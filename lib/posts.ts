@@ -1,0 +1,261 @@
+import { deleteImage, uploadMultipleImages } from './image-upload';
+import { supabase } from './supabase';
+
+export interface CreatePostData {
+    title: string;
+    content: string;
+    location?: {
+        latitude: number;
+        longitude: number;
+        address?: string;
+        city?: string;
+        country?: string;
+    };
+    images?: string[]; // URIs of local images
+}
+
+export interface Post {
+    id: string;
+    user_id: string;
+    title: string;
+    content: string;
+    location?: {
+        latitude: number;
+        longitude: number;
+        address?: string;
+        city?: string;
+        country?: string;
+    };
+    images?: string[];
+    created_at: string;
+    updated_at: string;
+    likes_count: number;
+    comments_count: number;
+}
+
+/**
+ * Create a new post with images
+ */
+export async function createPost(data: CreatePostData): Promise<Post> {
+    try {
+        // Get current user
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            throw new Error('User not authenticated');
+        }
+
+        // Upload images if provided
+        let imageUrls: string[] = [];
+        if (data.images && data.images.length > 0) {
+            imageUrls = await uploadMultipleImages(data.images, 'posts', user.id);
+        }
+
+        // Create post in database
+        const { data: post, error: postError } = await supabase
+            .from('posts')
+            .insert({
+                user_id: user.id,
+                title: data.title,
+                content: data.content,
+                location: data.location,
+                images: imageUrls,
+            })
+            .select()
+            .single();
+
+        if (postError) {
+            // If post creation fails, delete uploaded images
+            if (imageUrls.length > 0) {
+                await Promise.all(imageUrls.map((url) => deleteImage(url, 'posts')));
+            }
+            throw postError;
+        }
+
+        return post;
+    } catch (error) {
+        console.error('Error creating post:', error);
+        throw error;
+    }
+}
+
+/**
+ * Update an existing post
+ */
+export async function updatePost(
+    postId: string,
+    data: Partial<CreatePostData>
+): Promise<Post> {
+    try {
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            throw new Error('User not authenticated');
+        }
+
+        // Upload new images if provided
+        let imageUrls: string[] | undefined;
+        if (data.images && data.images.length > 0) {
+            imageUrls = await uploadMultipleImages(data.images, 'posts', user.id);
+        }
+
+        const updateData: any = {
+            updated_at: new Date().toISOString(),
+        };
+
+        if (data.title !== undefined) updateData.title = data.title;
+        if (data.content !== undefined) updateData.content = data.content;
+        if (data.location !== undefined) updateData.location = data.location;
+        if (imageUrls !== undefined) updateData.images = imageUrls;
+
+        const { data: post, error: postError } = await supabase
+            .from('posts')
+            .update(updateData)
+            .eq('id', postId)
+            .eq('user_id', user.id)
+            .select()
+            .single();
+
+        if (postError) {
+            throw postError;
+        }
+
+        return post;
+    } catch (error) {
+        console.error('Error updating post:', error);
+        throw error;
+    }
+}
+
+/**
+ * Delete a post and its images
+ */
+export async function deletePost(postId: string): Promise<void> {
+    try {
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            throw new Error('User not authenticated');
+        }
+
+        // Get post to retrieve image URLs
+        const { data: post, error: fetchError } = await supabase
+            .from('posts')
+            .select('images')
+            .eq('id', postId)
+            .eq('user_id', user.id)
+            .single();
+
+        if (fetchError) {
+            throw fetchError;
+        }
+
+        // Delete images from storage
+        if (post.images && post.images.length > 0) {
+            await Promise.all(post.images.map((url: string) => deleteImage(url, 'posts')));
+        }
+
+        // Delete post from database
+        const { error: deleteError } = await supabase
+            .from('posts')
+            .delete()
+            .eq('id', postId)
+            .eq('user_id', user.id);
+
+        if (deleteError) {
+            throw deleteError;
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        throw error;
+    }
+}
+
+/**
+ * Fetch posts with pagination
+ */
+export async function fetchPosts(
+    page: number = 0,
+    pageSize: number = 10
+): Promise<Post[]> {
+    try {
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+
+        const { data, error } = await supabase
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .range(from, to);
+
+        if (error) {
+            throw error;
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        throw error;
+    }
+}
+
+/**
+ * Fetch a single post by ID
+ */
+export async function fetchPostById(postId: string): Promise<Post> {
+    try {
+        const { data, error } = await supabase
+            .from('posts')
+            .select('*')
+            .eq('id', postId)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching post:', error);
+        throw error;
+    }
+}
+
+/**
+ * Fetch posts by user ID
+ */
+export async function fetchPostsByUser(
+    userId: string,
+    page: number = 0,
+    pageSize: number = 10
+): Promise<Post[]> {
+    try {
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+
+        const { data, error } = await supabase
+            .from('posts')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .range(from, to);
+
+        if (error) {
+            throw error;
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching user posts:', error);
+        throw error;
+    }
+}

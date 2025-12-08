@@ -1,0 +1,34 @@
+/* Global styles for NativeWind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom utility classes for book-inspired design */
+.text-heading {
+  font-family: 'PlayfairDisplay-Bold';
+}
+
+.text-body {
+  font-family: 'Lora-Regular';
+  letter-spacing: 0.01em;
+  line-height: 1.625;
+}
+
+.text-accent {
+  font-family: 'Merriweather-Regular';
+}
+
+/* Paper texture effect (optional - can be applied to backgrounds) */
+.paper-texture {
+  background-color: #F5F1E8;
+}
+
+/* Drop cap for first letter of posts */
+.drop-cap::first-letter {
+  font-size: 3em;
+  font-family: 'PlayfairDisplay-Black';
+  float: left;
+  line-height: 0.8;
+  margin-right: 0.1em;
+  margin-top: 0.1em;
+}
