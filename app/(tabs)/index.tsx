@@ -60,8 +60,10 @@ export default function HomeScreen() {
   };
 
   const handlePostPress = (post: Post) => {
-    // Navigate to post detail screen (to be implemented)
-    console.log('Post pressed:', post.id);
+    router.push({
+      pathname: '/post-detail/[id]',
+      params: { id: post.id }
+    });
   };
 
   const renderEmpty = () => {
