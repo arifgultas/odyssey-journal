@@ -2,7 +2,7 @@ import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import React from 'react';
+import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -11,12 +11,21 @@ const IMAGE_WIDTH = width - Spacing.md * 2;
 interface PostCardProps {
     post: Post;
     onPress?: () => void;
-    onLike?: () => void;
+    onLike?: (postId: string, isLiked: boolean) => void;
+    onBookmark?: (postId: string, isBookmarked: boolean) => void;
     onComment?: () => void;
     onShare?: () => void;
+    onDelete?: () => void;
+    onReport?: () => void;
+    isOwnPost?: boolean;
 }
 
-export function PostCard({ post, onPress, onLike, onComment, onShare }: PostCardProps) {
+export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare, onDelete, onReport, isOwnPost = false }: PostCardProps) {
+    const [isLiked, setIsLiked] = useState(post.isLiked || false);
+    const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked || false);
+    const [likesCount, setLikesCount] = useState(post.likes_count || 0);
+    const [showMenu, setShowMenu] = useState(false);
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -33,6 +42,25 @@ export function PostCard({ post, onPress, onLike, onComment, onShare }: PostCard
         } else {
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
+    };
+
+    const handleLike = () => {
+        // Optimistic update
+        const newIsLiked = !isLiked;
+        setIsLiked(newIsLiked);
+        setLikesCount(prev => newIsLiked ? prev + 1 : Math.max(0, prev - 1));
+
+        // Call parent handler
+        onLike?.(post.id, newIsLiked);
+    };
+
+    const handleBookmark = () => {
+        // Optimistic update
+        const newIsBookmarked = !isBookmarked;
+        setIsBookmarked(newIsBookmarked);
+
+        // Call parent handler
+        onBookmark?.(post.id, newIsBookmarked);
     };
 
     return (
@@ -52,10 +80,51 @@ export function PostCard({ post, onPress, onLike, onComment, onShare }: PostCard
                         <Text style={styles.timestamp}>{formatDate(post.created_at)}</Text>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.moreButton}>
+                <TouchableOpacity
+                    style={styles.moreButton}
+                    onPress={(e) => {
+                        e.stopPropagation();
+                        setShowMenu(!showMenu);
+                    }}
+                >
                     <Ionicons name="ellipsis-horizontal" size={20} color={Colors.light.textMuted} />
                 </TouchableOpacity>
             </View>
+
+            {/* Menu */}
+            {showMenu && (
+                <View style={styles.menu}>
+                    {isOwnPost ? (
+                        <TouchableOpacity
+                            style={styles.menuItem}
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                setShowMenu(false);
+                                onDelete?.();
+                            }}
+                        >
+                            <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
+                            <Text style={[styles.menuText, { color: Colors.light.error }]}>
+                                Delete Post
+                            </Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.menuItem}
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                setShowMenu(false);
+                                onReport?.();
+                            }}
+                        >
+                            <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
+                            <Text style={[styles.menuText, { color: Colors.light.error }]}>
+                                Report Post
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            )}
 
             {/* Title */}
             <Text style={styles.title}>{post.title}</Text>
@@ -94,15 +163,32 @@ export function PostCard({ post, onPress, onLike, onComment, onShare }: PostCard
 
             {/* Actions */}
             <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionButton} onPress={onLike}>
-                    <Ionicons name="heart-outline" size={22} color={Colors.light.text} />
-                    <Text style={styles.actionText}>{post.likes_count || 0}</Text>
+                <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={handleLike}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons
+                        name={isLiked ? "heart" : "heart-outline"}
+                        size={22}
+                        color={isLiked ? Colors.light.error : Colors.light.text}
+                    />
+                    <Text style={[
+                        styles.actionText,
+                        isLiked && { color: Colors.light.error }
+                    ]}>
+                        {likesCount}
+                    </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.actionButton} onPress={onComment}>
+                <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={onComment}
+                >
                     <Ionicons name="chatbubble-outline" size={20} color={Colors.light.text} />
                     <Text style={styles.actionText}>{post.comments_count || 0}</Text>
                 </TouchableOpacity>
+
 
                 <TouchableOpacity style={styles.actionButton} onPress={onShare}>
                     <Ionicons name="share-outline" size={20} color={Colors.light.text} />
@@ -110,8 +196,16 @@ export function PostCard({ post, onPress, onLike, onComment, onShare }: PostCard
 
                 <View style={{ flex: 1 }} />
 
-                <TouchableOpacity style={styles.actionButton}>
-                    <Ionicons name="bookmark-outline" size={20} color={Colors.light.text} />
+                <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={handleBookmark}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons
+                        name={isBookmarked ? "bookmark" : "bookmark-outline"}
+                        size={20}
+                        color={isBookmarked ? Colors.light.accent : Colors.light.text}
+                    />
                 </TouchableOpacity>
             </View>
         </TouchableOpacity>
@@ -225,5 +319,30 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.body,
         fontSize: 14,
         color: Colors.light.text,
+    },
+    menu: {
+        backgroundColor: Colors.light.surface,
+        borderRadius: BorderRadius.sm,
+        marginTop: Spacing.xs,
+        marginHorizontal: Spacing.md,
+        padding: Spacing.xs,
+        borderWidth: 1,
+        borderColor: Colors.light.border,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.sm,
+        padding: Spacing.sm,
+        borderRadius: BorderRadius.sm,
+    },
+    menuText: {
+        fontFamily: Typography.fonts.bodyBold,
+        fontSize: 14,
     },
 });

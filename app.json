@@ -10,10 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.odysseyjournal.app",
-      "config": {
-        "googleMapsApiKey": "AIzaSyDzxS9zQ9NEeLfYVzQDpqWIZlihWbJ6sRg"
-      }
+      "bundleIdentifier": "com.odysseyjournal.app"
     },
     "android": {
       "package": "com.odysseyjournal.app",
@@ -24,12 +21,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyDzxS9zQ9NEeLfYVzQDpqWIZlihWbJ6sRg"
-        }
-      }
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",

@@ -1,22 +1,26 @@
-import { PostCard } from '@/components/post-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { UserCard } from '@/components/user-card';
 import { Colors, Spacing, Typography } from '@/constants/theme';
-import { bookmarkPost, getBookmarkedPosts, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
-import { Post } from '@/lib/posts';
+import { followUser, getFollowers, unfollowUser, UserProfile } from '@/lib/follow';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-export default function SavedPostsScreen() {
-    const [posts, setPosts] = useState<Post[]>([]);
+export default function FollowersScreen() {
+    const { userId } = useLocalSearchParams<{ userId: string }>();
+    const [followers, setFollowers] = useState<UserProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [followingStates, setFollowingStates] = useState<Record<string, boolean>>({});
+    const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
-    const loadBookmarkedPosts = async (pageNum: number = 0, refresh: boolean = false) => {
+    const loadFollowers = async (pageNum: number = 0, refresh: boolean = false) => {
+        if (!userId) return;
+
         try {
             if (refresh) {
                 setIsRefreshing(true);
@@ -24,120 +28,85 @@ export default function SavedPostsScreen() {
                 setIsLoading(true);
             }
 
-            const bookmarkedPosts = await getBookmarkedPosts(pageNum, 10);
+            const data = await getFollowers(userId, pageNum, 20);
 
             if (refresh || pageNum === 0) {
-                setPosts(bookmarkedPosts);
+                setFollowers(data);
             } else {
-                setPosts([...posts, ...bookmarkedPosts]);
+                setFollowers([...followers, ...data]);
             }
 
-            setHasMore(bookmarkedPosts.length === 10);
+            setHasMore(data.length === 20);
             setPage(pageNum);
         } catch (error) {
-            console.error('Error loading bookmarked posts:', error);
-            Alert.alert('Error', 'Failed to load saved posts');
+            console.error('Error loading followers:', error);
+            Alert.alert('Error', 'Failed to load followers');
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
         }
     };
 
-    // Reload when screen comes into focus
-    useFocusEffect(
-        useCallback(() => {
-            loadBookmarkedPosts(0, true);
-        }, [])
-    );
+    useEffect(() => {
+        loadFollowers(0);
+    }, [userId]);
 
     const handleRefresh = () => {
-        loadBookmarkedPosts(0, true);
+        loadFollowers(0, true);
     };
 
     const handleLoadMore = () => {
         if (!isLoading && hasMore) {
-            loadBookmarkedPosts(page + 1);
+            loadFollowers(page + 1);
         }
     };
 
-    const handlePostPress = (post: Post) => {
-        router.push({
-            pathname: '/post-detail/[id]',
-            params: { id: post.id }
-        });
-    };
+    const handleFollowPress = async (targetUserId: string, shouldFollow: boolean) => {
+        setLoadingStates(prev => ({ ...prev, [targetUserId]: true }));
 
-    const handleLike = async (postId: string, isLiked: boolean) => {
         try {
-            if (isLiked) {
-                await likePost(postId);
+            if (shouldFollow) {
+                await followUser(targetUserId);
             } else {
-                await unlikePost(postId);
+                await unfollowUser(targetUserId);
             }
 
-            setPosts(prevPosts =>
-                prevPosts.map(post =>
-                    post.id === postId
-                        ? {
-                            ...post,
-                            isLiked,
-                            likes_count: isLiked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1)
-                        }
-                        : post
-                )
-            );
+            setFollowingStates(prev => ({ ...prev, [targetUserId]: shouldFollow }));
         } catch (error) {
-            console.error('Error toggling like:', error);
-            setPosts(prevPosts =>
-                prevPosts.map(post =>
-                    post.id === postId
-                        ? {
-                            ...post,
-                            isLiked: !isLiked,
-                            likes_count: !isLiked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1)
-                        }
-                        : post
-                )
-            );
+            console.error('Error toggling follow:', error);
+            Alert.alert('Error', 'Failed to update follow status');
+        } finally {
+            setLoadingStates(prev => ({ ...prev, [targetUserId]: false }));
         }
     };
 
-    const handleBookmark = async (postId: string, isBookmarked: boolean) => {
-        try {
-            if (isBookmarked) {
-                await bookmarkPost(postId);
-            } else {
-                await unbookmarkPost(postId);
-                // Remove from list when unbookmarked
-                setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-            }
-        } catch (error) {
-            console.error('Error toggling bookmark:', error);
-            // Reload on error
-            loadBookmarkedPosts(0, true);
-        }
+    const handleUserPress = (user: UserProfile) => {
+        // TODO: Create user profile screen
+        // router.push({
+        //     pathname: '/user-profile/[id]',
+        //     params: { id: user.id }
+        // });
+        console.log('User pressed:', user.username);
     };
 
     const renderEmpty = () => {
-        if (isLoading) {
-            return null;
-        }
+        if (isLoading) return null;
 
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="bookmark-outline" size={80} color={Colors.light.textMuted} />
+                <Ionicons name="people-outline" size={80} color={Colors.light.textMuted} />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
-                    No Saved Posts
+                    No Followers Yet
                 </ThemedText>
                 <ThemedText style={styles.emptyText}>
-                    Posts you bookmark will appear here
+                    When people follow this user, they'll appear here
                 </ThemedText>
             </View>
         );
     };
 
     const renderFooter = () => {
-        if (!isLoading || posts.length === 0) return null;
+        if (!isLoading || followers.length === 0) return null;
 
         return (
             <View style={styles.footerLoader}>
@@ -146,13 +115,17 @@ export default function SavedPostsScreen() {
         );
     };
 
-    if (isLoading && posts.length === 0) {
+    if (isLoading && followers.length === 0) {
         return (
             <ThemedView style={styles.container}>
                 <View style={styles.header}>
+                    <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+                    </TouchableOpacity>
                     <ThemedText type="title" style={styles.headerTitle}>
-                        Saved Posts
+                        Followers
                     </ThemedText>
+                    <View style={{ width: 40 }} />
                 </View>
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={Colors.light.accent} />
@@ -164,20 +137,25 @@ export default function SavedPostsScreen() {
     return (
         <ThemedView style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+                </TouchableOpacity>
                 <ThemedText type="title" style={styles.headerTitle}>
-                    Saved Posts
+                    Followers
                 </ThemedText>
+                <View style={{ width: 40 }} />
             </View>
 
             <FlatList
-                data={posts}
+                data={followers}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <PostCard
-                        post={{ ...item, isBookmarked: true }}
-                        onPress={() => handlePostPress(item)}
-                        onLike={handleLike}
-                        onBookmark={handleBookmark}
+                    <UserCard
+                        user={item}
+                        onPress={() => handleUserPress(item)}
+                        onFollowPress={handleFollowPress}
+                        isFollowing={followingStates[item.id] || false}
+                        followLoading={loadingStates[item.id] || false}
                     />
                 )}
                 contentContainerStyle={styles.listContent}
@@ -203,10 +181,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.lg,
+        paddingVertical: Spacing.md,
         borderBottomWidth: 1,
         borderBottomColor: Colors.light.border,
+    },
+    backButton: {
+        padding: Spacing.xs,
     },
     headerTitle: {
         fontFamily: Typography.fonts.heading,

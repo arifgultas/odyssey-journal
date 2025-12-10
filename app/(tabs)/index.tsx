@@ -1,12 +1,16 @@
 import { FloatingActionButton } from '@/components/floating-action-button';
 import { PostCard } from '@/components/post-card';
+import { ReportModal } from '@/components/report-modal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
-import { fetchPosts, Post } from '@/lib/posts';
+import { bookmarkPost, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
+import { deletePost, fetchPosts, Post } from '@/lib/posts';
+import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
+import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -14,6 +18,21 @@ export default function HomeScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadCurrentUser();
+    loadPosts(0);
+  }, []);
+
+  const loadCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      setCurrentUserId(user.id);
+    }
+  };
 
   const loadPosts = async (pageNum: number = 0, refresh: boolean = false) => {
     try {
@@ -35,6 +54,7 @@ export default function HomeScreen() {
       setPage(pageNum);
     } catch (error) {
       console.error('Error loading posts:', error);
+      Alert.alert('Error', 'Failed to load posts');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -64,6 +84,115 @@ export default function HomeScreen() {
       pathname: '/post-detail/[id]',
       params: { id: post.id }
     });
+  };
+
+  const handleLike = async (postId: string, isLiked: boolean) => {
+    try {
+      if (isLiked) {
+        await likePost(postId);
+      } else {
+        await unlikePost(postId);
+      }
+
+      // Update local state
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.id === postId
+            ? {
+              ...post,
+              isLiked,
+              likes_count: isLiked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1)
+            }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      // Revert optimistic update on error
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.id === postId
+            ? {
+              ...post,
+              isLiked: !isLiked,
+              likes_count: !isLiked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1)
+            }
+            : post
+        )
+      );
+    }
+  };
+
+  const handleBookmark = async (postId: string, isBookmarked: boolean) => {
+    try {
+      if (isBookmarked) {
+        await bookmarkPost(postId);
+      } else {
+        await unbookmarkPost(postId);
+      }
+
+      // Update local state
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.id === postId ? { ...post, isBookmarked } : post
+        )
+      );
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+      // Revert optimistic update on error
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.id === postId ? { ...post, isBookmarked: !isBookmarked } : post
+        )
+      );
+    }
+  };
+
+  const handleComment = (postId: string) => {
+    router.push({
+      pathname: '/comments/[postId]',
+      params: { postId }
+    });
+  };
+
+  const handleShare = async (post: Post) => {
+    const shareUrl = generatePostShareUrl(post.id);
+    const shareMessage = getPostShareMessage(post.title, post.content);
+
+    await sharePost({
+      title: post.title,
+      message: shareMessage,
+      url: shareUrl,
+    });
+  };
+
+  const handleDelete = async (postId: string) => {
+    Alert.alert(
+      'Delete Post',
+      'Are you sure you want to delete this post?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deletePost(postId);
+              setPosts(posts.filter(p => p.id !== postId));
+              Alert.alert('Success', 'Post deleted successfully');
+            } catch (error) {
+              console.error('Error deleting post:', error);
+              Alert.alert('Error', 'Failed to delete post');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleReport = (postId: string) => {
+    setSelectedPostId(postId);
+    setShowReportModal(true);
   };
 
   const renderEmpty = () => {
@@ -123,6 +252,13 @@ export default function HomeScreen() {
           <PostCard
             post={item}
             onPress={() => handlePostPress(item)}
+            onLike={handleLike}
+            onBookmark={handleBookmark}
+            onComment={() => handleComment(item.id)}
+            onShare={() => handleShare(item)}
+            onDelete={() => handleDelete(item.id)}
+            onReport={() => handleReport(item.id)}
+            isOwnPost={currentUserId === item.user_id}
           />
         )}
         contentContainerStyle={styles.listContent}
@@ -141,6 +277,18 @@ export default function HomeScreen() {
       />
 
       <FloatingActionButton onPress={handleCreatePost} />
+
+      {/* Report Modal */}
+      {selectedPostId && (
+        <ReportModal
+          visible={showReportModal}
+          postId={selectedPostId}
+          onClose={() => setShowReportModal(false)}
+          onReported={() => {
+            // Optional: Add any post-report actions
+          }}
+        />
+      )}
     </ThemedView>
   );
 }

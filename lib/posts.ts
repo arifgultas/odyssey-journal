@@ -31,6 +31,9 @@ export interface Post {
     updated_at: string;
     likes_count: number;
     comments_count: number;
+    // Client-side state
+    isLiked?: boolean;
+    isBookmarked?: boolean;
 }
 
 /**
