@@ -8,11 +8,18 @@ module.exports = {
         primary: '#2C1810',      // Dark brown (main text)
         secondary: '#8B7355',    // Medium brown
         accent: '#D4A574',       // Gold/tan accent
+        compass: '#4A6FA5',      // Compass/navigation color (reused for links, map markers, info)
+        info: '#4A6FA5',         // Teal blue (links, map markers)
         background: '#F5F1E8',   // Cream/parchment
         surface: '#FFFFFF',      // White (cards)
         text: '#2C1810',         // Dark brown text
         muted: '#A89984',        // Muted brown
         border: '#E8DCC8',       // Light tan border
+
+        // Status colors
+        success: '#6B8E23',      // Olive green
+        error: '#8B4513',        // Saddle brown
+        warning: '#DAA520',      // Goldenrod
       },
       fontFamily: {
         // Serif fonts for book-like feel

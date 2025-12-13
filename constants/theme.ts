@@ -9,6 +9,7 @@ export const Colors = {
     primary: '#2C1810',      // Dark brown (main text)
     secondary: '#8B7355',    // Medium brown
     accent: '#D4A574',       // Gold/tan accent
+    compass: '#4A6FA5',      // Compass/navigation color (reused for links, map markers, info)
 
     // Backgrounds
     background: '#F5F1E8',   // Cream/parchment
@@ -27,6 +28,7 @@ export const Colors = {
     success: '#6B8E23',      // Olive green
     error: '#8B4513',        // Saddle brown
     warning: '#DAA520',      // Goldenrod
+    info: '#4A6FA5',         // Teal blue (links, map markers)
 
     // Tab bar
     tint: '#D4A574',
@@ -38,6 +40,7 @@ export const Colors = {
     primary: '#F5F1E8',
     secondary: '#D4A574',
     accent: '#DAA520',
+    compass: '#6B9BD1',      // Lighter compass color for dark mode
 
     background: '#1A1410',
     surface: '#2C1810',
@@ -52,6 +55,7 @@ export const Colors = {
     success: '#8FBC8F',
     error: '#CD853F',
     warning: '#F0E68C',
+    info: '#6B9BD1',         // Lighter teal for dark mode
 
     tint: '#D4A574',
     tabIconDefault: '#8B7355',
@@ -96,6 +100,7 @@ export const Spacing = {
 };
 
 export const BorderRadius = {
+  xs: 2,
   sm: 4,
   md: 8,
   lg: 12,

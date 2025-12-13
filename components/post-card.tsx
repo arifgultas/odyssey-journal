@@ -2,8 +2,11 @@ import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BookmarkRibbon } from './bookmark-ribbon';
+import { ImageCarousel } from './image-carousel';
 
 const { width } = Dimensions.get('window');
 const IMAGE_WIDTH = width - Spacing.md * 2;
@@ -21,6 +24,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare, onDelete, onReport, isOwnPost = false }: PostCardProps) {
+    const router = useRouter();
     const [isLiked, setIsLiked] = useState(post.isLiked || false);
     const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked || false);
     const [likesCount, setLikesCount] = useState(post.likes_count || 0);
@@ -63,6 +67,13 @@ export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare
         onBookmark?.(post.id, newIsBookmarked);
     };
 
+    const handleUserPress = (e: any) => {
+        e.stopPropagation();
+        if (post.profiles?.id) {
+            router.push(`/user-profile/${post.profiles.id}`);
+        }
+    };
+
     return (
         <TouchableOpacity
             style={styles.container}
@@ -71,15 +82,29 @@ export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare
         >
             {/* Header */}
             <View style={styles.header}>
-                <View style={styles.userInfo}>
+                <TouchableOpacity
+                    style={styles.userInfo}
+                    onPress={handleUserPress}
+                    activeOpacity={0.7}
+                >
                     <View style={styles.avatar}>
-                        <Ionicons name="person" size={20} color={Colors.light.textMuted} />
+                        {post.profiles?.avatar_url ? (
+                            <Image
+                                source={{ uri: post.profiles.avatar_url }}
+                                style={styles.avatarImage}
+                                contentFit="cover"
+                            />
+                        ) : (
+                            <Ionicons name="person" size={20} color={Colors.light.textMuted} />
+                        )}
                     </View>
                     <View>
-                        <Text style={styles.username}>User</Text>
+                        <Text style={styles.username}>
+                            {post.profiles?.full_name || post.profiles?.username || 'User'}
+                        </Text>
                         <Text style={styles.timestamp}>{formatDate(post.created_at)}</Text>
                     </View>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.moreButton}
                     onPress={(e) => {
@@ -126,28 +151,25 @@ export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare
                 </View>
             )}
 
-            {/* Title */}
-            <Text style={styles.title}>{post.title}</Text>
-
-            {/* Content Preview */}
-            <Text style={styles.content} numberOfLines={3}>
-                {post.content}
-            </Text>
-
-            {/* Images */}
+            {/* Images - Polaroid Style with Carousel */}
             {post.images && post.images.length > 0 && (
-                <View style={styles.imagesContainer}>
-                    <Image
-                        source={{ uri: post.images[0] }}
-                        style={styles.mainImage}
-                        contentFit="cover"
-                    />
-                    {post.images.length > 1 && (
-                        <View style={styles.imageCount}>
-                            <Ionicons name="images" size={16} color={Colors.light.surface} />
-                            <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
-                        </View>
-                    )}
+                <View style={styles.polaroidContainer}>
+                    <View style={styles.polaroidFrame}>
+                        <ImageCarousel images={post.images} />
+                        {post.images.length > 1 && (
+                            <View style={styles.imageCount}>
+                                <Ionicons name="images" size={14} color={Colors.light.surface} />
+                                <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
+                            </View>
+                        )}
+                    </View>
+                    {/* Polaroid Caption */}
+                    <View style={styles.polaroidCaption}>
+                        <Text style={styles.captionTitle} numberOfLines={1}>{post.title}</Text>
+                        <Text style={styles.captionContent} numberOfLines={2}>
+                            {post.content}
+                        </Text>
+                    </View>
                 </View>
             )}
 
@@ -196,17 +218,11 @@ export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare
 
                 <View style={{ flex: 1 }} />
 
-                <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={handleBookmark}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons
-                        name={isBookmarked ? "bookmark" : "bookmark-outline"}
-                        size={20}
-                        color={isBookmarked ? Colors.light.accent : Colors.light.text}
-                    />
-                </TouchableOpacity>
+                <BookmarkRibbon
+                    isBookmarked={isBookmarked}
+                    onToggle={handleBookmark}
+                    size={22}
+                />
             </View>
         </TouchableOpacity>
     );
@@ -238,6 +254,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light.background,
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    avatarImage: {
+        width: '100%',
+        height: '100%',
     },
     username: {
         fontFamily: Typography.fonts.bodyBold,
@@ -252,27 +273,43 @@ const styles = StyleSheet.create({
     moreButton: {
         padding: Spacing.xs,
     },
-    title: {
-        fontFamily: Typography.fonts.heading,
-        fontSize: 20,
-        color: Colors.light.text,
-        marginBottom: Spacing.sm,
-    },
-    content: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 14,
-        color: Colors.light.textSecondary,
-        lineHeight: 22,
+    // Polaroid Container
+    polaroidContainer: {
+        backgroundColor: Colors.light.surface,
+        padding: Spacing.md,
+        borderRadius: BorderRadius.sm,
         marginBottom: Spacing.md,
+        ...Shadows.lg,
+        borderWidth: 1,
+        borderColor: Colors.light.border,
     },
-    imagesContainer: {
+    polaroidFrame: {
         position: 'relative',
-        marginBottom: Spacing.md,
+        backgroundColor: Colors.light.surface,
+        padding: 8,
+        borderRadius: BorderRadius.sm,
     },
-    mainImage: {
-        width: IMAGE_WIDTH - Spacing.md * 2,
-        height: 250,
-        borderRadius: BorderRadius.md,
+    polaroidImage: {
+        width: '100%',
+        height: 280,
+        borderRadius: BorderRadius.xs,
+    },
+    polaroidCaption: {
+        paddingTop: Spacing.md,
+        paddingHorizontal: Spacing.xs,
+    },
+    captionTitle: {
+        fontFamily: Typography.fonts.accent,
+        fontSize: 18,
+        color: Colors.light.text,
+        marginBottom: 6,
+        letterSpacing: -0.3,
+    },
+    captionContent: {
+        fontFamily: Typography.fonts.bodyItalic,
+        fontSize: 13,
+        color: Colors.light.textSecondary,
+        lineHeight: 20,
     },
     imageCount: {
         position: 'absolute',
@@ -300,7 +337,8 @@ const styles = StyleSheet.create({
     locationText: {
         fontFamily: Typography.fonts.body,
         fontSize: 12,
-        color: Colors.light.textSecondary,
+        color: Colors.light.compass,
+        fontWeight: '500',
     },
     actions: {
         flexDirection: 'row',

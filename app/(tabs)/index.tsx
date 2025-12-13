@@ -1,6 +1,7 @@
 import { FloatingActionButton } from '@/components/floating-action-button';
 import { PostCard } from '@/components/post-card';
 import { ReportModal } from '@/components/report-modal';
+import { PostCardSkeleton } from '@/components/skeleton-loader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
@@ -230,8 +231,10 @@ export default function HomeScreen() {
             Odyssey Journal
           </ThemedText>
         </View>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.light.accent} />
+        <View style={styles.listContent}>
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+          <PostCardSkeleton />
         </View>
       </ThemedView>
     );

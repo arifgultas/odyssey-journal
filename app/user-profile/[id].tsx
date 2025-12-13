@@ -1,91 +1,67 @@
-import { EditProfileModal } from '@/components/edit-profile-modal';
 import { ProfileHeader } from '@/components/profile-header';
 import { ProfileStatsBar } from '@/components/profile-stats-bar';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
-import { useCurrentProfile, useProfileStats, useUserPosts } from '@/hooks/use-profile';
+import { useFollowUser } from '@/hooks/use-follow';
+import { useProfile, useUserPosts } from '@/hooks/use-profile';
 import type { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
 import {
     ActivityIndicator,
-    Alert,
-    Dimensions,
     FlatList,
-    RefreshControl,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
 
-const { width } = Dimensions.get('window');
-const ITEM_SIZE = width / 3 - 2;
-
-export default function ProfileScreen() {
+export default function UserProfileScreen() {
     const router = useRouter();
-    const { user, signOut } = useAuth();
-    const [editModalVisible, setEditModalVisible] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
+    const { id } = useLocalSearchParams<{ id: string }>();
+    const { user: currentUser } = useAuth();
 
-    const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
-    const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useProfileStats(user?.id || null);
-    const { data: posts, isLoading: postsLoading, refetch: refetchPosts } = useUserPosts(user?.id || null);
+    const { data: profileData, isLoading: profileLoading } = useProfile(id);
+    const { data: posts, isLoading: postsLoading } = useUserPosts(id);
+    const followMutation = useFollowUser();
 
-    const handleRefresh = async () => {
-        setRefreshing(true);
-        await Promise.all([
-            refetchProfile(),
-            refetchStats(),
-            refetchPosts(),
-        ]);
-        setRefreshing(false);
-    };
+    const isCurrentUser = currentUser?.id === id;
 
-    const handleLogout = () => {
-        Alert.alert(
-            'Logout',
-            'Are you sure you want to logout?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Logout',
-                    style: 'destructive',
-                    onPress: signOut,
-                },
-            ]
-        );
+    const handleFollowPress = async () => {
+        if (!profileData || !id) return;
+
+        try {
+            await followMutation.mutateAsync({
+                targetUserId: id,
+                action: profileData.isFollowing ? 'unfollow' : 'follow',
+            });
+        } catch (error) {
+            console.error('Error toggling follow:', error);
+        }
     };
 
     const handleFollowersPress = () => {
-        if (user?.id) {
-            router.push(`/followers/${user.id}`);
+        if (id) {
+            router.push(`/followers/${id}`);
         }
     };
 
     const handleFollowingPress = () => {
-        if (user?.id) {
-            router.push(`/following/${user.id}`);
+        if (id) {
+            router.push(`/following/${id}`);
         }
     };
 
-
-    const handleEditSuccess = async () => {
-        console.log('Edit success callback - refreshing profile...');
-        // Force immediate refresh
-        await Promise.all([
-            refetchProfile(),
-            refetchStats(),
-        ]);
-        console.log('Profile refreshed');
+    const handleBack = () => {
+        router.back();
     };
 
     const handlePostPress = (postId: string) => {
         router.push(`/post-detail/${postId}`);
     };
 
-    if (profileLoading || !profile) {
+    if (profileLoading || !profileData) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={Colors.light.primary} />
@@ -96,24 +72,22 @@ export default function ProfileScreen() {
     const renderHeader = () => (
         <>
             <ProfileHeader
-                profile={profile}
-                isCurrentUser={true}
-                onEditPress={() => setEditModalVisible(true)}
+                profile={profileData}
+                isCurrentUser={isCurrentUser}
+                isFollowing={profileData.isFollowing}
+                onFollowPress={handleFollowPress}
+                isFollowLoading={followMutation.isPending}
             />
 
-            {statsLoading ? (
-                <View style={styles.statsLoading}>
-                    <ActivityIndicator size="small" color={Colors.light.primary} />
-                </View>
-            ) : stats ? (
+            {profileData.stats && (
                 <View style={styles.statsContainer}>
                     <ProfileStatsBar
-                        stats={stats}
+                        stats={profileData.stats}
                         onFollowersPress={handleFollowersPress}
                         onFollowingPress={handleFollowingPress}
                     />
                 </View>
-            ) : null}
+            )}
 
             <View style={styles.gridHeader}>
                 <Ionicons name="grid-outline" size={20} color={Colors.light.text} />
@@ -126,12 +100,10 @@ export default function ProfileScreen() {
         <View style={styles.emptyState}>
             <Ionicons name="images-outline" size={64} color={Colors.light.border} />
             <Text style={styles.emptyText}>No posts yet</Text>
-            <Text style={styles.emptySubtext}>Share your travel experiences!</Text>
         </View>
     );
 
     const renderGridItem = ({ item, index }: { item: Post; index: number }) => {
-        const imageUrl = item.images?.[0];
         const col = index % 3;
 
         return (
@@ -154,10 +126,13 @@ export default function ProfileScreen() {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.logo}>Odyssey</Text>
-                <TouchableOpacity onPress={handleLogout} style={styles.logoutIcon}>
-                    <Ionicons name="log-out-outline" size={24} color={Colors.light.primary} />
+                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={Colors.light.primary} />
                 </TouchableOpacity>
+                <Text style={styles.headerTitle}>
+                    {profileData.username || 'Profile'}
+                </Text>
+                <View style={styles.headerRight} />
             </View>
 
             <FlatList
@@ -171,26 +146,9 @@ export default function ProfileScreen() {
                         <ActivityIndicator size="small" color={Colors.light.primary} />
                     </View>
                 ) : renderEmpty()}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={handleRefresh}
-                        tintColor={Colors.light.primary}
-                    />
-                }
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
             />
-
-            {/* Edit Profile Modal */}
-            {profile && (
-                <EditProfileModal
-                    visible={editModalVisible}
-                    profile={profile}
-                    onClose={() => setEditModalVisible(false)}
-                    onSuccess={handleEditSuccess}
-                />
-            )}
         </View>
     );
 }
@@ -217,28 +175,23 @@ const styles = StyleSheet.create({
         borderBottomColor: Colors.light.border,
         backgroundColor: Colors.light.surface,
     },
-    logo: {
-        fontFamily: Typography.fonts.heading,
-        fontSize: 24,
-        color: Colors.light.primary,
-        letterSpacing: -0.5,
-    },
-    logoutIcon: {
+    backButton: {
         padding: Spacing.sm,
     },
-    content: {
-        flex: 1,
+    headerTitle: {
+        fontFamily: Typography.fonts.heading,
+        fontSize: 18,
+        color: Colors.light.text,
+    },
+    headerRight: {
+        width: 40,
+    },
+    flatListContent: {
+        flexGrow: 1,
     },
     statsContainer: {
         paddingHorizontal: Spacing.lg,
         paddingVertical: Spacing.md,
-    },
-    statsLoading: {
-        paddingVertical: Spacing.xl,
-        alignItems: 'center',
-    },
-    gridSection: {
-        marginTop: Spacing.md,
     },
     gridHeader: {
         flexDirection: 'row',
@@ -255,9 +208,6 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.bodyBold,
         fontSize: 16,
         color: Colors.light.text,
-    },
-    flatListContent: {
-        flexGrow: 1,
     },
     gridItem: {
         flex: 1,
@@ -292,11 +242,5 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: Colors.light.textSecondary,
         marginTop: Spacing.md,
-    },
-    emptySubtext: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 14,
-        color: Colors.light.textSecondary,
-        marginTop: Spacing.sm,
     },
 });

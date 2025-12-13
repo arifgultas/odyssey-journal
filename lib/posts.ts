@@ -31,6 +31,13 @@ export interface Post {
     updated_at: string;
     likes_count: number;
     comments_count: number;
+    // User profile data (from join)
+    profiles?: {
+        id: string;
+        username: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+    };
     // Client-side state
     isLiked?: boolean;
     isBookmarked?: boolean;
@@ -196,7 +203,15 @@ export async function fetchPosts(
 
         const { data, error } = await supabase
             .from('posts')
-            .select('*')
+            .select(`
+                *,
+                profiles:user_id (
+                    id,
+                    username,
+                    full_name,
+                    avatar_url
+                )
+            `)
             .order('created_at', { ascending: false })
             .range(from, to);
 
