@@ -34,6 +34,12 @@ export const Colors = {
     tint: '#D4A574',
     tabIconDefault: '#A89984',
     tabIconSelected: '#2C1810',
+
+    // Vintage Map Colors (Explore page)
+    parchment: '#E8DCC8',
+    compassBlue: '#4A6FA5',
+    goldenrod: '#DAA520',
+    sepiaOverlay: '#704214',
   },
   dark: {
     // Sepia/Parchment dark mode
@@ -60,6 +66,12 @@ export const Colors = {
     tint: '#D4A574',
     tabIconDefault: '#8B7355',
     tabIconSelected: '#F5F1E8',
+
+    // Vintage Map Colors (Explore page)
+    parchment: '#3D2F20',
+    compassBlue: '#6B9BD1',
+    goldenrod: '#F0E68C',
+    sepiaOverlay: '#1A1410',
   },
 };
 
