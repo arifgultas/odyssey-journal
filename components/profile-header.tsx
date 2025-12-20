@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Profile } from '@/lib/types/profile';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -23,30 +24,33 @@ export function ProfileHeader({
     onFollowPress,
     isFollowLoading = false,
 }: ProfileHeaderProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.surface }]}>
             {/* Leather-inspired gradient background */}
             <LinearGradient
-                colors={[Colors.light.surface, Colors.light.background, Colors.light.surface]}
+                colors={[theme.surface, theme.background, theme.surface]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.gradientBackground}
             >
                 {/* Avatar with premium border */}
                 <View style={styles.avatarSection}>
-                    <View style={styles.avatarOuterBorder}>
-                        <View style={styles.avatarInnerBorder}>
+                    <View style={[styles.avatarOuterBorder, { backgroundColor: theme.accent }]}>
+                        <View style={[styles.avatarInnerBorder, { backgroundColor: theme.surface }]}>
                             {profile.avatar_url ? (
                                 <Image
                                     key={profile.avatar_url}
                                     source={{ uri: profile.avatar_url }}
-                                    style={styles.avatar}
+                                    style={[styles.avatar, { borderColor: theme.primary }]}
                                     contentFit="cover"
                                     transition={200}
                                 />
                             ) : (
-                                <View style={styles.avatarPlaceholder}>
-                                    <Text style={styles.avatarText}>
+                                <View style={[styles.avatarPlaceholder, { backgroundColor: theme.accent, borderColor: theme.primary }]}>
+                                    <Text style={[styles.avatarText, { color: theme.surface }]}>
                                         {profile.full_name?.charAt(0).toUpperCase() ||
                                             profile.username?.charAt(0).toUpperCase() ||
                                             'U'}
@@ -59,19 +63,19 @@ export function ProfileHeader({
 
                 {/* User Info */}
                 <View style={styles.infoContainer}>
-                    <Text style={styles.fullName}>
+                    <Text style={[styles.fullName, { color: theme.text }]}>
                         {profile.full_name || 'Traveler'}
                     </Text>
                     {profile.username && (
-                        <Text style={styles.username}>@{profile.username}</Text>
+                        <Text style={[styles.username, { color: theme.textSecondary }]}>@{profile.username}</Text>
                     )}
                     {profile.bio && (
-                        <Text style={styles.bio}>{profile.bio}</Text>
+                        <Text style={[styles.bio, { color: theme.text }]}>{profile.bio}</Text>
                     )}
                     {profile.website && (
                         <TouchableOpacity style={styles.websiteContainer}>
-                            <Ionicons name="link-outline" size={16} color={Colors.light.compass} />
-                            <Text style={styles.website}>{profile.website}</Text>
+                            <Ionicons name="link-outline" size={16} color={theme.compass} />
+                            <Text style={[styles.website, { color: theme.compass }]}>{profile.website}</Text>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -79,33 +83,35 @@ export function ProfileHeader({
                 {/* Action Button */}
                 {isCurrentUser ? (
                     <TouchableOpacity
-                        style={styles.editButton}
+                        style={[styles.editButton, { backgroundColor: theme.primary }]}
                         onPress={onEditPress}
                     >
-                        <Ionicons name="create-outline" size={18} color={Colors.light.surface} />
-                        <Text style={styles.editButtonText}>Edit Profile</Text>
+                        <Ionicons name="create-outline" size={18} color={theme.surface} />
+                        <Text style={[styles.editButtonText, { color: theme.surface }]}>Edit Profile</Text>
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity
                         style={[
                             styles.followButton,
-                            isFollowing && styles.followingButton
+                            { backgroundColor: theme.primary },
+                            isFollowing && { backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.primary }
                         ]}
                         onPress={onFollowPress}
                         disabled={isFollowLoading}
                     >
                         {isFollowLoading ? (
-                            <ActivityIndicator size="small" color={isFollowing ? Colors.light.primary : Colors.light.surface} />
+                            <ActivityIndicator size="small" color={isFollowing ? theme.primary : theme.surface} />
                         ) : (
                             <>
                                 <Ionicons
                                     name={isFollowing ? "checkmark-outline" : "person-add-outline"}
                                     size={18}
-                                    color={isFollowing ? Colors.light.primary : Colors.light.surface}
+                                    color={isFollowing ? theme.primary : theme.surface}
                                 />
                                 <Text style={[
                                     styles.followButtonText,
-                                    isFollowing && styles.followingButtonText
+                                    { color: theme.surface },
+                                    isFollowing && { color: theme.primary }
                                 ]}>
                                     {isFollowing ? 'Following' : 'Follow'}
                                 </Text>

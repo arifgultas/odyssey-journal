@@ -1,4 +1,8 @@
 import {
+    Caveat_400Regular,
+    Caveat_700Bold,
+} from '@expo-google-fonts/caveat';
+import {
     Lora_400Regular,
     Lora_400Regular_Italic,
     Lora_700Bold,
@@ -29,6 +33,10 @@ export function useBookFonts() {
         // Merriweather (Accent)
         'Merriweather-Regular': Merriweather_400Regular,
         'Merriweather-Bold': Merriweather_700Bold,
+
+        // Caveat (Handwriting for polaroid captions)
+        'Caveat-Regular': Caveat_400Regular,
+        'Caveat-Bold': Caveat_700Bold,
     });
 
     return { fontsLoaded, fontError };

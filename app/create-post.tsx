@@ -20,8 +20,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CreatePostScreen() {
+    const insets = useSafeAreaInsets();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,7 +102,7 @@ export default function CreatePostScreen() {
                 style={styles.keyboardView}
             >
                 {/* Header */}
-                <View style={styles.header}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
                         <Ionicons name="close" size={28} color={Colors.light.text} />
                     </TouchableOpacity>
@@ -227,7 +229,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.md,
+        paddingBottom: Spacing.md,
         borderBottomWidth: 1,
         borderBottomColor: Colors.light.border,
     },

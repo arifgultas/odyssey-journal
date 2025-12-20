@@ -1,3 +1,5 @@
+import { BorderRadius, Colors, Spacing } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -21,6 +23,8 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
     borderRadius = 8,
     style,
 }) => {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
     const shimmerValue = useSharedValue(0);
 
     useEffect(() => {
@@ -36,42 +40,80 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         return { opacity };
     });
 
+    const bgColor = colorScheme === 'dark' ? '#3D2F20' : '#E8DCC8';
+    const shimmerColor = colorScheme === 'dark' ? '#4D3F30' : '#F5F1E8';
+
     return (
-        <View style={[styles.container, { width, height, borderRadius }, style]}>
-            <Animated.View style={[styles.shimmer, animatedStyle]} />
+        <View style={[styles.container, { width, height, borderRadius, backgroundColor: bgColor }, style]}>
+            <Animated.View style={[styles.shimmer, { backgroundColor: shimmerColor }, animatedStyle]} />
         </View>
     );
 };
 
+/**
+ * Polaroid-style skeleton for PostCard
+ * Matches the new Google Stitch design
+ */
 export const PostCardSkeleton: React.FC = () => {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
+    // Random rotation like real polaroid cards
+    const rotation = [-2, 1, -1, 2][Math.floor(Math.random() * 4)];
+
     return (
-        <View style={styles.postCard}>
-            <View style={styles.header}>
-                <SkeletonLoader width={40} height={40} borderRadius={20} />
-                <View style={styles.headerText}>
-                    <SkeletonLoader width="60%" height={16} />
-                    <SkeletonLoader width="40%" height={12} style={{ marginTop: 4 }} />
+        <View style={[
+            styles.polaroidCard,
+            {
+                backgroundColor: theme.surface,
+                borderColor: theme.border,
+                transform: [{ rotate: `${rotation}deg` }]
+            }
+        ]}>
+            {/* Image skeleton with stamp placeholder */}
+            <View style={styles.imageContainer}>
+                <SkeletonLoader width="100%" height="100%" borderRadius={BorderRadius.xs} />
+
+                {/* Stamp skeleton */}
+                <View style={[styles.stampSkeleton, { borderColor: theme.accent }]}>
+                    <SkeletonLoader width={24} height={24} borderRadius={12} />
                 </View>
             </View>
 
-            <SkeletonLoader width="100%" height={300} style={{ marginVertical: 12 }} />
+            {/* Handwriting caption skeleton */}
+            <View style={styles.captionContainer}>
+                <SkeletonLoader width={120} height={28} borderRadius={4} style={styles.locationSkeleton} />
+                <SkeletonLoader width={100} height={20} borderRadius={4} style={styles.dateSkeleton} />
+            </View>
 
-            <SkeletonLoader width="80%" height={20} style={{ marginBottom: 8 }} />
-            <SkeletonLoader width="100%" height={16} />
-            <SkeletonLoader width="90%" height={16} style={{ marginTop: 4 }} />
+            {/* User section skeleton */}
+            <View style={[styles.userSection, { borderTopColor: theme.border }]}>
+                <SkeletonLoader width={36} height={36} borderRadius={18} />
+                <View style={styles.userTextSkeleton}>
+                    <SkeletonLoader width={80} height={12} borderRadius={6} />
+                    <SkeletonLoader width="100%" height={10} borderRadius={5} style={{ marginTop: 6 }} />
+                    <SkeletonLoader width="80%" height={10} borderRadius={5} style={{ marginTop: 4 }} />
+                </View>
+            </View>
 
-            <View style={styles.footer}>
-                <SkeletonLoader width={60} height={32} borderRadius={16} />
-                <SkeletonLoader width={60} height={32} borderRadius={16} />
-                <SkeletonLoader width={60} height={32} borderRadius={16} />
+            {/* Actions skeleton */}
+            <View style={[styles.actionsSkeleton, { borderTopColor: theme.border }]}>
+                <SkeletonLoader width={40} height={20} borderRadius={10} />
+                <SkeletonLoader width={40} height={20} borderRadius={10} />
+                <SkeletonLoader width={24} height={20} borderRadius={10} />
+                <View style={{ flex: 1 }} />
+                <SkeletonLoader width={20} height={24} borderRadius={4} />
             </View>
         </View>
     );
 };
 
 export const ProfileHeaderSkeleton: React.FC = () => {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     return (
-        <View style={styles.profileHeader}>
+        <View style={[styles.profileHeader, { backgroundColor: theme.surface }]}>
             <SkeletonLoader width={100} height={100} borderRadius={50} style={{ alignSelf: 'center' }} />
             <SkeletonLoader width="60%" height={24} style={{ marginTop: 16, alignSelf: 'center' }} />
             <SkeletonLoader width="40%" height={16} style={{ marginTop: 8, alignSelf: 'center' }} />
@@ -95,8 +137,11 @@ export const ProfileHeaderSkeleton: React.FC = () => {
 };
 
 export const CommentSkeleton: React.FC = () => {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     return (
-        <View style={styles.comment}>
+        <View style={[styles.comment, { backgroundColor: theme.surface }]}>
             <SkeletonLoader width={32} height={32} borderRadius={16} />
             <View style={styles.commentContent}>
                 <SkeletonLoader width="40%" height={14} />
@@ -109,36 +154,79 @@ export const CommentSkeleton: React.FC = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#E1E9EE',
         overflow: 'hidden',
     },
     shimmer: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
     },
-    postCard: {
-        backgroundColor: '#FFF',
-        padding: 16,
-        marginBottom: 16,
-        borderRadius: 12,
+    // Polaroid card skeleton styles
+    polaroidCard: {
+        padding: Spacing.sm,
+        paddingBottom: Spacing.md,
+        borderRadius: BorderRadius.xs,
+        borderWidth: 1,
+        marginBottom: Spacing.xl,
+        marginHorizontal: Spacing.xs,
+        // Polaroid shadow
+        shadowColor: '#2C1810',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 4,
     },
-    header: {
-        flexDirection: 'row',
+    imageContainer: {
+        aspectRatio: 1,
+        borderRadius: BorderRadius.xs,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    stampSkeleton: {
+        position: 'absolute',
+        top: Spacing.md,
+        right: Spacing.md,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        borderWidth: 2,
         alignItems: 'center',
-        marginBottom: 12,
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        transform: [{ rotate: '12deg' }],
     },
-    headerText: {
-        marginLeft: 12,
+    captionContainer: {
+        alignItems: 'center',
+        paddingTop: Spacing.md,
+        paddingHorizontal: Spacing.xs,
+    },
+    locationSkeleton: {
+        alignSelf: 'center',
+    },
+    dateSkeleton: {
+        alignSelf: 'center',
+        marginTop: Spacing.xs,
+    },
+    userSection: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingTop: Spacing.sm,
+        borderTopWidth: 1,
+        marginTop: Spacing.sm,
+        gap: Spacing.sm,
+    },
+    userTextSkeleton: {
         flex: 1,
     },
-    footer: {
+    actionsSkeleton: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 12,
+        alignItems: 'center',
+        gap: Spacing.md,
+        paddingTop: Spacing.sm,
+        marginTop: Spacing.xs,
+        borderTopWidth: 1,
     },
+    // Legacy styles for other skeletons
     profileHeader: {
         padding: 20,
-        backgroundColor: '#FFF',
     },
     statsRow: {
         flexDirection: 'row',
@@ -151,7 +239,6 @@ const styles = StyleSheet.create({
     comment: {
         flexDirection: 'row',
         padding: 12,
-        backgroundColor: '#FFF',
         marginBottom: 8,
     },
     commentContent: {

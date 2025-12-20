@@ -20,8 +20,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CreatePostScreen() {
+    const insets = useSafeAreaInsets();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,7 +73,7 @@ export default function CreatePostScreen() {
                         setContent('');
                         clearLocation();
                         // Navigate to home
-                        router.push('/(tabs)/');
+                        router.push('/(tabs)');
                     },
                 },
             ]);
@@ -107,7 +109,7 @@ export default function CreatePostScreen() {
                 style={styles.keyboardView}
             >
                 {/* Header */}
-                <View style={styles.header}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
                     <ThemedText type="title" style={styles.headerTitle}>
                         Create Post
                     </ThemedText>
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.md,
+        paddingBottom: Spacing.md,
         borderBottomWidth: 1,
         borderBottomColor: Colors.light.border,
     },

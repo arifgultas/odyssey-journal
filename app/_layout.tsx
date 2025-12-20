@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { OfflineIndicator } from '@/components/offline-indicator';
 import { AuthProvider } from '@/context/AuthContext';
@@ -20,7 +21,8 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient(queryClientConfig);
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  // Start with index which redirects to onboarding
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
@@ -38,18 +40,22 @@ export default function RootLayout() {
   }
 
   return (
-    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-      <AuthProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          </Stack>
-          <StatusBar style="auto" />
-          <OfflineIndicator position="top" />
-        </ThemeProvider>
-      </AuthProvider>
-    </PersistQueryClientProvider>
+    <SafeAreaProvider>
+      <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+        <AuthProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+            </Stack>
+            <StatusBar style="auto" />
+            <OfflineIndicator position="top" />
+          </ThemeProvider>
+        </AuthProvider>
+      </PersistQueryClientProvider>
+    </SafeAreaProvider>
   );
 }

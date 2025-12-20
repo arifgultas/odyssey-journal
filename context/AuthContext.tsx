@@ -48,14 +48,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (isLoading) return;
 
-        const inAuthGroup = segments[0] === '(auth)';
+        // Wait for segments to be populated
+        if (!segments || !segments[0]) return;
 
-        if (!session && !inAuthGroup) {
-            // Redirect to login if waiting for auth or not authenticated
-            router.replace('/(auth)/login');
-        } else if (session && inAuthGroup) {
-            // Redirect to home if authenticated and trying to access auth screens
-            router.replace('/(tabs)');
+        const inAuthGroup = segments[0] === '(auth)';
+        const inOnboarding = segments[0] === 'onboarding';
+        const inTabs = segments[0] === '(tabs)';
+
+        if (!session) {
+            // User is not logged in
+            if (inTabs) {
+                // Only redirect to onboarding if trying to access protected tabs
+                router.replace('/onboarding');
+            }
+            // Allow staying in auth or onboarding screens
+        } else {
+            // User is logged in
+            if (inAuthGroup || inOnboarding) {
+                // Redirect to home if authenticated and trying to access auth/onboarding screens
+                router.replace('/(tabs)');
+            }
         }
     }, [session, segments, isLoading]);
 

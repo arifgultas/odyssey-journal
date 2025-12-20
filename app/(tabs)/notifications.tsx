@@ -2,6 +2,7 @@ import { NotificationItem } from '@/components/notification-item';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
     getNotifications,
     getUnreadNotificationCount,
@@ -15,8 +16,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function NotificationsScreen() {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+    const insets = useSafeAreaInsets();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -138,7 +143,7 @@ export default function NotificationsScreen() {
 
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="notifications-outline" size={80} color={Colors.light.textMuted} />
+                <Ionicons name="notifications-outline" size={80} color={theme.textMuted} />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
                     No Notifications
                 </ThemedText>
@@ -154,7 +159,7 @@ export default function NotificationsScreen() {
 
         return (
             <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color={Colors.light.accent} />
+                <ActivityIndicator size="small" color={theme.accent} />
             </View>
         );
     };
@@ -162,13 +167,13 @@ export default function NotificationsScreen() {
     if (isLoading && notifications.length === 0) {
         return (
             <ThemedView style={styles.container}>
-                <View style={styles.header}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.md, borderBottomColor: theme.border }]}>
                     <ThemedText type="title" style={styles.headerTitle}>
                         Notifications
                     </ThemedText>
                 </View>
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={Colors.light.accent} />
+                    <ActivityIndicator size="large" color={theme.accent} />
                 </View>
             </ThemedView>
         );
@@ -176,13 +181,13 @@ export default function NotificationsScreen() {
 
     return (
         <ThemedView style={styles.container}>
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.md, borderBottomColor: theme.border }]}>
                 <ThemedText type="title" style={styles.headerTitle}>
                     Notifications
                 </ThemedText>
                 {unreadCount > 0 && (
                     <TouchableOpacity onPress={handleMarkAllAsRead} style={styles.markAllButton}>
-                        <ThemedText style={styles.markAllText}>Mark all read</ThemedText>
+                        <ThemedText style={[styles.markAllText, { color: theme.accent }]}>Mark all read</ThemedText>
                     </TouchableOpacity>
                 )}
             </View>
@@ -196,11 +201,13 @@ export default function NotificationsScreen() {
                         onPress={() => handleNotificationPress(item)}
                     />
                 )}
+                contentContainerStyle={styles.listContent}
+                contentInsetAdjustmentBehavior="never"
                 refreshControl={
                     <RefreshControl
                         refreshing={isRefreshing}
                         onRefresh={handleRefresh}
-                        tintColor={Colors.light.accent}
+                        tintColor={theme.accent}
                     />
                 }
                 onEndReached={handleLoadMore}
@@ -217,14 +224,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    listContent: {
+        flexGrow: 1,
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.lg,
+        paddingBottom: Spacing.lg,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
     },
     headerTitle: {
         fontFamily: Typography.fonts.heading,
@@ -235,7 +244,6 @@ const styles = StyleSheet.create({
     markAllText: {
         fontFamily: Typography.fonts.body,
         fontSize: 14,
-        color: Colors.light.accent,
     },
     loadingContainer: {
         flex: 1,
@@ -253,7 +261,6 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.heading,
     },
     emptyText: {
-        color: Colors.light.textMuted,
         textAlign: 'center',
     },
     footerLoader: {

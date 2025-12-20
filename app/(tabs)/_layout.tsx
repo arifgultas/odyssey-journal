@@ -9,17 +9,18 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].primary,
-        tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].textMuted,
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textSecondary,
         headerShown: false,
         tabBarButton: HapticTab,
         // Elegant Floating Tab Bar Style
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].surface,
+          backgroundColor: theme.surface,
           borderTopWidth: 0,
           height: Platform.OS === 'ios' ? 88 : 68,
           paddingBottom: Platform.OS === 'ios' ? 28 : 12,
@@ -27,7 +28,7 @@ export default function TabLayout() {
           paddingHorizontal: Spacing.md,
           // Leather-inspired shadow
           ...Shadows.lg,
-          shadowColor: Colors[colorScheme ?? 'light'].primary,
+          shadowColor: theme.primary,
           shadowOpacity: 0.15,
           // Floating effect
           position: 'absolute',
@@ -37,7 +38,8 @@ export default function TabLayout() {
           borderRadius: BorderRadius.xl,
           // Premium border
           borderWidth: 1,
-          borderColor: Colors[colorScheme ?? 'light'].border,
+          borderColor: theme.border,
+          opacity: 1,  // Ensure full opacity
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -80,8 +82,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: 'Alerts',
-          tabBarIcon: ({ color }) => <IconSymbol size={26} name="bell.fill" color={color} />,
+          href: null, // Hide from tab bar but keep screen accessible
         }}
       />
       <Tabs.Screen

@@ -2,14 +2,19 @@ import { PostCard } from '@/components/post-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { bookmarkPost, getBookmarkedPosts, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SavedPostsScreen() {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+    const insets = useSafeAreaInsets();
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -125,7 +130,7 @@ export default function SavedPostsScreen() {
 
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="bookmark-outline" size={80} color={Colors.light.textMuted} />
+                <Ionicons name="bookmark-outline" size={80} color={theme.textMuted} />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
                     No Saved Posts
                 </ThemedText>
@@ -141,7 +146,7 @@ export default function SavedPostsScreen() {
 
         return (
             <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color={Colors.light.accent} />
+                <ActivityIndicator size="small" color={theme.accent} />
             </View>
         );
     };
@@ -149,13 +154,13 @@ export default function SavedPostsScreen() {
     if (isLoading && posts.length === 0) {
         return (
             <ThemedView style={styles.container}>
-                <View style={styles.header}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.md, borderBottomColor: theme.border }]}>
                     <ThemedText type="title" style={styles.headerTitle}>
                         Saved Posts
                     </ThemedText>
                 </View>
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={Colors.light.accent} />
+                    <ActivityIndicator size="large" color={theme.accent} />
                 </View>
             </ThemedView>
         );
@@ -163,7 +168,7 @@ export default function SavedPostsScreen() {
 
     return (
         <ThemedView style={styles.container}>
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.md, borderBottomColor: theme.border }]}>
                 <ThemedText type="title" style={styles.headerTitle}>
                     Saved Posts
                 </ThemedText>
@@ -172,9 +177,10 @@ export default function SavedPostsScreen() {
             <FlatList
                 data={posts}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                     <PostCard
                         post={{ ...item, isBookmarked: true }}
+                        index={index}
                         onPress={() => handlePostPress(item)}
                         onLike={handleLike}
                         onBookmark={handleBookmark}
@@ -185,7 +191,7 @@ export default function SavedPostsScreen() {
                     <RefreshControl
                         refreshing={isRefreshing}
                         onRefresh={handleRefresh}
-                        tintColor={Colors.light.accent}
+                        tintColor={theme.accent}
                     />
                 }
                 onEndReached={handleLoadMore}
@@ -204,15 +210,16 @@ const styles = StyleSheet.create({
     },
     header: {
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.lg,
+        paddingBottom: Spacing.lg,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
     },
     headerTitle: {
         fontFamily: Typography.fonts.heading,
     },
     listContent: {
-        padding: Spacing.md,
+        paddingHorizontal: Spacing.md,
+        paddingTop: Spacing.lg,
+        paddingBottom: 160,
     },
     loadingContainer: {
         flex: 1,
@@ -230,7 +237,6 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.heading,
     },
     emptyText: {
-        color: Colors.light.textMuted,
         textAlign: 'center',
     },
     footerLoader: {

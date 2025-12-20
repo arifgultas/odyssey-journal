@@ -75,6 +75,9 @@ export const Typography = {
     accentBold: 'Merriweather-Bold',
     ui: 'Inter-Regular',
     uiBold: 'Inter-Bold',
+    // Handwriting font for polaroid captions
+    handwriting: 'Caveat-Regular',
+    handwritingBold: 'Caveat-Bold',
   },
 
   // Font sizes with line heights

@@ -1,8 +1,11 @@
 import { EditProfileModal } from '@/components/edit-profile-modal';
 import { ProfileHeader } from '@/components/profile-header';
 import { ProfileStatsBar } from '@/components/profile-stats-bar';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCurrentProfile, useProfileStats, useUserPosts } from '@/hooks/use-profile';
 import type { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,15 +18,18 @@ import {
     FlatList,
     RefreshControl,
     StyleSheet,
-    Text,
     TouchableOpacity,
     View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = width / 3 - 2;
 
 export default function ProfileScreen() {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+    const insets = useSafeAreaInsets();
     const router = useRouter();
     const { user, signOut } = useAuth();
     const [editModalVisible, setEditModalVisible] = useState(false);
@@ -87,9 +93,9 @@ export default function ProfileScreen() {
 
     if (profileLoading || !profile) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={Colors.light.primary} />
-            </View>
+            <ThemedView style={[styles.loadingContainer]}>
+                <ActivityIndicator size="large" color={theme.primary} />
+            </ThemedView>
         );
     }
 
@@ -103,7 +109,7 @@ export default function ProfileScreen() {
 
             {statsLoading ? (
                 <View style={styles.statsLoading}>
-                    <ActivityIndicator size="small" color={Colors.light.primary} />
+                    <ActivityIndicator size="small" color={theme.primary} />
                 </View>
             ) : stats ? (
                 <View style={styles.statsContainer}>
@@ -115,18 +121,18 @@ export default function ProfileScreen() {
                 </View>
             ) : null}
 
-            <View style={styles.gridHeader}>
-                <Ionicons name="grid-outline" size={20} color={Colors.light.text} />
-                <Text style={styles.gridTitle}>Travel History</Text>
+            <View style={[styles.gridHeader, { borderColor: theme.border }]}>
+                <Ionicons name="grid-outline" size={20} color={theme.text} />
+                <ThemedText style={styles.gridTitle}>Travel History</ThemedText>
             </View>
         </>
     );
 
     const renderEmpty = () => (
         <View style={styles.emptyState}>
-            <Ionicons name="images-outline" size={64} color={Colors.light.border} />
-            <Text style={styles.emptyText}>No posts yet</Text>
-            <Text style={styles.emptySubtext}>Share your travel experiences!</Text>
+            <Ionicons name="images-outline" size={64} color={theme.border} />
+            <ThemedText style={styles.emptyText}>No posts yet</ThemedText>
+            <ThemedText style={styles.emptySubtext}>Share your travel experiences!</ThemedText>
         </View>
     );
 
@@ -143,20 +149,20 @@ export default function ProfileScreen() {
                 ]}
                 onPress={() => handlePostPress(item.id)}
             >
-                <View style={styles.gridImagePlaceholder}>
-                    <Ionicons name="image-outline" size={40} color={Colors.light.border} />
+                <View style={[styles.gridImagePlaceholder, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    <Ionicons name="image-outline" size={40} color={theme.border} />
                 </View>
             </TouchableOpacity>
         );
     };
 
     return (
-        <View style={styles.container}>
+        <ThemedView style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.logo}>Odyssey</Text>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.md, borderBottomColor: theme.border }]}>
+                <ThemedText type="title" style={styles.headerTitle}>Odyssey</ThemedText>
                 <TouchableOpacity onPress={handleLogout} style={styles.logoutIcon}>
-                    <Ionicons name="log-out-outline" size={24} color={Colors.light.primary} />
+                    <Ionicons name="log-out-outline" size={24} color={theme.primary} />
                 </TouchableOpacity>
             </View>
 
@@ -168,14 +174,14 @@ export default function ProfileScreen() {
                 ListHeaderComponent={renderHeader}
                 ListEmptyComponent={postsLoading ? (
                     <View style={styles.postsLoading}>
-                        <ActivityIndicator size="small" color={Colors.light.primary} />
+                        <ActivityIndicator size="small" color={theme.primary} />
                     </View>
                 ) : renderEmpty()}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={handleRefresh}
-                        tintColor={Colors.light.primary}
+                        tintColor={theme.primary}
                     />
                 }
                 showsVerticalScrollIndicator={false}
@@ -191,37 +197,29 @@ export default function ProfileScreen() {
                     onSuccess={handleEditSuccess}
                 />
             )}
-        </View>
+        </ThemedView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.light.background,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: Colors.light.background,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: Spacing.lg,
-        paddingTop: 60,
         paddingBottom: Spacing.md,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
-        backgroundColor: Colors.light.surface,
     },
-    logo: {
+    headerTitle: {
         fontFamily: Typography.fonts.heading,
-        fontSize: 24,
-        color: Colors.light.primary,
-        letterSpacing: -0.5,
     },
     logoutIcon: {
         padding: Spacing.sm,

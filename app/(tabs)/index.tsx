@@ -5,15 +5,32 @@ import { PostCardSkeleton } from '@/components/skeleton-loader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { bookmarkPost, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
 import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
 import { supabase } from '@/lib/supabase';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  FlatList,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -23,10 +40,27 @@ export default function HomeScreen() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  // Spinning compass animation
+  const spinValue = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
+    // Start compass spinning animation
+    Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 8000,
+        useNativeDriver: true,
+      })
+    ).start();
+
     loadCurrentUser();
     loadPosts(0);
   }, []);
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   const loadCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -62,10 +96,6 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    loadPosts(0);
-  }, []);
-
   const handleRefresh = () => {
     loadPosts(0, true);
   };
@@ -95,7 +125,6 @@ export default function HomeScreen() {
         await unlikePost(postId);
       }
 
-      // Update local state
       setPosts(prevPosts =>
         prevPosts.map(post =>
           post.id === postId
@@ -109,7 +138,6 @@ export default function HomeScreen() {
       );
     } catch (error) {
       console.error('Error toggling like:', error);
-      // Revert optimistic update on error
       setPosts(prevPosts =>
         prevPosts.map(post =>
           post.id === postId
@@ -132,7 +160,6 @@ export default function HomeScreen() {
         await unbookmarkPost(postId);
       }
 
-      // Update local state
       setPosts(prevPosts =>
         prevPosts.map(post =>
           post.id === postId ? { ...post, isBookmarked } : post
@@ -140,7 +167,6 @@ export default function HomeScreen() {
       );
     } catch (error) {
       console.error('Error toggling bookmark:', error);
-      // Revert optimistic update on error
       setPosts(prevPosts =>
         prevPosts.map(post =>
           post.id === postId ? { ...post, isBookmarked: !isBookmarked } : post
@@ -203,12 +229,19 @@ export default function HomeScreen() {
 
     return (
       <View style={styles.emptyContainer}>
+        <MaterialIcons name="explore" size={64} color={theme.accent} style={{ opacity: 0.6 }} />
         <ThemedText type="subtitle" style={styles.emptyTitle}>
-          No Posts Yet
+          No Adventures Yet
         </ThemedText>
         <ThemedText style={styles.emptyText}>
-          Start sharing your travel adventures!
+          Start sharing your travel memories!
         </ThemedText>
+        <TouchableOpacity
+          style={[styles.emptyButton, { backgroundColor: theme.accent }]}
+          onPress={handleCreatePost}
+        >
+          <Text style={styles.emptyButtonText}>Create Your First Post</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -218,19 +251,53 @@ export default function HomeScreen() {
 
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={Colors.light.accent} />
+        <ActivityIndicator size="small" color={theme.accent} />
       </View>
     );
   };
 
+  const renderHeader = () => (
+    <View style={[
+      styles.header,
+      {
+        paddingTop: insets.top + Spacing.sm,
+        backgroundColor: colorScheme === 'dark'
+          ? 'rgba(26, 20, 16, 0.95)'
+          : 'rgba(245, 241, 232, 0.95)',
+        borderBottomColor: `${theme.accent}33`,
+      }
+    ]}>
+      <View style={styles.headerSpacer} />
+      <View style={styles.headerCenter}>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>
+          Odyssey Journal
+        </Text>
+        <Animated.View style={{ transform: [{ rotate: spin }] }}>
+          <MaterialIcons
+            name="explore"
+            size={24}
+            color={theme.accent}
+            style={styles.compassIcon}
+          />
+        </Animated.View>
+      </View>
+      <TouchableOpacity
+        style={styles.headerButton}
+        onPress={() => router.push('/notifications')}
+      >
+        <Ionicons name="notifications-outline" size={24} color={theme.text} />
+      </TouchableOpacity>
+    </View>
+  );
+
   if (isLoading && posts.length === 0) {
     return (
       <ThemedView style={styles.container}>
-        <View style={styles.header}>
-          <ThemedText type="title" style={styles.headerTitle}>
-            Odyssey Journal
-          </ThemedText>
-        </View>
+        {/* Map Texture Background */}
+        <View style={[styles.mapTexture, { opacity: colorScheme === 'dark' ? 0.04 : 0.08 }]} />
+
+        {renderHeader()}
+
         <View style={styles.listContent}>
           <PostCardSkeleton />
           <PostCardSkeleton />
@@ -242,18 +309,18 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText type="title" style={styles.headerTitle}>
-          Odyssey Journal
-        </ThemedText>
-      </View>
+      {/* Map Texture Background - pseudo vintage map effect */}
+      <View style={[styles.mapTexture, { opacity: colorScheme === 'dark' ? 0.04 : 0.08 }]} />
+
+      {renderHeader()}
 
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <PostCard
             post={item}
+            index={index}
             onPress={() => handlePostPress(item)}
             onLike={handleLike}
             onBookmark={handleBookmark}
@@ -269,7 +336,8 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={Colors.light.accent}
+            tintColor={theme.accent}
+            colors={[theme.accent]}
           />
         }
         onEndReached={handleLoadMore}
@@ -300,39 +368,83 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  mapTexture: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: Colors.light.accent,
+    // This creates a subtle texture effect
+    opacity: 0.08,
+  },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.lg,
+    paddingBottom: Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    // Blur effect for iOS
+    ...(Platform.OS === 'ios' && {
+      backdropFilter: 'blur(8px)',
+    }),
+  },
+  headerSpacer: {
+    width: 32,
+  },
+  headerCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   headerTitle: {
     fontFamily: Typography.fonts.heading,
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: -0.3,
+  },
+  compassIcon: {
+    // Drop shadow for the compass
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  headerButton: {
+    padding: Spacing.xs,
   },
   listContent: {
-    padding: Spacing.md,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.lg,
+    paddingBottom: 160,
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing.xxl,
+    paddingVertical: Spacing.xxl * 2,
+    paddingHorizontal: Spacing.lg,
   },
   emptyTitle: {
+    marginTop: Spacing.md,
     marginBottom: Spacing.sm,
     fontFamily: Typography.fonts.heading,
   },
   emptyText: {
-    color: Colors.light.textMuted,
     textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  emptyButton: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderRadius: 20,
+  },
+  emptyButtonText: {
+    fontFamily: Typography.fonts.uiBold,
+    fontSize: 14,
+    color: '#FFFFFF',
   },
   footerLoader: {
     paddingVertical: Spacing.lg,
     alignItems: 'center',
   },
 });
-

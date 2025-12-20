@@ -19,10 +19,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
 export default function PostDetailScreen() {
+    const insets = useSafeAreaInsets();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -172,7 +174,7 @@ export default function PostDetailScreen() {
     if (isLoading) {
         return (
             <ThemedView style={styles.container}>
-                <View style={styles.header}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
@@ -191,7 +193,7 @@ export default function PostDetailScreen() {
     return (
         <ThemedView style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                 </TouchableOpacity>
@@ -380,7 +382,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.md,
+        paddingBottom: Spacing.md,
         borderBottomWidth: 1,
         borderBottomColor: Colors.light.border,
     },

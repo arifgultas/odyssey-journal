@@ -2,8 +2,11 @@ import { CategoryCard } from '@/components/category-card';
 import { DestinationCard } from '@/components/destination-card';
 import { LocationCard } from '@/components/location-card';
 import { SearchBar } from '@/components/search-bar';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
 import { UserCard } from '@/components/user-card';
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useFollowUser } from '@/hooks/use-follow';
 import {
   useDeleteSearchHistoryItem,
@@ -30,11 +33,15 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type TabType = 'all' | 'locations' | 'users';
 type SortType = 'recent' | 'popular' | 'trending';
 
 export default function ExploreScreen() {
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('all');
@@ -105,8 +112,8 @@ export default function ExploreScreen() {
   const renderSearchResults = () => {
     if (searchLoading) {
       return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.light.primary} />
+        <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+          <ActivityIndicator size="large" color={theme.primary} />
         </View>
       );
     }
@@ -136,10 +143,10 @@ export default function ExploreScreen() {
 
     if (flatData.length === 0) {
       return (
-        <View style={styles.emptyState}>
-          <Ionicons name="search-outline" size={64} color={Colors.light.border} />
-          <Text style={styles.emptyText}>No results found</Text>
-          <Text style={styles.emptySubtext}>Try different keywords</Text>
+        <View style={[styles.emptyState, { backgroundColor: theme.background }]}>
+          <Ionicons name="search-outline" size={64} color={theme.border} />
+          <Text style={[styles.emptyText, { color: theme.textSecondary }]}>No results found</Text>
+          <Text style={[styles.emptySubtext, { color: theme.textSecondary }]}>Try different keywords</Text>
         </View>
       );
     }
@@ -150,7 +157,7 @@ export default function ExploreScreen() {
         keyExtractor={(item, index) => `${item.type}-${index}`}
         renderItem={({ item }) => {
           if (item.type === 'header') {
-            return <Text style={styles.sectionTitle}>{item.title}</Text>;
+            return <Text style={[styles.sectionTitle, { color: theme.text }]}>{item.title}</Text>;
           } else if (item.type === 'location') {
             return (
               <LocationCard
@@ -186,21 +193,21 @@ export default function ExploreScreen() {
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
             <View style={styles.historyHeader}>
-              <Text style={styles.historyTitle}>Recent Searches</Text>
+              <Text style={[styles.historyTitle, { color: theme.text }]}>Recent Searches</Text>
             </View>
           }
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.historyItem}
+              style={[styles.historyItem, { borderBottomColor: theme.border }]}
               onPress={() => handleHistoryItemPress(item.query)}
             >
-              <Ionicons name="time-outline" size={20} color={Colors.light.textSecondary} />
-              <Text style={styles.historyText}>{item.query}</Text>
+              <Ionicons name="time-outline" size={20} color={theme.textSecondary} />
+              <Text style={[styles.historyText, { color: theme.text }]}>{item.query}</Text>
               <TouchableOpacity
                 onPress={() => handleDeleteHistory(item.id)}
                 style={styles.deleteButton}
               >
-                <Ionicons name="close" size={18} color={Colors.light.textSecondary} />
+                <Ionicons name="close" size={18} color={theme.textSecondary} />
               </TouchableOpacity>
             </TouchableOpacity>
           )}
@@ -297,11 +304,11 @@ export default function ExploreScreen() {
                   size={24}
                   color={
                     item.icon === 'trending-up' || item.icon === 'flame'
-                      ? Colors.light.accent
-                      : Colors.light.primary
+                      ? theme.accent
+                      : theme.primary
                   }
                 />
-                <Text style={styles.sectionTitle}>{item.title}</Text>
+                <Text style={[styles.sectionTitle, { color: theme.text }]}>{item.title}</Text>
               </View>
             );
           } else if (item.type === 'categories') {
@@ -330,8 +337,8 @@ export default function ExploreScreen() {
                     style={styles.gridPostItem}
                     onPress={() => router.push(`/post-detail/${post.id}`)}
                   >
-                    <View style={styles.gridPostPlaceholder}>
-                      <Ionicons name="image-outline" size={32} color={Colors.light.border} />
+                    <View style={[styles.gridPostPlaceholder, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                      <Ionicons name="image-outline" size={32} color={theme.border} />
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -403,14 +410,14 @@ export default function ExploreScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.logo}>Explore</Text>
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.md, borderBottomColor: theme.border }]}>
+        <ThemedText type="title" style={styles.headerTitle}>Explore</ThemedText>
       </View>
 
       {/* Search Bar */}
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
         <SearchBar
           value={searchQuery}
           onChangeText={handleSearch}
@@ -423,29 +430,29 @@ export default function ExploreScreen() {
 
       {/* Tabs & Filters (when searching) */}
       {searchQuery.length > 0 && (
-        <View style={styles.filtersContainer}>
+        <View style={[styles.filtersContainer, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
           <View style={styles.tabs}>
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'all' && styles.activeTab]}
+              style={[styles.tab, activeTab === 'all' && { backgroundColor: theme.primary }]}
               onPress={() => setActiveTab('all')}
             >
-              <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>
+              <Text style={[styles.tabText, { color: theme.textSecondary }, activeTab === 'all' && { color: theme.surface }]}>
                 All
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'locations' && styles.activeTab]}
+              style={[styles.tab, activeTab === 'locations' && { backgroundColor: theme.primary }]}
               onPress={() => setActiveTab('locations')}
             >
-              <Text style={[styles.tabText, activeTab === 'locations' && styles.activeTabText]}>
+              <Text style={[styles.tabText, { color: theme.textSecondary }, activeTab === 'locations' && { color: theme.surface }]}>
                 Locations
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'users' && styles.activeTab]}
+              style={[styles.tab, activeTab === 'users' && { backgroundColor: theme.primary }]}
               onPress={() => setActiveTab('users')}
             >
-              <Text style={[styles.tabText, activeTab === 'users' && styles.activeTabText]}>
+              <Text style={[styles.tabText, { color: theme.textSecondary }, activeTab === 'users' && { color: theme.surface }]}>
                 Users
               </Text>
             </TouchableOpacity>
@@ -453,26 +460,26 @@ export default function ExploreScreen() {
 
           <View style={styles.sortContainer}>
             <TouchableOpacity
-              style={[styles.sortButton, sortBy === 'recent' && styles.activeSortButton]}
+              style={[styles.sortButton, { borderColor: theme.border }, sortBy === 'recent' && { backgroundColor: theme.accent, borderColor: theme.accent }]}
               onPress={() => setSortBy('recent')}
             >
-              <Text style={[styles.sortText, sortBy === 'recent' && styles.activeSortText]}>
+              <Text style={[styles.sortText, { color: theme.textSecondary }, sortBy === 'recent' && { color: theme.surface }]}>
                 Recent
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.sortButton, sortBy === 'popular' && styles.activeSortButton]}
+              style={[styles.sortButton, { borderColor: theme.border }, sortBy === 'popular' && { backgroundColor: theme.accent, borderColor: theme.accent }]}
               onPress={() => setSortBy('popular')}
             >
-              <Text style={[styles.sortText, sortBy === 'popular' && styles.activeSortText]}>
+              <Text style={[styles.sortText, { color: theme.textSecondary }, sortBy === 'popular' && { color: theme.surface }]}>
                 Popular
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.sortButton, sortBy === 'trending' && styles.activeSortButton]}
+              style={[styles.sortButton, { borderColor: theme.border }, sortBy === 'trending' && { backgroundColor: theme.accent, borderColor: theme.accent }]}
               onPress={() => setSortBy('trending')}
             >
-              <Text style={[styles.sortText, sortBy === 'trending' && styles.activeSortText]}>
+              <Text style={[styles.sortText, { color: theme.textSecondary }, sortBy === 'trending' && { color: theme.surface }]}>
                 Trending
               </Text>
             </TouchableOpacity>
@@ -482,40 +489,29 @@ export default function ExploreScreen() {
 
       {/* Content */}
       {searchQuery.length > 0 ? renderSearchResults() : renderDiscoverContent()}
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: 60,
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
-    backgroundColor: Colors.light.surface,
   },
-  logo: {
+  headerTitle: {
     fontFamily: Typography.fonts.heading,
-    fontSize: 24,
-    color: Colors.light.primary,
-    letterSpacing: -0.5,
   },
   searchContainer: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.light.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
   },
   filtersContainer: {
-    backgroundColor: Colors.light.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
     paddingBottom: Spacing.sm,
   },
   tabs: {

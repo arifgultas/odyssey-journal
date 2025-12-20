@@ -1,4 +1,5 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { ProfileStats } from '@/lib/types/profile';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -16,44 +17,47 @@ export function ProfileStatsBar({
     onFollowersPress,
     onFollowingPress,
 }: ProfileStatsBarProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <TouchableOpacity
                 style={styles.statItem}
                 onPress={onPostsPress}
                 disabled={!onPostsPress}
             >
-                <Text style={styles.statNumber}>{stats.postsCount}</Text>
-                <Text style={styles.statLabel}>Posts</Text>
+                <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.postsCount}</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Posts</Text>
             </TouchableOpacity>
 
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
             <TouchableOpacity
                 style={styles.statItem}
                 onPress={onFollowersPress}
                 disabled={!onFollowersPress}
             >
-                <Text style={styles.statNumber}>{stats.followersCount}</Text>
-                <Text style={styles.statLabel}>Followers</Text>
+                <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.followersCount}</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Followers</Text>
             </TouchableOpacity>
 
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
             <TouchableOpacity
                 style={styles.statItem}
                 onPress={onFollowingPress}
                 disabled={!onFollowingPress}
             >
-                <Text style={styles.statNumber}>{stats.followingCount}</Text>
-                <Text style={styles.statLabel}>Following</Text>
+                <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.followingCount}</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Following</Text>
             </TouchableOpacity>
 
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
             <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{stats.countriesVisited}</Text>
-                <Text style={styles.statLabel}>Countries</Text>
+                <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.countriesVisited}</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Countries</Text>
             </View>
         </View>
     );

@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { UserProfile } from '@/lib/follow';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -23,20 +24,23 @@ export function UserCard({
     isFollowing = false,
     followLoading = false
 }: UserCardProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     const handleFollowPress = () => {
         onFollowPress?.(user.id, !isFollowing);
     };
 
     return (
         <TouchableOpacity
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.surface }]}
             onPress={onPress}
             activeOpacity={0.7}
             disabled={!onPress}
         >
             <View style={styles.content}>
                 {/* Avatar */}
-                <View style={styles.avatar}>
+                <View style={[styles.avatar, { backgroundColor: theme.background }]}>
                     {user.avatar_url ? (
                         <Image
                             source={{ uri: user.avatar_url }}
@@ -44,32 +48,32 @@ export function UserCard({
                             contentFit="cover"
                         />
                     ) : (
-                        <Ionicons name="person" size={32} color={Colors.light.textMuted} />
+                        <Ionicons name="person" size={32} color={theme.textMuted} />
                     )}
                 </View>
 
                 {/* User Info */}
                 <View style={styles.userInfo}>
-                    <Text style={styles.fullName} numberOfLines={1}>
+                    <Text style={[styles.fullName, { color: theme.text }]} numberOfLines={1}>
                         {user.full_name || user.username || 'Unknown User'}
                     </Text>
                     {user.username && (
-                        <Text style={styles.username} numberOfLines={1}>
+                        <Text style={[styles.username, { color: theme.textSecondary }]} numberOfLines={1}>
                             @{user.username}
                         </Text>
                     )}
                     {user.bio && (
-                        <Text style={styles.bio} numberOfLines={2}>
+                        <Text style={[styles.bio, { color: theme.textSecondary }]} numberOfLines={2}>
                             {user.bio}
                         </Text>
                     )}
                     <View style={styles.stats}>
-                        <Text style={styles.statText}>
-                            <Text style={styles.statNumber}>{user.followers_count || 0}</Text> followers
+                        <Text style={[styles.statText, { color: theme.textMuted }]}>
+                            <Text style={[styles.statNumber, { color: theme.text }]}>{user.followers_count || 0}</Text> followers
                         </Text>
-                        <Text style={styles.statDivider}>•</Text>
-                        <Text style={styles.statText}>
-                            <Text style={styles.statNumber}>{user.following_count || 0}</Text> following
+                        <Text style={[styles.statDivider, { color: theme.textMuted }]}>•</Text>
+                        <Text style={[styles.statText, { color: theme.textMuted }]}>
+                            <Text style={[styles.statNumber, { color: theme.text }]}>{user.following_count || 0}</Text> following
                         </Text>
                     </View>
                 </View>

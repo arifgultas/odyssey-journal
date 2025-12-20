@@ -1,18 +1,31 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Post } from '@/lib/posts';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { BookmarkRibbon } from './bookmark-ribbon';
 import { ImageCarousel } from './image-carousel';
 
-const { width } = Dimensions.get('window');
-const IMAGE_WIDTH = width - Spacing.md * 2;
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Stamp icons for visual variety
+const STAMP_ICONS = [
+    'flight-takeoff',
+    'temple-buddhist',
+    'sailing',
+    'photo-camera',
+    'landscape',
+    'beach-access',
+    'hiking',
+    'castle',
+] as const;
 
 interface PostCardProps {
     post: Post;
+    index?: number; // For alternating rotations
     onPress?: () => void;
     onLike?: (postId: string, isLiked: boolean) => void;
     onBookmark?: (postId: string, isBookmarked: boolean) => void;
@@ -23,47 +36,74 @@ interface PostCardProps {
     isOwnPost?: boolean;
 }
 
-export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare, onDelete, onReport, isOwnPost = false }: PostCardProps) {
+export function PostCard({
+    post,
+    index = 0,
+    onPress,
+    onLike,
+    onBookmark,
+    onComment,
+    onShare,
+    onDelete,
+    onReport,
+    isOwnPost = false
+}: PostCardProps) {
     const router = useRouter();
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     const [isLiked, setIsLiked] = useState(post.isLiked || false);
     const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked || false);
     const [likesCount, setLikesCount] = useState(post.likes_count || 0);
     const [showMenu, setShowMenu] = useState(false);
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInMs = now.getTime() - date.getTime();
-        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-        const diffInDays = Math.floor(diffInHours / 24);
+    // Animation values using React Native Animated (not Reanimated)
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const rotateAnim = useRef(new Animated.Value(0)).current;
 
-        if (diffInHours < 1) {
-            return 'Just now';
-        } else if (diffInHours < 24) {
-            return `${diffInHours}h ago`;
-        } else if (diffInDays < 7) {
-            return `${diffInDays}d ago`;
-        } else {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    // Get a deterministic rotation for polaroid effect (-3 to 3 degrees)
+    const baseRotation = useMemo(() => {
+        const rotations = [-3, 2, -2, 1, -1, 3, 0];
+        return rotations[index % rotations.length];
+    }, [index]);
+
+    // Get a stamp icon based on index
+    const stampIcon = useMemo(() => {
+        return STAMP_ICONS[index % STAMP_ICONS.length];
+    }, [index]);
+
+    // Format date for polaroid caption (e.g., "October 14, 2023")
+    const formatDateForPolaroid = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    // Get location display text
+    const getLocationText = () => {
+        if (post.location) {
+            if (post.location.city && post.location.country) {
+                const countryCode = post.location.country.substring(0, 2).toUpperCase();
+                return `${post.location.city}, ${countryCode}`;
+            }
+            return post.location.city || post.location.country || post.title;
         }
+        return post.title;
     };
 
     const handleLike = () => {
-        // Optimistic update
         const newIsLiked = !isLiked;
         setIsLiked(newIsLiked);
         setLikesCount(prev => newIsLiked ? prev + 1 : Math.max(0, prev - 1));
-
-        // Call parent handler
         onLike?.(post.id, newIsLiked);
     };
 
     const handleBookmark = () => {
-        // Optimistic update
         const newIsBookmarked = !isBookmarked;
         setIsBookmarked(newIsBookmarked);
-
-        // Call parent handler
         onBookmark?.(post.id, newIsBookmarked);
     };
 
@@ -74,242 +114,252 @@ export function PostCard({ post, onPress, onLike, onBookmark, onComment, onShare
         }
     };
 
+    // Press animations
+    const handlePressIn = () => {
+        Animated.parallel([
+            Animated.spring(scaleAnim, {
+                toValue: 1.02,
+                friction: 8,
+                tension: 100,
+                useNativeDriver: true,
+            }),
+            Animated.spring(rotateAnim, {
+                toValue: 1, // Will interpolate to 0deg
+                friction: 8,
+                tension: 100,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.parallel([
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                friction: 8,
+                tension: 100,
+                useNativeDriver: true,
+            }),
+            Animated.spring(rotateAnim, {
+                toValue: 0, // Back to baseRotation
+                friction: 8,
+                tension: 100,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    // Interpolate rotation from baseRotation to 0
+    const rotateInterpolate = rotateAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [`${baseRotation}deg`, '0deg'],
+    });
+
     return (
-        <TouchableOpacity
-            style={styles.container}
+        <TouchableWithoutFeedback
             onPress={onPress}
-            activeOpacity={0.95}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
         >
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.userInfo}
-                    onPress={handleUserPress}
-                    activeOpacity={0.7}
-                >
-                    <View style={styles.avatar}>
-                        {post.profiles?.avatar_url ? (
-                            <Image
-                                source={{ uri: post.profiles.avatar_url }}
-                                style={styles.avatarImage}
-                                contentFit="cover"
-                            />
-                        ) : (
-                            <Ionicons name="person" size={20} color={Colors.light.textMuted} />
-                        )}
-                    </View>
-                    <View>
-                        <Text style={styles.username}>
-                            {post.profiles?.full_name || post.profiles?.username || 'User'}
-                        </Text>
-                        <Text style={styles.timestamp}>{formatDate(post.created_at)}</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.moreButton}
-                    onPress={(e) => {
-                        e.stopPropagation();
-                        setShowMenu(!showMenu);
-                    }}
-                >
-                    <Ionicons name="ellipsis-horizontal" size={20} color={Colors.light.textMuted} />
-                </TouchableOpacity>
-            </View>
+            <Animated.View
+                style={[
+                    styles.cardWrapper,
+                    {
+                        transform: [
+                            { rotate: rotateInterpolate },
+                            { scale: scaleAnim }
+                        ]
+                    }
+                ]}
+            >
+                <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                    {/* Images - Polaroid Style */}
+                    {post.images && post.images.length > 0 && (
+                        <View style={styles.polaroidFrame}>
+                            <View style={styles.imageWrapper}>
+                                <ImageCarousel images={post.images} style={styles.carousel} />
 
-            {/* Menu */}
-            {showMenu && (
-                <View style={styles.menu}>
-                    {isOwnPost ? (
-                        <TouchableOpacity
-                            style={styles.menuItem}
-                            onPress={(e) => {
-                                e.stopPropagation();
-                                setShowMenu(false);
-                                onDelete?.();
-                            }}
-                        >
-                            <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
-                            <Text style={[styles.menuText, { color: Colors.light.error }]}>
-                                Delete Post
-                            </Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity
-                            style={styles.menuItem}
-                            onPress={(e) => {
-                                e.stopPropagation();
-                                setShowMenu(false);
-                                onReport?.();
-                            }}
-                        >
-                            <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
-                            <Text style={[styles.menuText, { color: Colors.light.error }]}>
-                                Report Post
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
-            )}
+                                {/* Image count badge */}
+                                {post.images.length > 1 && (
+                                    <View style={styles.imageCount}>
+                                        <Ionicons name="images" size={14} color={Colors.light.surface} />
+                                        <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
+                                    </View>
+                                )}
 
-            {/* Images - Polaroid Style with Carousel */}
-            {post.images && post.images.length > 0 && (
-                <View style={styles.polaroidContainer}>
-                    <View style={styles.polaroidFrame}>
-                        <ImageCarousel images={post.images} />
-                        {post.images.length > 1 && (
-                            <View style={styles.imageCount}>
-                                <Ionicons name="images" size={14} color={Colors.light.surface} />
-                                <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
+                                {/* Stamp Effect */}
+                                <View style={[styles.stampContainer, { borderColor: theme.accent }]}>
+                                    <MaterialIcons
+                                        name={stampIcon}
+                                        size={28}
+                                        color={theme.accent}
+                                    />
+                                </View>
                             </View>
-                        )}
+
+                            {/* Polaroid Caption - Handwriting Style */}
+                            <View style={styles.polaroidCaption}>
+                                <Text style={[styles.locationTitle, { color: theme.text }]} numberOfLines={1}>
+                                    {getLocationText()}
+                                </Text>
+                                <Text style={[styles.dateText, { color: theme.textMuted }]}>
+                                    {formatDateForPolaroid(post.created_at)}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
+
+                    {/* User Info Section */}
+                    <View style={[styles.userSection, { borderTopColor: theme.border }]}>
+                        <TouchableWithoutFeedback onPress={handleUserPress}>
+                            <View style={styles.userInfo}>
+                                <View style={[styles.avatar, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                                    {post.profiles?.avatar_url ? (
+                                        <Image
+                                            source={{ uri: post.profiles.avatar_url }}
+                                            style={styles.avatarImage}
+                                            contentFit="cover"
+                                        />
+                                    ) : (
+                                        <Ionicons name="person" size={18} color={theme.textMuted} />
+                                    )}
+                                </View>
+                                <View style={styles.userTextContainer}>
+                                    <Text style={[styles.username, { color: theme.text }]}>
+                                        {post.profiles?.full_name || post.profiles?.username || 'Traveler'}
+                                    </Text>
+                                    <Text style={[styles.postContent, { color: theme.textSecondary }]} numberOfLines={2}>
+                                        {post.content}
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        {/* More Menu Button */}
+                        <TouchableWithoutFeedback
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                setShowMenu(!showMenu);
+                            }}
+                        >
+                            <View style={styles.moreButton}>
+                                <Ionicons name="ellipsis-horizontal" size={18} color={theme.textMuted} />
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-                    {/* Polaroid Caption */}
-                    <View style={styles.polaroidCaption}>
-                        <Text style={styles.captionTitle} numberOfLines={1}>{post.title}</Text>
-                        <Text style={styles.captionContent} numberOfLines={2}>
-                            {post.content}
-                        </Text>
+
+                    {/* Menu Dropdown */}
+                    {showMenu && (
+                        <View style={[styles.menu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                            {isOwnPost ? (
+                                <TouchableWithoutFeedback
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        onDelete?.();
+                                    }}
+                                >
+                                    <View style={styles.menuItem}>
+                                        <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
+                                        <Text style={[styles.menuText, { color: Colors.light.error }]}>
+                                            Delete Post
+                                        </Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            ) : (
+                                <TouchableWithoutFeedback
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        onReport?.();
+                                    }}
+                                >
+                                    <View style={styles.menuItem}>
+                                        <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
+                                        <Text style={[styles.menuText, { color: Colors.light.error }]}>
+                                            Report Post
+                                        </Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            )}
+                        </View>
+                    )}
+
+                    {/* Actions Bar - Minimal */}
+                    <View style={[styles.actions, { borderTopColor: theme.border }]}>
+                        <TouchableWithoutFeedback onPress={handleLike}>
+                            <View style={styles.actionButton}>
+                                <Ionicons
+                                    name={isLiked ? "heart" : "heart-outline"}
+                                    size={20}
+                                    color={isLiked ? Colors.light.error : theme.textMuted}
+                                />
+                                <Text style={[styles.actionText, { color: isLiked ? Colors.light.error : theme.textMuted }]}>
+                                    {likesCount}
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        <TouchableWithoutFeedback onPress={onComment}>
+                            <View style={styles.actionButton}>
+                                <Ionicons name="chatbubble-outline" size={18} color={theme.textMuted} />
+                                <Text style={[styles.actionText, { color: theme.textMuted }]}>
+                                    {post.comments_count || 0}
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        <TouchableWithoutFeedback onPress={onShare}>
+                            <View style={styles.actionButton}>
+                                <Ionicons name="share-outline" size={18} color={theme.textMuted} />
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        <View style={{ flex: 1 }} />
+
+                        <BookmarkRibbon
+                            isBookmarked={isBookmarked}
+                            onToggle={handleBookmark}
+                            size={20}
+                        />
                     </View>
                 </View>
-            )}
-
-            {/* Location */}
-            {post.location && (
-                <View style={styles.locationContainer}>
-                    <Ionicons name="location" size={14} color={Colors.light.accent} />
-                    <Text style={styles.locationText}>
-                        {post.location.city || post.location.country || 'Unknown location'}
-                    </Text>
-                </View>
-            )}
-
-            {/* Actions */}
-            <View style={styles.actions}>
-                <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={handleLike}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons
-                        name={isLiked ? "heart" : "heart-outline"}
-                        size={22}
-                        color={isLiked ? Colors.light.error : Colors.light.text}
-                    />
-                    <Text style={[
-                        styles.actionText,
-                        isLiked && { color: Colors.light.error }
-                    ]}>
-                        {likesCount}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.actionButton}
-                    onPress={onComment}
-                >
-                    <Ionicons name="chatbubble-outline" size={20} color={Colors.light.text} />
-                    <Text style={styles.actionText}>{post.comments_count || 0}</Text>
-                </TouchableOpacity>
-
-
-                <TouchableOpacity style={styles.actionButton} onPress={onShare}>
-                    <Ionicons name="share-outline" size={20} color={Colors.light.text} />
-                </TouchableOpacity>
-
-                <View style={{ flex: 1 }} />
-
-                <BookmarkRibbon
-                    isBookmarked={isBookmarked}
-                    onToggle={handleBookmark}
-                    size={22}
-                />
-            </View>
-        </TouchableOpacity>
+            </Animated.View>
+        </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
+    cardWrapper: {
+        marginBottom: Spacing.xl,
+        marginHorizontal: Spacing.xs,
+    },
     container: {
         backgroundColor: Colors.light.surface,
-        marginBottom: Spacing.md,
-        padding: Spacing.md,
-        borderRadius: BorderRadius.lg,
-        ...Shadows.sm,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: Spacing.md,
-    },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: Spacing.sm,
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: Colors.light.background,
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-    },
-    username: {
-        fontFamily: Typography.fonts.bodyBold,
-        fontSize: 14,
-        color: Colors.light.text,
-    },
-    timestamp: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 12,
-        color: Colors.light.textMuted,
-    },
-    moreButton: {
-        padding: Spacing.xs,
-    },
-    // Polaroid Container
-    polaroidContainer: {
-        backgroundColor: Colors.light.surface,
-        padding: Spacing.md,
-        borderRadius: BorderRadius.sm,
-        marginBottom: Spacing.md,
-        ...Shadows.lg,
+        padding: Spacing.sm,
+        paddingBottom: Spacing.md,
+        borderRadius: BorderRadius.xs,
         borderWidth: 1,
         borderColor: Colors.light.border,
+        // Polaroid shadow effect
+        shadowColor: '#2C1810',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 4,
     },
     polaroidFrame: {
-        position: 'relative',
-        backgroundColor: Colors.light.surface,
-        padding: 8,
-        borderRadius: BorderRadius.sm,
+        marginBottom: Spacing.sm,
     },
-    polaroidImage: {
-        width: '100%',
-        height: 280,
+    imageWrapper: {
+        position: 'relative',
+        aspectRatio: 1,
+        overflow: 'hidden',
+        backgroundColor: '#f5f5f5',
         borderRadius: BorderRadius.xs,
     },
-    polaroidCaption: {
-        paddingTop: Spacing.md,
-        paddingHorizontal: Spacing.xs,
-    },
-    captionTitle: {
-        fontFamily: Typography.fonts.accent,
-        fontSize: 18,
-        color: Colors.light.text,
-        marginBottom: 6,
-        letterSpacing: -0.3,
-    },
-    captionContent: {
-        fontFamily: Typography.fonts.bodyItalic,
-        fontSize: 13,
-        color: Colors.light.textSecondary,
-        lineHeight: 20,
+    carousel: {
+        flex: 1,
     },
     imageCount: {
         position: 'absolute',
@@ -324,53 +374,90 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     imageCountText: {
-        fontFamily: Typography.fonts.bodyBold,
+        fontFamily: Typography.fonts.uiBold,
         fontSize: 12,
         color: Colors.light.surface,
     },
-    locationContainer: {
-        flexDirection: 'row',
+    stampContainer: {
+        position: 'absolute',
+        top: Spacing.md,
+        right: Spacing.md,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        borderWidth: 2,
         alignItems: 'center',
-        gap: 4,
-        marginBottom: Spacing.md,
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        opacity: 0.85,
+        transform: [{ rotate: '12deg' }],
     },
-    locationText: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 12,
-        color: Colors.light.compass,
-        fontWeight: '500',
-    },
-    actions: {
-        flexDirection: 'row',
+    polaroidCaption: {
         alignItems: 'center',
-        gap: Spacing.md,
+        paddingTop: Spacing.md,
+        paddingHorizontal: Spacing.xs,
+    },
+    locationTitle: {
+        fontFamily: Typography.fonts.handwriting,
+        fontSize: 28,
+        lineHeight: 32,
+        textAlign: 'center',
+    },
+    dateText: {
+        fontFamily: Typography.fonts.handwriting,
+        fontSize: 20,
+        marginTop: 2,
+    },
+    userSection: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
         paddingTop: Spacing.sm,
         borderTopWidth: 1,
-        borderTopColor: Colors.light.border,
+        borderTopColor: 'rgba(232, 220, 200, 0.5)',
+        marginTop: Spacing.xs,
     },
-    actionButton: {
+    userInfo: {
+        flex: 1,
         flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
+        alignItems: 'flex-start',
+        gap: Spacing.sm,
     },
-    actionText: {
+    avatar: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        borderWidth: 1,
+    },
+    avatarImage: {
+        width: '100%',
+        height: '100%',
+    },
+    userTextContainer: {
+        flex: 1,
+    },
+    username: {
+        fontFamily: Typography.fonts.bodyBold,
+        fontSize: 12,
+        marginBottom: 2,
+    },
+    postContent: {
         fontFamily: Typography.fonts.body,
-        fontSize: 14,
-        color: Colors.light.text,
+        fontSize: 12,
+        lineHeight: 18,
+    },
+    moreButton: {
+        padding: Spacing.xs,
     },
     menu: {
-        backgroundColor: Colors.light.surface,
         borderRadius: BorderRadius.sm,
         marginTop: Spacing.xs,
         marginHorizontal: Spacing.md,
         padding: Spacing.xs,
         borderWidth: 1,
-        borderColor: Colors.light.border,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        ...Shadows.md,
     },
     menuItem: {
         flexDirection: 'row',
@@ -382,5 +469,24 @@ const styles = StyleSheet.create({
     menuText: {
         fontFamily: Typography.fonts.bodyBold,
         fontSize: 14,
+    },
+    actions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.md,
+        paddingTop: Spacing.sm,
+        marginTop: Spacing.xs,
+        borderTopWidth: 1,
+    },
+    actionButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingVertical: 4,
+        paddingHorizontal: 2,
+    },
+    actionText: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 13,
     },
 });
