@@ -233,7 +233,15 @@ export async function fetchPostById(postId: string): Promise<Post> {
     try {
         const { data, error } = await supabase
             .from('posts')
-            .select('*')
+            .select(`
+                *,
+                profiles:user_id (
+                    id,
+                    username,
+                    full_name,
+                    avatar_url
+                )
+            `)
             .eq('id', postId)
             .single();
 
