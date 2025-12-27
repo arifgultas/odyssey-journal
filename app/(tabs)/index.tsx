@@ -1,8 +1,8 @@
-import { FloatingActionButton } from '@/components/floating-action-button';
-import { PostCard } from '@/components/post-card';
+import { AnimatedEmptyState } from '@/components/animated-empty-state';
+import { AnimatedFAB } from '@/components/animated-fab';
+import { AnimatedPostCard } from '@/components/animated-post-card';
 import { ReportModal } from '@/components/report-modal';
 import { PostCardSkeleton } from '@/components/skeleton-loader';
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -23,7 +23,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -228,21 +228,14 @@ export default function HomeScreen() {
     }
 
     return (
-      <View style={styles.emptyContainer}>
-        <MaterialIcons name="explore" size={64} color={theme.accent} style={{ opacity: 0.6 }} />
-        <ThemedText type="subtitle" style={styles.emptyTitle}>
-          No Adventures Yet
-        </ThemedText>
-        <ThemedText style={styles.emptyText}>
-          Start sharing your travel memories!
-        </ThemedText>
-        <TouchableOpacity
-          style={[styles.emptyButton, { backgroundColor: theme.accent }]}
-          onPress={handleCreatePost}
-        >
-          <Text style={styles.emptyButtonText}>Create Your First Post</Text>
-        </TouchableOpacity>
-      </View>
+      <AnimatedEmptyState
+        icon="explore"
+        title="No Adventures Yet"
+        description="Start sharing your travel memories!"
+        buttonText="Create Your First Post"
+        onButtonPress={handleCreatePost}
+        showTypewriter={false}
+      />
     );
   };
 
@@ -318,7 +311,7 @@ export default function HomeScreen() {
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
-          <PostCard
+          <AnimatedPostCard
             post={item}
             index={index}
             onPress={() => handlePostPress(item)}
@@ -347,7 +340,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       />
 
-      <FloatingActionButton onPress={handleCreatePost} />
+      <AnimatedFAB onPress={handleCreatePost} />
 
       {/* Report Modal */}
       {selectedPostId && (

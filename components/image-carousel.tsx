@@ -10,6 +10,7 @@ interface ImageCarouselProps {
     images: string[];
     style?: any;
     aspectRatio?: number; // Default is 1 (square)
+    onImageLoad?: () => void; // Callback when first image loads
 }
 
 /**
@@ -23,10 +24,19 @@ interface ImageCarouselProps {
  * - Polaroid-style square format (default)
  * - Subtle grayscale effect that removes on active
  */
-export function ImageCarousel({ images, style, aspectRatio = 1 }: ImageCarouselProps) {
+export function ImageCarousel({ images, style, aspectRatio = 1, onImageLoad }: ImageCarouselProps) {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [hasLoadedFirst, setHasLoadedFirst] = useState(false);
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
+
+    const handleImageLoad = () => {
+        if (!hasLoadedFirst) {
+            setHasLoadedFirst(true);
+            onImageLoad?.();
+        }
+    };
+
 
     // Calculate carousel width based on container
     // Account for card padding: container (Spacing.sm * 2) = 16px
@@ -76,6 +86,7 @@ export function ImageCarousel({ images, style, aspectRatio = 1 }: ImageCarouselP
                             contentFit="cover"
                             transition={200}
                             cachePolicy="memory-disk"
+                            onLoad={index === 0 ? handleImageLoad : undefined}
                         />
                     </View>
                 ))}
