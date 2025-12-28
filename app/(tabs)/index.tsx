@@ -1,5 +1,5 @@
 import { AnimatedEmptyState } from '@/components/animated-empty-state';
-import { AnimatedFAB } from '@/components/animated-fab';
+
 import { AnimatedPostCard } from '@/components/animated-post-card';
 import { ReportModal } from '@/components/report-modal';
 import { PostCardSkeleton } from '@/components/skeleton-loader';
@@ -340,7 +340,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       />
 
-      <AnimatedFAB onPress={handleCreatePost} />
+
 
       {/* Report Modal */}
       {selectedPostId && (
