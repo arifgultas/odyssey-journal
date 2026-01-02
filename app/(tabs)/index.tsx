@@ -5,12 +5,16 @@ import { ReportModal } from '@/components/report-modal';
 import { PostCardSkeleton } from '@/components/skeleton-loader';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { bookmarkPost, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
 import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
 import { supabase } from '@/lib/supabase';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+
+// Custom SVG icon for notifications
+import BellIcon from '@/assets/icons/bell-notification.svg';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -31,6 +35,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
+  const { t } = useLanguage();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -230,9 +235,9 @@ export default function HomeScreen() {
     return (
       <AnimatedEmptyState
         icon="explore"
-        title="No Adventures Yet"
-        description="Start sharing your travel memories!"
-        buttonText="Create Your First Post"
+        title={t('home.noAdventures')}
+        description={t('home.startSharing')}
+        buttonText={t('home.createFirstPost')}
         onButtonPress={handleCreatePost}
         showTypewriter={false}
       />
@@ -263,7 +268,7 @@ export default function HomeScreen() {
       <View style={styles.headerSpacer} />
       <View style={styles.headerCenter}>
         <Text style={[styles.headerTitle, { color: theme.text }]}>
-          Odyssey Journal
+          {t('home.title')}
         </Text>
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
           <MaterialIcons
@@ -278,7 +283,7 @@ export default function HomeScreen() {
         style={styles.headerButton}
         onPress={() => router.push('/notifications')}
       >
-        <Ionicons name="notifications-outline" size={24} color={theme.text} />
+        <BellIcon width={24} height={24} />
       </TouchableOpacity>
     </View>
   );

@@ -1,9 +1,12 @@
 import { EditProfileModal } from '@/components/edit-profile-modal';
+import { LanguageSelectorModal } from '@/components/language-selector-modal';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCurrentProfile, useProfileStats, useUserPosts } from '@/hooks/use-profile';
+import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import type { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -101,7 +104,9 @@ export default function ProfileScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const { user, signOut } = useAuth();
+    const { language, t } = useLanguage();
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [languageModalVisible, setLanguageModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
@@ -293,7 +298,19 @@ export default function ProfileScreen() {
                                 onPress={() => setEditModalVisible(true)}
                             >
                                 <Ionicons name="create-outline" size={18} color={passportTheme.gold} />
-                                <Text style={[styles.editButtonText, { color: passportTheme.gold }]}>Profili Düzenle</Text>
+                                <Text style={[styles.editButtonText, { color: passportTheme.gold }]}>{t('profile.editProfile')}</Text>
+                            </TouchableOpacity>
+
+                            {/* Language Selector Button */}
+                            <TouchableOpacity
+                                style={[styles.languageButton, { backgroundColor: theme.surface, borderColor: `${passportTheme.gold}33` }]}
+                                onPress={() => setLanguageModalVisible(true)}
+                            >
+                                <Text style={styles.languageFlag}>{SUPPORTED_LANGUAGES[language].flag}</Text>
+                                <Text style={[styles.languageButtonText, { color: passportTheme.text }]}>
+                                    {SUPPORTED_LANGUAGES[language].nativeName}
+                                </Text>
+                                <Ionicons name="chevron-forward" size={16} color={passportTheme.textMuted} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -468,6 +485,12 @@ export default function ProfileScreen() {
                     onSuccess={handleEditSuccess}
                 />
             )}
+
+            {/* Language Selector Modal */}
+            <LanguageSelectorModal
+                visible={languageModalVisible}
+                onClose={() => setLanguageModalVisible(false)}
+            />
         </ThemedView>
     );
 }
@@ -667,6 +690,26 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         letterSpacing: 2,
         textTransform: 'uppercase',
+    },
+
+    // Language Button
+    languageButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        borderRadius: 12,
+        gap: 10,
+        borderWidth: 1,
+        marginTop: 12,
+    },
+    languageFlag: {
+        fontSize: 20,
+    },
+    languageButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        flex: 1,
     },
 
     // Stats
