@@ -53,7 +53,11 @@ CREATE INDEX IF NOT EXISTS idx_follows_following_id ON public.follows(following_
 CREATE INDEX IF NOT EXISTS idx_follows_created_at ON public.follows(created_at DESC);
 
 -- View for follow suggestions (users not followed yet with most followers)
-CREATE OR REPLACE VIEW follow_suggestions AS
+-- Using security_invoker to respect RLS policies of the querying user
+DROP VIEW IF EXISTS public.follow_suggestions;
+CREATE VIEW public.follow_suggestions
+WITH (security_invoker = true)
+AS
 SELECT 
     p.id,
     p.username,
@@ -72,3 +76,6 @@ AND p.id NOT IN (
 )
 ORDER BY p.followers_count DESC, p.updated_at DESC
 LIMIT 20;
+
+-- Grant access to authenticated users
+GRANT SELECT ON public.follow_suggestions TO authenticated;

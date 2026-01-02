@@ -108,7 +108,11 @@ CREATE TRIGGER trigger_unfollow_notification
     EXECUTE FUNCTION delete_follow_notification();
 
 -- View for notifications with actor info
-CREATE OR REPLACE VIEW notifications_with_actors AS
+-- Using security_invoker to respect RLS policies of the querying user
+DROP VIEW IF EXISTS public.notifications_with_actors;
+CREATE VIEW public.notifications_with_actors
+WITH (security_invoker = true)
+AS
 SELECT 
     n.id,
     n.user_id,
@@ -126,6 +130,9 @@ FROM public.notifications n
 LEFT JOIN public.profiles p ON n.actor_id = p.id
 LEFT JOIN public.posts ON n.post_id = posts.id
 ORDER BY n.created_at DESC;
+
+-- Grant access to authenticated users
+GRANT SELECT ON public.notifications_with_actors TO authenticated;
 
 -- Additional indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON public.notifications(user_id, read) WHERE read = false;

@@ -392,10 +392,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   headerTitle: {
-    fontFamily: Typography.fonts.heading,
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: -0.3,
+    fontFamily: Typography.fonts.brandTitle,
+    fontSize: 28,
+    letterSpacing: 0.5,
   },
   compassIcon: {
     // Drop shadow for the compass

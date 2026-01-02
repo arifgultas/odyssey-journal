@@ -90,6 +90,8 @@ export const Typography = {
     // Handwriting font for polaroid captions
     handwriting: 'Caveat-Regular',
     handwritingBold: 'Caveat-Bold',
+    // Ephesis script font for brand title
+    brandTitle: 'Ephesis-Regular',
   },
 
   // Font sizes with line heights

@@ -40,7 +40,11 @@ CREATE INDEX IF NOT EXISTS idx_comments_user_id ON public.comments(user_id);
 CREATE INDEX IF NOT EXISTS idx_comments_created_at ON public.comments(created_at DESC);
 
 -- View for comments with user info
-CREATE OR REPLACE VIEW comments_with_users AS
+-- Using security_invoker to respect RLS policies of the querying user
+DROP VIEW IF EXISTS public.comments_with_users;
+CREATE VIEW public.comments_with_users
+WITH (security_invoker = true)
+AS
 SELECT 
     c.id,
     c.post_id,
@@ -53,3 +57,6 @@ SELECT
 FROM public.comments c
 LEFT JOIN public.profiles p ON c.user_id = p.id
 ORDER BY c.created_at DESC;
+
+-- Grant access to authenticated users
+GRANT SELECT ON public.comments_with_users TO authenticated;
