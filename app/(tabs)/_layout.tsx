@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-import { AnimatedTabIcon } from '@/components/animated-tab-icon';
+import { CustomAnimatedTabIcon } from '@/components/custom-animated-tab-icon';
 import { HapticTab } from '@/components/haptic-tab';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -73,12 +73,11 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon
+            <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={28}
-              filledName="home"
-              outlineName="home-outline"
+              size={26}
+              icon="home"
             />
           ),
         }}
@@ -87,12 +86,11 @@ export default function TabLayout() {
         name="explore"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon
+            <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={28}
-              filledName="compass"
-              outlineName="compass-outline"
+              size={26}
+              icon="compass"
             />
           ),
         }}
@@ -101,12 +99,11 @@ export default function TabLayout() {
         name="create"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon
+            <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={32}
-              filledName="plus-circle"
-              outlineName="plus-circle-outline"
+              size={30}
+              icon="create"
             />
           ),
         }}
@@ -115,12 +112,11 @@ export default function TabLayout() {
         name="saved"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon
+            <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={28}
-              filledName="bookmark"
-              outlineName="bookmark-outline"
+              size={26}
+              icon="bookmark"
             />
           ),
         }}
@@ -135,12 +131,11 @@ export default function TabLayout() {
         name="profile"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon
+            <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={28}
-              filledName="account"
-              outlineName="account-outline"
+              size={26}
+              icon="user"
             />
           ),
         }}
@@ -148,5 +143,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-
