@@ -18,31 +18,33 @@ import {
     useColorScheme,
 } from 'react-native';
 
-// Stitch design colors
+// Updated Stitch design colors matching login/signup screens
 const StitchColors = {
     light: {
-        primary: '#f4c025',
-        background: '#f8f8f5',
+        primaryGold: '#D4A574',
+        primaryDark: '#2C1810',
+        background: '#F5F1E8',
         surface: '#FFFDF5',
-        text: '#221e10',
-        textSecondary: '#181611',
-        textMuted: '#8a8060',
-        border: '#e6e3db',
+        text: '#2C1810',
+        textMuted: 'rgba(44, 24, 16, 0.6)',
+        border: 'rgba(44, 24, 16, 0.2)',
+        borderFocused: '#D4A574',
         tealLink: '#008080',
-        divider: '#e6e3db',
-        success: '#4CAF50',
+        divider: 'rgba(44, 24, 16, 0.1)',
+        success: '#6B8E23',
     },
     dark: {
-        primary: '#f4c025',
-        background: '#221e10',
-        surface: '#2f2b1d',
-        text: '#e6e3db',
-        textSecondary: '#e6e3db',
-        textMuted: '#8a8060',
-        border: '#4a4430',
+        primaryGold: '#D4A574',
+        primaryDark: '#2C1810',
+        background: '#2C1810',
+        surface: '#3a2e26',
+        text: '#F5F1E8',
+        textMuted: 'rgba(212, 165, 116, 0.7)',
+        border: 'rgba(212, 165, 116, 0.3)',
+        borderFocused: '#D4A574',
         tealLink: '#20b2aa',
-        divider: '#4a4430',
-        success: '#81C784',
+        divider: 'rgba(212, 165, 116, 0.2)',
+        success: '#8FBC8F',
     },
 };
 
@@ -54,6 +56,7 @@ export default function ForgotPasswordScreen() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
+    const [emailFocused, setEmailFocused] = useState(false);
 
     async function handleResetPassword() {
         if (!email) {
@@ -86,31 +89,59 @@ export default function ForgotPasswordScreen() {
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <View style={styles.successContent}>
                     {/* Success Icon */}
-                    <View style={[styles.successIconContainer, { backgroundColor: `${theme.success}20` }]}>
+                    <View style={[styles.successIconContainer, {
+                        backgroundColor: isDark ? 'rgba(143, 188, 143, 0.15)' : 'rgba(107, 142, 35, 0.1)',
+                        borderWidth: 3,
+                        borderColor: isDark ? 'rgba(143, 188, 143, 0.3)' : 'rgba(107, 142, 35, 0.2)',
+                    }]}>
                         <Ionicons name="mail-open-outline" size={48} color={theme.success} />
                     </View>
 
-                    <Text style={[styles.successTitle, { color: isDark ? theme.primary : theme.text }]}>
+                    <Text style={[styles.successTitle, {
+                        color: isDark ? theme.primaryGold : theme.primaryDark
+                    }]}>
                         E-posta Gönderildi!
                     </Text>
 
-                    <Text style={[styles.successMessage, { color: theme.textMuted }]}>
+                    <Text style={[styles.successMessage, {
+                        color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
+                    }]}>
                         Şifre sıfırlama bağlantısı{'\n'}
                         <Text style={{ color: theme.tealLink, fontWeight: '600' }}>{email}</Text>
                         {'\n'}adresine gönderildi.
                     </Text>
 
-                    <Text style={[styles.successHint, { color: theme.textMuted }]}>
+                    <Text style={[styles.successHint, {
+                        color: isDark ? 'rgba(245, 241, 232, 0.5)' : 'rgba(44, 24, 16, 0.5)'
+                    }]}>
                         E-posta gelen kutunuzu kontrol edin. Spam klasörünü de kontrol etmeyi unutmayın.
                     </Text>
 
                     {/* Back to Login Button */}
                     <Link href="/login" asChild>
                         <TouchableOpacity
-                            style={[styles.primaryButton, { backgroundColor: theme.primary }]}
-                            activeOpacity={0.8}
+                            style={{
+                                backgroundColor: isDark ? '#D4A574' : '#2C1810',
+                                borderRadius: 12,
+                                paddingVertical: 16,
+                                paddingHorizontal: 32,
+                                alignItems: 'center' as const,
+                                justifyContent: 'center' as const,
+                                shadowColor: isDark ? '#D4A574' : '#2C1810',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: isDark ? 0.3 : 0.15,
+                                shadowRadius: 4,
+                                elevation: 3,
+                                width: '100%',
+                            }}
+                            activeOpacity={0.85}
                         >
-                            <Text style={[styles.primaryButtonText, { color: StitchColors.light.text }]}>
+                            <Text style={{
+                                fontFamily: Typography.fonts.heading,
+                                fontSize: 18,
+                                fontWeight: '700',
+                                color: isDark ? '#2C1810' : '#D4A574',
+                            }}>
                                 Giriş Sayfasına Dön
                             </Text>
                         </TouchableOpacity>
@@ -147,85 +178,124 @@ export default function ForgotPasswordScreen() {
                 <View style={styles.content}>
                     {/* Back Button */}
                     <TouchableOpacity
-                        style={styles.backButton}
+                        style={[styles.backButton, {
+                            backgroundColor: isDark ? 'rgba(212, 165, 116, 0.1)' : 'rgba(44, 24, 16, 0.05)',
+                        }]}
                         onPress={() => router.back()}
                         activeOpacity={0.7}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                        <Ionicons name="arrow-back" size={24} color={theme.text} />
+                        <Ionicons name="arrow-back" size={24} color={isDark ? theme.primaryGold : theme.primaryDark} />
                     </TouchableOpacity>
 
                     {/* Logo Section */}
                     <View style={styles.logoSection}>
-                        <View style={[styles.logoContainer, { backgroundColor: `${theme.primary}20` }]}>
+                        <View style={[styles.logoContainer, {
+                            borderColor: 'rgba(212, 165, 116, 0.4)',
+                            backgroundColor: isDark ? 'rgba(212, 165, 116, 0.1)' : 'rgba(44, 24, 16, 0.05)',
+                        }]}>
                             <Image
                                 source={require('@/assets/images/icon.png')}
                                 style={styles.logoImage}
                                 contentFit="cover"
                             />
                         </View>
-                        <Text style={[styles.appTitle, { color: isDark ? theme.primary : theme.text }]}>
-                            Şifremi Unuttum
-                        </Text>
-                        <Text style={[styles.tagline, { color: theme.textMuted }]}>
-                            Endişelenme, herkese olabilir.{'\n'}
-                            Şifreni sıfırlamak için e-posta adresini gir.
-                        </Text>
+                        <View style={styles.titleContainer}>
+                            <Text style={[styles.appTitle, {
+                                color: isDark ? theme.primaryGold : theme.primaryDark
+                            }]}>
+                                Şifremi Unuttum
+                            </Text>
+                            <Text style={[styles.tagline, {
+                                color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
+                            }]}>
+                                Endişelenme, herkese olabilir.{'\n'}
+                                Şifreni sıfırlamak için e-posta adresini gir.
+                            </Text>
+                        </View>
                     </View>
 
                     {/* Form Section */}
                     <View style={styles.formSection}>
-                        {/* Illustration */}
-                        <View style={[styles.illustrationContainer, { backgroundColor: `${theme.primary}10` }]}>
-                            <Ionicons name="key-outline" size={40} color={theme.primary} />
+                        {/* Key Illustration */}
+                        <View style={[styles.illustrationContainer, {
+                            backgroundColor: isDark ? 'rgba(212, 165, 116, 0.1)' : 'rgba(212, 165, 116, 0.15)',
+                            borderWidth: 2,
+                            borderColor: isDark ? 'rgba(212, 165, 116, 0.2)' : 'rgba(212, 165, 116, 0.3)',
+                        }]}>
+                            <Ionicons name="key-outline" size={40} color={theme.primaryGold} />
                         </View>
 
-                        {/* Email Input */}
+                        {/* Email Input with Floating Label */}
                         <View style={styles.inputGroup}>
-                            <Text style={[styles.label, { color: theme.textSecondary }]}>
-                                E-posta Adresi
-                            </Text>
                             <View style={[styles.inputContainer, {
-                                backgroundColor: theme.surface,
-                                borderColor: theme.border,
+                                backgroundColor: isDark ? theme.surface : theme.surface,
+                                borderColor: emailFocused ? theme.borderFocused : theme.border,
+                                borderWidth: emailFocused ? 1.5 : 1,
                             }]}>
                                 <TextInput
                                     style={[styles.input, { color: theme.text }]}
-                                    placeholder="seyahatsever@mail.com"
+                                    placeholder="E-posta Adresi"
                                     placeholderTextColor={theme.textMuted}
                                     value={email}
                                     onChangeText={setEmail}
+                                    onFocus={() => setEmailFocused(true)}
+                                    onBlur={() => setEmailFocused(false)}
                                     autoCapitalize="none"
                                     keyboardType="email-address"
                                     autoComplete="email"
-                                    autoFocus
-                                />
-                                <Ionicons
-                                    name="mail-outline"
-                                    size={20}
-                                    color={theme.textMuted}
-                                    style={styles.inputIcon}
                                 />
                             </View>
+                            {(emailFocused || email.length > 0) && (
+                                <View style={[styles.floatingLabelContainer, {
+                                    backgroundColor: isDark ? theme.surface : theme.surface,
+                                }]}>
+                                    <Text style={[styles.floatingLabel, {
+                                        color: emailFocused ? theme.primaryGold : theme.textMuted,
+                                    }]}>
+                                        E-posta Adresi
+                                    </Text>
+                                </View>
+                            )}
                         </View>
 
                         {/* Reset Password Button */}
                         <TouchableOpacity
-                            style={[
-                                styles.primaryButton,
-                                { backgroundColor: theme.primary },
-                                loading && styles.buttonDisabled,
-                            ]}
+                            style={{
+                                backgroundColor: isDark ? '#D4A574' : '#2C1810',
+                                borderRadius: 12,
+                                paddingVertical: 16,
+                                flexDirection: 'row',
+                                alignItems: 'center' as const,
+                                justifyContent: 'center' as const,
+                                marginTop: 8,
+                                shadowColor: isDark ? '#D4A574' : '#2C1810',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: isDark ? 0.3 : 0.15,
+                                shadowRadius: 4,
+                                elevation: 3,
+                                opacity: loading ? 0.7 : 1,
+                            }}
                             onPress={handleResetPassword}
                             disabled={loading}
-                            activeOpacity={0.8}
+                            activeOpacity={0.85}
                         >
                             {loading ? (
-                                <ActivityIndicator color={StitchColors.light.text} />
+                                <ActivityIndicator color={isDark ? '#2C1810' : '#D4A574'} />
                             ) : (
                                 <>
-                                    <Ionicons name="send-outline" size={18} color={StitchColors.light.text} style={{ marginRight: 8 }} />
-                                    <Text style={[styles.primaryButtonText, { color: StitchColors.light.text }]}>
+                                    <Ionicons
+                                        name="send-outline"
+                                        size={18}
+                                        color={isDark ? '#2C1810' : '#D4A574'}
+                                        style={{ marginRight: 8 }}
+                                    />
+                                    <Text style={{
+                                        fontFamily: Typography.fonts.heading,
+                                        fontSize: 16,
+                                        fontWeight: '700',
+                                        color: isDark ? '#2C1810' : '#D4A574',
+                                    }}>
                                         Sıfırlama Bağlantısı Gönder
                                     </Text>
                                 </>
@@ -234,7 +304,9 @@ export default function ForgotPasswordScreen() {
 
                         {/* Remember Password Link */}
                         <View style={styles.loginLinkContainer}>
-                            <Text style={[styles.loginLinkText, { color: theme.textMuted }]}>
+                            <Text style={[styles.loginLinkText, {
+                                color: isDark ? 'rgba(245, 241, 232, 0.6)' : 'rgba(44, 24, 16, 0.6)'
+                            }]}>
                                 Şifreni hatırladın mı?{' '}
                             </Text>
                             <Link href="/login" asChild>
@@ -247,9 +319,15 @@ export default function ForgotPasswordScreen() {
                         </View>
 
                         {/* Security Note */}
-                        <View style={[styles.securityNote, { backgroundColor: `${theme.primary}10` }]}>
-                            <Ionicons name="shield-checkmark-outline" size={20} color={theme.primary} />
-                            <Text style={[styles.securityNoteText, { color: theme.textMuted }]}>
+                        <View style={[styles.securityNote, {
+                            backgroundColor: isDark ? 'rgba(212, 165, 116, 0.08)' : 'rgba(212, 165, 116, 0.1)',
+                            borderWidth: 1,
+                            borderColor: isDark ? 'rgba(212, 165, 116, 0.15)' : 'rgba(212, 165, 116, 0.2)',
+                        }]}>
+                            <Ionicons name="shield-checkmark-outline" size={20} color={theme.primaryGold} />
+                            <Text style={[styles.securityNoteText, {
+                                color: isDark ? 'rgba(245, 241, 232, 0.6)' : 'rgba(44, 24, 16, 0.6)'
+                            }]}>
                                 Güvenliğiniz için şifre sıfırlama bağlantısı 1 saat geçerlidir.
                             </Text>
                         </View>
@@ -257,8 +335,10 @@ export default function ForgotPasswordScreen() {
 
                     {/* Footer */}
                     <View style={styles.footer}>
-                        <Text style={[styles.footerText, { color: theme.textMuted }]}>
-                            © 2024 Odyssey Journal. Tüm hakları saklıdır.
+                        <Text style={[styles.footerText, {
+                            color: isDark ? 'rgba(245, 241, 232, 0.4)' : 'rgba(44, 24, 16, 0.5)',
+                        }]}>
+                            © 2026 Odyssey Journal. Tüm hakları saklıdır.
                         </Text>
                     </View>
                 </View>
@@ -279,7 +359,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 60,
         paddingBottom: 24,
-        maxWidth: 400,
+        maxWidth: 380,
         width: '100%',
         alignSelf: 'center',
     },
@@ -288,24 +368,30 @@ const styles = StyleSheet.create({
         top: 60,
         left: 24,
         zIndex: 10,
-        padding: 8,
+        padding: 10,
+        borderRadius: 12,
     },
     logoSection: {
         alignItems: 'center',
-        marginBottom: 32,
-        marginTop: 40,
+        gap: 16,
+        marginBottom: 24,
+        marginTop: 48,
     },
     logoContainer: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+        width: 96,
+        height: 96,
+        borderRadius: 48,
         overflow: 'hidden',
-        marginBottom: 16,
+        borderWidth: 3,
         ...Shadows.lg,
     },
     logoImage: {
         width: '100%',
         height: '100%',
+    },
+    titleContainer: {
+        alignItems: 'center',
+        gap: 8,
     },
     appTitle: {
         fontFamily: Typography.fonts.heading,
@@ -316,8 +402,8 @@ const styles = StyleSheet.create({
     },
     tagline: {
         fontFamily: Typography.fonts.body,
+        fontStyle: 'italic',
         fontSize: 14,
-        marginTop: 12,
         textAlign: 'center',
         lineHeight: 22,
     },
@@ -334,20 +420,14 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     inputGroup: {
-        gap: 6,
-    },
-    label: {
-        fontFamily: Typography.fonts.bodyBold,
-        fontSize: 16,
-        marginLeft: 4,
+        position: 'relative',
     },
     inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         borderRadius: BorderRadius.lg,
-        borderWidth: 1,
         paddingHorizontal: 16,
         height: 56,
+        flexDirection: 'row',
+        alignItems: 'center',
         ...Shadows.sm,
     },
     input: {
@@ -356,30 +436,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         height: '100%',
     },
-    inputIcon: {
-        marginLeft: 8,
+    floatingLabelContainer: {
+        position: 'absolute',
+        top: -10,
+        left: 12,
+        paddingHorizontal: 4,
     },
-    primaryButton: {
-        flexDirection: 'row',
-        borderRadius: BorderRadius.lg,
-        paddingVertical: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 8,
-        ...Shadows.md,
-    },
-    buttonDisabled: {
-        opacity: 0.7,
-    },
-    primaryButtonText: {
-        fontFamily: Typography.fonts.uiBold,
-        fontSize: 16,
-        fontWeight: '700',
+    floatingLabel: {
+        fontFamily: Typography.fonts.body,
+        fontSize: 12,
     },
     loginLinkContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 8,
     },
     loginLinkText: {
         fontFamily: Typography.fonts.body,
@@ -405,13 +476,15 @@ const styles = StyleSheet.create({
         lineHeight: 18,
     },
     footer: {
-        marginTop: 'auto',
-        paddingTop: 32,
+        marginTop: 24,
+        paddingTop: 16,
+        paddingBottom: 16,
         alignItems: 'center',
     },
     footerText: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 12,
+        fontFamily: 'System',
+        fontSize: 11,
+        letterSpacing: 0.5,
     },
     // Success State Styles
     successContent: {
@@ -419,7 +492,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 120,
         alignItems: 'center',
-        maxWidth: 400,
+        maxWidth: 380,
         width: '100%',
         alignSelf: 'center',
     },

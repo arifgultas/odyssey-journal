@@ -70,14 +70,9 @@ export const PostCardSkeleton: React.FC = () => {
                 transform: [{ rotate: `${rotation}deg` }]
             }
         ]}>
-            {/* Image skeleton with stamp placeholder */}
+            {/* Image skeleton */}
             <View style={styles.imageContainer}>
                 <SkeletonLoader width="100%" height="100%" borderRadius={BorderRadius.xs} />
-
-                {/* Stamp skeleton */}
-                <View style={[styles.stampSkeleton, { borderColor: theme.accent }]}>
-                    <SkeletonLoader width={24} height={24} borderRadius={12} />
-                </View>
             </View>
 
             {/* Handwriting caption skeleton */}
@@ -180,19 +175,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         position: 'relative',
     },
-    stampSkeleton: {
-        position: 'absolute',
-        top: Spacing.md,
-        right: Spacing.md,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        borderWidth: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        transform: [{ rotate: '12deg' }],
-    },
+
     captionContainer: {
         alignItems: 'center',
         paddingTop: Spacing.md,

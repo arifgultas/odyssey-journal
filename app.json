@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "odyssey-journal",
+    "name": "Odyssey Journal",
     "slug": "odyssey-journal",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.odysseyjournal.app",
       "config": {
-        "googleMapsApiKey": "YOUR_IOS_GOOGLE_MAPS_API_KEY"
+        "googleMapsApiKey": "AIzaSyCEGoGob9ZgEVb4-3xQRwyQAjs7IB3vujA"
       }
     },
     "android": {
@@ -27,7 +27,7 @@
       "predictiveBackGestureEnabled": false,
       "config": {
         "googleMaps": {
-          "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_API_KEY"
+          "apiKey": "AIzaSyCEGoGob9ZgEVb4-3xQRwyQAjs7IB3vujA"
         }
       }
     },
@@ -40,13 +40,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/android-icon-foreground.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#F5F1E8",
           "dark": {
             "backgroundColor": "#1A1410",
-            "image": "./assets/images/splash-icon.png"
+            "image": "./assets/images/android-icon-foreground.png"
           }
         }
       ],

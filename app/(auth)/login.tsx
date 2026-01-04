@@ -18,29 +18,33 @@ import {
     useColorScheme,
 } from 'react-native';
 
-// Stitch design colors
+// Updated Stitch design colors matching the new HTML
 const StitchColors = {
     light: {
-        primary: '#f4c025',
-        background: '#f8f8f5',
+        primaryGold: '#D4A574',
+        primaryDark: '#2C1810',
+        background: '#F5F1E8',
         surface: '#FFFDF5',
-        text: '#221e10',
-        textSecondary: '#181611',
-        textMuted: '#8a8060',
-        border: '#e6e3db',
+        surfaceDark: '#3a2e26',
+        text: '#2C1810',
+        textMuted: 'rgba(44, 24, 16, 0.6)',
+        border: 'rgba(44, 24, 16, 0.2)',
+        borderFocused: '#D4A574',
         tealLink: '#008080',
-        divider: '#e6e3db',
+        divider: 'rgba(44, 24, 16, 0.1)',
     },
     dark: {
-        primary: '#f4c025',
-        background: '#221e10',
-        surface: '#2f2b1d',
-        text: '#e6e3db',
-        textSecondary: '#e6e3db',
-        textMuted: '#8a8060',
-        border: '#4a4430',
+        primaryGold: '#D4A574',
+        primaryDark: '#2C1810',
+        background: '#2C1810',
+        surface: '#3a2e26',
+        surfaceDark: '#3a2e26',
+        text: '#F5F1E8',
+        textMuted: 'rgba(212, 165, 116, 0.7)',
+        border: 'rgba(212, 165, 116, 0.3)',
+        borderFocused: '#D4A574',
         tealLink: '#20b2aa',
-        divider: '#4a4430',
+        divider: 'rgba(212, 165, 116, 0.2)',
     },
 };
 
@@ -53,6 +57,8 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [emailFocused, setEmailFocused] = useState(false);
+    const [passwordFocused, setPasswordFocused] = useState(false);
 
     async function signInWithEmail() {
         if (!email || !password) {
@@ -89,218 +95,254 @@ export default function LoginScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.content}>
-                    {/* Logo Section */}
-                    <View style={styles.logoSection}>
-                        <View style={[styles.logoContainer, { backgroundColor: `${theme.primary}20` }]}>
-                            <Image
-                                source={require('@/assets/images/icon.png')}
-                                style={styles.logoImage}
-                                contentFit="cover"
-                            />
-                        </View>
-                        <Text style={[styles.appTitle, { color: isDark ? theme.primary : theme.text }]}>
-                            Odyssey Journal
-                        </Text>
-                        <Text style={[styles.tagline, { color: theme.textMuted }]}>
-                            Dünyayı keşfet, hikayeni paylaş.
-                        </Text>
-                    </View>
+                    {/* Spacer Top */}
+                    <View style={styles.spacerTop} />
 
-                    {/* Form Section */}
-                    <View style={styles.formSection}>
-                        {/* Email/Username Input */}
-                        <View style={styles.inputGroup}>
-                            <Text style={[styles.label, { color: theme.textSecondary }]}>
-                                E-posta veya Kullanıcı Adı
-                            </Text>
-                            <View style={[styles.inputContainer, {
-                                backgroundColor: theme.surface,
-                                borderColor: theme.border,
+                    {/* Main Content */}
+                    <View style={styles.mainContent}>
+                        {/* Logo Section */}
+                        <View style={styles.logoSection}>
+                            <View style={[styles.logoContainer, {
+                                borderColor: 'rgba(212, 165, 116, 0.4)',
+                                backgroundColor: isDark ? 'rgba(212, 165, 116, 0.1)' : 'rgba(44, 24, 16, 0.05)',
                             }]}>
-                                <TextInput
-                                    style={[styles.input, { color: theme.text }]}
-                                    placeholder="seyahatsever@mail.com"
-                                    placeholderTextColor={theme.textMuted}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    autoCapitalize="none"
-                                    keyboardType="email-address"
-                                    autoComplete="email"
+                                <Image
+                                    source={require('@/assets/images/icon.png')}
+                                    style={styles.logoImage}
+                                    contentFit="cover"
                                 />
-                                <Ionicons
-                                    name="person-outline"
-                                    size={20}
-                                    color={theme.textMuted}
-                                    style={styles.inputIcon}
-                                />
+                            </View>
+                            <View style={styles.titleContainer}>
+                                <Text style={[styles.appTitle, {
+                                    color: isDark ? theme.primaryGold : theme.primaryDark
+                                }]}>
+                                    Odyssey Journal
+                                </Text>
+                                <Text style={[styles.tagline, {
+                                    color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
+                                }]}>
+                                    Dünyayı keşfet, hikayeni paylaş.
+                                </Text>
                             </View>
                         </View>
 
-                        {/* Password Input */}
-                        <View style={styles.inputGroup}>
-                            <Text style={[styles.label, { color: theme.textSecondary }]}>
-                                Şifre
-                            </Text>
-                            <View style={[styles.inputContainer, {
-                                backgroundColor: theme.surface,
-                                borderColor: theme.border,
-                            }]}>
-                                <TextInput
-                                    style={[styles.input, { color: theme.text }]}
-                                    placeholder="******"
-                                    placeholderTextColor={theme.textMuted}
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry={!showPassword}
-                                    autoComplete="password"
-                                />
+                        {/* Form Section */}
+                        <View style={styles.formSection}>
+                            {/* Email/Username Input with Floating Label */}
+                            <View style={styles.inputGroup}>
+                                <View style={[styles.inputContainer, {
+                                    backgroundColor: isDark ? theme.surface : theme.surface,
+                                    borderColor: emailFocused ? theme.borderFocused : theme.border,
+                                    borderWidth: emailFocused ? 1.5 : 1,
+                                }]}>
+                                    <TextInput
+                                        style={[styles.input, { color: theme.text }]}
+                                        placeholder="E-posta veya Kullanıcı Adı"
+                                        placeholderTextColor={theme.textMuted}
+                                        value={email}
+                                        onChangeText={setEmail}
+                                        onFocus={() => setEmailFocused(true)}
+                                        onBlur={() => setEmailFocused(false)}
+                                        autoCapitalize="none"
+                                        keyboardType="email-address"
+                                        autoComplete="email"
+                                    />
+                                </View>
+                                {(emailFocused || email.length > 0) && (
+                                    <View style={[styles.floatingLabelContainer, {
+                                        backgroundColor: isDark ? theme.surface : theme.surface,
+                                    }]}>
+                                        <Text style={[styles.floatingLabel, {
+                                            color: emailFocused ? theme.primaryGold : theme.textMuted,
+                                        }]}>
+                                            E-posta veya Kullanıcı Adı
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+
+                            {/* Password Input with Floating Label */}
+                            <View style={styles.inputGroup}>
+                                <View style={[styles.inputContainer, {
+                                    backgroundColor: isDark ? theme.surface : theme.surface,
+                                    borderColor: passwordFocused ? theme.borderFocused : theme.border,
+                                    borderWidth: passwordFocused ? 1.5 : 1,
+                                }]}>
+                                    <TextInput
+                                        style={[styles.input, styles.inputWithIcon, { color: theme.text }]}
+                                        placeholder="Şifre"
+                                        placeholderTextColor={theme.textMuted}
+                                        value={password}
+                                        onChangeText={setPassword}
+                                        onFocus={() => setPasswordFocused(true)}
+                                        onBlur={() => setPasswordFocused(false)}
+                                        secureTextEntry={!showPassword}
+                                        autoComplete="password"
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => setShowPassword(!showPassword)}
+                                        style={styles.visibilityButton}
+                                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                    >
+                                        <Ionicons
+                                            name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                                            size={20}
+                                            color={isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.4)'}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                                {(passwordFocused || password.length > 0) && (
+                                    <View style={[styles.floatingLabelContainer, {
+                                        backgroundColor: isDark ? theme.surface : theme.surface,
+                                    }]}>
+                                        <Text style={[styles.floatingLabel, {
+                                            color: passwordFocused ? theme.primaryGold : theme.textMuted,
+                                        }]}>
+                                            Şifre
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+
+                            {/* Forgot Password Link */}
+                            <View style={styles.forgotPasswordContainer}>
+                                <Link href="/forgot-password" asChild>
+                                    <TouchableOpacity activeOpacity={0.7}>
+                                        <Text style={[styles.forgotPasswordText, { color: theme.tealLink }]}>
+                                            Şifremi Unuttum?
+                                        </Text>
+                                    </TouchableOpacity>
+                                </Link>
+                            </View>
+
+                            {/* Primary Login Button */}
+                            <TouchableOpacity
+                                style={{
+                                    backgroundColor: isDark ? '#D4A574' : '#2C1810',
+                                    borderRadius: 12,
+                                    paddingVertical: 16,
+                                    alignItems: 'center' as const,
+                                    justifyContent: 'center' as const,
+                                    marginTop: 8,
+                                    shadowColor: isDark ? '#D4A574' : '#2C1810',
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: isDark ? 0.3 : 0.15,
+                                    shadowRadius: 4,
+                                    elevation: 3,
+                                }}
+                                onPress={signInWithEmail}
+                                disabled={loading}
+                                activeOpacity={0.85}
+                            >
+                                {loading ? (
+                                    <ActivityIndicator color={isDark ? '#2C1810' : '#D4A574'} />
+                                ) : (
+                                    <Text style={{
+                                        fontFamily: Typography.fonts.heading,
+                                        fontSize: 18,
+                                        fontWeight: '700',
+                                        color: isDark ? '#2C1810' : '#D4A574',
+                                    }}>
+                                        Giriş Yap
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+
+                            {/* Divider */}
+                            <View style={styles.dividerContainer}>
+                                <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
+                                <View style={[styles.dividerTextContainer, { backgroundColor: theme.background }]}>
+                                    <Text style={[styles.dividerText, {
+                                        color: isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.5)',
+                                    }]}>
+                                        veya şununla devam et
+                                    </Text>
+                                </View>
+                                <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
+                            </View>
+
+                            {/* Social Login Buttons - Circular */}
+                            <View style={styles.socialButtonsContainer}>
+                                {/* Google Button */}
                                 <TouchableOpacity
-                                    onPress={() => setShowPassword(!showPassword)}
-                                    style={styles.visibilityButton}
-                                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                    style={[styles.socialButtonCircle, {
+                                        backgroundColor: isDark ? theme.surface : '#FFFFFF',
+                                        borderColor: isDark ? 'rgba(212, 165, 116, 0.2)' : 'rgba(44, 24, 16, 0.1)',
+                                    }]}
+                                    onPress={signInWithGoogle}
+                                    activeOpacity={0.7}
+                                >
+                                    <Image
+                                        source={require('@/assets/icons/icon _google.png')}
+                                        style={styles.socialIcon}
+                                        contentFit="contain"
+                                    />
+                                </TouchableOpacity>
+
+                                {/* Apple Button */}
+                                <TouchableOpacity
+                                    style={[styles.socialButtonCircle, {
+                                        backgroundColor: '#181611',
+                                        borderColor: '#000000',
+                                    }]}
+                                    onPress={signInWithApple}
+                                    activeOpacity={0.7}
                                 >
                                     <Ionicons
-                                        name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                                        size={20}
-                                        color={theme.textMuted}
+                                        name="logo-apple"
+                                        size={24}
+                                        color="#FFFFFF"
                                     />
                                 </TouchableOpacity>
                             </View>
                         </View>
+                    </View>
 
-                        {/* Forgot Password Link */}
-                        <View style={styles.forgotPasswordContainer}>
-                            <Link href="/forgot-password" asChild>
-                                <TouchableOpacity>
-                                    <Text style={[styles.forgotPasswordText, { color: theme.tealLink }]}>
-                                        Şifremi Unuttum?
-                                    </Text>
-                                </TouchableOpacity>
-                            </Link>
-                        </View>
-
-                        {/* Primary Login Button */}
-                        <TouchableOpacity
-                            style={[
-                                styles.primaryButton,
-                                { backgroundColor: theme.primary },
-                                loading && styles.buttonDisabled,
-                            ]}
-                            onPress={signInWithEmail}
-                            disabled={loading}
-                            activeOpacity={0.8}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color={StitchColors.light.text} />
-                            ) : (
-                                <Text style={[styles.primaryButtonText, { color: StitchColors.light.text }]}>
-                                    Giriş Yap
-                                </Text>
-                            )}
-                        </TouchableOpacity>
-
-                        {/* Divider */}
-                        <View style={styles.dividerContainer}>
-                            <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
-                            <Text style={[styles.dividerText, {
-                                color: theme.textMuted,
-                                backgroundColor: theme.background,
-                            }]}>
-                                veya şununla devam et
-                            </Text>
-                            <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
-                        </View>
-
-                        {/* Social Login Buttons */}
-                        <View style={styles.socialButtonsContainer}>
-                            {/* Google Button */}
-                            <TouchableOpacity
-                                style={[styles.socialButton, {
-                                    backgroundColor: isDark ? theme.surface : '#FFFFFF',
-                                    borderColor: theme.border,
-                                }]}
-                                onPress={signInWithGoogle}
-                                activeOpacity={0.7}
-                            >
-                                <GoogleIcon />
-                                <Text style={[styles.socialButtonText, { color: theme.text }]}>
-                                    Google
-                                </Text>
-                            </TouchableOpacity>
-
-                            {/* Apple Button */}
-                            <TouchableOpacity
-                                style={[styles.socialButton, {
-                                    backgroundColor: isDark ? theme.surface : '#181611',
-                                    borderColor: isDark ? theme.border : '#181611',
-                                }]}
-                                onPress={signInWithApple}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons
-                                    name="logo-apple"
-                                    size={20}
-                                    color={isDark ? theme.text : '#FFFFFF'}
-                                />
-                                <Text style={[styles.socialButtonText, {
-                                    color: isDark ? theme.text : '#FFFFFF',
-                                }]}>
-                                    Apple
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Sign Up Button - Stitch Design: White bg with thin dark border */}
+                    {/* Bottom Section */}
+                    <View style={styles.bottomSection}>
+                        {/* Sign Up Button */}
                         <Link href="/signup" asChild>
                             <TouchableOpacity
                                 style={{
-                                    borderRadius: 8,
+                                    backgroundColor: isDark ? '#3a2e26' : '#FFFFFF',
+                                    borderColor: isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.25)',
                                     borderWidth: 1,
-                                    borderColor: isDark ? '#4a4430' : '#221e10',
-                                    backgroundColor: isDark ? '#2f2b1d' : '#FFFFFF',
+                                    borderRadius: 12,
                                     paddingVertical: 14,
                                     paddingHorizontal: 12,
                                     alignItems: 'center' as const,
                                     justifyContent: 'center' as const,
-                                    marginTop: 16,
                                     shadowColor: '#2C1810',
                                     shadowOffset: { width: 0, height: 1 },
-                                    shadowOpacity: 0.05,
+                                    shadowOpacity: 0.08,
                                     shadowRadius: 2,
-                                    elevation: 1,
+                                    elevation: 2,
                                 }}
                                 activeOpacity={0.7}
                             >
                                 <Text style={{
-                                    fontFamily: Typography.fonts.uiBold,
+                                    fontFamily: Typography.fonts.heading,
                                     fontSize: 16,
                                     fontWeight: '700',
-                                    color: isDark ? '#e6e3db' : '#221e10',
+                                    color: isDark ? '#D4A574' : '#2C1810',
                                 }}>
                                     Hesap Oluştur
                                 </Text>
                             </TouchableOpacity>
                         </Link>
-                    </View>
 
-                    {/* Footer */}
-                    <View style={styles.footer}>
-                        <Text style={[styles.footerText, { color: theme.textMuted }]}>
-                            © 2024 Odyssey Journal. Tüm hakları saklıdır.
-                        </Text>
+                        {/* Footer */}
+                        <View style={styles.footer}>
+                            <Text style={[styles.footerText, {
+                                color: isDark ? 'rgba(245, 241, 232, 0.4)' : 'rgba(44, 24, 16, 0.5)',
+                            }]}>
+                                © 2026 Odyssey Journal. Tüm hakları saklıdır.
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
-    );
-}
-
-// Google Icon SVG Component
-function GoogleIcon() {
-    return (
-        <View style={{ width: 20, height: 20 }}>
-            <Ionicons name="logo-google" size={20} color="#4285F4" />
-        </View>
     );
 }
 
@@ -314,27 +356,39 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         paddingHorizontal: 24,
-        paddingTop: 60,
-        paddingBottom: 24,
-        maxWidth: 400,
+        minHeight: '100%',
+    },
+    spacerTop: {
+        height: 16,
+    },
+    mainContent: {
+        flex: 1,
+        justifyContent: 'center',
+        maxWidth: 380,
         width: '100%',
         alignSelf: 'center',
+        gap: 24,
     },
     logoSection: {
         alignItems: 'center',
-        marginBottom: 32,
+        gap: 20,
+        marginBottom: 8,
     },
     logoContainer: {
-        width: 96,
-        height: 96,
-        borderRadius: 48,
+        width: 112,
+        height: 112,
+        borderRadius: 56,
         overflow: 'hidden',
-        marginBottom: 16,
+        borderWidth: 3,
         ...Shadows.lg,
     },
     logoImage: {
         width: '100%',
         height: '100%',
+    },
+    titleContainer: {
+        alignItems: 'center',
+        gap: 4,
     },
     appTitle: {
         fontFamily: Typography.fonts.heading,
@@ -345,28 +399,24 @@ const styles = StyleSheet.create({
     },
     tagline: {
         fontFamily: Typography.fonts.body,
-        fontSize: 14,
-        marginTop: 8,
+        fontStyle: 'italic',
+        fontSize: 15,
+        letterSpacing: 0.5,
         textAlign: 'center',
     },
     formSection: {
-        gap: 16,
+        gap: 20,
+        marginTop: 8,
     },
     inputGroup: {
-        gap: 6,
-    },
-    label: {
-        fontFamily: Typography.fonts.bodyBold,
-        fontSize: 16,
-        marginLeft: 4,
+        position: 'relative',
     },
     inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         borderRadius: BorderRadius.lg,
-        borderWidth: 1,
         paddingHorizontal: 16,
         height: 56,
+        flexDirection: 'row',
+        alignItems: 'center',
         ...Shadows.sm,
     },
     input: {
@@ -375,21 +425,35 @@ const styles = StyleSheet.create({
         fontSize: 16,
         height: '100%',
     },
-    inputIcon: {
-        marginLeft: 8,
+    inputWithIcon: {
+        paddingRight: 40,
+    },
+    floatingLabelContainer: {
+        position: 'absolute',
+        top: -10,
+        left: 12,
+        paddingHorizontal: 4,
+    },
+    floatingLabel: {
+        fontFamily: Typography.fonts.body,
+        fontSize: 12,
     },
     visibilityButton: {
+        position: 'absolute',
+        right: 12,
         padding: 4,
     },
     forgotPasswordContainer: {
         alignItems: 'flex-end',
+        marginTop: -4,
     },
     forgotPasswordText: {
-        fontFamily: Typography.fonts.bodyBold,
-        fontSize: 14,
+        fontFamily: Typography.fonts.ui,
+        fontSize: 12,
+        fontWeight: '500',
     },
     primaryButton: {
-        borderRadius: BorderRadius.lg,
+        borderRadius: 12,
         paddingVertical: 16,
         alignItems: 'center',
         justifyContent: 'center',
@@ -400,65 +464,75 @@ const styles = StyleSheet.create({
         opacity: 0.7,
     },
     primaryButtonText: {
-        fontFamily: Typography.fonts.uiBold,
-        fontSize: 16,
+        fontFamily: Typography.fonts.heading,
+        fontSize: 18,
         fontWeight: '700',
     },
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 8,
+        marginVertical: 16,
     },
     dividerLine: {
         flex: 1,
         height: 1,
     },
+    dividerTextContainer: {
+        paddingHorizontal: 16,
+    },
     dividerText: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 14,
-        paddingHorizontal: 12,
+        fontFamily: Typography.fonts.ui,
+        fontSize: 12,
+        fontWeight: '500',
     },
     socialButtonsContainer: {
         flexDirection: 'row',
-        gap: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 24,
     },
-    socialButton: {
-        flex: 1,
-        flexDirection: 'row',
+    socialButtonCircle: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 12,
-        borderRadius: BorderRadius.lg,
-        borderWidth: 1,
-        paddingVertical: 14,
         ...Shadows.sm,
     },
-    socialButtonText: {
-        fontFamily: Typography.fonts.bodyBold,
-        fontSize: 14,
-        fontWeight: '600',
+    socialIcon: {
+        width: 24,
+        height: 24,
+    },
+    bottomSection: {
+        maxWidth: 380,
+        width: '100%',
+        alignSelf: 'center',
+        gap: 24,
+        marginTop: 16,
+        marginBottom: 8,
     },
     secondaryButton: {
-        borderRadius: BorderRadius.lg,
-        borderWidth: 1, // Thin border as shown in Stitch design
+        borderRadius: 12,
+        borderWidth: 1,
         paddingVertical: 14,
         paddingHorizontal: 12,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 16,
         ...Shadows.sm,
     },
     secondaryButtonText: {
-        fontFamily: Typography.fonts.uiBold,
+        fontFamily: Typography.fonts.heading,
         fontSize: 16,
         fontWeight: '700',
     },
     footer: {
-        marginTop: 32,
         alignItems: 'center',
+        paddingBottom: 8,
     },
     footerText: {
-        fontFamily: Typography.fonts.body,
-        fontSize: 12,
+        fontFamily: 'System',
+        fontSize: 11,
+        letterSpacing: 0.5,
     },
 });

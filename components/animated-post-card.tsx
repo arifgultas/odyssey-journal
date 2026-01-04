@@ -11,7 +11,7 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Post } from '@/lib/posts';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -31,17 +31,6 @@ import { ImageCarousel } from './image-carousel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Stamp icons for visual variety
-const STAMP_ICONS = [
-    'flight-takeoff',
-    'temple-buddhist',
-    'sailing',
-    'photo-camera',
-    'landscape',
-    'beach-access',
-    'hiking',
-    'castle',
-] as const;
 
 interface AnimatedPostCardProps {
     post: Post;
@@ -91,10 +80,6 @@ export function AnimatedPostCard({
         return rotations[index % rotations.length];
     }, [index]);
 
-    // Get a stamp icon based on index
-    const stampIcon = useMemo(() => {
-        return STAMP_ICONS[index % STAMP_ICONS.length];
-    }, [index]);
 
     // Appear animation on mount with stagger
     useEffect(() => {
@@ -276,11 +261,6 @@ export function AnimatedPostCard({
                                         <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
                                     </View>
                                 )}
-
-                                {/* Stamp Effect */}
-                                <View style={[styles.stampContainer, { borderColor: theme.accent }]}>
-                                    <MaterialIcons name={stampIcon} size={28} color={theme.accent} />
-                                </View>
                             </View>
 
                             {/* Polaroid Caption - Handwriting Style */}
@@ -467,20 +447,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: Colors.light.surface,
     },
-    stampContainer: {
-        position: 'absolute',
-        top: Spacing.md,
-        right: Spacing.md,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        borderWidth: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        opacity: 0.85,
-        transform: [{ rotate: '12deg' }],
-    },
+
     polaroidCaption: {
         alignItems: 'center',
         paddingTop: Spacing.md,

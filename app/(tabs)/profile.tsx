@@ -149,7 +149,8 @@ export default function ProfileScreen() {
         router.push(`/post-detail/${postId}`);
     };
 
-    if (profileLoading || !profile) {
+    // Only show loading when actively loading, not when profile is null (error case)
+    if (profileLoading) {
         return (
             <ThemedView style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={passportTheme.gold} />
@@ -157,8 +158,19 @@ export default function ProfileScreen() {
         );
     }
 
+    // Create fallback profile if null (handles error cases)
+    const displayProfile = profile || {
+        id: user?.id || '',
+        full_name: user?.email?.split('@')[0] || 'Gezgin',
+        username: user?.email?.split('@')[0] || 'user',
+        avatar_url: null,
+        bio: null,
+        website: null,
+        updated_at: new Date().toISOString(),
+    };
+
     // Parse name into surname and given names
-    const nameParts = (profile.full_name || 'Gezgin').split(' ');
+    const nameParts = (displayProfile.full_name || 'Gezgin').split(' ');
     const surname = nameParts.length > 1 ? nameParts[nameParts.length - 1].toUpperCase() : nameParts[0].toUpperCase();
     const givenNames = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ').toUpperCase() : '';
 
@@ -233,9 +245,9 @@ export default function ProfileScreen() {
                                 {/* Photo */}
                                 <View style={styles.photoContainer}>
                                     <View style={[styles.photoFrame, { borderColor: colorScheme === 'dark' ? `${passportTheme.gold}99` : passportTheme.passportLeather }]}>
-                                        {profile.avatar_url ? (
+                                        {displayProfile.avatar_url ? (
                                             <Image
-                                                source={{ uri: profile.avatar_url }}
+                                                source={{ uri: displayProfile.avatar_url }}
                                                 style={styles.photoImage}
                                                 contentFit="cover"
                                             />
@@ -275,19 +287,19 @@ export default function ProfileScreen() {
                                         </View>
                                         <View style={styles.infoFieldSmall}>
                                             <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>ID</Text>
-                                            <Text style={[styles.fieldValueMono, { color: passportTheme.gold }]}>@{profile.username || 'user'}</Text>
+                                            <Text style={[styles.fieldValueMono, { color: passportTheme.gold }]}>@{displayProfile.username || 'user'}</Text>
                                         </View>
                                     </View>
                                 </View>
                             </View>
 
                             {/* Bio Section */}
-                            {profile.bio && (
+                            {displayProfile.bio && (
                                 <View style={[styles.bioContainer, { backgroundColor: passportTheme.paperDark }]}>
                                     <Ionicons name="airplane" size={48} color={passportTheme.textSecondary} style={styles.bioIcon1} />
                                     <Ionicons name="globe-outline" size={48} color={passportTheme.textSecondary} style={styles.bioIcon2} />
                                     <Text style={[styles.bioText, { color: colorScheme === 'dark' ? '#d4c5b0' : passportTheme.passportLeather }]}>
-                                        "{profile.bio}"
+                                        "{displayProfile.bio}"
                                     </Text>
                                 </View>
                             )}
@@ -477,14 +489,12 @@ export default function ProfileScreen() {
             </ScrollView>
 
             {/* Edit Profile Modal */}
-            {profile && (
-                <EditProfileModal
-                    visible={editModalVisible}
-                    profile={profile}
-                    onClose={() => setEditModalVisible(false)}
-                    onSuccess={handleEditSuccess}
-                />
-            )}
+            <EditProfileModal
+                visible={editModalVisible}
+                profile={displayProfile}
+                onClose={() => setEditModalVisible(false)}
+                onSuccess={handleEditSuccess}
+            />
 
             {/* Language Selector Modal */}
             <LanguageSelectorModal

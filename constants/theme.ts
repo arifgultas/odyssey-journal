@@ -94,6 +94,16 @@ export const Typography = {
     brandTitle: 'Ephesis-Regular',
   },
 
+  // Web font fallbacks (used when custom fonts are not available)
+  webFallbacks: {
+    heading: '"Playfair Display", Georgia, "Times New Roman", serif',
+    body: 'Lora, Georgia, "Times New Roman", serif',
+    accent: 'Merriweather, Georgia, serif',
+    ui: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    handwriting: 'Caveat, "Brush Script MT", cursive',
+    brandTitle: 'Ephesis, "Dancing Script", cursive',
+  },
+
   // Font sizes with line heights
   sizes: {
     display: { fontSize: 48, lineHeight: 56, letterSpacing: -0.96 },

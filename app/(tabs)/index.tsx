@@ -283,7 +283,7 @@ export default function HomeScreen() {
         style={styles.headerButton}
         onPress={() => router.push('/notifications')}
       >
-        <BellIcon width={24} height={24} />
+        <BellIcon width={40} height={40} />
       </TouchableOpacity>
     </View>
   );

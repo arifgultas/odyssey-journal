@@ -6,6 +6,10 @@ import {
     Ephesis_400Regular,
 } from '@expo-google-fonts/ephesis';
 import {
+    Inter_400Regular,
+    Inter_700Bold,
+} from '@expo-google-fonts/inter';
+import {
     Lora_400Regular,
     Lora_400Regular_Italic,
     Lora_700Bold,
@@ -37,6 +41,10 @@ export function useBookFonts() {
         'Merriweather-Regular': Merriweather_400Regular,
         'Merriweather-Bold': Merriweather_700Bold,
 
+        // Inter (UI elements)
+        'Inter-Regular': Inter_400Regular,
+        'Inter-Bold': Inter_700Bold,
+
         // Caveat (Handwriting for polaroid captions)
         'Caveat-Regular': Caveat_400Regular,
         'Caveat-Bold': Caveat_700Bold,
@@ -47,3 +55,4 @@ export function useBookFonts() {
 
     return { fontsLoaded, fontError };
 }
+

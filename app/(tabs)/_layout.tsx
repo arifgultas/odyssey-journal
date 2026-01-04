@@ -76,7 +76,7 @@ export default function TabLayout() {
             <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={26}
+              size={40}
               icon="home"
             />
           ),
@@ -89,7 +89,7 @@ export default function TabLayout() {
             <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={26}
+              size={40}
               icon="compass"
             />
           ),
@@ -102,7 +102,7 @@ export default function TabLayout() {
             <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={30}
+              size={42}
               icon="create"
             />
           ),
@@ -115,7 +115,7 @@ export default function TabLayout() {
             <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={26}
+              size={40}
               icon="bookmark"
             />
           ),
@@ -134,7 +134,7 @@ export default function TabLayout() {
             <CustomAnimatedTabIcon
               focused={focused}
               color={color}
-              size={26}
+              size={40}
               icon="user"
             />
           ),
