@@ -24,6 +24,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -98,7 +99,6 @@ export default function ExploreScreen() {
 
   const filters: SearchFilters = { sortBy };
 
-  // Hooks
   const { data: searchResults, isLoading: searchLoading } = useSearch(
     searchQuery,
     filters,
@@ -113,6 +113,21 @@ export default function ExploreScreen() {
   const saveSearch = useSaveSearchHistory();
   const deleteHistoryItem = useDeleteSearchHistoryItem();
   const followMutation = useFollowUser();
+
+  // Map hide animation on scroll - platform specific for performance
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // iOS uses height animation (smooth), Android uses only opacity (performant)
+  const mapHeight = scrollY.interpolate({
+    inputRange: [0, 200],
+    outputRange: [380, 0],
+    extrapolate: 'clamp',
+  });
+  const mapOpacity = scrollY.interpolate({
+    inputRange: [0, 150],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
 
   // Typing animation effect
   useEffect(() => {
@@ -219,8 +234,20 @@ export default function ExploreScreen() {
   const renderMapHeader = () => {
     const pinLocations = trendingLocations?.slice(0, 3) || [];
 
+    // Platform-specific animation styles
+    // iOS: height shrinks with scroll, Android: no animation (stays visible)
+    const mapAnimationStyle = Platform.OS === 'ios'
+      ? { height: mapHeight, opacity: mapOpacity }
+      : {}; // Android: no animation, map stays fixed
+
     return (
-      <View style={[styles.mapHeader, { backgroundColor: vintageTheme.parchment }]}>
+      <Animated.View style={[
+        styles.mapHeader,
+        {
+          backgroundColor: vintageTheme.parchment,
+          ...mapAnimationStyle
+        }
+      ]}>
         {/* Background Map Image */}
         <View style={styles.mapBackground}>
           <Image
@@ -319,7 +346,7 @@ export default function ExploreScreen() {
             <Ionicons name="remove" size={22} color={vintageTheme.textSecondary} />
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -451,60 +478,43 @@ export default function ExploreScreen() {
     return num.toString();
   };
 
-  // Render popular destinations section - Static data matching Google Stitch design
+  // Render popular destinations section - uses real post locations
   const renderPopularDestinations = () => {
-    // Static destinations matching the design
-    const staticDestinations = [
-      {
-        name: 'Paris',
-        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRUh1J8X_-75oU3KwXM6dZl23I1ROsuHm3fQte2CSEIVzoMX4O9YysgH-ByKvLOkpKfAi8cKVZOMptL_F3BM3g7MpgXx9eqWJBrp1qwE4KK4Kg2yuTgZ0tWIt9BZ-pTuQhCAIQpGWLuuphIYM0AI8xagqQ4w8c66FMsnrFz4MeaRfPOuh4ZsgTbPBYqQPeplAOh0m7BQr58_7LucIdQdACaGeNEF3NmwVd4ktZt0cHCq_8HgqxzC3H96NXiZ1-BbVHTKBtenX_rkE',
-        postCount: 128,
-        bgColor: '#e0f2fe',
-        icon: 'airplane' as keyof typeof Ionicons.glyphMap,
-        iconColor: '#4A6FA5',
-        dotColor: '#4A6FA5',
-      },
-      {
-        name: 'Arizona',
-        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD8RzAeQifuE_dvcgmnLBXpeWQLMS72tmFys7LwkP9ahLielaAw1LcpnAa8UCzs__jscsVBIcwhjyKo-HlmJVabcr-KSuVuquQCWY3v9cyGw0Z_e_Tde4CO-KzRTbuawzNvQ5Oke_Z17dmgTrJ2ZjVRkPTev7pKZeUklFfaqYitsW3gVsYLbrEM2Vuc44RqETPAcf3BMRtQB76q9R2aAqu2DYZle5Nlt0Bhlf3fgeuTS-YdojcYVti64InDgapt5IOTSOeVPt51ke4',
-        postCount: 42,
-        bgColor: '#fef3c7',
-        icon: 'walk' as keyof typeof Ionicons.glyphMap,
-        iconColor: '#DAA520',
-        dotColor: '#DAA520',
-      },
-      {
-        name: 'Bali',
-        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDotsU9xiiMvU-EbyZQKhxOY88-Hd0Lnt803dBxwJUNfVsUXSesFYdfWsvdpSSMZ39f-lsDW7pqqDuK7aPCPs06nf-iHEBqftDAummTFGJZIpsFB3zjkL-j4HKmqi35KzRLZvvoQ9VLQYhV6ryhUSSpGGDgbi1x1t8jGE7MGfwe5s6Z_q8KrdYC6Mosr7HyXpURYIgfjAAHJHi7aPURbso-kfzqCbR7wXBcGgUlf44N8Fxp7k6gDsVqcihHUUxjylWRvEP5kg5lsgk',
-        postCount: 94,
-        bgColor: '#dcfce7',
-        icon: 'leaf' as keyof typeof Ionicons.glyphMap,
-        iconColor: '#22c55e',
-        dotColor: '#22c55e',
-      },
-      {
-        name: 'Londra',
-        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4_j93GPrpjdrYAj-PyD2qnxfxoMMARYN73qb1NQxtrQ7HTWb2cNlxHFCsXjKxSG1Vs2sJSXuHRUmY_mtXxg5rLnWCVqg_fAXvugmNpLuIU6a7vXSI_SKOcqBIffXFO-hM90Ow0OLpjGOgP6TpPayldqLdZFp3nm9iCHi-5lH9GchMBgi74RhjopwKi69BOjFDWR1gF1lvylkd3X4l17TuCcXShU4TIqTJezN5BktOm_E4wLnQaKkt0B4-UuM8pc_F6iv34wtoX0g',
-        postCount: 215,
-        bgColor: '#f3e8ff',
-        icon: 'business' as keyof typeof Ionicons.glyphMap,
-        iconColor: '#a855f7',
-        dotColor: '#a855f7',
-      },
+    // Color palettes for destinations
+    const colorPalettes = [
+      { bgColor: '#e0f2fe', icon: 'airplane' as keyof typeof Ionicons.glyphMap, iconColor: '#4A6FA5', dotColor: '#4A6FA5' },
+      { bgColor: '#fef3c7', icon: 'walk' as keyof typeof Ionicons.glyphMap, iconColor: '#DAA520', dotColor: '#DAA520' },
+      { bgColor: '#dcfce7', icon: 'leaf' as keyof typeof Ionicons.glyphMap, iconColor: '#22c55e', dotColor: '#22c55e' },
+      { bgColor: '#f3e8ff', icon: 'business' as keyof typeof Ionicons.glyphMap, iconColor: '#a855f7', dotColor: '#a855f7' },
     ];
 
-    // Use API data if available, otherwise use static data
-    const destinations = (popularDestinations && popularDestinations.length >= 4)
-      ? popularDestinations.slice(0, 4).map((dest: any, index: number) => ({
-        name: dest.city || dest.name?.split(',')[0] || staticDestinations[index].name,
-        imageUrl: dest.imageUrl || staticDestinations[index].imageUrl,
-        postCount: dest.postCount || staticDestinations[index].postCount,
-        bgColor: staticDestinations[index].bgColor,
-        icon: staticDestinations[index].icon,
-        iconColor: staticDestinations[index].iconColor,
-        dotColor: staticDestinations[index].dotColor,
-      }))
-      : staticDestinations;
+    // Get unique locations from trending posts
+    const postLocationsRaw = trendingPosts?.filter((post: any) =>
+      post.location?.city || post.location?.country || post.location_name
+    ).map((post: any) => ({
+      name: post.location?.city || post.location?.country || post.location_name?.split(',')[0] || 'Bilinmeyen',
+      imageUrl: post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400',
+    })) || [];
+
+    // If no post locations, don't show this section
+    if (postLocationsRaw.length === 0) return null;
+
+    // Group by location name and count
+    const locationMap = new Map<string, { name: string; imageUrl: string; postCount: number }>();
+    postLocationsRaw.forEach(loc => {
+      if (locationMap.has(loc.name)) {
+        const existing = locationMap.get(loc.name)!;
+        existing.postCount++;
+      } else {
+        locationMap.set(loc.name, { ...loc, postCount: 1 });
+      }
+    });
+
+    // Create destinations array with colors
+    const destinations = Array.from(locationMap.values()).slice(0, 4).map((loc, index) => ({
+      ...loc,
+      ...colorPalettes[index % colorPalettes.length],
+    }));
 
     return (
       <View style={styles.section}>
@@ -783,16 +793,21 @@ export default function ExploreScreen() {
     }
 
     return (
-      <ScrollView
+      <Animated.ScrollView
         style={[styles.contentScroll, { backgroundColor: vintageTheme.background }]}
         showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: Platform.OS !== 'ios' } // iOS: false for height animation, Android: true for performance
+        )}
       >
         {renderCategories()}
         {renderTrendingPosts()}
         {renderPopularDestinations()}
         {renderWeeklyDiscovery()}
         {renderSuggestedUsers()}
-      </ScrollView>
+      </Animated.ScrollView>
     );
   };
 
@@ -937,7 +952,7 @@ const styles = StyleSheet.create({
   // Zoom Controls
   zoomControls: {
     position: 'absolute',
-    bottom: 32,
+    bottom: 100,
     right: 16,
     gap: 10,
     zIndex: 30,
