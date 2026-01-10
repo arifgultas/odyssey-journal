@@ -29,7 +29,7 @@ const CARD_WIDTH = (SCREEN_WIDTH - Spacing.md * 3) / 2;
 const CARD_HEIGHT = 250;
 const COLLECTION_CARD_WIDTH = 140;
 
-// Koleksiyon tipi (mock data, gerçek veriyle değiştirilebilir)
+// Koleksiyon tipi (gerçek API verisi kullanır)
 interface Collection {
     id: string;
     name: string;
@@ -38,32 +38,29 @@ interface Collection {
     color: string;
 }
 
-// Mock koleksiyonlar (gerçek API ile değiştirilebilir)
-const MOCK_COLLECTIONS: Collection[] = [
-    {
-        id: '1',
-        name: 'Avrupa Turu',
-        imageUrl: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400',
-        postCount: 12,
-        color: '#3E2723',
+// Design Colors - Tutarlı renk sistemi
+const DesignColors = {
+    light: {
+        background: '#F5F1E8', // Açık krem arka plan
+        headerBg: '#F5F1E8', // Header da açık krem
+        cardBg: '#FFFFFF',
+        cardBackBg: '#F5F1E8',
+        textPrimary: '#2C1810', // Koyu kahverengi text
+        textSecondary: 'rgba(44, 24, 16, 0.6)',
+        accent: '#D4A574',
+        border: 'rgba(139, 115, 85, 0.3)',
     },
-    {
-        id: '2',
-        name: '2024 Planları',
-        imageUrl: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400',
-        postCount: 8,
-        color: '#5D4037',
+    dark: {
+        background: '#2C1810',
+        headerBg: 'rgba(44, 24, 16, 0.98)',
+        cardBg: '#e6dcc8',
+        cardBackBg: '#3E2723',
+        textPrimary: '#F5F1E8',
+        textSecondary: 'rgba(245, 241, 232, 0.6)',
+        accent: '#D4A574',
+        border: 'rgba(212, 165, 116, 0.25)',
     },
-    {
-        id: '3',
-        name: 'Rüya Rotalar',
-        imageUrl: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400',
-        postCount: 24,
-        color: '#4E342E',
-    },
-];
-
-type TabType = 'all' | 'favorites' | 'notes';
+};
 
 export default function SavedPostsScreen() {
     const colorScheme = useColorScheme();
@@ -72,11 +69,14 @@ export default function SavedPostsScreen() {
     const insets = useSafeAreaInsets();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false); // İlk yükleme durumu kaldırıldı
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [collections, setCollections] = useState<Collection[]>([]); // Gerçek koleksiyon verisi
+
+    // Tema renkleri
+    const colors = isDark ? DesignColors.dark : DesignColors.light;
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const [activeTab, setActiveTab] = useState<TabType>('all');
     const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set());
 
     // Flip animasyonları için referanslar
@@ -93,9 +93,8 @@ export default function SavedPostsScreen() {
         try {
             if (refresh) {
                 setIsRefreshing(true);
-            } else if (pageNum === 0) {
-                setIsLoading(true);
             }
+            // İlk yüklemede loading göstermiyoruz
 
             const bookmarkedPosts = await getBookmarkedPosts(pageNum, 10);
 
@@ -118,7 +117,7 @@ export default function SavedPostsScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            loadBookmarkedPosts(0, true);
+            loadBookmarkedPosts(0, false); // refresh: false - loading spinner gösterme
         }, [])
     );
 
@@ -293,7 +292,7 @@ export default function SavedPostsScreen() {
                             styles.cardFront,
                             frontAnimatedStyle,
                             shadowStyle,
-                            { backgroundColor: isDark ? '#e6dcc8' : '#F5F1E8' },
+                            { backgroundColor: colors.cardBg },
                         ]}
                     >
                         <View style={styles.polaroidImageContainer}>
@@ -325,7 +324,7 @@ export default function SavedPostsScreen() {
                             styles.polaroidCard,
                             styles.cardBack,
                             backAnimatedStyle,
-                            { backgroundColor: isDark ? '#3E2723' : '#F5F1E8' },
+                            { backgroundColor: colors.cardBackBg },
                         ]}
                     >
                         {/* Kağıt dokusu overlay */}
@@ -387,10 +386,10 @@ export default function SavedPostsScreen() {
 
     const renderHeader = () => (
         <>
-            {/* Koleksiyonlar Bölümü */}
+            {/* Koleksiyonlar Bölümü - Her zaman göster */}
             <View style={styles.collectionsSection}>
                 <View style={styles.collectionsSectionHeader}>
-                    <Text style={[styles.sectionTitle, { color: isDark ? '#D4A574' : '#F5F1E8' }]}>
+                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
                         Koleksiyonlar
                     </Text>
                     <TouchableOpacity style={styles.newCollectionButton} activeOpacity={0.8}>
@@ -399,76 +398,34 @@ export default function SavedPostsScreen() {
                     </TouchableOpacity>
                 </View>
 
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.collectionsScroll}
-                    snapToInterval={COLLECTION_CARD_WIDTH + Spacing.md}
-                    decelerationRate="fast"
-                >
-                    {MOCK_COLLECTIONS.map(renderCollectionCard)}
-                </ScrollView>
+                {collections.length > 0 ? (
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.collectionsScroll}
+                        snapToInterval={COLLECTION_CARD_WIDTH + Spacing.md}
+                        decelerationRate="fast"
+                    >
+                        {collections.map(renderCollectionCard)}
+                    </ScrollView>
+                ) : (
+                    /* Koleksiyon yoksa boş state */
+                    <View style={styles.emptyCollectionsContainer}>
+                        <View style={[styles.emptyCollectionCard, { borderColor: colors.border }]}>
+                            <Ionicons name="folder-outline" size={32} color={colors.accent} style={{ opacity: 0.6 }} />
+                            <Text style={[styles.emptyCollectionText, { color: colors.textSecondary }]}>
+                                Henüz koleksiyon yok
+                            </Text>
+                            <Text style={[styles.emptyCollectionSubtext, { color: colors.textSecondary }]}>
+                                Gönderilerinizi düzenlemek için koleksiyon oluşturun
+                            </Text>
+                        </View>
+                    </View>
+                )}
             </View>
 
             {/* Ayırıcı */}
             <View style={styles.divider} />
-
-            {/* Sekmeler */}
-            <View style={[styles.tabsContainer, { backgroundColor: isDark ? 'rgba(44, 24, 16, 0.95)' : 'rgba(139, 115, 85, 0.95)' }]}>
-                <View style={styles.tabsInner}>
-                    <TouchableOpacity
-                        style={styles.tab}
-                        onPress={() => setActiveTab('all')}
-                    >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                activeTab === 'all' && styles.tabTextActive,
-                                { color: activeTab === 'all' ? (isDark ? '#D4A574' : '#F5F1E8') : 'rgba(245, 241, 232, 0.6)' },
-                            ]}
-                        >
-                            Tümü
-                        </Text>
-                        {activeTab === 'all' && <View style={styles.tabIndicator} />}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.tab}
-                        onPress={() => setActiveTab('favorites')}
-                    >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                activeTab === 'favorites' && styles.tabTextActive,
-                                { color: activeTab === 'favorites' ? (isDark ? '#D4A574' : '#F5F1E8') : 'rgba(245, 241, 232, 0.6)' },
-                            ]}
-                        >
-                            Favoriler
-                        </Text>
-                        {activeTab === 'favorites' && <View style={styles.tabIndicator} />}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.tab}
-                        onPress={() => setActiveTab('notes')}
-                    >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                activeTab === 'notes' && styles.tabTextActive,
-                                { color: activeTab === 'notes' ? (isDark ? '#D4A574' : '#F5F1E8') : 'rgba(245, 241, 232, 0.6)' },
-                            ]}
-                        >
-                            Notlar
-                        </Text>
-                        {activeTab === 'notes' && <View style={styles.tabIndicator} />}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.filterButton}>
-                        <MaterialIcons name="tune" size={20} color="#D4A574" />
-                    </TouchableOpacity>
-                </View>
-            </View>
         </>
     );
 
@@ -483,7 +440,7 @@ export default function SavedPostsScreen() {
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
                     Kaydedilen Gönderi Yok
                 </ThemedText>
-                <ThemedText style={[styles.emptyText, { color: isDark ? '#b8ad9d' : '#F5F1E8' }]}>
+                <ThemedText style={[styles.emptyText, { color: colors.textSecondary }]}>
                     Kaydettiğiniz gönderiler burada görünecek
                 </ThemedText>
             </View>
@@ -500,50 +457,24 @@ export default function SavedPostsScreen() {
         );
     };
 
-    // Filtreleme
-    const filteredPosts = posts.filter((post) => {
-        if (activeTab === 'favorites') return post.isLiked;
-        if (activeTab === 'notes') return post.content && post.content.length > 0;
-        return true;
-    });
+    // Tüm postları göster (sekmeler kaldırıldı)
+    const filteredPosts = posts;
 
-    if (isLoading && posts.length === 0) {
-        return (
-            <View style={[styles.container, { backgroundColor: isDark ? '#2C1810' : '#8B7355' }]}>
-                {/* Deri doku overlay */}
-                <View style={styles.leatherTexture} />
-
-                {/* Header */}
-                <View style={[styles.header, { paddingTop: insets.top }]}>
-                    <TouchableOpacity style={styles.headerButton}>
-                        <MaterialIcons name="arrow-back-ios" size={24} color="#F5F1E8" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Kaydedilenler</Text>
-                    <TouchableOpacity style={styles.headerButton}>
-                        <MaterialIcons name="search" size={24} color="#F5F1E8" />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#D4A574" />
-                </View>
-            </View>
-        );
-    }
+    // Loading state kaldırıldı - sayfa hemen içeriği gösteriyor
 
     return (
-        <View style={[styles.container, { backgroundColor: isDark ? '#2C1810' : '#8B7355' }]}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             {/* Deri doku overlay */}
             <View style={styles.leatherTexture} />
 
             {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top, backgroundColor: isDark ? 'rgba(44, 24, 16, 0.95)' : 'rgba(139, 115, 85, 0.95)' }]}>
+            <View style={[styles.header, { paddingTop: insets.top, backgroundColor: colors.headerBg }]}>
                 <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
-                    <MaterialIcons name="arrow-back-ios" size={24} color="#F5F1E8" />
+                    <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Kaydedilenler</Text>
+                <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Kaydedilenler</Text>
                 <TouchableOpacity style={styles.headerButton}>
-                    <MaterialIcons name="search" size={24} color="#F5F1E8" />
+                    <MaterialIcons name="search" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
             </View>
 
@@ -712,6 +643,34 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.ui,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
+    },
+
+    // Empty Collections State
+    emptyCollectionsContainer: {
+        paddingHorizontal: Spacing.md,
+        paddingBottom: Spacing.lg,
+    },
+    emptyCollectionCard: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: Spacing.xl,
+        paddingHorizontal: Spacing.lg,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderRadius: BorderRadius.lg,
+        gap: Spacing.sm,
+    },
+    emptyCollectionText: {
+        fontSize: 14,
+        fontWeight: '600',
+        fontFamily: Typography.fonts.ui,
+        marginTop: Spacing.xs,
+    },
+    emptyCollectionSubtext: {
+        fontSize: 12,
+        fontFamily: Typography.fonts.ui,
+        textAlign: 'center',
+        opacity: 0.7,
     },
 
     // Divider

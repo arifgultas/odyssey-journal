@@ -3,10 +3,10 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
 import { createPost } from '@/lib/posts';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -20,7 +20,20 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import Animated, {
+    Easing,
+    FadeIn,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withRepeat,
+    withSequence,
+    withSpring,
+    withTiming
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
 
@@ -48,21 +61,438 @@ const DesignColors = {
     },
 };
 
-// Mood options
-const MOODS = [
-    { id: 'adventure', icon: 'terrain', label: 'Macera' },
-    { id: 'peaceful', icon: 'spa', label: 'Huzur' },
-    { id: 'discovery', icon: 'explore', label: 'Keşif' },
-    { id: 'romantic', icon: 'favorite', label: 'Romantik' },
+// Category options with custom SVG icons
+const CATEGORIES = [
+    { id: 'nature', label: 'Doğa', icon: 'tree' },
+    { id: 'city', label: 'Şehir', icon: 'city' },
+    { id: 'food', label: 'Yemek', icon: 'food' },
+    { id: 'history', label: 'Tarih', icon: 'history' },
+    { id: 'art', label: 'Sanat', icon: 'art' },
 ];
 
-// Template options
-const TEMPLATES = [
-    { id: 'classic', label: 'Klasik Günlük' },
-    { id: 'photo', label: 'Fotoğraf Odaklı' },
-    { id: 'minimal', label: 'Minimalist Rota' },
-    { id: 'food', label: 'Yemek Tadımı' },
-];
+// Custom SVG Icons Component
+const CategoryIcon = ({ icon, color, size = 20 }: { icon: string; color: string; size?: number }) => {
+    switch (icon) {
+        case 'tree':
+            return (
+                <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
+                    <Path d="M12 3 L15.5 10 H13.5 L17 17 H7 L10.5 10 H8.5 L12 3 Z" strokeLinejoin="round" />
+                    <Path d="M12 21 V17" strokeLinecap="round" />
+                </Svg>
+            );
+        case 'city':
+            return (
+                <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
+                    <Path d="M3 21h18" strokeLinecap="round" />
+                    <Path d="M5 21V10l3-3 3 3v11" strokeLinejoin="round" />
+                    <Path d="M13 21V7l3-3 4 3v14" strokeLinejoin="round" />
+                    <Rect x={15} y={11} width={2} height={2} fill="none" />
+                    <Rect x={15} y={15} width={2} height={2} fill="none" />
+                </Svg>
+            );
+        case 'food':
+            return (
+                <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
+                    <Path d="M3 19h18" strokeLinecap="round" />
+                    <Path d="M4 19a8 8 0 0 1 16 0" strokeLinejoin="round" />
+                    <Path d="M12 11v-4" strokeLinecap="round" />
+                    <Circle cx={12} cy={5} r={2} fill="none" />
+                </Svg>
+            );
+        case 'history':
+            return (
+                <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
+                    <Rect x={6} y={20} width={12} height={2} strokeLinecap="round" />
+                    <Rect x={5} y={4} width={14} height={2} strokeLinecap="round" />
+                    <Path d="M7 6v14" strokeLinecap="round" />
+                    <Path d="M17 6v14" strokeLinecap="round" />
+                    <Line x1={10} y1={6} x2={10} y2={20} strokeDasharray="1 3" strokeLinecap="round" />
+                    <Line x1={14} y1={6} x2={14} y2={20} strokeDasharray="1 3" strokeLinecap="round" />
+                    <Circle cx={5.5} cy={5} r={1.5} fill="none" />
+                    <Circle cx={18.5} cy={5} r={1.5} fill="none" />
+                </Svg>
+            );
+        case 'art':
+            return (
+                <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
+                    <Path
+                        d="M12 21a9 9 0 0 1-9-9c0-4.97 4.03-9 9-9s9 4.03 9 9c0 1.3-.84 2.4-2.1 2.8-.5.16-1.1-.2-1.1-.76V13a2 2 0 0 0-2-2H9"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                    <Circle cx={10} cy={8} r={1} fill={color} opacity={0.3} />
+                    <Circle cx={14} cy={8} r={1} fill={color} opacity={0.3} />
+                    <Circle cx={16} cy={12} r={1} fill={color} opacity={0.3} />
+                </Svg>
+            );
+        default:
+            return null;
+    }
+};
+
+// Animated Category Button Component
+const AnimatedCategoryButton = ({
+    category,
+    isSelected,
+    onPress,
+    theme,
+    isDark,
+}: {
+    category: typeof CATEGORIES[0];
+    isSelected: boolean;
+    onPress: () => void;
+    theme: typeof DesignColors.light;
+    isDark: boolean;
+}) => {
+    const scale = useSharedValue(1);
+    const backgroundColor = useSharedValue(isSelected ? 1 : 0);
+
+    useEffect(() => {
+        backgroundColor.value = withSpring(isSelected ? 1 : 0, {
+            damping: 15,
+            stiffness: 150,
+        });
+    }, [isSelected]);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+        backgroundColor: interpolate(
+            backgroundColor.value,
+            [0, 1],
+            [0, 1]
+        ) === 1 ? theme.primary : 'transparent',
+        borderColor: interpolate(
+            backgroundColor.value,
+            [0, 1],
+            [0, 1]
+        ) === 1 ? theme.primary : (isDark ? theme.accentBrown : theme.textMain),
+    }));
+
+    const handlePressIn = () => {
+        scale.value = withSpring(1.05, { damping: 10, stiffness: 400 });
+    };
+
+    const handlePressOut = () => {
+        scale.value = withSpring(1, { damping: 10, stiffness: 400 });
+    };
+
+    return (
+        <TouchableOpacity
+            onPress={onPress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            activeOpacity={0.9}
+        >
+            <Animated.View style={[styles.categoryButton, animatedStyle]}>
+                <CategoryIcon
+                    icon={category.icon}
+                    color={isSelected ? '#2C1810' : (isDark ? theme.primary : theme.textMain)}
+                    size={20}
+                />
+                <Animated.Text
+                    style={[
+                        styles.categoryLabel,
+                        { color: isSelected ? '#2C1810' : (isDark ? theme.primary : theme.textMain) },
+                    ]}
+                >
+                    {category.label}
+                </Animated.Text>
+            </Animated.View>
+        </TouchableOpacity>
+    );
+};
+
+// Animated Polaroid Card Component
+const AnimatedPolaroidCard = ({
+    image,
+    index,
+    onRemove,
+    rotation,
+}: {
+    image: SelectedImage;
+    index: number;
+    onRemove: () => void;
+    rotation: number;
+}) => {
+    const scale = useSharedValue(0.8);
+    const opacity = useSharedValue(0);
+    const imageScale = useSharedValue(1.1);
+
+    useEffect(() => {
+        scale.value = withDelay(
+            index * 100,
+            withSpring(1, { damping: 12, stiffness: 100 })
+        );
+        opacity.value = withDelay(
+            index * 100,
+            withTiming(1, { duration: 400 })
+        );
+    }, []);
+
+    const animatedContainerStyle = useAnimatedStyle(() => ({
+        transform: [
+            { scale: scale.value },
+            { rotate: `${rotation}deg` },
+        ],
+        opacity: opacity.value,
+    }));
+
+    const animatedImageStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: imageScale.value }],
+    }));
+
+    return (
+        <Animated.View style={[styles.polaroidCard, animatedContainerStyle]}>
+            <TouchableOpacity style={styles.polaroidRemove} onPress={onRemove}>
+                <Ionicons name="close" size={14} color="#FFFFFF" />
+            </TouchableOpacity>
+            <Animated.View style={[styles.polaroidImageContainer, animatedImageStyle]}>
+                <Image
+                    source={{ uri: image.uri }}
+                    style={styles.polaroidImage}
+                    contentFit="cover"
+                />
+            </Animated.View>
+            <View style={styles.polaroidCaption}>
+                <Text style={styles.polaroidCaptionText}>Anı {index + 1} ✨</Text>
+            </View>
+        </Animated.View>
+    );
+};
+
+// Animated Location Pin Component
+const AnimatedLocationPin = ({ isVisible }: { isVisible: boolean }) => {
+    const translateY = useSharedValue(-200);
+    const pinScale = useSharedValue(0.8);
+    const pinOpacity = useSharedValue(0);
+    const shadowOpacity = useSharedValue(0);
+    const pulseScale1 = useSharedValue(0.1);
+    const pulseOpacity1 = useSharedValue(0.8);
+    const pulseScale2 = useSharedValue(0.1);
+    const pulseOpacity2 = useSharedValue(0.8);
+
+    useEffect(() => {
+        if (isVisible) {
+            // Pin drop animation
+            translateY.value = withDelay(
+                200,
+                withSequence(
+                    withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) }),
+                    withTiming(-20, { duration: 150 }),
+                    withTiming(0, { duration: 150 }),
+                    withTiming(-8, { duration: 100 }),
+                    withTiming(0, { duration: 100 })
+                )
+            );
+            pinScale.value = withDelay(
+                200,
+                withSequence(
+                    withTiming(1, { duration: 400 }),
+                    withTiming(0.95, { duration: 150 }),
+                    withTiming(1, { duration: 300 })
+                )
+            );
+            pinOpacity.value = withDelay(200, withTiming(1, { duration: 300 }));
+            shadowOpacity.value = withDelay(800, withTiming(1, { duration: 300 }));
+
+            // Pulse animation
+            pulseScale1.value = withDelay(
+                1000,
+                withRepeat(
+                    withTiming(2.5, { duration: 3000, easing: Easing.out(Easing.cubic) }),
+                    -1,
+                    false
+                )
+            );
+            pulseOpacity1.value = withDelay(
+                1000,
+                withRepeat(
+                    withSequence(
+                        withTiming(0.4, { duration: 1500 }),
+                        withTiming(0, { duration: 1500 })
+                    ),
+                    -1,
+                    false
+                )
+            );
+        } else {
+            translateY.value = -200;
+            pinOpacity.value = 0;
+            shadowOpacity.value = 0;
+        }
+    }, [isVisible]);
+
+    const pinStyle = useAnimatedStyle(() => ({
+        transform: [
+            { translateY: translateY.value },
+            { scale: pinScale.value },
+        ],
+        opacity: pinOpacity.value,
+    }));
+
+    const shadowStyle = useAnimatedStyle(() => ({
+        opacity: shadowOpacity.value * 0.4,
+    }));
+
+    const pulseStyle1 = useAnimatedStyle(() => ({
+        transform: [{ scale: pulseScale1.value }],
+        opacity: pulseOpacity1.value,
+    }));
+
+    if (!isVisible) return null;
+
+    return (
+        <View style={styles.locationPinContainer}>
+            {/* Pulse rings */}
+            <Animated.View style={[styles.pulseRing, pulseStyle1]} />
+
+            {/* Shadow */}
+            <Animated.View style={[styles.pinShadow, shadowStyle]} />
+
+            {/* Pin */}
+            <Animated.View style={[styles.pinWrapper, pinStyle]}>
+                <Ionicons name="location" size={42} color="#D4A574" />
+            </Animated.View>
+        </View>
+    );
+};
+
+// Animated Location Card Component
+const AnimatedLocationCard = ({
+    location,
+    theme,
+    isDark,
+    onConfirm,
+    onChangeLocation,
+}: {
+    location: { latitude: number; longitude: number; name?: string };
+    theme: typeof DesignColors.light;
+    isDark: boolean;
+    onConfirm: () => void;
+    onChangeLocation: () => void;
+}) => {
+    const cardTranslateY = useSharedValue(40);
+    const cardScale = useSharedValue(0.95);
+    const cardOpacity = useSharedValue(0);
+
+    useEffect(() => {
+        cardTranslateY.value = withDelay(
+            1400,
+            withSpring(0, { damping: 15, stiffness: 80 })
+        );
+        cardScale.value = withDelay(
+            1400,
+            withSpring(1, { damping: 15, stiffness: 80 })
+        );
+        cardOpacity.value = withDelay(
+            1400,
+            withTiming(1, { duration: 400 })
+        );
+    }, []);
+
+    const cardStyle = useAnimatedStyle(() => ({
+        transform: [
+            { translateY: cardTranslateY.value },
+            { scale: cardScale.value },
+        ],
+        opacity: cardOpacity.value,
+    }));
+
+    return (
+        <Animated.View style={[styles.locationCardOverlay, cardStyle]}>
+            <View style={[
+                styles.locationConfirmCard,
+                {
+                    backgroundColor: isDark ? theme.background : theme.paper,
+                    borderColor: theme.primary,
+                }
+            ]}>
+                <View style={[
+                    styles.locationConfirmInner,
+                    { borderColor: `${theme.primary}50` }
+                ]}>
+                    <View style={styles.locationConfirmHeader}>
+                        <Ionicons name="location" size={24} color={theme.primary} />
+                        <View style={styles.locationConfirmText}>
+                            <Text style={[
+                                styles.locationConfirmTitle,
+                                { color: isDark ? theme.textMain : '#2C1810' }
+                            ]}>
+                                {location.name || 'Kapadokya, Türkiye'}
+                            </Text>
+                            <Text style={[
+                                styles.locationConfirmSubtitle,
+                                { color: theme.accentBrown }
+                            ]}>
+                                {`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.locationConfirmButtons}>
+                        <TouchableOpacity
+                            style={[styles.locationConfirmButton, { backgroundColor: theme.primary }]}
+                            onPress={onConfirm}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.locationConfirmButtonText}>Konumu onayla</Text>
+                            <Ionicons name="checkmark" size={16} color="#2C1810" />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.locationChangeButton, { borderColor: `${theme.accentBrown}50` }]}
+                            onPress={onChangeLocation}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={[styles.locationChangeButtonText, { color: theme.accentBrown }]}>
+                                Değiştir
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                {/* Decorative corner */}
+                <View style={[styles.locationCardCorner, { backgroundColor: `${theme.primary}20` }]} />
+            </View>
+        </Animated.View>
+    );
+};
+
+// Add Photo Button Component
+const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof DesignColors.light }) => {
+    const scale = useSharedValue(1);
+
+    const handlePressIn = () => {
+        scale.value = withSpring(0.95, { damping: 10, stiffness: 400 });
+    };
+
+    const handlePressOut = () => {
+        scale.value = withSpring(1, { damping: 10, stiffness: 400 });
+    };
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
+
+    return (
+        <TouchableOpacity
+            onPress={onPress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            activeOpacity={0.9}
+        >
+            <Animated.View style={[
+                styles.addPhotoButton,
+                { borderColor: `${theme.accentBrown}80` },
+                animatedStyle,
+            ]}>
+                <View style={[styles.addPhotoIconWrapper, { backgroundColor: theme.paper, borderColor: `${theme.accentBrown}30` }]}>
+                    <Ionicons name="add-outline" size={24} color={theme.accentBrown} />
+                </View>
+                <Text style={[styles.addPhotoText, { color: theme.accentBrown }]}>
+                    Fotoğraf Ekle
+                </Text>
+            </Animated.View>
+        </TouchableOpacity>
+    );
+};
 
 export default function CreatePostScreen() {
     const insets = useSafeAreaInsets();
@@ -73,8 +503,8 @@ export default function CreatePostScreen() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [selectedMood, setSelectedMood] = useState<string | null>(null);
-    const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(['nature']); // Default selection
+    const [locationConfirmed, setLocationConfirmed] = useState(false);
 
     const {
         images,
@@ -89,7 +519,6 @@ export default function CreatePostScreen() {
         isLoading: isGettingLocation,
         getCurrentLocation,
         clearLocation,
-        getLocationString,
     } = useLocationPicker();
 
     const handleSubmit = async () => {
@@ -153,8 +582,26 @@ export default function CreatePostScreen() {
     };
 
     const getPolaroidRotation = (index: number) => {
-        const rotations = [-1.5, 1.5, -0.5, 2, -2];
+        const rotations = [-2.5, 1.5, 3, -1, 2];
         return rotations[index % rotations.length];
+    };
+
+    const toggleCategory = (categoryId: string) => {
+        setSelectedCategories(prev => {
+            if (prev.includes(categoryId)) {
+                return prev.filter(id => id !== categoryId);
+            }
+            return [...prev, categoryId];
+        });
+    };
+
+    const handleLocationConfirm = () => {
+        setLocationConfirmed(true);
+    };
+
+    const handleLocationChange = () => {
+        clearLocation();
+        setLocationConfirmed(false);
     };
 
     return (
@@ -164,14 +611,17 @@ export default function CreatePostScreen() {
                 style={styles.keyboardView}
             >
                 {/* Header */}
-                <View style={[
-                    styles.header,
-                    {
-                        paddingTop: insets.top + Spacing.sm,
-                        backgroundColor: isDark ? 'rgba(44, 24, 16, 0.95)' : 'rgba(245, 241, 232, 0.95)',
-                        borderBottomColor: theme.border,
-                    }
-                ]}>
+                <Animated.View
+                    entering={FadeIn.duration(300)}
+                    style={[
+                        styles.header,
+                        {
+                            paddingTop: insets.top + Spacing.sm,
+                            backgroundColor: isDark ? 'rgba(44, 24, 16, 0.95)' : 'rgba(245, 241, 232, 0.95)',
+                            borderBottomColor: theme.border,
+                        }
+                    ]}
+                >
                     <TouchableOpacity
                         onPress={() => router.back()}
                         style={styles.cancelButton}
@@ -181,7 +631,7 @@ export default function CreatePostScreen() {
                         </Text>
                     </TouchableOpacity>
 
-                    <Text style={[styles.headerTitle, { color: theme.textMain }]}>
+                    <Text style={[styles.headerTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
                         Yeni Günlük Girişi
                     </Text>
 
@@ -197,7 +647,7 @@ export default function CreatePostScreen() {
                             <Text style={styles.publishText}>Paylaş</Text>
                         )}
                     </TouchableOpacity>
-                </View>
+                </Animated.View>
 
                 <ScrollView
                     style={styles.content}
@@ -205,86 +655,87 @@ export default function CreatePostScreen() {
                     contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
                 >
                     {/* Date Stamp */}
-                    <View style={styles.dateStampContainer}>
-                        <View style={[styles.dateStamp, { borderColor: `${theme.accentBrown}40` }]}>
+                    <Animated.View
+                        entering={FadeIn.delay(100).duration(400)}
+                        style={styles.dateStampContainer}
+                    >
+                        <TouchableOpacity
+                            style={[
+                                styles.dateStamp,
+                                { borderColor: theme.accentBrown }
+                            ]}
+                            activeOpacity={0.8}
+                        >
+                            <Ionicons name="calendar-outline" size={14} color={theme.accentBrown} style={{ marginRight: 6 }} />
                             <Text style={[styles.dateStampText, { color: theme.textSub }]}>
                                 {formatDate()}
                             </Text>
-                        </View>
-                    </View>
-
-                    {/* Images Section */}
-                    <View style={styles.section}>
-                        <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            GÖRSELLER
-                        </Text>
-
-                        {/* Upload Area */}
-                        <TouchableOpacity
-                            style={[
-                                styles.uploadArea,
-                                {
-                                    borderColor: theme.accentBrown,
-                                    backgroundColor: isDark ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)',
-                                }
-                            ]}
-                            onPress={showImageOptions}
-                            disabled={isPickingImage || images.length >= 5}
-                            activeOpacity={0.7}
-                        >
-                            <View style={[styles.uploadIcon, { backgroundColor: `${theme.accentBrown}15` }]}>
-                                {isPickingImage ? (
-                                    <ActivityIndicator size="small" color={theme.accentBrown} />
-                                ) : (
-                                    <Ionicons name="camera" size={36} color={theme.accentBrown} />
-                                )}
-                            </View>
-                            <Text style={[styles.uploadText, { color: theme.accentBrown }]}>
-                                Görselleri buraya sürükle veya seçmek için dokun
-                            </Text>
                         </TouchableOpacity>
+                    </Animated.View>
 
-                        {/* Polaroid Images */}
-                        {images.length > 0 && (
-                            <ScrollView
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.polaroidContainer}
-                            >
-                                {images.map((image, index) => (
-                                    <View
-                                        key={index}
-                                        style={[
-                                            styles.polaroidCard,
-                                            { transform: [{ rotate: `${getPolaroidRotation(index)}deg` }] }
-                                        ]}
-                                    >
-                                        <TouchableOpacity
-                                            style={styles.polaroidRemove}
-                                            onPress={() => removeImage(index)}
-                                        >
-                                            <Ionicons name="close" size={16} color="#FFFFFF" />
-                                        </TouchableOpacity>
-                                        <View style={styles.polaroidImageContainer}>
-                                            <Image
-                                                source={{ uri: image.uri }}
-                                                style={styles.polaroidImage}
-                                                contentFit="cover"
-                                            />
+                    {/* Images Section with Vintage Map Background */}
+                    <Animated.View
+                        entering={FadeIn.delay(200).duration(400)}
+                        style={styles.imagesSection}
+                    >
+                        <View style={[
+                            styles.vintageMapBackground,
+                            { backgroundColor: isDark ? '#3d261a' : '#e8dcc8' }
+                        ]}>
+                            {/* Vintage map pattern overlay */}
+                            <View style={styles.vintageMapPattern} />
+                        </View>
+
+                        <View style={styles.imagesSectionHeader}>
+                            <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
+                                GÖRSELLER
+                            </Text>
+                        </View>
+
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.polaroidScrollContainer}
+                        >
+                            {/* Add Photo Button */}
+                            <AddPhotoButton onPress={showImageOptions} theme={theme} />
+
+                            {/* Polaroid Images */}
+                            {images.map((image, index) => (
+                                <AnimatedPolaroidCard
+                                    key={`${image.uri}-${index}`}
+                                    image={image}
+                                    index={index}
+                                    onRemove={() => removeImage(index)}
+                                    rotation={getPolaroidRotation(index)}
+                                />
+                            ))}
+
+                            {/* Placeholder cards when empty */}
+                            {images.length === 0 && (
+                                <>
+                                    <View style={[styles.polaroidPlaceholder, { opacity: 0.3 }]}>
+                                        <View style={styles.polaroidPlaceholderImage}>
+                                            <Ionicons name="image-outline" size={32} color="#999" />
                                         </View>
-                                        <View style={styles.polaroidCaption}>
-                                            <Text style={styles.polaroidCaptionText}>
-                                                Anı {index + 1}
-                                            </Text>
-                                        </View>
+                                        <View style={styles.polaroidPlaceholderCaption} />
                                     </View>
-                                ))}
-                            </ScrollView>
-                        )}
-                    </View>
+                                    <View style={[styles.polaroidPlaceholder, { opacity: 0.2, transform: [{ rotate: '3deg' }] }]}>
+                                        <View style={styles.polaroidPlaceholderImage}>
+                                            <Ionicons name="image-outline" size={32} color="#999" />
+                                        </View>
+                                        <View style={styles.polaroidPlaceholderCaption} />
+                                    </View>
+                                </>
+                            )}
+                        </ScrollView>
+                    </Animated.View>
 
                     {/* Location Section */}
-                    <View style={styles.section}>
+                    <Animated.View
+                        entering={FadeIn.delay(300).duration(400)}
+                        style={styles.section}
+                    >
                         <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
                             LOKASYON
                         </Text>
@@ -298,10 +749,10 @@ export default function CreatePostScreen() {
                                 }
                             ]}
                             onPress={getCurrentLocation}
-                            disabled={isGettingLocation}
-                            activeOpacity={0.8}
+                            disabled={isGettingLocation || !!location}
+                            activeOpacity={0.9}
                         >
-                            {/* Map Background Placeholder */}
+                            {/* Map Background */}
                             <View style={[styles.mapPreview, { backgroundColor: isDark ? '#2a1f18' : '#e8dcc8' }]}>
                                 {location ? (
                                     <>
@@ -317,192 +768,103 @@ export default function CreatePostScreen() {
                                 ) : (
                                     <View style={styles.mapPlaceholder}>
                                         <Ionicons name="map-outline" size={40} color={theme.textSub} style={{ opacity: 0.5 }} />
+                                        {isGettingLocation && (
+                                            <ActivityIndicator
+                                                size="large"
+                                                color={theme.primary}
+                                                style={styles.mapLoadingIndicator}
+                                            />
+                                        )}
                                     </View>
                                 )}
 
-                                {/* Search Bar */}
-                                <View style={[
-                                    styles.locationSearchBar,
-                                    {
-                                        backgroundColor: isDark ? 'rgba(61, 38, 26, 0.9)' : 'rgba(255,255,255,0.9)',
-                                        borderColor: theme.border,
-                                    }
-                                ]}>
-                                    <Ionicons name="search" size={20} color={theme.textSub} />
-                                    <Text style={[styles.locationSearchText, { color: location ? theme.textMain : theme.textSub }]}>
-                                        {location ? getLocationString() : 'Konum ara...'}
-                                    </Text>
-                                    {location && (
-                                        <TouchableOpacity onPress={clearLocation}>
-                                            <Ionicons name="close" size={20} color={theme.textSub} />
-                                        </TouchableOpacity>
-                                    )}
-                                    {isGettingLocation && (
-                                        <ActivityIndicator size="small" color={theme.primary} />
-                                    )}
-                                </View>
+                                {/* Animated Location Pin */}
+                                <AnimatedLocationPin isVisible={!!location} />
 
-                                {/* Location Pin */}
-                                {location && (
-                                    <View style={styles.locationPin}>
-                                        <Ionicons name="location" size={36} color="#B91C1C" />
-                                    </View>
+                                {/* Location Confirmation Card */}
+                                {location && !locationConfirmed && (
+                                    <AnimatedLocationCard
+                                        location={location}
+                                        theme={theme}
+                                        isDark={isDark}
+                                        onConfirm={handleLocationConfirm}
+                                        onChangeLocation={handleLocationChange}
+                                    />
+                                )}
+
+                                {/* Confirmed indicator */}
+                                {location && locationConfirmed && (
+                                    <Animated.View
+                                        entering={FadeIn.duration(300)}
+                                        style={[
+                                            styles.locationConfirmedBadge,
+                                            { backgroundColor: theme.primary }
+                                        ]}
+                                    >
+                                        <Ionicons name="checkmark" size={12} color="#2C1810" />
+                                        <Text style={styles.locationConfirmedText}>Konum seçildi</Text>
+                                    </Animated.View>
                                 )}
 
                                 {/* Pin instruction */}
-                                <View style={[styles.pinInstruction, { backgroundColor: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)' }]}>
-                                    <Text style={[styles.pinInstructionText, { color: theme.textSub }]}>
-                                        {location ? 'Konum seçildi' : 'Konum eklemek için dokun'}
-                                    </Text>
-                                </View>
+                                {!location && !isGettingLocation && (
+                                    <View style={[styles.pinInstruction, { backgroundColor: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)' }]}>
+                                        <Text style={[styles.pinInstructionText, { color: theme.textSub }]}>
+                                            Konum eklemek için dokun
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
                         </TouchableOpacity>
-                    </View>
+                    </Animated.View>
 
-                    {/* Mood Section */}
-                    <View style={styles.section}>
+                    {/* Categories Section */}
+                    <Animated.View
+                        entering={FadeIn.delay(400).duration(400)}
+                        style={styles.section}
+                    >
                         <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            RUH HALİ
+                            KATEGORİLER
                         </Text>
 
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.moodContainer}
-                        >
-                            {MOODS.map((mood) => {
-                                const isSelected = selectedMood === mood.id;
-                                return (
-                                    <TouchableOpacity
-                                        key={mood.id}
-                                        style={[
-                                            styles.moodButton,
-                                            {
-                                                backgroundColor: isSelected
-                                                    ? theme.primary
-                                                    : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)',
-                                                borderColor: isSelected ? theme.primary : 'transparent',
-                                            }
-                                        ]}
-                                        onPress={() => setSelectedMood(isSelected ? null : mood.id)}
-                                        activeOpacity={0.8}
-                                    >
-                                        <MaterialCommunityIcons
-                                            name={
-                                                mood.id === 'adventure' ? 'terrain' :
-                                                    mood.id === 'peaceful' ? 'spa' :
-                                                        mood.id === 'discovery' ? 'compass' : 'heart'
-                                            }
-                                            size={28}
-                                            color={isSelected ? '#2C1810' : theme.textSub}
-                                        />
-                                        <Text style={[
-                                            styles.moodLabel,
-                                            { color: isSelected ? '#2C1810' : theme.textSub }
-                                        ]}>
-                                            {mood.label}
-                                        </Text>
-                                        {isSelected && (
-                                            <View style={styles.moodSelectedDot} />
-                                        )}
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </ScrollView>
-                    </View>
+                        <View style={styles.categoriesContainer}>
+                            {CATEGORIES.map((category) => (
+                                <AnimatedCategoryButton
+                                    key={category.id}
+                                    category={category}
+                                    isSelected={selectedCategories.includes(category.id)}
+                                    onPress={() => toggleCategory(category.id)}
+                                    theme={theme}
+                                    isDark={isDark}
+                                />
+                            ))}
+                        </View>
+                    </Animated.View>
 
-                    {/* Template Section */}
-                    <View style={styles.section}>
-                        <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            ŞABLON SEÇİMİ
-                        </Text>
-
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.templateContainer}
-                        >
-                            {TEMPLATES.map((template) => {
-                                const isSelected = selectedTemplate === template.id;
-                                return (
-                                    <TouchableOpacity
-                                        key={template.id}
-                                        style={styles.templateButton}
-                                        onPress={() => setSelectedTemplate(isSelected ? null : template.id)}
-                                        activeOpacity={0.8}
-                                    >
-                                        <View style={[
-                                            styles.templatePreview,
-                                            {
-                                                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)',
-                                                borderColor: isSelected ? theme.primary : theme.border,
-                                                borderWidth: isSelected ? 2 : 1,
-                                            }
-                                        ]}>
-                                            {/* Template preview lines */}
-                                            <View style={[styles.templateLine, { width: '50%', backgroundColor: isDark ? '#666' : '#999' }]} />
-                                            <View style={[styles.templateLine, { width: '100%', backgroundColor: isDark ? '#555' : '#ccc', height: 2 }]} />
-                                            <View style={[styles.templateLine, { width: '80%', backgroundColor: isDark ? '#555' : '#ccc', height: 2 }]} />
-                                            <View style={[styles.templateLine, { width: '100%', backgroundColor: isDark ? '#555' : '#ccc', height: 2 }]} />
-                                        </View>
-                                        <Text style={[
-                                            styles.templateLabel,
-                                            { color: isSelected ? theme.primary : theme.textSub }
-                                        ]}>
-                                            {template.label}
-                                        </Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </ScrollView>
-                    </View>
-
-                    {/* Divider */}
-                    <View style={[styles.divider, { backgroundColor: theme.border }]} />
+                    {/* Gradient Divider */}
+                    <Animated.View
+                        entering={FadeIn.delay(500).duration(400)}
+                        style={styles.gradientDivider}
+                    >
+                        <View style={[styles.dividerGradient, { backgroundColor: `${theme.accentBrown}30` }]} />
+                    </Animated.View>
 
                     {/* Writing Section */}
-                    <View style={styles.writingSection}>
-                        {/* Formatting Toolbar */}
-                        <View style={[
-                            styles.toolbar,
-                            {
-                                backgroundColor: isDark ? 'rgba(44, 24, 16, 0.95)' : 'rgba(245, 241, 232, 0.95)',
-                                borderColor: theme.border,
-                            }
-                        ]}>
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Text style={[styles.toolbarH1, { color: theme.textMain }]}>H1</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Text style={[styles.toolbarH2, { color: theme.textMain }]}>H2</Text>
-                            </TouchableOpacity>
-                            <View style={[styles.toolbarDivider, { backgroundColor: theme.border }]} />
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Ionicons name="text" size={20} color={theme.textSub} />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Text style={[styles.toolbarBold, { color: theme.textSub }]}>B</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Text style={[styles.toolbarItalic, { color: theme.textSub }]}>I</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Ionicons name="brush" size={20} color={theme.primary} />
-                            </TouchableOpacity>
-                            <View style={[styles.toolbarDivider, { backgroundColor: theme.border }]} />
-                            <TouchableOpacity style={styles.toolbarButton}>
-                                <Ionicons name="list" size={20} color={theme.textSub} />
-                            </TouchableOpacity>
-                        </View>
-
+                    <Animated.View
+                        entering={FadeIn.delay(600).duration(400)}
+                        style={styles.writingSection}
+                    >
                         {/* Title Input */}
                         <TextInput
                             style={[
                                 styles.titleInput,
-                                { color: theme.textMain }
+                                {
+                                    color: theme.textMain,
+                                    borderBottomColor: `${theme.accentBrown}20`,
+                                }
                             ]}
-                            placeholder="Başlık (Opsiyonel)"
-                            placeholderTextColor={`${theme.textSub}60`}
+                            placeholder="Başlık"
+                            placeholderTextColor={`${theme.accentBrown}40`}
                             value={title}
                             onChangeText={setTitle}
                             maxLength={100}
@@ -515,15 +877,27 @@ export default function CreatePostScreen() {
                                     styles.contentInput,
                                     { color: theme.textMain }
                                 ]}
-                                placeholder="Bugünkü hikayeni anlatmaya başla..."
-                                placeholderTextColor={`${theme.textSub}60`}
+                                placeholder="Hikayeni anlatmaya başla..."
+                                placeholderTextColor={`${theme.accentBrown}40`}
                                 value={content}
                                 onChangeText={setContent}
                                 multiline
                                 textAlignVertical="top"
                             />
+                            {/* Journal lines background */}
+                            <View style={styles.journalLines} pointerEvents="none">
+                                {[...Array(15)].map((_, i) => (
+                                    <View
+                                        key={i}
+                                        style={[
+                                            styles.journalLine,
+                                            { backgroundColor: isDark ? 'rgba(212, 165, 116, 0.15)' : 'rgba(136, 120, 99, 0.15)' }
+                                        ]}
+                                    />
+                                ))}
+                            </View>
                         </View>
-                    </View>
+                    </Animated.View>
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>
@@ -574,8 +948,8 @@ const styles = StyleSheet.create({
         letterSpacing: -0.3,
     },
     publishButton: {
-        paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.xs + 2,
+        paddingHorizontal: Spacing.md + 4,
+        paddingVertical: Spacing.xs + 4,
         borderRadius: BorderRadius.full,
         ...Platform.select({
             ios: {
@@ -599,22 +973,23 @@ const styles = StyleSheet.create({
     // Content
     content: {
         flex: 1,
-        paddingHorizontal: Spacing.lg,
     },
 
     // Date Stamp
     dateStampContainer: {
         alignItems: 'flex-end',
         marginTop: Spacing.md,
-        marginBottom: Spacing.sm,
+        marginBottom: Spacing.xs,
+        paddingHorizontal: Spacing.lg,
     },
     dateStamp: {
-        borderWidth: 2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
         borderStyle: 'dashed',
-        paddingHorizontal: Spacing.sm,
-        paddingVertical: Spacing.xs,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.xs + 2,
         borderRadius: 4,
-        transform: [{ rotate: '-2deg' }],
     },
     dateStampText: {
         fontFamily: Typography.fonts.uiBold,
@@ -622,9 +997,35 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
     },
 
+    // Images Section
+    imagesSection: {
+        position: 'relative',
+        marginTop: Spacing.md,
+        paddingVertical: Spacing.lg,
+    },
+    vintageMapBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    vintageMapPattern: {
+        flex: 1,
+        opacity: 0.1,
+    },
+    imagesSectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: Spacing.lg,
+        marginBottom: Spacing.sm,
+    },
+
     // Section
     section: {
         marginTop: Spacing.lg,
+        paddingHorizontal: Spacing.lg,
     },
     sectionLabel: {
         fontFamily: Typography.fonts.uiBold,
@@ -632,54 +1033,68 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
         marginBottom: Spacing.sm,
         paddingHorizontal: 4,
-    },
-
-    // Upload Area
-    uploadArea: {
-        height: 128,
-        borderWidth: 2,
-        borderStyle: 'dashed',
-        borderRadius: BorderRadius.xl,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: Spacing.sm,
-    },
-    uploadIcon: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    uploadText: {
-        fontFamily: Typography.fonts.ui,
-        fontSize: 14,
-        fontWeight: '500',
-        textAlign: 'center',
-        paddingHorizontal: Spacing.lg,
+        textTransform: 'uppercase',
+        opacity: 0.8,
     },
 
     // Polaroid
-    polaroidContainer: {
+    polaroidScrollContainer: {
+        paddingHorizontal: Spacing.lg,
         paddingTop: Spacing.md,
-        paddingBottom: Spacing.lg,
-        gap: Spacing.md,
+        paddingBottom: Spacing.lg + 8,
+        gap: Spacing.lg,
+        alignItems: 'center',
+    },
+    addPhotoButton: {
+        width: 140,
+        aspectRatio: 4 / 5,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: Spacing.sm,
+        backgroundColor: 'rgba(245, 241, 232, 0.5)',
+    },
+    addPhotoIconWrapper: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 1,
+            },
+        }),
+    },
+    addPhotoText: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 12,
+        fontWeight: '500',
     },
     polaroidCard: {
-        width: 144,
+        width: 160,
         backgroundColor: '#FFFFFF',
-        padding: 8,
-        paddingBottom: 24,
+        padding: 12,
+        paddingBottom: 32,
         borderRadius: 2,
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
                 shadowOffset: { width: 2, height: 4 },
                 shadowOpacity: 0.15,
-                shadowRadius: 8,
+                shadowRadius: 12,
             },
             android: {
-                elevation: 4,
+                elevation: 6,
             },
         }),
     },
@@ -689,17 +1104,17 @@ const styles = StyleSheet.create({
         right: -8,
         width: 24,
         height: 24,
-        backgroundColor: '#EF4444',
+        backgroundColor: '#2C1810',
         borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 20,
     },
     polaroidImageContainer: {
-        aspectRatio: 4 / 5,
+        aspectRatio: 1,
         backgroundColor: '#F3F4F6',
         overflow: 'hidden',
-        marginBottom: 8,
+        marginBottom: 12,
     },
     polaroidImage: {
         width: '100%',
@@ -710,19 +1125,64 @@ const styles = StyleSheet.create({
     },
     polaroidCaptionText: {
         fontFamily: Typography.fonts.bodyItalic,
-        fontSize: 11,
+        fontSize: 12,
         color: '#6B7280',
+    },
+    polaroidPlaceholder: {
+        width: 140,
+        backgroundColor: '#FFFFFF',
+        padding: 12,
+        paddingBottom: 32,
+        borderRadius: 2,
+        transform: [{ rotate: '-2.5deg' }],
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 2, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 3,
+            },
+        }),
+    },
+    polaroidPlaceholderImage: {
+        aspectRatio: 1,
+        backgroundColor: '#F3F4F6',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+    },
+    polaroidPlaceholderCaption: {
+        width: 60,
+        height: 8,
+        backgroundColor: '#E5E7EB',
+        borderRadius: 4,
+        alignSelf: 'center',
     },
 
     // Location
     locationCard: {
-        borderRadius: BorderRadius.xl,
+        borderRadius: BorderRadius.lg,
         overflow: 'hidden',
         borderWidth: 1,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 3,
+            },
+        }),
     },
     mapPreview: {
-        height: 192,
+        height: 200,
         position: 'relative',
+        overflow: 'hidden',
     },
     mapImage: {
         width: '100%',
@@ -742,30 +1202,158 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    locationSearchBar: {
+    mapLoadingIndicator: {
         position: 'absolute',
-        top: Spacing.sm,
-        left: Spacing.sm,
-        right: Spacing.sm,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: Spacing.sm,
-        paddingVertical: Spacing.xs + 2,
-        borderRadius: BorderRadius.lg,
-        borderWidth: 1,
-        gap: Spacing.xs,
     },
-    locationSearchText: {
-        flex: 1,
-        fontFamily: Typography.fonts.ui,
-        fontSize: 14,
-    },
-    locationPin: {
+
+    // Location Pin Animation
+    locationPinContainer: {
         position: 'absolute',
         top: '50%',
         left: '50%',
-        marginLeft: -18,
-        marginTop: -36,
+        marginLeft: -24,
+        marginTop: -48,
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        width: 48,
+        height: 48,
+    },
+    pulseRing: {
+        position: 'absolute',
+        bottom: 2,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: 'rgba(212, 165, 116, 0.4)',
+    },
+    pinShadow: {
+        position: 'absolute',
+        bottom: -4,
+        width: 16,
+        height: 6,
+        borderRadius: 8,
+        backgroundColor: '#2C1810',
+    },
+    pinWrapper: {
+        zIndex: 10,
+    },
+
+    // Location Confirmation Card
+    locationCardOverlay: {
+        position: 'absolute',
+        bottom: Spacing.md,
+        left: Spacing.md,
+        right: Spacing.md,
+    },
+    locationConfirmCard: {
+        borderRadius: BorderRadius.lg,
+        borderWidth: 2,
+        overflow: 'hidden',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 12,
+            },
+            android: {
+                elevation: 8,
+            },
+        }),
+    },
+    locationConfirmInner: {
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderRadius: BorderRadius.lg - 2,
+        padding: Spacing.md,
+        margin: 2,
+    },
+    locationConfirmHeader: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: Spacing.sm,
+    },
+    locationConfirmText: {
+        flex: 1,
+    },
+    locationConfirmTitle: {
+        fontFamily: Typography.fonts.heading,
+        fontSize: 20,
+        fontWeight: '700',
+        lineHeight: 24,
+    },
+    locationConfirmSubtitle: {
+        fontFamily: Typography.fonts.bodyItalic,
+        fontSize: 11,
+        marginTop: 4,
+    },
+    locationConfirmButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.sm,
+        marginTop: Spacing.md,
+    },
+    locationConfirmButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: Spacing.xs,
+        paddingVertical: Spacing.sm + 2,
+        borderRadius: BorderRadius.md,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
+    },
+    locationConfirmButtonText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#2C1810',
+    },
+    locationChangeButton: {
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.sm + 2,
+        borderRadius: BorderRadius.md,
+        borderWidth: 1,
+    },
+    locationChangeButtonText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 12,
+        fontWeight: '700',
+    },
+    locationCardCorner: {
+        position: 'absolute',
+        top: -16,
+        right: -16,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+    },
+    locationConfirmedBadge: {
+        position: 'absolute',
+        bottom: Spacing.sm,
+        right: Spacing.sm,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        paddingHorizontal: Spacing.sm,
+        paddingVertical: Spacing.xs,
+        borderRadius: BorderRadius.full,
+    },
+    locationConfirmedText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 10,
+        fontWeight: '600',
+        color: '#2C1810',
     },
     pinInstruction: {
         position: 'absolute',
@@ -781,117 +1369,45 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
 
-    // Mood
-    moodContainer: {
+    // Categories
+    categoriesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         gap: Spacing.sm,
-        paddingVertical: Spacing.xs,
+        paddingHorizontal: 4,
     },
-    moodButton: {
-        width: 80,
-        height: 80,
-        borderRadius: 16,
+    categoryButton: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        gap: 4,
-        borderWidth: 2,
-        position: 'relative',
+        gap: Spacing.sm,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.sm + 2,
+        borderRadius: BorderRadius.xl,
+        borderWidth: 1,
     },
-    moodLabel: {
+    categoryLabel: {
         fontFamily: Typography.fonts.uiBold,
-        fontSize: 11,
-    },
-    moodSelectedDot: {
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: '#2C1810',
-        opacity: 0.4,
+        fontSize: 14,
+        fontWeight: '600',
     },
 
-    // Template
-    templateContainer: {
-        gap: Spacing.md,
-        paddingVertical: Spacing.xs,
-    },
-    templateButton: {
-        width: 100,
-        gap: Spacing.xs,
-    },
-    templatePreview: {
-        height: 64,
-        borderRadius: BorderRadius.lg,
-        padding: Spacing.xs,
-        gap: 6,
-        justifyContent: 'center',
-    },
-    templateLine: {
-        height: 4,
-        borderRadius: 2,
-        opacity: 0.6,
-    },
-    templateLabel: {
-        fontFamily: Typography.fonts.ui,
-        fontSize: 10,
-        fontWeight: '500',
-        textAlign: 'center',
-    },
-
-    // Divider
-    divider: {
+    // Gradient Divider
+    gradientDivider: {
+        marginTop: Spacing.xl,
+        marginBottom: Spacing.lg,
+        marginHorizontal: Spacing.lg,
         height: 1,
-        marginVertical: Spacing.xl,
-        marginHorizontal: -Spacing.lg,
-        opacity: 0.5,
+        alignItems: 'center',
+    },
+    dividerGradient: {
+        width: '100%',
+        height: 1,
     },
 
     // Writing Section
     writingSection: {
-        gap: Spacing.md,
-    },
-    toolbar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: Spacing.xs,
-        paddingHorizontal: Spacing.xs,
-        borderRadius: BorderRadius.lg,
-        borderWidth: 1,
-        gap: 4,
-        marginHorizontal: -Spacing.lg,
-        marginBottom: Spacing.sm,
-    },
-    toolbarButton: {
-        padding: Spacing.xs,
-        minWidth: 32,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 4,
-    },
-    toolbarH1: {
-        fontFamily: Typography.fonts.heading,
-        fontSize: 18,
-        fontWeight: '700',
-    },
-    toolbarH2: {
-        fontFamily: Typography.fonts.heading,
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    toolbarBold: {
-        fontFamily: Typography.fonts.bodyBold,
-        fontSize: 18,
-        fontWeight: '700',
-    },
-    toolbarItalic: {
-        fontFamily: Typography.fonts.bodyItalic,
-        fontSize: 18,
-    },
-    toolbarDivider: {
-        width: 1,
-        height: 20,
-        marginHorizontal: 4,
+        paddingHorizontal: Spacing.lg,
+        gap: Spacing.lg,
     },
 
     // Title Input
@@ -901,11 +1417,14 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         letterSpacing: -0.5,
         padding: 0,
+        paddingBottom: Spacing.sm,
+        borderBottomWidth: 1,
     },
 
     // Content Input
     journalContainer: {
-        minHeight: 400,
+        position: 'relative',
+        minHeight: 350,
     },
     contentInput: {
         fontFamily: Typography.fonts.body,
@@ -913,5 +1432,18 @@ const styles = StyleSheet.create({
         lineHeight: 32,
         padding: 0,
         textAlignVertical: 'top',
+        zIndex: 1,
+    },
+    journalLines: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0,
+    },
+    journalLine: {
+        height: 1,
+        marginTop: 31,
     },
 });
