@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.odysseyjournal.app",
-      "softwareKeyboardLayoutMode": "pan",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#F5F1E8",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

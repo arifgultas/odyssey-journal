@@ -836,7 +836,36 @@ export default function ExploreScreen() {
         </>
       ) : (
         <>
-          {renderMapHeader()}
+          {/* Simple search header without map */}
+          <View style={[styles.exploreHeader, { paddingTop: insets.top + 16, backgroundColor: vintageTheme.background }]}>
+            <View style={[styles.searchBar, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border, borderWidth: 1 }]}>
+              <Ionicons name="compass-outline" size={24} color={vintageTheme.textMuted} />
+              <View style={styles.searchInputContainer}>
+                <TextInput
+                  style={[styles.searchInput, { color: vintageTheme.text }]}
+                  value={searchQuery}
+                  onChangeText={handleSearch}
+                  placeholder=""
+                  placeholderTextColor={vintageTheme.textMuted}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                />
+                {!searchQuery && !isSearchFocused && (
+                  <Animated.Text
+                    style={[
+                      styles.typingPlaceholder,
+                      { color: vintageTheme.textMuted, opacity: typingOpacity }
+                    ]}
+                  >
+                    {TYPING_TEXTS[currentTypingIndex]}
+                  </Animated.Text>
+                )}
+              </View>
+              <TouchableOpacity style={styles.filterButton}>
+                <Ionicons name="options-outline" size={20} color={vintageTheme.textMuted} />
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={[styles.contentContainer, { backgroundColor: vintageTheme.background }]}>
             {renderDiscoverContent()}
           </View>
@@ -967,13 +996,20 @@ const styles = StyleSheet.create({
     ...Shadows.md,
   },
 
+  // Explore Header (without map)
+  exploreHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  simpleHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+
   // Content Container
   contentContainer: {
     flex: 1,
-    marginTop: -40,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    paddingTop: 24,
+    paddingTop: 8,
   },
   contentScroll: {
     flex: 1,
@@ -1319,12 +1355,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: Typography.fonts.uiBold,
     color: 'white',
-  },
-
-  // Simple Header (for search)
-  simpleHeader: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
   },
 
   // Search Results

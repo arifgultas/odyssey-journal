@@ -101,9 +101,9 @@ export async function checkIfLiked(postId: string): Promise<boolean> {
 }
 
 /**
- * Bookmark/Save a post
+ * Bookmark/Save a post (optionally to a specific collection)
  */
-export async function bookmarkPost(postId: string): Promise<boolean> {
+export async function bookmarkPost(postId: string, collectionId?: string): Promise<boolean> {
     try {
         const {
             data: { user },
@@ -119,6 +119,7 @@ export async function bookmarkPost(postId: string): Promise<boolean> {
             .insert({
                 user_id: user.id,
                 post_id: postId,
+                collection_id: collectionId || null,
             });
 
         if (error) {

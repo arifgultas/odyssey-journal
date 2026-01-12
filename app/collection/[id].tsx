@@ -1,16 +1,15 @@
-import { CreateCollectionModal } from '@/components/create-collection-modal';
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
-import { getCollections } from '@/lib/collections';
-import { bookmarkPost, getBookmarkedPosts, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
+import { deleteCollection, getCollectionById, getCollectionPosts } from '@/lib/collections';
+import { bookmarkPost, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { Post } from '@/lib/posts';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -19,7 +18,6 @@ import {
     FlatList,
     Pressable,
     RefreshControl,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -30,16 +28,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - Spacing.md * 3) / 2;
 const CARD_HEIGHT = 250;
-const COLLECTION_CARD_WIDTH = 140;
 
-// Design Colors - Tutarlı renk sistemi
+// Design Colors
 const DesignColors = {
     light: {
-        background: '#F5F1E8', // Açık krem arka plan
-        headerBg: '#F5F1E8', // Header da açık krem
+        background: '#F5F1E8',
+        headerBg: '#F5F1E8',
         cardBg: '#FFFFFF',
         cardBackBg: '#F5F1E8',
-        textPrimary: '#2C1810', // Koyu kahverengi text
+        textPrimary: '#2C1810',
         textSecondary: 'rgba(44, 24, 16, 0.6)',
         accent: '#D4A574',
         border: 'rgba(139, 115, 85, 0.3)',
@@ -56,25 +53,23 @@ const DesignColors = {
     },
 };
 
-export default function SavedPostsScreen() {
+export default function CollectionDetailScreen() {
+    const { id } = useLocalSearchParams<{ id: string }>();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
-
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [isLoading, setIsLoading] = useState(false); // İlk yükleme durumu kaldırıldı
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [collections, setCollections] = useState<Collection[]>([]);
-    const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false);
-
-    // Tema renkleri
     const colors = isDark ? DesignColors.dark : DesignColors.light;
+
+    const [collection, setCollection] = useState<Collection | null>(null);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set());
 
-    // Flip animasyonları için referanslar
+    // Flip animations
     const flipAnimations = useRef<{ [key: string]: Animated.Value }>({});
 
     const getFlipAnimation = (postId: string) => {
@@ -84,57 +79,81 @@ export default function SavedPostsScreen() {
         return flipAnimations.current[postId];
     };
 
-    const loadBookmarkedPosts = async (pageNum: number = 0, refresh: boolean = false) => {
+    // Load collection and posts
+    const loadData = useCallback(async (refresh: boolean = false) => {
+        if (!id) return;
+
         try {
             if (refresh) {
                 setIsRefreshing(true);
-            }
-            // İlk yüklemede loading göstermiyoruz
-
-            const bookmarkedPosts = await getBookmarkedPosts(pageNum, 10);
-
-            if (refresh || pageNum === 0) {
-                setPosts(bookmarkedPosts);
             } else {
-                setPosts([...posts, ...bookmarkedPosts]);
+                setIsLoading(true);
             }
 
-            setHasMore(bookmarkedPosts.length === 10);
-            setPage(pageNum);
+            const [collectionData, postsData] = await Promise.all([
+                getCollectionById(id),
+                getCollectionPosts(id, 0, 20),
+            ]);
+
+            setCollection(collectionData);
+            setPosts(postsData);
+            setPage(0);
+            setHasMore(postsData.length === 20);
         } catch (error) {
-            console.error('Error loading bookmarked posts:', error);
-            Alert.alert('Hata', 'Kaydedilen gönderiler yüklenemedi');
+            console.error('Error loading collection:', error);
+            Alert.alert('Hata', 'Koleksiyon yüklenemedi');
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
         }
-    };
+    }, [id]);
 
-    const loadCollections = async () => {
-        try {
-            const data = await getCollections();
-            setCollections(data);
-        } catch (error) {
-            console.error('Error loading collections:', error);
-        }
-    };
-
-    useFocusEffect(
-        useCallback(() => {
-            loadBookmarkedPosts(0, false); // refresh: false - loading spinner gösterme
-            loadCollections();
-        }, [])
-    );
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const handleRefresh = () => {
-        loadBookmarkedPosts(0, true);
-        loadCollections();
+        loadData(true);
     };
 
-    const handleLoadMore = () => {
-        if (!isLoading && hasMore) {
-            loadBookmarkedPosts(page + 1);
+    const handleLoadMore = async () => {
+        if (!id || !hasMore || isLoading) return;
+
+        try {
+            const nextPage = page + 1;
+            const newPosts = await getCollectionPosts(id, nextPage, 20);
+
+            setPosts((prev) => [...prev, ...newPosts]);
+            setPage(nextPage);
+            setHasMore(newPosts.length === 20);
+        } catch (error) {
+            console.error('Error loading more posts:', error);
         }
+    };
+
+    const handleDeleteCollection = () => {
+        if (!collection) return;
+
+        Alert.alert(
+            'Koleksiyonu Sil',
+            `"${collection.name}" koleksiyonunu silmek istediğinize emin misiniz? Kaydedilen gönderiler silinmeyecek.`,
+            [
+                { text: 'İptal', style: 'cancel' },
+                {
+                    text: 'Sil',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await deleteCollection(collection.id);
+                            router.back();
+                        } catch (error) {
+                            console.error('Error deleting collection:', error);
+                            Alert.alert('Hata', 'Koleksiyon silinemedi');
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     const handlePostPress = (post: Post) => {
@@ -165,17 +184,6 @@ export default function SavedPostsScreen() {
             );
         } catch (error) {
             console.error('Error toggling like:', error);
-            setPosts((prevPosts) =>
-                prevPosts.map((post) =>
-                    post.id === postId
-                        ? {
-                            ...post,
-                            isLiked: !isLiked,
-                            likes_count: !isLiked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1),
-                        }
-                        : post
-                )
-            );
         }
     };
 
@@ -185,11 +193,11 @@ export default function SavedPostsScreen() {
                 await bookmarkPost(postId);
             } else {
                 await unbookmarkPost(postId);
+                // Remove from list if unbookmarked
                 setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
             }
         } catch (error) {
             console.error('Error toggling bookmark:', error);
-            loadBookmarkedPosts(0, true);
         }
     };
 
@@ -215,58 +223,9 @@ export default function SavedPostsScreen() {
         });
     };
 
-    // Koleksiyon kartına tıklama
-    const handleCollectionPress = (collectionId: string) => {
-        router.push({
-            pathname: '/collection/[id]',
-            params: { id: collectionId },
-        });
-    };
-
-    // Koleksiyon oluşturma başarılı
-    const handleCollectionCreated = () => {
-        loadCollections();
-    };
-
-    // Koleksiyon kartı render
-    const renderCollectionCard = (collection: Collection) => (
-        <TouchableOpacity
-            key={collection.id}
-            style={styles.collectionCardWrapper}
-            activeOpacity={0.9}
-            onPress={() => handleCollectionPress(collection.id)}
-        >
-            {/* Kitap sırtı efekti */}
-            <View style={styles.bookSpine} />
-
-            <View style={[styles.collectionCard, { backgroundColor: collection.color }]}>
-                {collection.cover_image_url && (
-                    <Image
-                        source={{ uri: collection.cover_image_url }}
-                        style={styles.collectionImage}
-                        contentFit="cover"
-                        transition={300}
-                    />
-                )}
-                <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.8)']}
-                    style={styles.collectionGradient}
-                />
-                <View style={styles.collectionInfo}>
-                    <Text style={styles.collectionName}>{collection.name}</Text>
-                    <View style={styles.collectionMeta}>
-                        <MaterialIcons name="photo-library" size={10} color="#D4A574" />
-                        <Text style={styles.collectionCount}>{collection.post_count} Gönderi</Text>
-                    </View>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
-
-    // Polaroid kart render (flip animasyonlu)
+    // Polaroid card render
     const renderPolaroidCard = ({ item: post, index }: { item: Post; index: number }) => {
         const animation = getFlipAnimation(post.id);
-        const isFlipped = flippedCards.has(post.id);
 
         const frontAnimatedStyle = {
             transform: [
@@ -307,7 +266,7 @@ export default function SavedPostsScreen() {
                 style={styles.polaroidWrapper}
             >
                 <View style={styles.perspective}>
-                    {/* Ön yüz - Polaroid */}
+                    {/* Front - Polaroid */}
                     <Animated.View
                         style={[
                             styles.polaroidCard,
@@ -340,7 +299,7 @@ export default function SavedPostsScreen() {
                         </View>
                     </Animated.View>
 
-                    {/* Arka yüz - Detaylar */}
+                    {/* Back - Details */}
                     <Animated.View
                         style={[
                             styles.polaroidCard,
@@ -349,11 +308,8 @@ export default function SavedPostsScreen() {
                             { backgroundColor: colors.cardBackBg },
                         ]}
                     >
-                        {/* Kağıt dokusu overlay */}
                         <View style={styles.paperTexture} />
-
                         <View style={styles.backContent}>
-                            {/* Header */}
                             <View style={styles.backHeader}>
                                 <Text style={[styles.backLabel, { color: '#D4A574' }]}>Detaylar</Text>
                                 <TouchableOpacity
@@ -368,7 +324,6 @@ export default function SavedPostsScreen() {
                                 </TouchableOpacity>
                             </View>
 
-                            {/* Not içeriği */}
                             <Text
                                 style={[
                                     styles.backNote,
@@ -379,7 +334,6 @@ export default function SavedPostsScreen() {
                                 "{post.content || 'Bu gönderi için not eklenmemiş.'}"
                             </Text>
 
-                            {/* Footer */}
                             <View style={styles.backFooter}>
                                 <Text style={[styles.backDate, { color: isDark ? '#b8ad9d' : '#888' }]}>
                                     {new Date(post.created_at).toLocaleDateString('tr-TR', {
@@ -406,75 +360,57 @@ export default function SavedPostsScreen() {
         );
     };
 
-    const renderHeader = () => (
-        <>
-            {/* Koleksiyonlar Bölümü - Her zaman göster */}
-            <View style={styles.collectionsSection}>
-                <View style={styles.collectionsSectionHeader}>
-                    <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                        Koleksiyonlar
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.newCollectionButton}
-                        activeOpacity={0.8}
-                        onPress={() => setShowCreateCollectionModal(true)}
-                    >
-                        <MaterialIcons name="add" size={14} color="#2C1810" />
-                        <Text style={styles.newCollectionText}>Yeni</Text>
-                    </TouchableOpacity>
-                </View>
+    const renderHeader = () => {
+        if (!collection) return null;
 
-                {collections.length > 0 ? (
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.collectionsScroll}
-                        snapToInterval={COLLECTION_CARD_WIDTH + Spacing.md}
-                        decelerationRate="fast"
-                    >
-                        {collections.map(renderCollectionCard)}
-                    </ScrollView>
-                ) : (
-                    /* Koleksiyon yoksa boş state */
-                    <View style={styles.emptyCollectionsContainer}>
-                        <View style={[styles.emptyCollectionCard, { borderColor: colors.border }]}>
-                            <Ionicons name="folder-outline" size={32} color={colors.accent} style={{ opacity: 0.6 }} />
-                            <Text style={[styles.emptyCollectionText, { color: colors.textSecondary }]}>
-                                Henüz koleksiyon yok
-                            </Text>
-                            <Text style={[styles.emptyCollectionSubtext, { color: colors.textSecondary }]}>
-                                Gönderilerinizi düzenlemek için koleksiyon oluşturun
-                            </Text>
+        return (
+            <View style={styles.headerContent}>
+                {/* Cover Image */}
+                <View style={[styles.coverContainer, { backgroundColor: collection.color }]}>
+                    {collection.cover_image_url ? (
+                        <Image
+                            source={{ uri: collection.cover_image_url }}
+                            style={styles.coverImage}
+                            contentFit="cover"
+                        />
+                    ) : null}
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.7)']}
+                        style={styles.coverGradient}
+                    />
+                    <View style={styles.coverInfo}>
+                        <Text style={styles.collectionName}>{collection.name}</Text>
+                        <View style={styles.collectionMeta}>
+                            <MaterialIcons name="photo-library" size={14} color="#D4A574" />
+                            <Text style={styles.collectionCount}>{collection.post_count} Gönderi</Text>
                         </View>
                     </View>
-                )}
-            </View>
+                </View>
 
-            {/* Ayırıcı */}
-            <View style={styles.divider} />
-        </>
-    );
+                {/* Divider */}
+                <View style={styles.divider} />
+            </View>
+        );
+    };
 
     const renderEmpty = () => {
-        if (isLoading) {
-            return null;
-        }
+        if (isLoading) return null;
 
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="bookmark-outline" size={80} color="#D4A574" />
+                <Ionicons name="images-outline" size={64} color={colors.accent} />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
-                    Kaydedilen Gönderi Yok
+                    Koleksiyon Boş
                 </ThemedText>
                 <ThemedText style={[styles.emptyText, { color: colors.textSecondary }]}>
-                    Kaydettiğiniz gönderiler burada görünecek
+                    Bu koleksiyona henüz gönderi eklenmemiş
                 </ThemedText>
             </View>
         );
     };
 
     const renderFooter = () => {
-        if (!isLoading || posts.length === 0) return null;
+        if (!hasMore || posts.length === 0) return null;
 
         return (
             <View style={styles.footerLoader}>
@@ -483,29 +419,42 @@ export default function SavedPostsScreen() {
         );
     };
 
-    // Tüm postları göster (sekmeler kaldırıldı)
-    const filteredPosts = posts;
+    if (isLoading) {
+        return (
+            <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
+                <ActivityIndicator size="large" color="#D4A574" />
+            </View>
+        );
+    }
 
-    // Loading state kaldırıldı - sayfa hemen içeriği gösteriyor
+    if (!collection) {
+        return (
+            <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
+                <ThemedText>Koleksiyon bulunamadı</ThemedText>
+            </View>
+        );
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            {/* Deri doku overlay */}
+            {/* Leather texture overlay */}
             <View style={styles.leatherTexture} />
 
-            {/* Header */}
+            {/* Navigation Header */}
             <View style={[styles.header, { paddingTop: insets.top, backgroundColor: colors.headerBg }]}>
                 <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
                     <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Kaydedilenler</Text>
-                <TouchableOpacity style={styles.headerButton}>
-                    <MaterialIcons name="search" size={24} color={colors.textPrimary} />
+                <Text style={[styles.headerTitle, { color: colors.textPrimary }]} numberOfLines={1}>
+                    {collection.name}
+                </Text>
+                <TouchableOpacity style={styles.headerButton} onPress={handleDeleteCollection}>
+                    <Ionicons name="trash-outline" size={22} color={colors.textPrimary} />
                 </TouchableOpacity>
             </View>
 
             <FlatList
-                data={filteredPosts}
+                data={posts}
                 keyExtractor={(item) => item.id}
                 renderItem={renderPolaroidCard}
                 numColumns={2}
@@ -526,13 +475,6 @@ export default function SavedPostsScreen() {
                 onEndReachedThreshold={0.5}
                 showsVerticalScrollIndicator={false}
             />
-
-            {/* Create Collection Modal */}
-            <CreateCollectionModal
-                visible={showCreateCollectionModal}
-                onClose={() => setShowCreateCollectionModal(false)}
-                onSuccess={handleCollectionCreated}
-            />
         </View>
     );
 }
@@ -541,10 +483,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    loadingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     leatherTexture: {
         ...StyleSheet.absoluteFillObject,
         opacity: 0.4,
-        // SVG doku yerine hafif gradient kullanıyoruz
     },
     header: {
         flexDirection: 'row',
@@ -563,219 +508,78 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#F5F1E8',
-        fontFamily: Typography.fonts.heading,
-        letterSpacing: 0.5,
-    },
-    loadingContainer: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: Typography.fonts.heading,
+        textAlign: 'center',
+        marginHorizontal: Spacing.sm,
     },
-
-    // Koleksiyonlar
-    collectionsSection: {
-        paddingTop: Spacing.lg,
-        paddingBottom: Spacing.md,
-    },
-    collectionsSectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-        paddingHorizontal: Spacing.md,
+    headerContent: {
         marginBottom: Spacing.md,
     },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        fontFamily: Typography.fonts.heading,
-        letterSpacing: 0.5,
-    },
-    newCollectionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        backgroundColor: '#D4A574',
-        ...Shadows.md,
-    },
-    newCollectionText: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-        color: '#2C1810',
-        fontFamily: Typography.fonts.ui,
-    },
-    collectionsScroll: {
-        paddingHorizontal: Spacing.md,
-        paddingBottom: Spacing.lg,
-        gap: Spacing.md,
-    },
-    collectionCardWrapper: {
-        width: COLLECTION_CARD_WIDTH,
-        marginRight: Spacing.md,
-    },
-    bookSpine: {
-        position: 'absolute',
-        left: -8,
-        top: 4,
-        bottom: 4,
-        width: 8,
-        backgroundColor: '#1a100c',
-        borderTopLeftRadius: 2,
-        borderBottomLeftRadius: 2,
-    },
-    collectionCard: {
-        width: COLLECTION_CARD_WIDTH,
-        aspectRatio: 3 / 4,
-        borderTopRightRadius: BorderRadius.lg,
-        borderBottomRightRadius: BorderRadius.lg,
-        borderTopLeftRadius: 2,
-        borderBottomLeftRadius: 2,
+    coverContainer: {
+        width: '100%',
+        aspectRatio: 16 / 9,
+        borderRadius: BorderRadius.lg,
         overflow: 'hidden',
-        borderLeftWidth: 4,
-        borderLeftColor: 'rgba(212, 165, 116, 0.3)',
+        marginBottom: Spacing.md,
         ...Shadows.lg,
     },
-    collectionImage: {
-        ...StyleSheet.absoluteFillObject,
-        opacity: 0.9,
-    },
-    collectionGradient: {
+    coverImage: {
         ...StyleSheet.absoluteFillObject,
     },
-    collectionInfo: {
+    coverGradient: {
+        ...StyleSheet.absoluteFillObject,
+    },
+    coverInfo: {
         position: 'absolute',
-        bottom: 12,
-        left: 12,
-        right: 12,
+        bottom: Spacing.lg,
+        left: Spacing.lg,
+        right: Spacing.lg,
     },
     collectionName: {
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 28,
+        fontWeight: 'bold',
         color: '#F5F1E8',
         fontFamily: Typography.fonts.heading,
-        marginBottom: 4,
+        marginBottom: Spacing.xs,
         textShadowColor: 'rgba(0,0,0,0.5)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 3,
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 4,
     },
     collectionMeta: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
+        gap: 6,
     },
     collectionCount: {
-        fontSize: 10,
+        fontSize: 14,
         color: '#D4A574',
         fontFamily: Typography.fonts.ui,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
-
-    // Empty Collections State
-    emptyCollectionsContainer: {
-        paddingHorizontal: Spacing.md,
-        paddingBottom: Spacing.lg,
-    },
-    emptyCollectionCard: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: Spacing.xl,
-        paddingHorizontal: Spacing.lg,
-        borderWidth: 1,
-        borderStyle: 'dashed',
-        borderRadius: BorderRadius.lg,
-        gap: Spacing.sm,
-    },
-    emptyCollectionText: {
-        fontSize: 14,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
-        marginTop: Spacing.xs,
-    },
-    emptyCollectionSubtext: {
-        fontSize: 12,
-        fontFamily: Typography.fonts.ui,
-        textAlign: 'center',
-        opacity: 0.7,
-    },
-
-    // Divider
     divider: {
         height: 1,
-        marginVertical: Spacing.sm,
-        marginHorizontal: Spacing.xl,
-        backgroundColor: 'transparent',
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(212, 165, 116, 0.4)',
+        backgroundColor: 'rgba(212, 165, 116, 0.4)',
+        marginHorizontal: Spacing.md,
     },
-
-    // Sekmeler
-    tabsContainer: {
-        paddingTop: Spacing.sm,
-        paddingBottom: Spacing.md,
-        paddingHorizontal: Spacing.md,
-    },
-    tabsInner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(212, 165, 116, 0.2)',
-    },
-    tab: {
-        paddingVertical: 12,
-        paddingHorizontal: Spacing.sm,
-        marginRight: Spacing.lg,
-        position: 'relative',
-    },
-    tabText: {
-        fontSize: 14,
-        fontWeight: '500',
-        fontFamily: Typography.fonts.ui,
-        letterSpacing: 0.3,
-    },
-    tabTextActive: {
-        fontWeight: '600',
-    },
-    tabIndicator: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 2,
-        backgroundColor: '#D4A574',
-        borderTopLeftRadius: 2,
-        borderTopRightRadius: 2,
-    },
-    filterButton: {
-        marginLeft: 'auto',
-        paddingBottom: 12,
-    },
-
-    // Grid
     gridContent: {
         paddingHorizontal: Spacing.md,
+        paddingTop: Spacing.md,
         paddingBottom: 160,
     },
     gridRow: {
         justifyContent: 'space-between',
         marginBottom: Spacing.md,
     },
-
-    // Polaroid Kartlar
     polaroidWrapper: {
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
     },
     perspective: {
         flex: 1,
-        // React Native'de perspective CSS değil, transform ile uygulanır
     },
     polaroidCard: {
         position: 'absolute',
@@ -811,7 +615,6 @@ const styles = StyleSheet.create({
     },
     polaroidImage: {
         ...StyleSheet.absoluteFillObject,
-        // Sepia efekti için tintColor veya overlay kullanılabilir
     },
     polaroidCaption: {
         paddingHorizontal: 4,
@@ -832,66 +635,53 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: '#5D4037',
         fontFamily: Typography.fonts.ui,
-        textTransform: 'uppercase',
-        letterSpacing: 0.3,
     },
-
-    // Arka yüz
     paperTexture: {
         ...StyleSheet.absoluteFillObject,
-        opacity: 0.5,
+        opacity: 0.1,
     },
     backContent: {
         flex: 1,
+        padding: 4,
     },
     backHeader: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
         justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(212, 165, 116, 0.3)',
-        paddingBottom: 8,
+        alignItems: 'center',
         marginBottom: 8,
     },
     backLabel: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        fontFamily: Typography.fonts.ui,
+        fontSize: 10,
+        fontWeight: '600',
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        letterSpacing: 1,
+        fontFamily: Typography.fonts.ui,
     },
     backNote: {
+        flex: 1,
         fontSize: 12,
         fontStyle: 'italic',
         lineHeight: 18,
-        fontFamily: Typography.fonts.bodyItalic,
-        flex: 1,
+        fontFamily: Typography.fonts.handwriting,
     },
     backFooter: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
         justifyContent: 'space-between',
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(212, 165, 116, 0.2)',
-        paddingTop: 8,
-        marginTop: 'auto',
+        alignItems: 'center',
+        marginTop: 8,
     },
     backDate: {
-        fontSize: 9,
-        fontFamily: Typography.fonts.ui,
+        fontSize: 10,
+        fontFamily: Typography.fonts.handwriting,
     },
-
-    // Empty State
     emptyContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: Spacing.xxl * 2,
+        paddingVertical: Spacing.xl * 3,
         gap: Spacing.md,
     },
     emptyTitle: {
         marginTop: Spacing.md,
-        fontFamily: Typography.fonts.heading,
-        color: '#F5F1E8',
     },
     emptyText: {
         textAlign: 'center',

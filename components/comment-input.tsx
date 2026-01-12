@@ -2,6 +2,7 @@ import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CommentInputProps {
     onSubmit: (content: string) => void;
@@ -15,6 +16,7 @@ export function CommentInput({
     placeholder = 'Add a comment...'
 }: CommentInputProps) {
     const [comment, setComment] = useState('');
+    const insets = useSafeAreaInsets();
 
     const handleSubmit = () => {
         if (comment.trim() && !loading) {
@@ -26,7 +28,7 @@ export function CommentInput({
     const canSubmit = comment.trim().length > 0 && !loading;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, Spacing.lg) }]}>
             <TextInput
                 style={styles.input}
                 placeholder={placeholder}

@@ -1,20 +1,22 @@
 import { AnimatedEmptyState } from '@/components/animated-empty-state';
 
 import { AnimatedPostCard } from '@/components/animated-post-card';
+import { CollectionPickerSheet } from '@/components/collection-picker-sheet';
 import { ReportModal } from '@/components/report-modal';
 import { PostCardSkeleton } from '@/components/skeleton-loader';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { bookmarkPost, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
+import { likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
 import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
 import { supabase } from '@/lib/supabase';
 import { MaterialIcons } from '@expo/vector-icons';
 
-// Custom SVG icon for notifications
+// Custom SVG icons
 import BellIcon from '@/assets/icons/bell-notification.svg';
+import GlobeIcon from '@/assets/icons/globe-earth-world.svg';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -44,6 +46,8 @@ export default function HomeScreen() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showCollectionPicker, setShowCollectionPicker] = useState(false);
+  const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
 
   // Spinning compass animation
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -158,26 +162,36 @@ export default function HomeScreen() {
   };
 
   const handleBookmark = async (postId: string, isBookmarked: boolean) => {
-    try {
-      if (isBookmarked) {
-        await bookmarkPost(postId);
-      } else {
-        await unbookmarkPost(postId);
-      }
+    // If bookmarking (not unbookmarking), show collection picker
+    if (isBookmarked) {
+      setBookmarkingPostId(postId);
+      setShowCollectionPicker(true);
+      return;
+    }
 
+    // If unbookmarking, directly remove the bookmark
+    try {
+      await unbookmarkPost(postId);
       setPosts(prevPosts =>
         prevPosts.map(post =>
-          post.id === postId ? { ...post, isBookmarked } : post
+          post.id === postId ? { ...post, isBookmarked: false } : post
         )
       );
     } catch (error) {
-      console.error('Error toggling bookmark:', error);
+      console.error('Error removing bookmark:', error);
+    }
+  };
+
+  const handleCollectionPickerSuccess = (collectionId: string | null) => {
+    if (bookmarkingPostId) {
+      // Update UI to show post is bookmarked
       setPosts(prevPosts =>
         prevPosts.map(post =>
-          post.id === postId ? { ...post, isBookmarked: !isBookmarked } : post
+          post.id === bookmarkingPostId ? { ...post, isBookmarked: true } : post
         )
       );
     }
+    setBookmarkingPostId(null);
   };
 
   const handleComment = (postId: string) => {
@@ -265,7 +279,17 @@ export default function HomeScreen() {
         borderBottomColor: `${theme.accent}33`,
       }
     ]}>
-      <View style={styles.headerSpacer} />
+      <TouchableOpacity
+        style={styles.headerButton}
+        onPress={() => router.push('/map')}
+      >
+        <GlobeIcon
+          width={40}
+          height={40}
+          fill={colorScheme === 'dark' ? '#F5F1E8' : '#181511'}
+          color={colorScheme === 'dark' ? '#F5F1E8' : '#181511'}
+        />
+      </TouchableOpacity>
       <View style={styles.headerCenter}>
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           {t('home.title')}
@@ -283,7 +307,12 @@ export default function HomeScreen() {
         style={styles.headerButton}
         onPress={() => router.push('/notifications')}
       >
-        <BellIcon width={40} height={40} />
+        <BellIcon
+          width={40}
+          height={40}
+          fill={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+          color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -358,6 +387,19 @@ export default function HomeScreen() {
           }}
         />
       )}
+
+      {/* Collection Picker Sheet */}
+      {bookmarkingPostId && (
+        <CollectionPickerSheet
+          visible={showCollectionPicker}
+          postId={bookmarkingPostId}
+          onClose={() => {
+            setShowCollectionPicker(false);
+            setBookmarkingPostId(null);
+          }}
+          onSuccess={handleCollectionPickerSuccess}
+        />
+      )}
     </ThemedView>
   );
 }
@@ -387,9 +429,6 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'ios' && {
       backdropFilter: 'blur(8px)',
     }),
-  },
-  headerSpacer: {
-    width: 32,
   },
   headerCenter: {
     flexDirection: 'row',

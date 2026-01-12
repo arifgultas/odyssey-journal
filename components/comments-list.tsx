@@ -75,11 +75,15 @@ export function CommentsList({
             ListEmptyComponent={renderEmpty}
             ListFooterComponent={renderFooter}
             showsVerticalScrollIndicator={false}
+            style={styles.list}
         />
     );
 }
 
 const styles = StyleSheet.create({
+    list: {
+        flex: 1,
+    },
     listContent: {
         padding: Spacing.md,
     },

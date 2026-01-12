@@ -4,7 +4,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { Ionicons } from '@expo/vector-icons';
@@ -54,8 +54,7 @@ const SettingsColors = {
 };
 
 export default function SettingsScreen() {
-    const colorScheme = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const { colorScheme, isDark, themePreference, setThemePreference } = useTheme();
     const colors = isDark ? SettingsColors.dark : SettingsColors.light;
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -64,7 +63,6 @@ export default function SettingsScreen() {
 
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
-    const [darkModeEnabled, setDarkModeEnabled] = useState(isDark);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
 
@@ -222,10 +220,10 @@ export default function SettingsScreen() {
                                     style={!isDark && styles.activeIcon}
                                 />
                                 <Switch
-                                    value={darkModeEnabled}
-                                    onValueChange={setDarkModeEnabled}
+                                    value={isDark}
+                                    onValueChange={(value) => setThemePreference(value ? 'dark' : 'light')}
                                     trackColor={{ false: `${colors.accentDark}30`, true: `${colors.accent}30` }}
-                                    thumbColor={darkModeEnabled ? colors.accent : colors.accentDark}
+                                    thumbColor={isDark ? colors.accent : colors.accentDark}
                                     ios_backgroundColor={`${colors.accentDark}30`}
                                     style={styles.themeSwitch}
                                 />
