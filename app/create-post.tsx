@@ -3,6 +3,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
 import { createPost } from '@/lib/posts';
+import { fetchWeatherData, WeatherData } from '@/lib/weather';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -208,11 +209,15 @@ const AnimatedPolaroidCard = ({
     index,
     onRemove,
     rotation,
+    caption,
+    onCaptionChange,
 }: {
     image: SelectedImage;
     index: number;
     onRemove: () => void;
     rotation: number;
+    caption: string;
+    onCaptionChange: (text: string) => void;
 }) => {
     const scale = useSharedValue(0.8);
     const opacity = useSharedValue(0);
@@ -242,7 +247,7 @@ const AnimatedPolaroidCard = ({
     }));
 
     return (
-        <Animated.View style={[styles.polaroidCard, animatedContainerStyle]}>
+        <Animated.View style={[styles.polaroidCard, animatedContainerStyle]} collapsable={false}>
             <TouchableOpacity style={styles.polaroidRemove} onPress={onRemove}>
                 <Ionicons name="close" size={14} color="#FFFFFF" />
             </TouchableOpacity>
@@ -253,8 +258,19 @@ const AnimatedPolaroidCard = ({
                     contentFit="cover"
                 />
             </Animated.View>
-            <View style={styles.polaroidCaption}>
-                <Text style={styles.polaroidCaptionText}>Anı {index + 1} ✨</Text>
+            <View style={styles.polaroidCaption} pointerEvents="box-none">
+                <TextInput
+                    style={styles.polaroidCaptionInput}
+                    value={caption}
+                    onChangeText={onCaptionChange}
+                    placeholder="Not ekle..."
+                    placeholderTextColor="#999"
+                    maxLength={100}
+                    multiline={false}
+                    returnKeyType="done"
+                    blurOnSubmit={true}
+                    underlineColorAndroid="transparent"
+                />
             </View>
         </Animated.View>
     );
@@ -364,12 +380,14 @@ const AnimatedLocationCard = ({
     isDark,
     onConfirm,
     onChangeLocation,
+    weatherData,
 }: {
     location: { latitude: number; longitude: number; name?: string };
     theme: typeof DesignColors.light;
     isDark: boolean;
     onConfirm: () => void;
     onChangeLocation: () => void;
+    weatherData: WeatherData | null;
 }) => {
     const cardTranslateY = useSharedValue(40);
     const cardScale = useSharedValue(0.95);
@@ -426,6 +444,14 @@ const AnimatedLocationCard = ({
                             ]}>
                                 {`${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`}
                             </Text>
+                            {weatherData && (
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                                    <Ionicons name={weatherData.icon as any} size={14} color={theme.accentBrown} style={{ marginRight: 4 }} />
+                                    <Text style={{ fontFamily: Typography.fonts.ui, fontSize: 12, color: theme.accentBrown }}>
+                                        {weatherData.temperature}°C • {weatherData.condition}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
                     </View>
                     <View style={styles.locationConfirmButtons}>
@@ -505,6 +531,9 @@ export default function CreatePostScreen() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>(['nature']); // Default selection
     const [locationConfirmed, setLocationConfirmed] = useState(false);
+    const [imageCaptions, setImageCaptions] = useState<string[]>([]);
+    const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+    const [isFetchingWeather, setIsFetchingWeather] = useState(false);
 
     const {
         images,
@@ -520,6 +549,26 @@ export default function CreatePostScreen() {
         getCurrentLocation,
         clearLocation,
     } = useLocationPicker();
+
+    // Auto-fetch weather when location is selected
+    useEffect(() => {
+        const fetchWeather = async () => {
+            if (location && !weatherData && !isFetchingWeather) {
+                setIsFetchingWeather(true);
+                try {
+                    const weather = await fetchWeatherData(location.latitude, location.longitude);
+                    if (weather) {
+                        setWeatherData(weather);
+                    }
+                } catch (error) {
+                    console.error('Error fetching weather:', error);
+                } finally {
+                    setIsFetchingWeather(false);
+                }
+            }
+        };
+        fetchWeather();
+    }, [location]);
 
     const handleSubmit = async () => {
         if (!title.trim()) {
@@ -539,6 +588,8 @@ export default function CreatePostScreen() {
                 content: content.trim(),
                 location: location || undefined,
                 images: images.map((img: SelectedImage) => img.uri),
+                imageCaptions: imageCaptions,
+                weatherData: weatherData || undefined,
             });
 
             Alert.alert('Başarılı', 'Günlük girişiniz oluşturuldu!', [
@@ -595,13 +646,37 @@ export default function CreatePostScreen() {
         });
     };
 
-    const handleLocationConfirm = () => {
+    const handleLocationConfirm = async () => {
         setLocationConfirmed(true);
+
+        // Fetch weather data for the location
+        if (location) {
+            setIsFetchingWeather(true);
+            try {
+                const weather = await fetchWeatherData(location.latitude, location.longitude);
+                if (weather) {
+                    setWeatherData(weather);
+                }
+            } catch (error) {
+                console.error('Error fetching weather:', error);
+            } finally {
+                setIsFetchingWeather(false);
+            }
+        }
     };
 
     const handleLocationChange = () => {
         clearLocation();
         setLocationConfirmed(false);
+        setWeatherData(null);
+    };
+
+    const updateCaption = (index: number, text: string) => {
+        setImageCaptions(prev => {
+            const newCaptions = [...prev];
+            newCaptions[index] = text;
+            return newCaptions;
+        });
     };
 
     return (
@@ -708,6 +783,8 @@ export default function CreatePostScreen() {
                                     index={index}
                                     onRemove={() => removeImage(index)}
                                     rotation={getPolaroidRotation(index)}
+                                    caption={imageCaptions[index] || ''}
+                                    onCaptionChange={(text) => updateCaption(index, text)}
                                 />
                             ))}
 
@@ -789,20 +866,34 @@ export default function CreatePostScreen() {
                                         isDark={isDark}
                                         onConfirm={handleLocationConfirm}
                                         onChangeLocation={handleLocationChange}
+                                        weatherData={weatherData}
                                     />
                                 )}
 
-                                {/* Confirmed indicator */}
+                                {/* Confirmed indicator with Weather */}
                                 {location && locationConfirmed && (
                                     <Animated.View
                                         entering={FadeIn.duration(300)}
                                         style={[
                                             styles.locationConfirmedBadge,
-                                            { backgroundColor: theme.primary }
+                                            { backgroundColor: theme.primary, flexDirection: 'column', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, height: 'auto', borderRadius: 8 }
                                         ]}
                                     >
-                                        <Ionicons name="checkmark" size={12} color="#2C1810" />
-                                        <Text style={styles.locationConfirmedText}>Konum seçildi</Text>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: weatherData ? 4 : 0 }}>
+                                            <Ionicons name="checkmark-circle" size={16} color="#2C1810" style={{ marginRight: 6 }} />
+                                            <Text style={styles.locationConfirmedText}>Konum seçildi</Text>
+                                        </View>
+
+                                        {isFetchingWeather ? (
+                                            <ActivityIndicator size="small" color="#2C1810" style={{ marginTop: 2 }} />
+                                        ) : weatherData ? (
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12 }}>
+                                                <Ionicons name={weatherData.icon as any} size={14} color="#2C1810" style={{ marginRight: 4 }} />
+                                                <Text style={{ fontFamily: Typography.fonts.uiBold, fontSize: 12, color: '#2C1810' }}>
+                                                    {weatherData.temperature}°C {weatherData.condition}
+                                                </Text>
+                                            </View>
+                                        ) : null}
                                     </Animated.View>
                                 )}
 
@@ -1127,6 +1218,20 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.bodyItalic,
         fontSize: 12,
         color: '#6B7280',
+    },
+    polaroidCaptionInput: {
+        fontFamily: Typography.fonts.bodyItalic,
+        fontSize: 12,
+        color: '#4B5563',
+        textAlign: 'center',
+        width: '100%',
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        minHeight: 28,
+        backgroundColor: '#FAFAFA',
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        borderRadius: 4,
     },
     polaroidPlaceholder: {
         width: 140,

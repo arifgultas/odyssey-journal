@@ -233,37 +233,37 @@ export function AnimatedPostCard({
                 },
             ]}
         >
-            <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
-                <Animated.View
-                    style={[
-                        styles.container,
-                        {
-                            backgroundColor: theme.surface,
-                            borderColor: theme.border,
-                            shadowOpacity,
-                        },
-                    ]}
-                >
-                    {/* Images - Polaroid Style */}
-                    {post.images && post.images.length > 0 && (
-                        <View style={styles.polaroidFrame}>
-                            <View style={styles.imageWrapper}>
-                                <ImageCarousel
-                                    images={post.images}
-                                    style={styles.carousel}
-                                    onImageLoad={() => setImageLoaded(true)}
-                                />
+            <Animated.View
+                style={[
+                    styles.container,
+                    {
+                        backgroundColor: theme.surface,
+                        borderColor: theme.border,
+                        shadowOpacity,
+                    },
+                ]}
+            >
+                {/* Images - Polaroid Style - Swipeable */}
+                {post.images && post.images.length > 0 && (
+                    <View style={styles.polaroidFrame}>
+                        <View style={styles.imageWrapper}>
+                            <ImageCarousel
+                                images={post.images}
+                                style={styles.carousel}
+                                onImageLoad={() => setImageLoaded(true)}
+                            />
 
-                                {/* Image count badge */}
-                                {post.images.length > 1 && (
-                                    <View style={styles.imageCount}>
-                                        <Ionicons name="images" size={14} color={Colors.light.surface} />
-                                        <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
-                                    </View>
-                                )}
-                            </View>
+                            {/* Image count badge */}
+                            {post.images.length > 1 && (
+                                <View style={styles.imageCount}>
+                                    <Ionicons name="images" size={14} color={Colors.light.surface} />
+                                    <Text style={styles.imageCountText}>+{post.images.length - 1}</Text>
+                                </View>
+                            )}
+                        </View>
 
-                            {/* Polaroid Caption - Handwriting Style */}
+                        {/* Polaroid Caption - Tappable to open post */}
+                        <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
                             <View style={styles.polaroidCaption}>
                                 <Text style={[styles.locationTitle, { color: theme.text }]} numberOfLines={1}>
                                     {getLocationText()}
@@ -272,10 +272,12 @@ export function AnimatedPostCard({
                                     {formatDateForPolaroid(post.created_at)}
                                 </Text>
                             </View>
-                        </View>
-                    )}
+                        </Pressable>
+                    </View>
+                )}
 
-                    {/* User Info Section */}
+                {/* User Info Section - Tappable */}
+                <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
                     <View style={[styles.userSection, { borderTopColor: theme.border }]}>
                         <TouchableWithoutFeedback onPress={handleUserPress}>
                             <View style={styles.userInfo}>
@@ -318,83 +320,83 @@ export function AnimatedPostCard({
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
+                </Pressable>
 
-                    {/* Menu Dropdown */}
-                    {showMenu && (
-                        <Animated.View
-                            style={[
-                                styles.menu,
-                                { backgroundColor: theme.surface, borderColor: theme.border },
-                            ]}
-                        >
-                            {isOwnPost ? (
-                                <TouchableWithoutFeedback
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        setShowMenu(false);
-                                        onDelete?.();
-                                    }}
-                                >
-                                    <View style={styles.menuItem}>
-                                        <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
-                                        <Text style={[styles.menuText, { color: Colors.light.error }]}>Delete Post</Text>
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            ) : (
-                                <TouchableWithoutFeedback
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        setShowMenu(false);
-                                        onReport?.();
-                                    }}
-                                >
-                                    <View style={styles.menuItem}>
-                                        <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
-                                        <Text style={[styles.menuText, { color: Colors.light.error }]}>Report Post</Text>
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            )}
-                        </Animated.View>
-                    )}
+                {/* Menu Dropdown */}
+                {showMenu && (
+                    <Animated.View
+                        style={[
+                            styles.menu,
+                            { backgroundColor: theme.surface, borderColor: theme.border },
+                        ]}
+                    >
+                        {isOwnPost ? (
+                            <TouchableWithoutFeedback
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    setShowMenu(false);
+                                    onDelete?.();
+                                }}
+                            >
+                                <View style={styles.menuItem}>
+                                    <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
+                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>Delete Post</Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        ) : (
+                            <TouchableWithoutFeedback
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    setShowMenu(false);
+                                    onReport?.();
+                                }}
+                            >
+                                <View style={styles.menuItem}>
+                                    <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
+                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>Report Post</Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        )}
+                    </Animated.View>
+                )}
 
-                    {/* Actions Bar - With Animated Buttons */}
-                    <View style={[styles.actions, { borderTopColor: theme.border }]}>
-                        {/* Animated Like Button */}
-                        <AnimatedLikeButton
-                            isLiked={isLiked}
-                            likesCount={likesCount}
-                            onPress={handleLike}
-                            size={20}
-                        />
+                {/* Actions Bar - With Animated Buttons */}
+                <View style={[styles.actions, { borderTopColor: theme.border }]}>
+                    {/* Animated Like Button */}
+                    <AnimatedLikeButton
+                        isLiked={isLiked}
+                        likesCount={likesCount}
+                        onPress={handleLike}
+                        size={20}
+                    />
 
-                        {/* Comment Button */}
-                        <TouchableWithoutFeedback onPress={onComment}>
-                            <View style={styles.actionButton}>
-                                <Ionicons name="chatbubble-outline" size={18} color={theme.textMuted} />
-                                <Text style={[styles.actionText, { color: theme.textMuted }]}>
-                                    {post.comments_count || 0}
-                                </Text>
-                            </View>
-                        </TouchableWithoutFeedback>
+                    {/* Comment Button */}
+                    <TouchableWithoutFeedback onPress={onComment}>
+                        <View style={styles.actionButton}>
+                            <Ionicons name="chatbubble-outline" size={18} color={theme.textMuted} />
+                            <Text style={[styles.actionText, { color: theme.textMuted }]}>
+                                {post.comments_count || 0}
+                            </Text>
+                        </View>
+                    </TouchableWithoutFeedback>
 
-                        {/* Share Button */}
-                        <TouchableWithoutFeedback onPress={onShare}>
-                            <View style={styles.actionButton}>
-                                <Ionicons name="share-outline" size={18} color={theme.textMuted} />
-                            </View>
-                        </TouchableWithoutFeedback>
+                    {/* Share Button */}
+                    <TouchableWithoutFeedback onPress={onShare}>
+                        <View style={styles.actionButton}>
+                            <Ionicons name="share-outline" size={18} color={theme.textMuted} />
+                        </View>
+                    </TouchableWithoutFeedback>
 
-                        <View style={{ flex: 1 }} />
+                    <View style={{ flex: 1 }} />
 
-                        {/* Animated Bookmark Button */}
-                        <AnimatedBookmarkButton
-                            isBookmarked={isBookmarked}
-                            onToggle={handleBookmark}
-                            size={20}
-                        />
-                    </View>
-                </Animated.View>
-            </Pressable>
+                    {/* Animated Bookmark Button */}
+                    <AnimatedBookmarkButton
+                        isBookmarked={isBookmarked}
+                        onToggle={handleBookmark}
+                        size={20}
+                    />
+                </View>
+            </Animated.View>
         </Animated.View>
     );
 }

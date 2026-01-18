@@ -5,11 +5,12 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCurrentProfile, useProfileStats, useUserPosts } from '@/hooks/use-profile';
+import { calculateBadges, type Badge } from '@/lib/badge-service';
 import type { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -55,45 +56,7 @@ const PassportColors = {
     }
 };
 
-// Static badge data
-const BADGES = [
-    { id: 'adventure', icon: 'walk-outline', name: 'İlk Macera', unlocked: true, count: null },
-    { id: 'world', icon: 'globe-outline', name: 'Dünya Gezgini', unlocked: true, count: 10, featured: true },
-    { id: 'camera', icon: 'camera-outline', name: 'Fotoğraf Ustası', unlocked: true, count: null },
-    { id: 'food', icon: 'restaurant-outline', name: 'Gurme', unlocked: false, count: null },
-];
 
-// Static journal entries for masonry grid
-const STATIC_JOURNAL_ENTRIES = [
-    {
-        id: '1',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAPvQid-qG8dt0kKXecq6aqnmKYuyQL6UaDXpPvTb6WSciDSPE92OoyfwITqZ9yUd-8HIROrz9Az0gkbPLKILs34EjUMrz2UmRQSF1YezODjnFEZYCiPLE_Ixd3cA4eWgph9FHfEt5_4vk1QatZuJAyT4Iv_g3XZmo3SpSWGzGs8s5wtDhQYIr6x0dT7AawvxmWlFhfAKqy_VzsBqc1yc-h3PhS2Z916zAl0A-NqrYALJYQCneTl5_MIX67MvA0sDIhCSE0eV7gD1g',
-        caption: 'Alpler, 2023',
-        aspectRatio: 0.75,
-        rotation: -2,
-    },
-    {
-        id: '2',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDFl6B_CfMdC7lVjFVgQwJEwajO4KysaH7YIHpyhRx_jUfkQadtQwVL9XgAx1xjn3oOS_wrOWBZCGq2rusMeE8CjKtEvhCDlxpgXM1Gq_p8cB0EEYVUwtnGUUFxRx0vHl6qCatD_gYJoAyqft6sYUyQawf6m7FMAlyGIQ7vw0mrUkOYyEAoqeU6nVjiWkU8-MNWds9737E2VDD17DUpToAZOPNyB_NnKYzaDMADqJOVAc6RzqzG98A_qGaBoGmkezcRRJY5xarkDp0',
-        caption: 'Rotamız',
-        aspectRatio: 1,
-        rotation: 1,
-    },
-    {
-        id: '3',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB2658R0-yTwa-netR90H-4rv-EbFivpcle_PJFY8zK60G7WMvoGAWVStFVeEEPilRgKGDb2QCK2GjkuTuAVFEaO0W9eRrsX87oC3MBZp3j4fGdkZwbIYEIO9DpJC0t6mRPGfitSLRdSEdRznX1G3dKurp6NJSE_XPNKzf20vneSW5urHhgSe9iuaa76wQUtCR9K7fCK9mI7FWXknlKOALGKKTH1x75nSeFbCQ1Ge_i2Za-SSqsJ57tlimw21tbXYQYW-wPnviywzU',
-        caption: 'Cinque Terre',
-        aspectRatio: 0.8,
-        rotation: 2,
-    },
-    {
-        id: '4',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA2DpTYVbgaTsz9G-iTVzx_Gu4gcj2GYrR5dPKzZj8FvLrWgVWcSCC9kvojh5KtN_PYJnCs1FfTRF1S-cxw7defxMPN5OFixR1bR5Gi2BAsea6LJCNDze1tVPlKn72tB4ZB_97cpTh7T3bpsVm0H8YYvGOkNdYpYyUL-pDJeKWaVZ85nqFSBtdmHUsvietVyHOah2mUUquBJW50QeiizX_QFhJxQa0uYo1v41LTZH3LG0PfMTR1Lh4XsGCSq8enn9PjkMIYy3Ysdn0',
-        caption: 'Sabah Kahvesi',
-        aspectRatio: 1,
-        rotation: -1,
-    },
-];
 
 export default function ProfileScreen() {
     const colorScheme = useColorScheme();
@@ -109,6 +72,17 @@ export default function ProfileScreen() {
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
     const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useProfileStats(user?.id || null);
     const { data: posts, isLoading: postsLoading, refetch: refetchPosts } = useUserPosts(user?.id || null);
+
+    // Format distance for display (e.g., 15400 -> 15.4k)
+    const formatDistance = (km: number): string => {
+        if (km >= 1000) {
+            return `${(km / 1000).toFixed(1)}k`;
+        }
+        return km.toString();
+    };
+
+    // Calculate badges based on user stats
+    const badges = useMemo(() => calculateBadges(stats), [stats]);
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -171,16 +145,21 @@ export default function ProfileScreen() {
     const surname = nameParts.length > 1 ? nameParts[nameParts.length - 1].toUpperCase() : nameParts[0].toUpperCase();
     const givenNames = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ').toUpperCase() : '';
 
-    // Use API posts or static entries
+    // Rotation values for polaroid effect
+    const rotations = [-2, 1, 2, -1, 1.5, -1.5];
+
+    // Use only real posts with images, no static fallback
     const journalEntries = posts && posts.length > 0
-        ? posts.slice(0, 4).map((post: Post, index: number) => ({
-            id: post.id,
-            image: post.images?.[0] || STATIC_JOURNAL_ENTRIES[index % 4].image,
-            caption: post.title || post.location?.city || post.location?.address || STATIC_JOURNAL_ENTRIES[index % 4].caption,
-            aspectRatio: STATIC_JOURNAL_ENTRIES[index % 4].aspectRatio,
-            rotation: STATIC_JOURNAL_ENTRIES[index % 4].rotation,
-        }))
-        : STATIC_JOURNAL_ENTRIES;
+        ? posts.slice(0, 6)
+            .filter((post: Post) => post.images && post.images.length > 0 && post.images[0])
+            .map((post: Post, index: number) => ({
+                id: post.id,
+                image: post.images![0] as string,
+                caption: post.title || post.location?.city || post.location?.address || 'Günlük Notu',
+                aspectRatio: index % 2 === 0 ? 0.8 : 1,
+                rotation: rotations[index % rotations.length],
+            }))
+        : [];
 
     return (
         <ThemedView style={[styles.container, { backgroundColor: passportTheme.background }]}>
@@ -320,7 +299,7 @@ export default function ProfileScreen() {
                         <View style={[styles.statCard, { backgroundColor: passportTheme.parchment, borderColor: colorScheme === 'dark' ? passportTheme.border : '#e6e0d4' }]}>
                             <Ionicons name="globe-outline" size={28} color={passportTheme.goldDim} style={styles.statIconBg} />
                             <Ionicons name="globe-outline" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={styles.statIcon} />
-                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.countriesVisited || 12}</Text>
+                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.countriesVisited || 0}</Text>
                             <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>Ülkeler</Text>
                         </View>
 
@@ -328,7 +307,7 @@ export default function ProfileScreen() {
                         <View style={[styles.statCard, { backgroundColor: passportTheme.parchment, borderColor: colorScheme === 'dark' ? passportTheme.border : '#e6e0d4' }]}>
                             <Ionicons name="airplane" size={28} color={passportTheme.goldDim} style={[styles.statIconBg, { transform: [{ rotate: '30deg' }] }]} />
                             <Ionicons name="airplane" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={[styles.statIcon, { transform: [{ rotate: '30deg' }] }]} />
-                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>15.4k</Text>
+                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{formatDistance(stats?.totalDistanceKm || 0)}</Text>
                             <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>Km</Text>
                         </View>
 
@@ -336,7 +315,7 @@ export default function ProfileScreen() {
                         <View style={[styles.statCard, { backgroundColor: passportTheme.parchment, borderColor: colorScheme === 'dark' ? passportTheme.border : '#e6e0d4' }]}>
                             <Ionicons name="calendar-outline" size={28} color={passportTheme.goldDim} style={styles.statIconBg} />
                             <Ionicons name="calendar-outline" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={[styles.statIcon, { transform: [{ rotate: '2deg' }] }]} />
-                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>45</Text>
+                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.travelDays || 0}</Text>
                             <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>Gün</Text>
                         </View>
                     </View>
@@ -349,39 +328,53 @@ export default function ProfileScreen() {
                         <Ionicons name="map-outline" size={16} color={`${passportTheme.gold}E6`} />
                     </View>
                     <View style={[styles.mapContainer, { borderColor: passportTheme.border }]}>
-                        <Image
-                            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCnQZPpAXGKcQfXWnl8_LRXafmvBnDyX37eSi11Gb4UPacUHaRq5XKK6-CvYEP0sSDBkG-VvRJMJvFQjixToeJt4tXn_7-4aK_RAc3sbcdv27gSqw3liqVxqUt47iCRhCh5ZLZMZz25i9d8XlloALaaXkQrveE-TN3XyPS0bdbZreYL9hIMwCY9hwbnnOs86_0BJ_lsrYPbnmZ6yqZfTHrsZTkTjvtnlp4HMH_cOqTatORc2WD3M9kg3fhlVr9rPOnwpMm44pzugBg' }}
-                            style={styles.mapImage}
-                            contentFit="cover"
-                        />
-                        {/* Map Markers */}
-                        <View style={[styles.mapMarker, { top: '35%', left: '52%' }]}>
-                            <Ionicons name="ellipse" size={16} color="#8b0000" />
-                        </View>
-                        <View style={[styles.mapMarker, { top: '42%', left: '48%' }]}>
-                            <Ionicons name="ellipse" size={12} color="#8b000099" />
-                        </View>
-                        <View style={[styles.mapMarker, { top: '38%', left: '54%' }]}>
-                            <Ionicons name="location" size={28} color="#a62c2b" />
-                        </View>
-                        <View style={styles.mapOverlay} />
+                        {stats?.visitedLocations && stats.visitedLocations.length > 0 ? (
+                            <>
+                                <Image
+                                    source={{
+                                        uri: (() => {
+                                            // Create Mapbox Static API URL with markers
+                                            const locations = stats.visitedLocations.slice(0, 10); // Limit to 10 markers
+                                            const markers = locations
+                                                .map(loc => `pin-s+D4A574(${loc.longitude},${loc.latitude})`)
+                                                .join(',');
+                                            // Calculate center point
+                                            const avgLat = locations.reduce((sum, loc) => sum + loc.latitude, 0) / locations.length;
+                                            const avgLng = locations.reduce((sum, loc) => sum + loc.longitude, 0) / locations.length;
+                                            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${markers}/${avgLng},${avgLat},2,0/400x200?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw`;
+                                        })()
+                                    }}
+                                    style={styles.mapImage}
+                                    contentFit="cover"
+                                />
+                                {/* Sepia overlay for vintage effect */}
+                                <View style={[styles.mapOverlay, { backgroundColor: 'rgba(139, 115, 85, 0.1)' }]} />
+                            </>
+                        ) : (
+                            <View style={[styles.mapPlaceholder, { backgroundColor: passportTheme.paperDark }]}>
+                                <Ionicons name="globe-outline" size={48} color={passportTheme.textMuted} />
+                                <Text style={[styles.mapPlaceholderText, { color: passportTheme.textMuted }]}>
+                                    Henüz seyahat lokasyonu yok
+                                </Text>
+                                <Text style={[styles.mapPlaceholderSubtext, { color: passportTheme.textSecondary }]}>
+                                    Lokasyonlu postlar paylaşın
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
                 {/* Badges Section */}
                 <View style={styles.badgesSection}>
-                    <View style={styles.sectionHeader}>
+                    <View style={[styles.sectionHeader, { paddingHorizontal: 20 }]}>
                         <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>Rozetler</Text>
-                        <TouchableOpacity>
-                            <Text style={[styles.seeAllText, { color: `${passportTheme.gold}E6` }]}>Tümü</Text>
-                        </TouchableOpacity>
                     </View>
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.badgesScroll}
                     >
-                        {BADGES.map((badge) => (
+                        {badges.map((badge: Badge) => (
                             <View key={badge.id} style={styles.badgeItem}>
                                 <View style={[
                                     styles.badgeCircle,
@@ -400,7 +393,7 @@ export default function ProfileScreen() {
                                         size={28}
                                         color={badge.unlocked ? (badge.featured ? 'white' : passportTheme.gold) : (colorScheme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)')}
                                     />
-                                    {badge.count && (
+                                    {badge.count !== undefined && badge.count > 0 && (
                                         <View style={styles.badgeCount}>
                                             <Text style={styles.badgeCountText}>{badge.count}</Text>
                                         </View>
@@ -424,49 +417,68 @@ export default function ProfileScreen() {
                         <Ionicons name="grid-outline" size={16} color={colorScheme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'} />
                     </View>
 
-                    {/* Masonry Grid */}
-                    <View style={styles.masonryContainer}>
-                        <View style={styles.masonryColumn}>
-                            {journalEntries.filter((_, i) => i % 2 === 0).map((entry, index) => (
-                                <TouchableOpacity
-                                    key={entry.id}
-                                    style={[
-                                        styles.polaroidCard,
-                                        { transform: [{ rotate: `${entry.rotation}deg` }] },
-                                        index > 0 && { marginTop: 16 }
-                                    ]}
-                                    onPress={() => handlePostPress(entry.id)}
-                                >
-                                    <Image
-                                        source={{ uri: entry.image }}
-                                        style={[styles.polaroidImage, { aspectRatio: entry.aspectRatio }]}
-                                        contentFit="cover"
-                                    />
-                                    <Text style={styles.polaroidCaption}>{entry.caption}</Text>
-                                </TouchableOpacity>
-                            ))}
+                    {/* Masonry Grid or Empty State */}
+                    {journalEntries.length > 0 ? (
+                        <View style={styles.masonryContainer}>
+                            <View style={styles.masonryColumn}>
+                                {journalEntries.filter((_, i) => i % 2 === 0).map((entry, index) => (
+                                    <TouchableOpacity
+                                        key={entry.id}
+                                        style={[
+                                            styles.polaroidCard,
+                                            { transform: [{ rotate: `${entry.rotation}deg` }] },
+                                            index > 0 && { marginTop: 16 }
+                                        ]}
+                                        onPress={() => handlePostPress(entry.id)}
+                                    >
+                                        <Image
+                                            source={{ uri: entry.image }}
+                                            style={[styles.polaroidImage, { aspectRatio: entry.aspectRatio }]}
+                                            contentFit="cover"
+                                        />
+                                        <Text style={styles.polaroidCaption}>{entry.caption}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                            <View style={[styles.masonryColumn, { marginTop: 24 }]}>
+                                {journalEntries.filter((_, i) => i % 2 === 1).map((entry, index) => (
+                                    <TouchableOpacity
+                                        key={entry.id}
+                                        style={[
+                                            styles.polaroidCard,
+                                            { transform: [{ rotate: `${entry.rotation}deg` }] },
+                                            index > 0 && { marginTop: 16 }
+                                        ]}
+                                        onPress={() => handlePostPress(entry.id)}
+                                    >
+                                        <Image
+                                            source={{ uri: entry.image }}
+                                            style={[styles.polaroidImage, { aspectRatio: entry.aspectRatio }]}
+                                            contentFit="cover"
+                                        />
+                                        <Text style={styles.polaroidCaption}>{entry.caption}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         </View>
-                        <View style={[styles.masonryColumn, { marginTop: 24 }]}>
-                            {journalEntries.filter((_, i) => i % 2 === 1).map((entry, index) => (
-                                <TouchableOpacity
-                                    key={entry.id}
-                                    style={[
-                                        styles.polaroidCard,
-                                        { transform: [{ rotate: `${entry.rotation}deg` }] },
-                                        index > 0 && { marginTop: 16 }
-                                    ]}
-                                    onPress={() => handlePostPress(entry.id)}
-                                >
-                                    <Image
-                                        source={{ uri: entry.image }}
-                                        style={[styles.polaroidImage, { aspectRatio: entry.aspectRatio }]}
-                                        contentFit="cover"
-                                    />
-                                    <Text style={styles.polaroidCaption}>{entry.caption}</Text>
-                                </TouchableOpacity>
-                            ))}
+                    ) : (
+                        <View style={[styles.emptyJournalState, { backgroundColor: passportTheme.paperDark }]}>
+                            <Ionicons name="book-outline" size={48} color={passportTheme.textMuted} />
+                            <Text style={[styles.emptyJournalTitle, { color: passportTheme.text }]}>
+                                Henüz günlük notu yok
+                            </Text>
+                            <Text style={[styles.emptyJournalSubtitle, { color: passportTheme.textSecondary }]}>
+                                Seyahat anılarınızı fotoğraflarla paylaşın
+                            </Text>
+                            <TouchableOpacity
+                                style={[styles.createPostButton, { backgroundColor: passportTheme.gold }]}
+                                onPress={() => router.push('/create-post')}
+                            >
+                                <Ionicons name="add-circle-outline" size={20} color="white" />
+                                <Text style={styles.createPostButtonText}>İlk Notunu Ekle</Text>
+                            </TouchableOpacity>
                         </View>
-                    </View>
+                    )}
                 </View>
 
                 {/* Bottom Padding */}
@@ -791,6 +803,22 @@ const styles = StyleSheet.create({
         borderWidth: 8,
         borderColor: 'rgba(255,255,255,0.05)',
     },
+    mapPlaceholder: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    mapPlaceholderText: {
+        fontSize: 14,
+        fontWeight: '600',
+        marginTop: 8,
+    },
+    mapPlaceholderSubtext: {
+        fontSize: 11,
+        fontWeight: '500',
+    },
 
     // Badges
     badgesSection: {
@@ -837,8 +865,8 @@ const styles = StyleSheet.create({
     },
     badgeCount: {
         position: 'absolute',
-        top: -4,
-        right: -4,
+        top: 0,
+        right: 0,
         width: 20,
         height: 20,
         borderRadius: 10,
@@ -895,5 +923,37 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#2c241b',
         textAlign: 'center',
+    },
+    emptyJournalState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 40,
+        paddingHorizontal: 24,
+        borderRadius: 12,
+        marginTop: 16,
+        gap: 8,
+    },
+    emptyJournalTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginTop: 12,
+    },
+    emptyJournalSubtitle: {
+        fontSize: 13,
+        textAlign: 'center',
+    },
+    createPostButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 24,
+        marginTop: 16,
+        gap: 8,
+    },
+    createPostButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: 'white',
     },
 });

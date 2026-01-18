@@ -86,7 +86,34 @@ export class ProfileService {
     }
 
     /**
-     * Get profile statistics
+     * Calculate distance between two coordinates using Haversine formula
+     * Returns distance in kilometers
+     */
+    private static calculateDistance(
+        lat1: number,
+        lon1: number,
+        lat2: number,
+        lon2: number
+    ): number {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = this.toRadians(lat2 - lat1);
+        const dLon = this.toRadians(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.toRadians(lat1)) *
+            Math.cos(this.toRadians(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    private static toRadians(degrees: number): number {
+        return degrees * (Math.PI / 180);
+    }
+
+    /**
+     * Get profile statistics with extended travel data
      */
     static async getProfileStats(userId: string): Promise<ProfileStats> {
         try {
@@ -108,26 +135,90 @@ export class ProfileService {
                 .select('*', { count: 'exact', head: true })
                 .eq('follower_id', userId);
 
-            // Get unique countries visited
+            // Get all posts with location data for extended stats
             const { data: posts } = await supabase
                 .from('posts')
-                .select('location_name')
+                .select('location, created_at')
                 .eq('user_id', userId)
-                .not('location_name', 'is', null);
+                .not('location', 'is', null)
+                .order('created_at', { ascending: true });
 
-            const uniqueCountries = new Set(
-                posts?.map(post => {
-                    // Extract country from location (assuming format: "City, Country")
-                    const parts = post.location_name?.split(',');
-                    return parts?.[parts.length - 1]?.trim();
-                }).filter(Boolean)
-            );
+            // Process location data
+            const visitedLocations: Array<{
+                latitude: number;
+                longitude: number;
+                name: string;
+                country: string;
+                visitDate: string;
+            }> = [];
+            const uniqueCountries = new Set<string>();
+            const countryDays = new Map<string, Set<string>>(); // country -> Set of unique dates
+            let totalDistanceKm = 0;
+
+            // User's home location (Turkey as default - can be made configurable later)
+            const homeLocation = { lat: 41.0082, lon: 28.9784 }; // Istanbul
+
+            if (posts && posts.length > 0) {
+                for (const post of posts) {
+                    const location = post.location as {
+                        latitude?: number;
+                        longitude?: number;
+                        address?: string;
+                        city?: string;
+                        country?: string;
+                    } | null;
+
+                    if (location && location.latitude && location.longitude) {
+                        const country = location.country || 'Unknown';
+                        const locationName = location.city || location.address || country;
+                        const visitDate = post.created_at.split('T')[0]; // Get date part only
+
+                        // Add to visited locations
+                        visitedLocations.push({
+                            latitude: location.latitude,
+                            longitude: location.longitude,
+                            name: locationName,
+                            country: country,
+                            visitDate: visitDate,
+                        });
+
+                        // Track unique countries
+                        if (country !== 'Unknown') {
+                            uniqueCountries.add(country);
+                        }
+
+                        // Track days per country
+                        if (!countryDays.has(country)) {
+                            countryDays.set(country, new Set());
+                        }
+                        countryDays.get(country)!.add(visitDate);
+
+                        // Calculate round-trip distance from home
+                        const distance = this.calculateDistance(
+                            homeLocation.lat,
+                            homeLocation.lon,
+                            location.latitude,
+                            location.longitude
+                        );
+                        totalDistanceKm += distance * 2; // Round trip (gidiş-dönüş)
+                    }
+                }
+            }
+
+            // Calculate total travel days (unique days across all countries)
+            let travelDays = 0;
+            countryDays.forEach((dates) => {
+                travelDays += dates.size;
+            });
 
             return {
                 postsCount: postsCount || 0,
                 followersCount: followersCount || 0,
                 followingCount: followingCount || 0,
                 countriesVisited: uniqueCountries.size,
+                totalDistanceKm: Math.round(totalDistanceKm),
+                travelDays: travelDays,
+                visitedLocations: visitedLocations,
             };
         } catch (error) {
             console.error('Error fetching profile stats:', error);
@@ -136,6 +227,9 @@ export class ProfileService {
                 followersCount: 0,
                 followingCount: 0,
                 countriesVisited: 0,
+                totalDistanceKm: 0,
+                travelDays: 0,
+                visitedLocations: [],
             };
         }
     }

@@ -232,6 +232,19 @@ export default function PostDetailScreen() {
         extrapolate: 'clamp',
     });
 
+    // Scroll-based header animation
+    const headerOpacity = scrollY.interpolate({
+        inputRange: [0, 100, 150],
+        outputRange: [1, 1, 0],
+        extrapolate: 'clamp',
+    });
+
+    const headerTranslateY = scrollY.interpolate({
+        inputRange: [0, 100, 150],
+        outputRange: [0, 0, -50],
+        extrapolate: 'clamp',
+    });
+
     if (isLoading) {
         return (
             <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -288,7 +301,14 @@ export default function PostDetailScreen() {
             </Animated.View>
 
             {/* Floating Header Buttons */}
-            <View style={[styles.floatingHeader, { paddingTop: insets.top + Spacing.sm }]}>
+            <Animated.View style={[
+                styles.floatingHeader,
+                {
+                    paddingTop: insets.top + Spacing.sm,
+                    opacity: headerOpacity,
+                    transform: [{ translateY: headerTranslateY }],
+                }
+            ]}>
                 <TouchableOpacity
                     onPress={() => router.back()}
                     style={styles.floatingButton}
@@ -314,7 +334,7 @@ export default function PostDetailScreen() {
                         <Ionicons name="share-outline" size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                 </View>
-            </View>
+            </Animated.View>
 
             {/* Scrollable Content */}
             <Animated.ScrollView
@@ -351,16 +371,18 @@ export default function PostDetailScreen() {
                             </View>
 
                             {/* Weather Card */}
-                            <View style={[styles.weatherCard, { backgroundColor: isDark ? theme.paper : '#FDFBF7', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(139, 94, 60, 0.4)' }]}>
-                                <View style={[styles.weatherCorner, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(139, 94, 60, 0.2)' }]} />
-                                <Ionicons name="sunny" size={28} color={theme.primary} />
-                                <Text style={[styles.weatherTemp, { color: theme.textMain, borderColor: isDark ? 'rgba(212, 165, 116, 0.3)' : 'rgba(139, 94, 60, 0.3)' }]}>
-                                    14°C
-                                </Text>
-                                <Text style={[styles.weatherCondition, { color: theme.textSubtle }]}>
-                                    Clear
-                                </Text>
-                            </View>
+                            {post.weather_data ? (
+                                <View style={[styles.weatherCard, { backgroundColor: isDark ? theme.paper : '#FDFBF7', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(139, 94, 60, 0.4)' }]}>
+                                    <View style={[styles.weatherCorner, { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(139, 94, 60, 0.2)' }]} />
+                                    <Ionicons name={post.weather_data.icon as any} size={28} color={theme.primary} />
+                                    <Text style={[styles.weatherTemp, { color: theme.textMain, borderColor: isDark ? 'rgba(212, 165, 116, 0.3)' : 'rgba(139, 94, 60, 0.3)' }]}>
+                                        {post.weather_data.temperature}°C
+                                    </Text>
+                                    <Text style={[styles.weatherCondition, { color: theme.textSubtle }]}>
+                                        {post.weather_data.condition}
+                                    </Text>
+                                </View>
+                            ) : null}
                         </View>
                     </View>
 
@@ -432,9 +454,9 @@ export default function PostDetailScreen() {
                                         </View>
                                         <View style={styles.polaroidCaption}>
                                             <Text style={styles.polaroidCaptionText}>
-                                                {index === 0 ? 'The view from above...' :
-                                                    index === 1 ? 'Fairy chimneys' :
-                                                        `Memory ${index + 1}`}
+                                                {post.image_captions && post.image_captions[index]
+                                                    ? post.image_captions[index]
+                                                    : `Anı ${index + 1}`}
                                             </Text>
                                         </View>
                                     </TouchableOpacity>

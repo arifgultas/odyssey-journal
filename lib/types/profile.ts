@@ -8,11 +8,22 @@ export interface Profile {
     updated_at: string | null;
 }
 
+export interface VisitedLocation {
+    latitude: number;
+    longitude: number;
+    name: string;
+    country: string;
+    visitDate: string;
+}
+
 export interface ProfileStats {
     postsCount: number;
     followersCount: number;
     followingCount: number;
     countriesVisited: number;
+    totalDistanceKm: number;
+    travelDays: number;
+    visitedLocations: VisitedLocation[];
 }
 
 export interface ProfileWithStats extends Profile {

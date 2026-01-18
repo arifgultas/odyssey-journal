@@ -1,5 +1,6 @@
 import { deleteImage, uploadMultipleImages } from './image-upload';
 import { supabase } from './supabase';
+import { WeatherData } from './weather';
 
 export interface CreatePostData {
     title: string;
@@ -12,6 +13,8 @@ export interface CreatePostData {
         country?: string;
     };
     images?: string[]; // URIs of local images
+    imageCaptions?: string[]; // Captions for each image
+    weatherData?: WeatherData; // Weather at time of post creation
 }
 
 export interface Post {
@@ -27,6 +30,8 @@ export interface Post {
         country?: string;
     };
     images?: string[];
+    image_captions?: string[]; // Captions for each image
+    weather_data?: WeatherData; // Weather at time of post creation
     created_at: string;
     updated_at: string;
     likes_count: number;
@@ -73,6 +78,8 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 content: data.content,
                 location: data.location,
                 images: imageUrls,
+                image_captions: data.imageCaptions || [],
+                weather_data: data.weatherData || null,
             })
             .select()
             .single();
