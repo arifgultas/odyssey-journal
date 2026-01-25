@@ -144,7 +144,7 @@ export class SearchService {
                 const key = post.location_name;
                 if (key) {
                     if (!locationMap.has(key)) {
-                        const parts = key.split(',').map((p) => p.trim());
+                        const parts = key.split(',').map((p: string) => p.trim());
                         locationMap.set(key, {
                             name: key,
                             city: parts[0],
@@ -191,7 +191,7 @@ export class SearchService {
                 const key = post.location_name;
                 if (key) {
                     if (!locationMap.has(key)) {
-                        const parts = key.split(',').map((p) => p.trim());
+                        const parts = key.split(',').map((p: string) => p.trim());
                         locationMap.set(key, {
                             name: key,
                             city: parts[0],
@@ -245,7 +245,7 @@ export class SearchService {
                 const key = post.location_name;
                 if (key) {
                     if (!locationMap.has(key)) {
-                        const parts = key.split(',').map((p) => p.trim());
+                        const parts = key.split(',').map((p: string) => p.trim());
                         locationMap.set(key, {
                             id: key.toLowerCase().replace(/\s+/g, '-'),
                             name: key,
@@ -407,25 +407,30 @@ export class SearchService {
      */
     static async getSuggestedUsers(limit = 10) {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return [];
-
-            // Get users that current user is not following
-            const { data: followingIds } = await supabase
-                .from('follows')
-                .select('following_id')
-                .eq('follower_id', user.id);
-
-            const excludeIds = [user.id, ...(followingIds?.map(f => f.following_id) || [])];
-
+            // Simple query - just get profiles ordered by followers
+            // No auth check, no follows filtering - maximum compatibility
             const { data, error } = await supabase
                 .from('profiles')
-                .select('*')
-                .not('id', 'in', `(${excludeIds.join(',')})`)
-                .order('followers_count', { ascending: false })
+                .select('id, username, full_name, avatar_url, bio, followers_count, following_count')
+                .order('followers_count', { ascending: false, nullsFirst: false })
                 .limit(limit);
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error in getSuggestedUsers:', error);
+                throw error;
+            }
+
+            // Try to filter out current user client-side if authenticated
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user && data) {
+                    return data.filter(profile => profile.id !== user.id);
+                }
+            } catch (authError) {
+                // Auth check failed, just return all data
+                console.log('Auth check failed, returning all profiles');
+            }
+
             return data || [];
         } catch (error) {
             console.error('Error fetching suggested users:', error);
@@ -451,7 +456,7 @@ export class SearchService {
                 const key = post.location_name;
                 if (key) {
                     if (!locationMap.has(key)) {
-                        const parts = key.split(',').map((p) => p.trim());
+                        const parts = key.split(',').map((p: string) => p.trim());
                         locationMap.set(key, {
                             name: key,
                             city: parts[0],
@@ -477,6 +482,107 @@ export class SearchService {
                 .slice(0, limit);
         } catch (error) {
             console.error('Error fetching popular destinations:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Get posts by category
+     * @param categoryId - Category ID to filter by (e.g., 'nature', 'city')
+     * @param page - Page number (0-indexed)
+     * @param pageSize - Number of posts per page
+     */
+    static async getPostsByCategory(categoryId: string, page = 0, pageSize = 20) {
+        try {
+            const from = page * pageSize;
+            const to = from + pageSize - 1;
+
+            const { data, error } = await supabase
+                .from('posts')
+                .select(`
+                    *,
+                    profiles:user_id (
+                        id,
+                        username,
+                        full_name,
+                        avatar_url
+                    )
+                `)
+                .contains('categories', [categoryId])
+                .order('created_at', { ascending: false })
+                .range(from, to);
+
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching posts by category:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Get posts by location name
+     * @param locationName - Location name to filter by
+     * @param page - Page number (0-indexed)
+     * @param pageSize - Number of posts per page
+     */
+    static async getPostsByLocation(locationName: string, page = 0, pageSize = 20) {
+        try {
+            const from = page * pageSize;
+            const to = from + pageSize - 1;
+
+            // Use ilike for partial matching (city or full location name)
+            const { data, error } = await supabase
+                .from('posts')
+                .select(`
+                    *,
+                    profiles:user_id (
+                        id,
+                        username,
+                        full_name,
+                        avatar_url
+                    )
+                `)
+                .or(`location->>city.ilike.%${locationName}%,location->>country.ilike.%${locationName}%`)
+                .order('created_at', { ascending: false })
+                .range(from, to);
+
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching posts by location:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Get all trending posts with pagination (for "View All" page)
+     * @param page - Page number (0-indexed)
+     * @param pageSize - Number of posts per page
+     */
+    static async getAllTrendingPosts(page = 0, pageSize = 20) {
+        try {
+            const from = page * pageSize;
+            const to = from + pageSize - 1;
+
+            const { data, error } = await supabase
+                .from('posts')
+                .select(`
+                    *,
+                    profiles:user_id (
+                        id,
+                        username,
+                        full_name,
+                        avatar_url
+                    )
+                `)
+                .order('likes_count', { ascending: false })
+                .range(from, to);
+
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching all trending posts:', error);
             return [];
         }
     }

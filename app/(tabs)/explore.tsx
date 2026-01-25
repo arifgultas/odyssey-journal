@@ -108,7 +108,7 @@ export default function ExploreScreen() {
   const { data: trendingPosts } = useTrendingPosts(12);
   const { data: recommendedPlaces } = useRecommendedPlaces(undefined, 10);
   const { data: popularDestinations } = usePopularDestinations(10);
-  const { data: suggestedUsers } = useSuggestedUsers(10);
+  const { data: suggestedUsers, isLoading: suggestedUsersLoading, isError: suggestedUsersError, refetch: refetchSuggestedUsers } = useSuggestedUsers(10);
   const { data: searchHistory } = useSearchHistory(10);
   const saveSearch = useSaveSearchHistory();
   const deleteHistoryItem = useDeleteSearchHistoryItem();
@@ -364,7 +364,7 @@ export default function ExploreScreen() {
             <TouchableOpacity
               key={category.id}
               style={styles.categoryItem}
-              onPress={() => console.log('Category:', category.name)}
+              onPress={() => router.push(`/category-posts/${category.id}` as any)}
             >
               <View style={[styles.categoryIcon, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}>
                 <Ionicons
@@ -408,7 +408,7 @@ export default function ExploreScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Popüler Gönderiler</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/popular-posts' as any)}>
             <Text style={[styles.viewAllText, { color: vintageTheme.primary }]}>Tümünü Gör</Text>
           </TouchableOpacity>
         </View>
@@ -524,7 +524,7 @@ export default function ExploreScreen() {
             <TouchableOpacity
               key={index}
               style={[styles.destinationCard, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-              onPress={() => handleLocationPress(dest.name)}
+              onPress={() => router.push(`/destination-posts/${encodeURIComponent(dest.name)}` as any)}
             >
               <View style={[styles.destinationImageContainer, { backgroundColor: dest.bgColor + '33' }]}>
                 <Image
@@ -615,16 +615,6 @@ export default function ExploreScreen() {
             <Text style={styles.weeklyDescription} numberOfLines={2}>
               {featuredPost.content || 'Türkiye\'nin en güzel rotalarını keşfedin ve maceraya atılın.'}
             </Text>
-            <View style={styles.weeklyTags}>
-              <View style={styles.weeklyTag}>
-                <Ionicons name="time-outline" size={14} color="white" />
-                <Text style={styles.weeklyTagText}>7 Gün</Text>
-              </View>
-              <View style={styles.weeklyTag}>
-                <Ionicons name="map-outline" size={14} color="white" />
-                <Text style={styles.weeklyTagText}>12 Durak</Text>
-              </View>
-            </View>
           </View>
         </TouchableOpacity>
       </View>
@@ -633,54 +623,71 @@ export default function ExploreScreen() {
 
   // Render suggested travelers section
   const renderSuggestedUsers = () => {
-    if (!suggestedUsers || suggestedUsers.length === 0) return null;
-
+    // Always show this section - with loading, empty, or data state
     return (
-      <View style={[styles.section, { marginBottom: 100 }]}>
+      <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Önerilen Gezginler</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.usersScroll}
-        >
-          {suggestedUsers.slice(0, 5).map((user: any) => (
-            <TouchableOpacity
-              key={user.id}
-              style={[styles.userCard, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-              onPress={() => handleUserPress(user.id)}
-            >
-              <TouchableOpacity style={styles.bookmarkButton}>
-                <Ionicons name="bookmark-outline" size={16} color={vintageTheme.border} />
-              </TouchableOpacity>
-              <View style={[styles.userAvatarContainer, { borderColor: vintageTheme.border }]}>
-                {user.avatar_url ? (
-                  <Image
-                    source={{ uri: user.avatar_url }}
-                    style={styles.userAvatar}
-                    contentFit="cover"
-                  />
-                ) : (
-                  <View style={[styles.userAvatarPlaceholder, { backgroundColor: vintageTheme.parchment }]}>
-                    <Ionicons name="person" size={28} color={vintageTheme.textMuted} />
-                  </View>
-                )}
-              </View>
-              <Text style={[styles.userName, { color: vintageTheme.text }]} numberOfLines={1}>
-                {user.full_name?.split(' ')[0] || user.username || 'User'}
-              </Text>
-              <Text style={[styles.userLabel, { color: vintageTheme.textSecondary }]} numberOfLines={1}>
-                {getUserLabel(user)}
-              </Text>
+
+        {suggestedUsersLoading ? (
+          <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+            <ActivityIndicator size="small" color={vintageTheme.primary} />
+            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>Yükleniyor...</Text>
+          </View>
+        ) : suggestedUsersError ? (
+          <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 40 }} onPress={() => refetchSuggestedUsers()}>
+            <Ionicons name="alert-circle-outline" size={40} color={vintageTheme.border} />
+            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>Yüklenemedi - Tekrar dene</Text>
+          </TouchableOpacity>
+        ) : !suggestedUsers || suggestedUsers.length === 0 ? (
+          <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 40 }} onPress={() => refetchSuggestedUsers()}>
+            <Ionicons name="people-outline" size={40} color={vintageTheme.border} />
+            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>Henüz öneri yok - Yenile</Text>
+          </TouchableOpacity>
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.usersScroll}
+          >
+            {suggestedUsers.slice(0, 5).map((user: any) => (
               <TouchableOpacity
-                style={[styles.followButton, { backgroundColor: vintageTheme.primary }]}
-                onPress={() => handleFollowPress(user.id, false)}
+                key={user.id}
+                style={[styles.userCard, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
+                onPress={() => handleUserPress(user.id)}
               >
-                <Ionicons name="person-add" size={12} color="white" />
-                <Text style={styles.followButtonText}>Takip Et</Text>
+                <TouchableOpacity style={styles.bookmarkButton}>
+                  <Ionicons name="bookmark-outline" size={16} color={vintageTheme.border} />
+                </TouchableOpacity>
+                <View style={[styles.userAvatarContainer, { borderColor: vintageTheme.border }]}>
+                  {user.avatar_url ? (
+                    <Image
+                      source={{ uri: user.avatar_url }}
+                      style={styles.userAvatar}
+                      contentFit="cover"
+                    />
+                  ) : (
+                    <View style={[styles.userAvatarPlaceholder, { backgroundColor: vintageTheme.parchment }]}>
+                      <Ionicons name="person" size={28} color={vintageTheme.textMuted} />
+                    </View>
+                  )}
+                </View>
+                <Text style={[styles.userName, { color: vintageTheme.text }]} numberOfLines={1}>
+                  {user.full_name?.split(' ')[0] || user.username || 'User'}
+                </Text>
+                <Text style={[styles.userLabel, { color: vintageTheme.textSecondary }]} numberOfLines={1}>
+                  {getUserLabel(user)}
+                </Text>
+                <TouchableOpacity
+                  style={[styles.followButton, { backgroundColor: vintageTheme.primary }]}
+                  onPress={() => handleFollowPress(user.id, false)}
+                >
+                  <Ionicons name="person-add" size={12} color="white" />
+                  <Text style={styles.followButtonText}>Takip Et</Text>
+                </TouchableOpacity>
               </TouchableOpacity>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        )}
       </View>
     );
   };
@@ -795,6 +802,7 @@ export default function ExploreScreen() {
     return (
       <Animated.ScrollView
         style={[styles.contentScroll, { backgroundColor: vintageTheme.background }]}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={Animated.event(
@@ -861,9 +869,6 @@ export default function ExploreScreen() {
                   </Animated.Text>
                 )}
               </View>
-              <TouchableOpacity style={styles.filterButton}>
-                <Ionicons name="options-outline" size={20} color={vintageTheme.textMuted} />
-              </TouchableOpacity>
             </View>
           </View>
           <View style={[styles.contentContainer, { backgroundColor: vintageTheme.background }]}>

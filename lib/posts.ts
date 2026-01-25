@@ -15,6 +15,7 @@ export interface CreatePostData {
     images?: string[]; // URIs of local images
     imageCaptions?: string[]; // Captions for each image
     weatherData?: WeatherData; // Weather at time of post creation
+    categories?: string[]; // Category IDs (e.g., ['nature', 'city'])
 }
 
 export interface Post {
@@ -32,6 +33,7 @@ export interface Post {
     images?: string[];
     image_captions?: string[]; // Captions for each image
     weather_data?: WeatherData; // Weather at time of post creation
+    categories?: string[]; // Category IDs
     created_at: string;
     updated_at: string;
     likes_count: number;
@@ -80,6 +82,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 images: imageUrls,
                 image_captions: data.imageCaptions || [],
                 weather_data: data.weatherData || null,
+                categories: data.categories || [],
             })
             .select()
             .single();

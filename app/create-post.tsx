@@ -590,6 +590,7 @@ export default function CreatePostScreen() {
                 images: images.map((img: SelectedImage) => img.uri),
                 imageCaptions: imageCaptions,
                 weatherData: weatherData || undefined,
+                categories: selectedCategories,
             });
 
             Alert.alert('Başarılı', 'Günlük girişiniz oluşturuldu!', [

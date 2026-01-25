@@ -139,7 +139,8 @@ export function useSuggestedUsers(limit = 10) {
     return useQuery({
         queryKey: ['suggested', 'users', limit],
         queryFn: () => SearchService.getSuggestedUsers(limit),
-        staleTime: 1000 * 60 * 30, // 30 minutes
+        staleTime: 1000 * 60 * 5, // 5 minutes (reduced from 30)
+        retry: 2,
     });
 }
 
@@ -151,5 +152,40 @@ export function usePopularDestinations(limit = 10) {
         queryKey: ['popular', 'destinations', limit],
         queryFn: () => SearchService.getPopularDestinations(limit),
         staleTime: 1000 * 60 * 60, // 1 hour
+    });
+}
+
+/**
+ * Hook to get posts by category
+ */
+export function usePostsByCategory(categoryId: string, page = 0, pageSize = 20) {
+    return useQuery({
+        queryKey: ['posts', 'category', categoryId, page, pageSize],
+        queryFn: () => SearchService.getPostsByCategory(categoryId, page, pageSize),
+        enabled: !!categoryId,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
+}
+
+/**
+ * Hook to get posts by location
+ */
+export function usePostsByLocation(locationName: string, page = 0, pageSize = 20) {
+    return useQuery({
+        queryKey: ['posts', 'location', locationName, page, pageSize],
+        queryFn: () => SearchService.getPostsByLocation(locationName, page, pageSize),
+        enabled: !!locationName,
+        staleTime: 1000 * 60 * 5, // 5 minutes
+    });
+}
+
+/**
+ * Hook to get all trending posts (for "View All" page)
+ */
+export function useAllTrendingPosts(page = 0, pageSize = 20) {
+    return useQuery({
+        queryKey: ['trending', 'posts', 'all', page, pageSize],
+        queryFn: () => SearchService.getAllTrendingPosts(page, pageSize),
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 }
