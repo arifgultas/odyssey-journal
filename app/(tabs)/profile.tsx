@@ -65,7 +65,7 @@ export default function ProfileScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const { user, signOut } = useAuth();
-    const { language, t } = useLanguage();
+    const { t, language } = useLanguage();
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
@@ -96,12 +96,12 @@ export default function ProfileScreen() {
 
     const handleLogout = () => {
         Alert.alert(
-            'Çıkış Yap',
-            'Çıkış yapmak istediğinize emin misiniz?',
+            t('profile.logoutTitle'),
+            t('profile.logoutMessage'),
             [
-                { text: 'İptal', style: 'cancel' },
+                { text: t('profile.cancel'), style: 'cancel' },
                 {
-                    text: 'Çıkış Yap',
+                    text: t('profile.logout'),
                     style: 'destructive',
                     onPress: signOut,
                 },
@@ -132,7 +132,7 @@ export default function ProfileScreen() {
     // Create fallback profile if null (handles error cases)
     const displayProfile = profile || {
         id: user?.id || '',
-        full_name: user?.email?.split('@')[0] || 'Gezgin',
+        full_name: user?.email?.split('@')[0] || t('profile.defaultUser'),
         username: user?.email?.split('@')[0] || 'user',
         avatar_url: null,
         bio: null,
@@ -141,7 +141,7 @@ export default function ProfileScreen() {
     };
 
     // Parse name into surname and given names
-    const nameParts = (displayProfile.full_name || 'Gezgin').split(' ');
+    const nameParts = (displayProfile.full_name || t('profile.defaultUser')).split(' ');
     const surname = nameParts.length > 1 ? nameParts[nameParts.length - 1].toUpperCase() : nameParts[0].toUpperCase();
     const givenNames = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ').toUpperCase() : '';
 
@@ -155,7 +155,7 @@ export default function ProfileScreen() {
             .map((post: Post, index: number) => ({
                 id: post.id,
                 image: post.images![0] as string,
-                caption: post.title || post.location?.city || post.location?.address || 'Günlük Notu',
+                caption: post.title || post.location?.city || post.location?.address || t('profile.journalNote'),
                 aspectRatio: index % 2 === 0 ? 0.8 : 1,
                 rotation: rotations[index % rotations.length],
             }))
@@ -180,7 +180,7 @@ export default function ProfileScreen() {
                     <View style={styles.headerBranding}>
                         <Ionicons name="airplane" size={10} color={colorScheme === 'dark' ? `${passportTheme.gold}CC` : `${passportTheme.text}B3`} />
                         <Text style={[styles.headerSubtitle, { color: colorScheme === 'dark' ? `${passportTheme.gold}CC` : `${passportTheme.text}B3` }]}>
-                            Republic of
+                            {t('profile.republicOf')}
                         </Text>
                         <Ionicons name="airplane" size={10} color={colorScheme === 'dark' ? `${passportTheme.gold}CC` : `${passportTheme.text}B3`} style={{ transform: [{ rotate: '180deg' }] }} />
                     </View>
@@ -243,13 +243,13 @@ export default function ProfileScreen() {
                                 <View style={styles.infoSection}>
                                     {/* Surname */}
                                     <View style={[styles.infoField, { borderBottomColor: `${passportTheme.gold}33` }]}>
-                                        <Text style={[styles.fieldLabel, { color: passportTheme.textMuted }]}>Soyad / Surname</Text>
+                                        <Text style={[styles.fieldLabel, { color: passportTheme.textMuted }]}>{t('profile.surnameTitle')}</Text>
                                         <Text style={[styles.fieldValue, { color: passportTheme.text }]}>{surname}</Text>
                                     </View>
 
                                     {/* Given Names */}
                                     <View style={styles.infoField}>
-                                        <Text style={[styles.fieldLabel, { color: passportTheme.textMuted }]}>Ad / Given Names</Text>
+                                        <Text style={[styles.fieldLabel, { color: passportTheme.textMuted }]}>{t('profile.nameTitle')}</Text>
                                         <Text style={[styles.fieldValueSmall, { color: passportTheme.text }]}>
                                             {givenNames || surname}
                                         </Text>
@@ -258,7 +258,7 @@ export default function ProfileScreen() {
                                     {/* Nationality & ID Row */}
                                     <View style={styles.infoRow}>
                                         <View style={styles.infoFieldSmall}>
-                                            <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>Uyruk / Nationality</Text>
+                                            <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>{t('profile.nationalityTitle')}</Text>
                                             <Text style={[styles.fieldValueMono, { color: passportTheme.text }]}>TUR</Text>
                                         </View>
                                         <View style={styles.infoFieldSmall}>
@@ -300,7 +300,7 @@ export default function ProfileScreen() {
                             <Ionicons name="globe-outline" size={28} color={passportTheme.goldDim} style={styles.statIconBg} />
                             <Ionicons name="globe-outline" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={styles.statIcon} />
                             <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.countriesVisited || 0}</Text>
-                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>Ülkeler</Text>
+                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>{t('profile.countries')}</Text>
                         </View>
 
                         {/* Distance */}
@@ -308,7 +308,7 @@ export default function ProfileScreen() {
                             <Ionicons name="airplane" size={28} color={passportTheme.goldDim} style={[styles.statIconBg, { transform: [{ rotate: '30deg' }] }]} />
                             <Ionicons name="airplane" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={[styles.statIcon, { transform: [{ rotate: '30deg' }] }]} />
                             <Text style={[styles.statNumber, { color: passportTheme.text }]}>{formatDistance(stats?.totalDistanceKm || 0)}</Text>
-                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>Km</Text>
+                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>{t('profile.kilometers')}</Text>
                         </View>
 
                         {/* Days */}
@@ -316,7 +316,7 @@ export default function ProfileScreen() {
                             <Ionicons name="calendar-outline" size={28} color={passportTheme.goldDim} style={styles.statIconBg} />
                             <Ionicons name="calendar-outline" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={[styles.statIcon, { transform: [{ rotate: '2deg' }] }]} />
                             <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.travelDays || 0}</Text>
-                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>Gün</Text>
+                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>{t('profile.days')}</Text>
                         </View>
                     </View>
                 </View>
@@ -324,7 +324,7 @@ export default function ProfileScreen() {
                 {/* Travel Map Section */}
                 <View style={styles.mapSection}>
                     <View style={styles.sectionHeader}>
-                        <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>Seyahat Haritası</Text>
+                        <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>{t('profile.travelMap')}</Text>
                         <Ionicons name="map-outline" size={16} color={`${passportTheme.gold}E6`} />
                     </View>
                     <View style={[styles.mapContainer, { borderColor: passportTheme.border }]}>
@@ -354,10 +354,10 @@ export default function ProfileScreen() {
                             <View style={[styles.mapPlaceholder, { backgroundColor: passportTheme.paperDark }]}>
                                 <Ionicons name="globe-outline" size={48} color={passportTheme.textMuted} />
                                 <Text style={[styles.mapPlaceholderText, { color: passportTheme.textMuted }]}>
-                                    Henüz seyahat lokasyonu yok
+                                    {t('profile.noTravelLocation')}
                                 </Text>
                                 <Text style={[styles.mapPlaceholderSubtext, { color: passportTheme.textSecondary }]}>
-                                    Lokasyonlu postlar paylaşın
+                                    {t('profile.shareLocationPosts')}
                                 </Text>
                             </View>
                         )}
@@ -367,7 +367,7 @@ export default function ProfileScreen() {
                 {/* Badges Section */}
                 <View style={styles.badgesSection}>
                     <View style={[styles.sectionHeader, { paddingHorizontal: 20 }]}>
-                        <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>Rozetler</Text>
+                        <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>{t('profile.badges')}</Text>
                     </View>
                     <ScrollView
                         horizontal
@@ -413,7 +413,7 @@ export default function ProfileScreen() {
                 {/* Journal Notes Section */}
                 <View style={styles.journalSection}>
                     <View style={[styles.sectionHeader, { borderBottomWidth: 1, borderBottomColor: colorScheme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.1)', paddingBottom: 8 }]}>
-                        <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>Günlük Notları</Text>
+                        <Text style={[styles.sectionTitle, { color: passportTheme.text }]}>{t('profile.journalNotes')}</Text>
                         <Ionicons name="grid-outline" size={16} color={colorScheme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'} />
                     </View>
 
@@ -465,17 +465,17 @@ export default function ProfileScreen() {
                         <View style={[styles.emptyJournalState, { backgroundColor: passportTheme.paperDark }]}>
                             <Ionicons name="book-outline" size={48} color={passportTheme.textMuted} />
                             <Text style={[styles.emptyJournalTitle, { color: passportTheme.text }]}>
-                                Henüz günlük notu yok
+                                {t('profile.noJournalNotes')}
                             </Text>
                             <Text style={[styles.emptyJournalSubtitle, { color: passportTheme.textSecondary }]}>
-                                Seyahat anılarınızı fotoğraflarla paylaşın
+                                {t('profile.shareMemories')}
                             </Text>
                             <TouchableOpacity
                                 style={[styles.createPostButton, { backgroundColor: passportTheme.gold }]}
                                 onPress={() => router.push('/create-post')}
                             >
                                 <Ionicons name="add-circle-outline" size={20} color="white" />
-                                <Text style={styles.createPostButtonText}>İlk Notunu Ekle</Text>
+                                <Text style={styles.createPostButtonText}>{t('profile.addFirstNote')}</Text>
                             </TouchableOpacity>
                         </View>
                     )}

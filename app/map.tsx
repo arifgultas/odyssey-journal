@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { calculateMapCenter, calculateZoomDelta, fetchPostLocations, LocationCluster } from '@/lib/map-locations';
 import { Post } from '@/lib/posts';
@@ -77,6 +78,7 @@ interface PostListModalProps {
 
 // Post List Modal Component
 function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostListModalProps) {
+    const { t } = useLanguage();
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
 
     useEffect(() => {
@@ -102,11 +104,11 @@ function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostLi
         const diffMs = now.getTime() - date.getTime();
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 0) return 'Bugün';
-        if (diffDays === 1) return 'Dün';
-        if (diffDays < 7) return `${diffDays} gün önce`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} hafta önce`;
-        return `${Math.floor(diffDays / 30)} ay önce`;
+        if (diffDays === 0) return t('notifications.today');
+        if (diffDays === 1) return t('time.yesterday');
+        if (diffDays < 7) return t('time.daysAgo', { count: diffDays });
+        if (diffDays < 30) return t('time.weeksAgo', { count: Math.floor(diffDays / 7) });
+        return t('time.monthsAgo', { count: Math.floor(diffDays / 30) });
     };
 
     const renderPostItem = ({ item }: { item: Post }) => (
@@ -133,7 +135,7 @@ function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostLi
             </View>
             <View style={styles.postInfo}>
                 <Text style={[styles.postTitle, { color: theme.text }]} numberOfLines={2}>
-                    {item.title || 'Başlıksız Post'}
+                    {item.title || t('explore.untitledPost')}
                 </Text>
                 <View style={styles.postMeta}>
                     <View style={styles.postAuthor}>
@@ -149,7 +151,7 @@ function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostLi
                             </View>
                         )}
                         <Text style={[styles.authorName, { color: theme.textSecondary }]}>
-                            @{item.profiles?.username || 'user'}
+                            @{item.profiles?.username || t('profile.defaultUser').toLowerCase()}
                         </Text>
                     </View>
                     <Text style={[styles.postDate, { color: theme.textSecondary }]}>
@@ -187,10 +189,10 @@ function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostLi
                                 <Ionicons name="location" size={24} color={theme.accent} />
                                 <View>
                                     <Text style={[styles.modalTitle, { color: theme.text }]}>
-                                        {cluster.locationName || cluster.city || 'Bilinmeyen Konum'}
+                                        {cluster.locationName || cluster.city || t('map.unknownLocation')}
                                     </Text>
                                     <Text style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
-                                        {cluster.postCount} post
+                                        {t('map.postCount', { count: cluster.postCount })}
                                     </Text>
                                 </View>
                             </View>
@@ -270,6 +272,7 @@ function ClusterMarker({ cluster, onPress, theme }: ClusterMarkerProps) {
 
 // Main Map Screen
 export default function MapScreen() {
+    const { t, language } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = MapColors[colorScheme ?? 'light'];
     const insets = useSafeAreaInsets();
@@ -380,7 +383,7 @@ export default function MapScreen() {
                 <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={theme.text} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: theme.text }]}>Harita</Text>
+                <Text style={[styles.headerTitle, { color: theme.text }]}>{t('map.title')}</Text>
                 <TouchableOpacity onPress={handleCenterMap} style={styles.centerButton}>
                     <Ionicons name="locate" size={24} color={theme.accent} />
                 </TouchableOpacity>
@@ -392,7 +395,7 @@ export default function MapScreen() {
                     <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
                         <ActivityIndicator size="large" color={theme.accent} />
                         <Text style={[styles.loadingText, { color: theme.textSecondary }]}>
-                            Harita yükleniyor...
+                            {t('map.loading')}
                         </Text>
                     </View>
                 ) : (!mapsAvailable || Platform.OS === 'web') ? (
@@ -404,13 +407,13 @@ export default function MapScreen() {
                         <View style={[styles.webNotice, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                             <Ionicons name="map-outline" size={48} color={theme.accent} />
                             <Text style={[styles.webNoticeTitle, { color: theme.text }]}>
-                                {Platform.OS === 'web' ? "Harita Web'de Desteklenmiyor" : "Harita Expo Go'da Desteklenmiyor"}
+                                {Platform.OS === 'web' ? t('map.notSupportedWeb') : t('map.notSupportedExpo')}
                             </Text>
                             <Text style={[styles.webNoticeSubtitle, { color: theme.textSecondary }]}>
                                 {Platform.OS === 'web'
-                                    ? "Haritayı görüntülemek için mobil uygulamayı kullanın."
-                                    : "Haritayı görüntülemek için Development Build gerekiyor."}{'\n'}
-                                Aşağıda lokasyonları liste olarak görebilirsiniz.
+                                    ? t('map.useMobileApp')
+                                    : t('map.useDevBuild')}{'\n'}
+                                {t('map.fallbackList')}
                             </Text>
                         </View>
 
@@ -419,7 +422,10 @@ export default function MapScreen() {
                                 <View style={styles.webStatsRow}>
                                     <Ionicons name="pin" size={16} color={theme.accent} />
                                     <Text style={[styles.webStatsText, { color: theme.text }]}>
-                                        {clusters.length} konum • {clusters.reduce((sum, c) => sum + c.postCount, 0)} post
+                                        {t('map.stats', {
+                                            locationCount: clusters.length,
+                                            postCount: clusters.reduce((sum, c) => sum + c.postCount, 0)
+                                        })}
                                     </Text>
                                 </View>
 
@@ -435,10 +441,10 @@ export default function MapScreen() {
                                         </View>
                                         <View style={styles.webLocationInfo}>
                                             <Text style={[styles.webLocationName, { color: theme.text }]}>
-                                                {cluster.locationName || cluster.city || 'Bilinmeyen Konum'}
+                                                {cluster.locationName || cluster.city || t('map.unknownLocation')}
                                             </Text>
                                             <Text style={[styles.webLocationMeta, { color: theme.textSecondary }]}>
-                                                {cluster.postCount} post • {cluster.country || ''}
+                                                {t('map.postCount', { count: cluster.postCount })} • {cluster.country || ''}
                                             </Text>
                                         </View>
                                         <View style={[styles.webLocationBadge, { backgroundColor: theme.accent }]}>
@@ -453,10 +459,10 @@ export default function MapScreen() {
                             <View style={styles.webEmptyState}>
                                 <Ionicons name="location-outline" size={64} color={theme.accent} />
                                 <Text style={[styles.emptyTitle, { color: theme.text }]}>
-                                    Henüz konumlu post yok
+                                    {t('map.noPosts')}
                                 </Text>
                                 <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                                    Post oluştururken konum ekleyerek haritada görünebilirsiniz
+                                    {t('map.addLocationTip')}
                                 </Text>
                             </View>
                         )}
@@ -508,10 +514,10 @@ export default function MapScreen() {
                             <View style={[styles.emptyOverlay, { backgroundColor: `${theme.background}CC` }]}>
                                 <Ionicons name="location-outline" size={64} color={theme.accent} />
                                 <Text style={[styles.emptyTitle, { color: theme.text }]}>
-                                    Henüz konumlu post yok
+                                    {t('map.noPosts')}
                                 </Text>
                                 <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                                    Post oluştururken konum ekleyerek haritada görünebilirsiniz
+                                    {t('map.addLocationTip')}
                                 </Text>
                             </View>
                         )}
@@ -521,7 +527,10 @@ export default function MapScreen() {
                             <View style={[styles.statsBadge, { backgroundColor: theme.surface, borderColor: theme.border, top: insets.top + 70 }]}>
                                 <Ionicons name="pin" size={16} color={theme.accent} />
                                 <Text style={[styles.statsText, { color: theme.text }]}>
-                                    {clusters.length} konum • {clusters.reduce((sum, c) => sum + c.postCount, 0)} post
+                                    {t('map.stats', {
+                                        locationCount: clusters.length,
+                                        postCount: clusters.reduce((sum, c) => sum + c.postCount, 0)
+                                    })}
                                 </Text>
                             </View>
                         )}

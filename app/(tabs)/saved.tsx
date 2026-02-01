@@ -1,6 +1,7 @@
 import { CreateCollectionModal } from '@/components/create-collection-modal';
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
 import { getCollections } from '@/lib/collections';
@@ -61,6 +62,7 @@ export default function SavedPostsScreen() {
     const theme = Colors[colorScheme ?? 'light'];
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
+    const { t, language } = useLanguage();
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(false); // İlk yükleme durumu kaldırıldı
@@ -103,7 +105,7 @@ export default function SavedPostsScreen() {
             setPage(pageNum);
         } catch (error) {
             console.error('Error loading bookmarked posts:', error);
-            Alert.alert('Hata', 'Kaydedilen gönderiler yüklenemedi');
+            Alert.alert(t('common.error'), t('saved.loadError'));
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
@@ -256,7 +258,7 @@ export default function SavedPostsScreen() {
                     <Text style={styles.collectionName}>{collection.name}</Text>
                     <View style={styles.collectionMeta}>
                         <MaterialIcons name="photo-library" size={10} color="#D4A574" />
-                        <Text style={styles.collectionCount}>{collection.post_count} Gönderi</Text>
+                        <Text style={styles.collectionCount}>{collection.post_count} {t('saved.posts')}</Text>
                     </View>
                 </View>
             </View>
@@ -298,7 +300,7 @@ export default function SavedPostsScreen() {
         };
 
         const imageUrl = post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400';
-        const locationText = post.location?.city || post.location?.country || 'Bilinmeyen Konum';
+        const locationText = post.location?.city || post.location?.country || t('saved.unknownLocation');
 
         return (
             <Pressable
@@ -331,7 +333,7 @@ export default function SavedPostsScreen() {
                         </View>
                         <View style={styles.polaroidCaption}>
                             <Text style={styles.polaroidTitle} numberOfLines={1}>
-                                {post.title || 'Başlıksız'}
+                                {post.title || t('saved.untitled')}
                             </Text>
                             <View style={styles.polaroidLocation}>
                                 <MaterialIcons name="location-on" size={10} color="#8B7355" />
@@ -355,7 +357,7 @@ export default function SavedPostsScreen() {
                         <View style={styles.backContent}>
                             {/* Header */}
                             <View style={styles.backHeader}>
-                                <Text style={[styles.backLabel, { color: '#D4A574' }]}>Detaylar</Text>
+                                <Text style={[styles.backLabel, { color: '#D4A574' }]}>{t('saved.details')}</Text>
                                 <TouchableOpacity
                                     onPress={() => handleLike(post.id, !post.isLiked)}
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -376,7 +378,7 @@ export default function SavedPostsScreen() {
                                 ]}
                                 numberOfLines={4}
                             >
-                                "{post.content || 'Bu gönderi için not eklenmemiş.'}"
+                                "{post.content || t('saved.noNote')}"
                             </Text>
 
                             {/* Footer */}
@@ -412,7 +414,7 @@ export default function SavedPostsScreen() {
             <View style={styles.collectionsSection}>
                 <View style={styles.collectionsSectionHeader}>
                     <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-                        Koleksiyonlar
+                        {t('saved.collections')}
                     </Text>
                     <TouchableOpacity
                         style={styles.newCollectionButton}
@@ -420,7 +422,7 @@ export default function SavedPostsScreen() {
                         onPress={() => setShowCreateCollectionModal(true)}
                     >
                         <MaterialIcons name="add" size={14} color="#2C1810" />
-                        <Text style={styles.newCollectionText}>Yeni</Text>
+                        <Text style={styles.newCollectionText}>{t('saved.new')}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -440,10 +442,10 @@ export default function SavedPostsScreen() {
                         <View style={[styles.emptyCollectionCard, { borderColor: colors.border }]}>
                             <Ionicons name="folder-outline" size={32} color={colors.accent} style={{ opacity: 0.6 }} />
                             <Text style={[styles.emptyCollectionText, { color: colors.textSecondary }]}>
-                                Henüz koleksiyon yok
+                                {t('saved.noCollectionsYet')}
                             </Text>
                             <Text style={[styles.emptyCollectionSubtext, { color: colors.textSecondary }]}>
-                                Gönderilerinizi düzenlemek için koleksiyon oluşturun
+                                {t('saved.createCollectionHint')}
                             </Text>
                         </View>
                     </View>
@@ -464,10 +466,10 @@ export default function SavedPostsScreen() {
             <View style={styles.emptyContainer}>
                 <Ionicons name="bookmark-outline" size={80} color="#D4A574" />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
-                    Kaydedilen Gönderi Yok
+                    {t('saved.noSavedPosts')}
                 </ThemedText>
                 <ThemedText style={[styles.emptyText, { color: colors.textSecondary }]}>
-                    Kaydettiğiniz gönderiler burada görünecek
+                    {t('saved.savedPostsWillAppear')}
                 </ThemedText>
             </View>
         );
@@ -498,7 +500,7 @@ export default function SavedPostsScreen() {
                 <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
                     <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Kaydedilenler</Text>
+                <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('saved.title')}</Text>
                 <TouchableOpacity style={styles.headerButton}>
                     <MaterialIcons name="search" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>

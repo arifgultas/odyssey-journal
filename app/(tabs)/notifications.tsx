@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
     getNotifications,
@@ -115,6 +116,7 @@ export default function NotificationsScreen() {
     const theme = Colors[colorScheme ?? 'light'];
     const letterTheme = LetterColors[colorScheme ?? 'light'];
     const insets = useSafeAreaInsets();
+    const { t, language } = useLanguage();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -166,7 +168,7 @@ export default function NotificationsScreen() {
             setPage(pageNum);
         } catch (error) {
             console.error('Error loading notifications:', error);
-            Alert.alert('Hata', 'Bildirimler yüklenemedi');
+            Alert.alert(t('common.error'), t('notifications.loadError'));
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
@@ -217,7 +219,7 @@ export default function NotificationsScreen() {
             setUnreadCount(0);
         } catch (error) {
             console.error('Error marking all as read:', error);
-            Alert.alert('Hata', 'Tüm bildirimler okundu olarak işaretlenemedi');
+            Alert.alert(t('common.error'), t('notifications.markAllError'));
         }
     };
 
@@ -263,11 +265,11 @@ export default function NotificationsScreen() {
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 60) return `${diffMins} dakika önce`;
-        if (diffHours < 24) return `${diffHours} saat önce`;
-        if (diffDays === 1) return 'Dün';
-        if (diffDays < 7) return `${diffDays} gün önce`;
-        return 'Geçen hafta';
+        if (diffMins < 60) return t('time.minutesAgo', { count: diffMins });
+        if (diffHours < 24) return t('time.hoursAgo', { count: diffHours });
+        if (diffDays === 1) return t('time.yesterday');
+        if (diffDays < 7) return t('time.daysAgo', { count: diffDays });
+        return t('time.lastWeek');
     };
 
     const getNotificationIcon = (type: string): keyof typeof Ionicons.glyphMap => {
@@ -281,19 +283,19 @@ export default function NotificationsScreen() {
     };
 
     const getNotificationMessage = (notification: any): string => {
-        const actorName = notification.actor_full_name || notification.actor_username || 'Birisi';
+        const actorName = notification.actor_full_name || notification.actor_username || t('notifications.someone');
 
         switch (notification.type) {
             case 'like':
-                return `${actorName} '${notification.post_title || 'yazını'}' beğendi`;
+                return `${actorName} ${t('notifications.likedPost', { postTitle: notification.post_title || 'your post' })}`;
             case 'comment':
-                return `${actorName} ${notification.post_title || 'gönderine'} yorum yaptı`;
+                return `${actorName} ${t('notifications.commented', { postTitle: notification.post_title || 'your post' })}`;
             case 'follow':
-                return `${actorName} seni takip etmeye başladı`;
+                return `${actorName} ${t('notifications.followed')}`;
             case 'location':
-                return `Yakınlarda yeni bir rota keşfedildi: ${notification.location_name}`;
+                return t('notifications.nearbyRoute', { locationName: notification.location_name });
             default:
-                return 'Yeni bildirim';
+                return t('notifications.newNotification');
         }
     };
 
@@ -396,7 +398,7 @@ export default function NotificationsScreen() {
                     <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
                         <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
                     </TouchableOpacity>
-                    <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>BİLDİRİMLER</Text>
+                    <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>{t('notifications.title').toUpperCase()}</Text>
                     <View style={styles.backButton} />
                 </View>
                 <View style={styles.loadingContainer}>
@@ -420,7 +422,7 @@ export default function NotificationsScreen() {
                 >
                     <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>BİLDİRİMLER</Text>
+                <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>{t('notifications.title').toUpperCase()}</Text>
                 <View style={styles.backButton} />
             </View>
 
@@ -439,7 +441,7 @@ export default function NotificationsScreen() {
                 {/* Today Section */}
                 {groupedNotifications.today.length > 0 && (
                     <View style={styles.section}>
-                        {renderSectionDivider('Bugün')}
+                        {renderSectionDivider(t('notifications.today'))}
                         <View style={styles.cardsContainer}>
                             {groupedNotifications.today.map((n, i) =>
                                 renderNotificationCard(n, false, i % 2 === 0 ? 0.5 : -0.5)
@@ -451,7 +453,7 @@ export default function NotificationsScreen() {
                 {/* This Week Section */}
                 {groupedNotifications.thisWeek.length > 0 && (
                     <View style={styles.section}>
-                        {renderSectionDivider('Bu Hafta')}
+                        {renderSectionDivider(t('notifications.thisWeek'))}
                         <View style={styles.cardsContainer}>
                             {groupedNotifications.thisWeek.map((n, i) =>
                                 renderNotificationCard(n, false, i % 2 === 0 ? -0.5 : 1)
@@ -463,7 +465,7 @@ export default function NotificationsScreen() {
                 {/* Older Section */}
                 {groupedNotifications.older.length > 0 && (
                     <View style={styles.section}>
-                        {renderSectionDivider('Daha Eski', false)}
+                        {renderSectionDivider(t('notifications.older'), false)}
                         <View style={[styles.cardsContainer, { opacity: 0.8 }]}>
                             {groupedNotifications.older.map((n, i) =>
                                 renderNotificationCard(n, true, i % 2 === 0 ? 1 : -0.5)
@@ -478,7 +480,7 @@ export default function NotificationsScreen() {
                         <Ionicons name="mail-open-outline" size={36} color={letterTheme.inkMuted} />
                     </View>
                     <Text style={[styles.emptyText, { color: letterTheme.inkMuted }]}>
-                        Posta kutusu güncel
+                        {t('notifications.inboxUpToDate')}
                     </Text>
                 </View>
 

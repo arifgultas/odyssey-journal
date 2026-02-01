@@ -1,4 +1,5 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -52,6 +53,7 @@ export default function ForgotPasswordScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? StitchColors.dark : StitchColors.light;
+    const { t, language } = useLanguage();
 
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
@@ -60,14 +62,14 @@ export default function ForgotPasswordScreen() {
 
     async function handleResetPassword() {
         if (!email) {
-            Alert.alert('Hata', 'Lütfen e-posta adresinizi girin.');
+            Alert.alert(t('common.error'), t('auth.enterEmail'));
             return;
         }
 
         // Basic email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            Alert.alert('Hata', 'Lütfen geçerli bir e-posta adresi girin.');
+            Alert.alert(t('common.error'), t('auth.invalidEmail'));
             return;
         }
 
@@ -77,7 +79,7 @@ export default function ForgotPasswordScreen() {
         });
 
         if (error) {
-            Alert.alert('Hata', error.message);
+            Alert.alert(t('common.error'), error.message);
         } else {
             setEmailSent(true);
         }
@@ -100,21 +102,20 @@ export default function ForgotPasswordScreen() {
                     <Text style={[styles.successTitle, {
                         color: isDark ? theme.primaryGold : theme.primaryDark
                     }]}>
-                        E-posta Gönderildi!
+                        {t('auth.emailSent')}
                     </Text>
 
                     <Text style={[styles.successMessage, {
                         color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
                     }]}>
-                        Şifre sıfırlama bağlantısı{'\n'}
+                        {t('auth.resetLinkSentTo')}{'\n'}
                         <Text style={{ color: theme.tealLink, fontWeight: '600' }}>{email}</Text>
-                        {'\n'}adresine gönderildi.
                     </Text>
 
                     <Text style={[styles.successHint, {
                         color: isDark ? 'rgba(245, 241, 232, 0.5)' : 'rgba(44, 24, 16, 0.5)'
                     }]}>
-                        E-posta gelen kutunuzu kontrol edin. Spam klasörünü de kontrol etmeyi unutmayın.
+                        {t('auth.checkInboxSpam')}
                     </Text>
 
                     {/* Back to Login Button */}
@@ -142,7 +143,7 @@ export default function ForgotPasswordScreen() {
                                 fontWeight: '700',
                                 color: isDark ? '#2C1810' : '#D4A574',
                             }}>
-                                Giriş Sayfasına Dön
+                                {t('auth.backToLogin')}
                             </Text>
                         </TouchableOpacity>
                     </Link>
@@ -157,7 +158,7 @@ export default function ForgotPasswordScreen() {
                         activeOpacity={0.7}
                     >
                         <Text style={[styles.resendText, { color: theme.tealLink }]}>
-                            E-posta gelmedi mi? Tekrar gönder
+                            {t('auth.resendEmail')}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -204,13 +205,12 @@ export default function ForgotPasswordScreen() {
                             <Text style={[styles.appTitle, {
                                 color: isDark ? theme.primaryGold : theme.primaryDark
                             }]}>
-                                Şifremi Unuttum
+                                {t('auth.forgotPasswordTitle')}
                             </Text>
                             <Text style={[styles.tagline, {
                                 color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
                             }]}>
-                                Endişelenme, herkese olabilir.{'\n'}
-                                Şifreni sıfırlamak için e-posta adresini gir.
+                                {t('auth.forgotPasswordSubtitle')}
                             </Text>
                         </View>
                     </View>
@@ -235,7 +235,7 @@ export default function ForgotPasswordScreen() {
                             }]}>
                                 <TextInput
                                     style={[styles.input, { color: theme.text }]}
-                                    placeholder="E-posta Adresi"
+                                    placeholder={t('auth.emailAddress')}
                                     placeholderTextColor={theme.textMuted}
                                     value={email}
                                     onChangeText={setEmail}
@@ -253,7 +253,7 @@ export default function ForgotPasswordScreen() {
                                     <Text style={[styles.floatingLabel, {
                                         color: emailFocused ? theme.primaryGold : theme.textMuted,
                                     }]}>
-                                        E-posta Adresi
+                                        {t('auth.emailAddress')}
                                     </Text>
                                 </View>
                             )}
@@ -296,7 +296,7 @@ export default function ForgotPasswordScreen() {
                                         fontWeight: '700',
                                         color: isDark ? '#2C1810' : '#D4A574',
                                     }}>
-                                        Sıfırlama Bağlantısı Gönder
+                                        {t('auth.sendResetLink')}
                                     </Text>
                                 </>
                             )}
@@ -307,12 +307,12 @@ export default function ForgotPasswordScreen() {
                             <Text style={[styles.loginLinkText, {
                                 color: isDark ? 'rgba(245, 241, 232, 0.6)' : 'rgba(44, 24, 16, 0.6)'
                             }]}>
-                                Şifreni hatırladın mı?{' '}
+                                {t('auth.rememberPassword')}{' '}
                             </Text>
                             <Link href="/login" asChild>
                                 <TouchableOpacity>
                                     <Text style={[styles.loginLink, { color: theme.tealLink }]}>
-                                        Giriş Yap
+                                        {t('auth.login')}
                                     </Text>
                                 </TouchableOpacity>
                             </Link>
@@ -328,7 +328,7 @@ export default function ForgotPasswordScreen() {
                             <Text style={[styles.securityNoteText, {
                                 color: isDark ? 'rgba(245, 241, 232, 0.6)' : 'rgba(44, 24, 16, 0.6)'
                             }]}>
-                                Güvenliğiniz için şifre sıfırlama bağlantısı 1 saat geçerlidir.
+                                {t('auth.resetLinkValidity')}
                             </Text>
                         </View>
                     </View>
@@ -338,7 +338,7 @@ export default function ForgotPasswordScreen() {
                         <Text style={[styles.footerText, {
                             color: isDark ? 'rgba(245, 241, 232, 0.4)' : 'rgba(44, 24, 16, 0.5)',
                         }]}>
-                            © 2026 Odyssey Journal. Tüm hakları saklıdır.
+                            {t('auth.copyright')}
                         </Text>
                     </View>
                 </View>

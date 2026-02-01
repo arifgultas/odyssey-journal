@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
 import { deleteCollection, getCollectionById, getCollectionPosts } from '@/lib/collections';
@@ -56,6 +57,7 @@ const DesignColors = {
 export default function CollectionDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const colorScheme = useColorScheme();
+    const { t } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
@@ -135,12 +137,12 @@ export default function CollectionDetailScreen() {
         if (!collection) return;
 
         Alert.alert(
-            'Koleksiyonu Sil',
-            `"${collection.name}" koleksiyonunu silmek istediğinize emin misiniz? Kaydedilen gönderiler silinmeyecek.`,
+            t('collection.deleteTitle'),
+            t('collection.deleteConfirm', { name: collection.name }),
             [
-                { text: 'İptal', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: 'Sil',
+                    text: t('common.delete'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -148,7 +150,7 @@ export default function CollectionDetailScreen() {
                             router.back();
                         } catch (error) {
                             console.error('Error deleting collection:', error);
-                            Alert.alert('Hata', 'Koleksiyon silinemedi');
+                            Alert.alert(t('collection.errorTitle'), t('collection.deleteError'));
                         }
                     },
                 },
@@ -400,10 +402,10 @@ export default function CollectionDetailScreen() {
             <View style={styles.emptyContainer}>
                 <Ionicons name="images-outline" size={64} color={colors.accent} />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
-                    Koleksiyon Boş
+                    {t('collection.empty')}
                 </ThemedText>
                 <ThemedText style={[styles.emptyText, { color: colors.textSecondary }]}>
-                    Bu koleksiyona henüz gönderi eklenmemiş
+                    {t('collection.emptyDesc')}
                 </ThemedText>
             </View>
         );
@@ -430,7 +432,7 @@ export default function CollectionDetailScreen() {
     if (!collection) {
         return (
             <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
-                <ThemedText>Koleksiyon bulunamadı</ThemedText>
+                <ThemedText>{t('collection.notFound')}</ThemedText>
             </View>
         );
     }

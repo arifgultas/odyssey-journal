@@ -1,4 +1,5 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -52,6 +53,7 @@ export default function LoginScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? StitchColors.dark : StitchColors.light;
+    const { t, language } = useLanguage();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -62,7 +64,7 @@ export default function LoginScreen() {
 
     async function signInWithEmail() {
         if (!email || !password) {
-            Alert.alert('Hata', 'Lütfen e-posta ve şifrenizi girin.');
+            Alert.alert(t('common.error'), t('auth.enterEmailPassword'));
             return;
         }
 
@@ -72,16 +74,16 @@ export default function LoginScreen() {
             password,
         });
 
-        if (error) Alert.alert('Giriş Hatası', error.message);
+        if (error) Alert.alert(t('auth.loginError'), error.message);
         setLoading(false);
     }
 
     async function signInWithGoogle() {
-        Alert.alert('Yakında', 'Google ile giriş yakında aktif olacak!');
+        Alert.alert(t('auth.comingSoon'), t('auth.googleLoginSoon'));
     }
 
     async function signInWithApple() {
-        Alert.alert('Yakında', 'Apple ile giriş yakında aktif olacak!');
+        Alert.alert(t('auth.comingSoon'), t('auth.appleLoginSoon'));
     }
 
     return (
@@ -121,7 +123,7 @@ export default function LoginScreen() {
                                 <Text style={[styles.tagline, {
                                     color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
                                 }]}>
-                                    Dünyayı keşfet, hikayeni paylaş.
+                                    {t('auth.tagline')}
                                 </Text>
                             </View>
                         </View>
@@ -137,7 +139,7 @@ export default function LoginScreen() {
                                 }]}>
                                     <TextInput
                                         style={[styles.input, { color: theme.text }]}
-                                        placeholder="E-posta veya Kullanıcı Adı"
+                                        placeholder={t('auth.emailOrUsername')}
                                         placeholderTextColor={theme.textMuted}
                                         value={email}
                                         onChangeText={setEmail}
@@ -155,7 +157,7 @@ export default function LoginScreen() {
                                         <Text style={[styles.floatingLabel, {
                                             color: emailFocused ? theme.primaryGold : theme.textMuted,
                                         }]}>
-                                            E-posta veya Kullanıcı Adı
+                                            {t('auth.emailOrUsername')}
                                         </Text>
                                     </View>
                                 )}
@@ -170,7 +172,7 @@ export default function LoginScreen() {
                                 }]}>
                                     <TextInput
                                         style={[styles.input, styles.inputWithIcon, { color: theme.text }]}
-                                        placeholder="Şifre"
+                                        placeholder={t('auth.password')}
                                         placeholderTextColor={theme.textMuted}
                                         value={password}
                                         onChangeText={setPassword}
@@ -198,7 +200,7 @@ export default function LoginScreen() {
                                         <Text style={[styles.floatingLabel, {
                                             color: passwordFocused ? theme.primaryGold : theme.textMuted,
                                         }]}>
-                                            Şifre
+                                            {t('auth.password')}
                                         </Text>
                                     </View>
                                 )}
@@ -209,7 +211,7 @@ export default function LoginScreen() {
                                 <Link href="/forgot-password" asChild>
                                     <TouchableOpacity activeOpacity={0.7}>
                                         <Text style={[styles.forgotPasswordText, { color: theme.tealLink }]}>
-                                            Şifremi Unuttum?
+                                            {t('auth.forgotPassword')}
                                         </Text>
                                     </TouchableOpacity>
                                 </Link>
@@ -243,7 +245,7 @@ export default function LoginScreen() {
                                         fontWeight: '700',
                                         color: isDark ? '#2C1810' : '#D4A574',
                                     }}>
-                                        Giriş Yap
+                                        {t('auth.login')}
                                     </Text>
                                 )}
                             </TouchableOpacity>
@@ -255,7 +257,7 @@ export default function LoginScreen() {
                                     <Text style={[styles.dividerText, {
                                         color: isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.5)',
                                     }]}>
-                                        veya şununla devam et
+                                        {t('auth.orContinueWith')}
                                     </Text>
                                 </View>
                                 <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
@@ -326,7 +328,7 @@ export default function LoginScreen() {
                                     fontWeight: '700',
                                     color: isDark ? '#D4A574' : '#2C1810',
                                 }}>
-                                    Hesap Oluştur
+                                    {t('auth.createAccount')}
                                 </Text>
                             </TouchableOpacity>
                         </Link>
@@ -336,7 +338,7 @@ export default function LoginScreen() {
                             <Text style={[styles.footerText, {
                                 color: isDark ? 'rgba(245, 241, 232, 0.4)' : 'rgba(44, 24, 16, 0.5)',
                             }]}>
-                                © 2026 Odyssey Journal. Tüm hakları saklıdır.
+                                {t('auth.copyright')}
                             </Text>
                         </View>
                     </View>

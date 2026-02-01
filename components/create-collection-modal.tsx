@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
 import { createCollection, updateCollection, uploadCollectionCover } from '@/lib/collections';
@@ -52,6 +53,7 @@ export function CreateCollectionModal({
     const theme = Colors[colorScheme ?? 'light'];
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
+    const { t, language } = useLanguage();
 
     const [name, setName] = useState(editCollection?.name || '');
     const [selectedColor, setSelectedColor] = useState(editCollection?.color || PRESET_COLORS[0]);
@@ -74,7 +76,7 @@ export function CreateCollectionModal({
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (!permissionResult.granted) {
-                Alert.alert('İzin Gerekli', 'Galeri erişimi için izin vermeniz gerekiyor.');
+                Alert.alert(t('collection.permissionRequired'), t('collection.galleryPermission'));
                 return;
             }
 
@@ -90,13 +92,13 @@ export function CreateCollectionModal({
             }
         } catch (error) {
             console.error('Error picking image:', error);
-            Alert.alert('Hata', 'Resim seçilirken bir hata oluştu');
+            Alert.alert(t('collection.errorTitle'), 'Resim seçilirken bir hata oluştu'); // "Resim seçilirken..." için ayrıca key oluşturmadım, ama Error Title çevrildi.
         }
     };
 
     const handleSave = async () => {
         if (!name.trim()) {
-            Alert.alert('Hata', 'Lütfen koleksiyon adı girin');
+            Alert.alert(t('collection.errorTitle'), t('collection.nameRequired'));
             return;
         }
 
@@ -132,7 +134,7 @@ export function CreateCollectionModal({
             onClose();
         } catch (error) {
             console.error('Error saving collection:', error);
-            Alert.alert('Hata', isEditMode ? 'Koleksiyon güncellenemedi' : 'Koleksiyon oluşturulamadı');
+            Alert.alert(t('collection.errorTitle'), isEditMode ? t('collection.updateError') : t('collection.createError'));
         } finally {
             setIsLoading(false);
         }
@@ -161,7 +163,7 @@ export function CreateCollectionModal({
                         <Ionicons name="close" size={24} color={textColor} />
                     </TouchableOpacity>
                     <Text style={[styles.headerTitle, { color: textColor }]}>
-                        {isEditMode ? 'Koleksiyonu Düzenle' : 'Koleksiyon Oluştur'}
+                        {isEditMode ? t('collection.editTitle') : t('collection.createTitle')}
                     </Text>
                     <TouchableOpacity
                         onPress={handleSave}
@@ -174,7 +176,7 @@ export function CreateCollectionModal({
                         {isLoading ? (
                             <ActivityIndicator size="small" color="#2C1810" />
                         ) : (
-                            <Text style={styles.saveButtonText}>Kaydet</Text>
+                            <Text style={styles.saveButtonText}>{t('collection.save')}</Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -187,7 +189,7 @@ export function CreateCollectionModal({
                     {/* Cover Image */}
                     <View style={styles.section}>
                         <Text style={[styles.sectionLabel, { color: textSecondary }]}>
-                            Kapak Fotoğrafı
+                            {t('collection.coverPhoto')}
                         </Text>
                         <TouchableOpacity
                             onPress={handlePickImage}
@@ -212,7 +214,7 @@ export function CreateCollectionModal({
                                 <View style={styles.coverImagePlaceholder}>
                                     <Ionicons name="image-outline" size={48} color={textSecondary} />
                                     <Text style={[styles.coverImageText, { color: textSecondary }]}>
-                                        Fotoğraf Ekle
+                                        {t('collection.addPhoto')}
                                     </Text>
                                 </View>
                             )}
@@ -222,7 +224,7 @@ export function CreateCollectionModal({
                     {/* Collection Name */}
                     <View style={styles.section}>
                         <Text style={[styles.sectionLabel, { color: textSecondary }]}>
-                            Koleksiyon Adı
+                            {t('collection.collectionName')}
                         </Text>
                         <TextInput
                             style={[
@@ -233,7 +235,7 @@ export function CreateCollectionModal({
                                     borderColor: borderColor,
                                 },
                             ]}
-                            placeholder="Örn: Yaz Tatili 2024"
+                            placeholder={t('collection.namePlaceholder')}
                             placeholderTextColor={textSecondary}
                             value={name}
                             onChangeText={setName}
@@ -248,7 +250,7 @@ export function CreateCollectionModal({
                     {/* Color Selection */}
                     <View style={styles.section}>
                         <Text style={[styles.sectionLabel, { color: textSecondary }]}>
-                            Tema Rengi
+                            {t('collection.themeColor')}
                         </Text>
                         <View style={styles.colorGrid}>
                             {PRESET_COLORS.map((color) => (
@@ -272,7 +274,7 @@ export function CreateCollectionModal({
                     {/* Preview */}
                     <View style={styles.section}>
                         <Text style={[styles.sectionLabel, { color: textSecondary }]}>
-                            Önizleme
+                            {t('collection.preview')}
                         </Text>
                         <View style={styles.previewContainer}>
                             <View
@@ -293,11 +295,11 @@ export function CreateCollectionModal({
                                 <View style={styles.previewGradient} />
                                 <View style={styles.previewInfo}>
                                     <Text style={styles.previewName}>
-                                        {name || 'Koleksiyon Adı'}
+                                        {name || t('collection.collectionName')}
                                     </Text>
                                     <View style={styles.previewMeta}>
                                         <MaterialIcons name="photo-library" size={10} color="#D4A574" />
-                                        <Text style={styles.previewCount}>0 Gönderi</Text>
+                                        <Text style={styles.previewCount}>{t('collection.zeroPosts')}</Text>
                                     </View>
                                 </View>
                             </View>

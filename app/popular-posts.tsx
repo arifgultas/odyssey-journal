@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAllTrendingPosts } from '@/hooks/use-search';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function PopularPostsScreen() {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
+    const { t } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
 
     const { data: posts, isLoading, error } = useAllTrendingPosts(0, 50);
@@ -67,7 +69,7 @@ export default function PopularPostsScreen() {
 
                 <View style={styles.postContent}>
                     <Text style={[styles.postTitle, { color: theme.text }]} numberOfLines={2}>
-                        {item.title || 'Başlıksız Gönderi'}
+                        {item.title || t('popularPosts.untitledPost')}
                     </Text>
                     <Text style={[styles.postDescription, { color: theme.textSecondary }]} numberOfLines={2}>
                         {item.content}
@@ -86,7 +88,7 @@ export default function PopularPostsScreen() {
                                 </View>
                             )}
                             <Text style={[styles.authorName, { color: theme.textSecondary }]}>
-                                {item.profiles?.full_name?.split(' ')[0] || item.profiles?.username || 'Kullanıcı'}
+                                {item.profiles?.full_name?.split(' ')[0] || item.profiles?.username || t('popularPosts.user')}
                             </Text>
                         </View>
                         <View style={styles.postStats}>
@@ -113,10 +115,10 @@ export default function PopularPostsScreen() {
         <View style={styles.emptyContainer}>
             <Ionicons name="trending-up-outline" size={64} color={theme.border} />
             <Text style={[styles.emptyTitle, { color: theme.text }]}>
-                Popüler gönderi yok
+                {t('popularPosts.empty')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                Henüz popüler gönderi bulunmuyor
+                {t('popularPosts.emptyDesc')}
             </Text>
         </View>
     );
@@ -134,7 +136,7 @@ export default function PopularPostsScreen() {
                 <View style={styles.headerTitleContainer}>
                     <Ionicons name="trending-up" size={20} color="#DAA520" style={{ marginRight: 8 }} />
                     <Text style={[styles.headerTitle, { color: theme.text }]}>
-                        Popüler Gönderiler
+                        {t('popularPosts.title')}
                     </Text>
                 </View>
                 <View style={styles.headerSpacer} />
@@ -149,7 +151,7 @@ export default function PopularPostsScreen() {
                 <View style={styles.errorContainer}>
                     <Ionicons name="alert-circle-outline" size={48} color={theme.error} />
                     <Text style={[styles.errorText, { color: theme.text }]}>
-                        Bir hata oluştu
+                        {t('popularPosts.error')}
                     </Text>
                 </View>
             ) : (

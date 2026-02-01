@@ -57,9 +57,12 @@ const DesignColors = {
     },
 };
 
+import { useLanguage } from '@/context/language-context';
+
 export default function PostDetailScreen() {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
+    const { t, language } = useLanguage();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
 
@@ -176,24 +179,24 @@ export default function PostDetailScreen() {
         if (!post) return;
 
         Alert.alert(
-            'Delete Post',
-            'Are you sure you want to delete this post? This action cannot be undone.',
+            t('post.deleteTitle'),
+            t('post.deleteConfirm'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('common.cancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Delete',
+                    text: t('common.delete'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             await deletePost(post.id);
-                            Alert.alert('Success', 'Post deleted successfully');
+                            Alert.alert(t('common.success'), t('post.deleteSuccess'));
                             router.back();
                         } catch (error) {
                             console.error('Error deleting post:', error);
-                            Alert.alert('Error', 'Failed to delete post');
+                            Alert.alert(t('common.error'), t('post.deleteError'));
                         }
                     },
                 },
@@ -204,7 +207,7 @@ export default function PostDetailScreen() {
 
     const formatFullDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
+        return date.toLocaleDateString(language, {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -213,10 +216,11 @@ export default function PostDetailScreen() {
 
     const formatDayOfWeek = (dateString: string) => {
         const date = new Date(dateString);
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+        const dayName = date.toLocaleDateString(language, { weekday: 'long' });
         const hour = date.getHours();
+        // Simple time of day localization - could be improved with t()
         const timeOfDay = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
-        return `${dayName} ${timeOfDay}`;
+        return `${dayName}`;
     };
 
     // Parallax effect for hero image
@@ -413,7 +417,7 @@ export default function PostDetailScreen() {
                             {!isOwnPost && (
                                 <TouchableOpacity style={[styles.followBtn, { backgroundColor: theme.primary }]}>
                                     <Text style={[styles.followBtnText, { color: isDark ? theme.background : '#FFFFFF' }]}>
-                                        Follow
+                                        {t('follow.follow')}
                                     </Text>
                                 </TouchableOpacity>
                             )}
@@ -456,7 +460,7 @@ export default function PostDetailScreen() {
                                             <Text style={styles.polaroidCaptionText}>
                                                 {post.image_captions && post.image_captions[index]
                                                     ? post.image_captions[index]
-                                                    : `Anı ${index + 1}`}
+                                                    : `${t('post.memory')} ${index + 1}`}
                                             </Text>
                                         </View>
                                     </TouchableOpacity>
@@ -488,10 +492,10 @@ export default function PostDetailScreen() {
                                         <Ionicons name="compass" size={32} color={theme.textMuted} />
                                         <View style={styles.mapLocationText}>
                                             <Text style={[styles.mapLocationName, { color: theme.textMuted }]}>
-                                                {post.location.city || 'Location'}
+                                                {post.location.city || t('post.location')}
                                             </Text>
                                             <Text style={[styles.mapLocationCountry, { color: theme.textSubtle }]}>
-                                                {post.location.country || post.location.address || 'Address'}
+                                                {post.location.country || post.location.address || t('post.address')}
                                             </Text>
                                         </View>
                                     </View>
@@ -526,11 +530,11 @@ export default function PostDetailScreen() {
                     <View style={styles.notesSection}>
                         <View style={styles.notesSectionHeader}>
                             <Text style={[styles.notesSectionTitle, { color: theme.textMain }]}>
-                                Memories & Notes
+                                {t('post.memoriesTitle')}
                             </Text>
                             <View style={[styles.notesCount, { backgroundColor: isDark ? theme.paper : 'rgba(232, 220, 200, 0.5)', borderColor: isDark ? 'rgba(139, 94, 60, 0.2)' : 'rgba(139, 94, 60, 0.2)' }]}>
                                 <Text style={[styles.notesCountText, { color: isDark ? theme.accentGold : theme.borderBrown }]}>
-                                    {post.comments_count || 0} Notes
+                                    {t('post.notesCount', { count: post.comments_count || 0 })}
                                 </Text>
                             </View>
                         </View>
@@ -540,10 +544,10 @@ export default function PostDetailScreen() {
                             <View style={[styles.emptyNotes, { backgroundColor: isDark ? theme.paper : '#FFFFFF', borderColor: isDark ? theme.borderBrown : theme.parchment }]}>
                                 <Ionicons name="chatbubbles-outline" size={48} color={theme.textSubtle} />
                                 <Text style={[styles.emptyNotesText, { color: theme.textSubtle }]}>
-                                    No notes yet
+                                    {t('post.noNotes')}
                                 </Text>
                                 <Text style={[styles.emptyNotesSubtext, { color: theme.textSubtle }]}>
-                                    Be the first to add a memory!
+                                    {t('post.beFirst')}
                                 </Text>
                             </View>
                         ) : (
@@ -556,7 +560,7 @@ export default function PostDetailScreen() {
                             >
                                 <Ionicons name="chatbubbles-outline" size={24} color={theme.primary} />
                                 <Text style={[styles.viewCommentsText, { color: theme.textMain }]}>
-                                    View {post.comments_count} notes
+                                    {t('post.viewNotes', { count: post.comments_count })}
                                 </Text>
                                 <Ionicons name="chevron-forward" size={20} color={theme.textSubtle} />
                             </TouchableOpacity>
@@ -579,7 +583,7 @@ export default function PostDetailScreen() {
                                 <Ionicons name="pencil" size={20} color={theme.borderBrown} />
                             </View>
                             <Text style={[styles.noteInputPlaceholder, { color: theme.textSubtle }]}>
-                                Write a note for your journal...
+                                {t('post.writeNote')}
                             </Text>
                         </TouchableOpacity>
 
@@ -636,14 +640,14 @@ export default function PostDetailScreen() {
                                 <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
                                     <Ionicons name="trash-outline" size={20} color="#E57373" />
                                     <Text style={[styles.menuText, { color: '#E57373' }]}>
-                                        Delete Post
+                                        {t('post.deleteTitle')}
                                     </Text>
                                 </TouchableOpacity>
                             ) : (
                                 <TouchableOpacity style={styles.menuItem} onPress={handleReport}>
                                     <Ionicons name="flag-outline" size={20} color="#E57373" />
                                     <Text style={[styles.menuText, { color: '#E57373' }]}>
-                                        Report Post
+                                        {t('post.reportPost')}
                                     </Text>
                                 </TouchableOpacity>
                             )}

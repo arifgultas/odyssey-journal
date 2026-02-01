@@ -50,10 +50,11 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
         setUpdateKey(prev => prev + 1);
     }, []);
 
-    // Translation function
+    // Translation function - depends on language to trigger re-renders
     const translate = useCallback((key: string, options?: Record<string, any>): string => {
+        // Including language in the dependency ensures components re-render when language changes
         return t(key, options);
-    }, [updateKey]); // Re-create when updateKey changes
+    }, [language]); // Re-create when language changes
 
     const value: LanguageContextType = {
         language,

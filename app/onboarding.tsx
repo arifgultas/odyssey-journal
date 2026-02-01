@@ -1,4 +1,5 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -18,34 +19,34 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
-// Onboarding data
-const onboardingData = [
-    {
-        id: 1,
-        image: require('@/assets/images/onboarding-cappadocia.png'),
-        title: 'Keşfetmeye\nBaşla',
-        description: 'Dünyanın en büyüleyici rotalarını keşfedin, seyahat ipuçları edinin ve unutulmaz anılarınızı paylaşın.',
-    },
-    {
-        id: 2,
-        image: require('@/assets/images/onboarding-sharing.png'),
-        title: 'Anılarını\nPaylaş',
-        description: 'Seyahatlerinizden fotoğraflar ve hikayeler paylaşın. Diğer gezginlerle bağlantı kurun.',
-    },
-    {
-        id: 3,
-        image: require('@/assets/images/onboarding-community.png'),
-        title: 'İlham Al\nve İlham Ver',
-        description: 'Topluluğumuzdan ilham alın ve kendi maceralarınızla başkalarına ilham verin.',
-    },
-];
-
 export default function OnboardingScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? Colors.dark : Colors.light;
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const { t } = useLanguage();
+
+    const onboardingData = [
+        {
+            id: 1,
+            image: require('@/assets/images/onboarding-cappadocia.png'),
+            title: t('onboarding.step1Title'),
+            description: t('onboarding.step1Desc'),
+        },
+        {
+            id: 2,
+            image: require('@/assets/images/onboarding-sharing.png'),
+            title: t('onboarding.step2Title'),
+            description: t('onboarding.step2Desc'),
+        },
+        {
+            id: 3,
+            image: require('@/assets/images/onboarding-community.png'),
+            title: t('onboarding.step3Title'),
+            description: t('onboarding.step3Desc'),
+        },
+    ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -156,7 +157,7 @@ export default function OnboardingScreen() {
                         style={styles.skipButton}
                         onPress={handleSkip}
                     >
-                        <Text style={styles.skipButtonText}>Atla</Text>
+                        <Text style={styles.skipButtonText}>{t('onboarding.skip')}</Text>
                     </Pressable>
                 </Animated.View>
             </View>
@@ -279,8 +280,8 @@ export default function OnboardingScreen() {
                                 ]}
                             >
                                 {currentIndex === onboardingData.length - 1
-                                    ? 'Başla'
-                                    : 'İleri'}
+                                    ? t('onboarding.start')
+                                    : t('onboarding.next')}
                             </Text>
                             <Ionicons
                                 name="arrow-forward"

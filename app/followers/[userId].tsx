@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { UserCard } from '@/components/user-card';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { followUser, getFollowers, unfollowUser, UserProfile } from '@/lib/follow';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -10,6 +11,7 @@ import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Touchab
 
 export default function FollowersScreen() {
     const { userId } = useLocalSearchParams<{ userId: string }>();
+    const { t } = useLanguage();
     const [followers, setFollowers] = useState<UserProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -40,7 +42,7 @@ export default function FollowersScreen() {
             setPage(pageNum);
         } catch (error) {
             console.error('Error loading followers:', error);
-            Alert.alert('Error', 'Failed to load followers');
+            Alert.alert(t('common.error'), t('followers.loadError'));
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
@@ -74,7 +76,7 @@ export default function FollowersScreen() {
             setFollowingStates(prev => ({ ...prev, [targetUserId]: shouldFollow }));
         } catch (error) {
             console.error('Error toggling follow:', error);
-            Alert.alert('Error', 'Failed to update follow status');
+            Alert.alert(t('common.error'), t('followers.followError'));
         } finally {
             setLoadingStates(prev => ({ ...prev, [targetUserId]: false }));
         }
@@ -96,10 +98,10 @@ export default function FollowersScreen() {
             <View style={styles.emptyContainer}>
                 <Ionicons name="people-outline" size={80} color={Colors.light.textMuted} />
                 <ThemedText type="subtitle" style={styles.emptyTitle}>
-                    No Followers Yet
+                    {t('followers.noFollowers')}
                 </ThemedText>
                 <ThemedText style={styles.emptyText}>
-                    When people follow this user, they'll appear here
+                    {t('followers.noFollowersDesc')}
                 </ThemedText>
             </View>
         );
@@ -123,7 +125,7 @@ export default function FollowersScreen() {
                         <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <ThemedText type="title" style={styles.headerTitle}>
-                        Followers
+                        {t('followers.title')}
                     </ThemedText>
                     <View style={{ width: 40 }} />
                 </View>

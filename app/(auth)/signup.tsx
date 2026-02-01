@@ -1,4 +1,5 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -50,6 +51,7 @@ export default function SignUpScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? StitchColors.dark : StitchColors.light;
+    const { t, language } = useLanguage();
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -68,22 +70,22 @@ export default function SignUpScreen() {
 
     async function signUpWithEmail() {
         if (!fullName || !email || !password || !confirmPassword) {
-            Alert.alert('Hata', 'Lütfen tüm alanları doldurun.');
+            Alert.alert(t('common.error'), t('auth.fillAllFields'));
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Hata', 'Şifreler eşleşmiyor.');
+            Alert.alert(t('common.error'), t('auth.passwordsDontMatch'));
             return;
         }
 
         if (password.length < 6) {
-            Alert.alert('Hata', 'Şifre en az 6 karakter olmalıdır.');
+            Alert.alert(t('common.error'), t('auth.passwordMinLength'));
             return;
         }
 
         if (!acceptTerms) {
-            Alert.alert('Hata', 'Devam etmek için kullanım koşullarını kabul etmelisiniz.');
+            Alert.alert(t('common.error'), t('auth.acceptTermsRequired'));
             return;
         }
 
@@ -100,23 +102,23 @@ export default function SignUpScreen() {
         });
 
         if (error) {
-            Alert.alert('Kayıt Hatası', error.message);
+            Alert.alert(t('auth.signupError'), error.message);
         } else {
             Alert.alert(
-                'Hesap Oluşturuldu!',
-                'Hesabınızı doğrulamak için e-posta kutunuzu kontrol edin.',
-                [{ text: 'Tamam', onPress: () => router.push('/login') }]
+                t('auth.accountCreated'),
+                t('auth.checkEmailVerify'),
+                [{ text: t('common.done'), onPress: () => router.push('/login') }]
             );
         }
         setLoading(false);
     }
 
     async function signUpWithGoogle() {
-        Alert.alert('Yakında', 'Google ile kayıt yakında aktif olacak!');
+        Alert.alert(t('auth.comingSoon'), t('auth.googleSignupSoon'));
     }
 
     async function signUpWithApple() {
-        Alert.alert('Yakında', 'Apple ile kayıt yakında aktif olacak!');
+        Alert.alert(t('auth.comingSoon'), t('auth.appleSignupSoon'));
     }
 
     return (
@@ -151,7 +153,7 @@ export default function SignUpScreen() {
                             <Text style={[styles.tagline, {
                                 color: isDark ? 'rgba(245, 241, 232, 0.7)' : 'rgba(44, 24, 16, 0.7)'
                             }]}>
-                                Yolculuğuna bugün başla.
+                                {t('auth.startJourney')}
                             </Text>
                         </View>
                     </View>
@@ -167,7 +169,7 @@ export default function SignUpScreen() {
                             }]}>
                                 <TextInput
                                     style={[styles.input, { color: theme.text }]}
-                                    placeholder="Ad Soyad"
+                                    placeholder={t('auth.fullName')}
                                     placeholderTextColor={theme.textMuted}
                                     value={fullName}
                                     onChangeText={setFullName}
@@ -184,7 +186,7 @@ export default function SignUpScreen() {
                                     <Text style={[styles.floatingLabel, {
                                         color: fullNameFocused ? theme.primaryGold : theme.textMuted,
                                     }]}>
-                                        Ad Soyad
+                                        {t('auth.fullName')}
                                     </Text>
                                 </View>
                             )}
@@ -199,7 +201,7 @@ export default function SignUpScreen() {
                             }]}>
                                 <TextInput
                                     style={[styles.input, { color: theme.text }]}
-                                    placeholder="E-posta Adresi"
+                                    placeholder={t('auth.emailAddress')}
                                     placeholderTextColor={theme.textMuted}
                                     value={email}
                                     onChangeText={setEmail}
@@ -217,7 +219,7 @@ export default function SignUpScreen() {
                                     <Text style={[styles.floatingLabel, {
                                         color: emailFocused ? theme.primaryGold : theme.textMuted,
                                     }]}>
-                                        E-posta Adresi
+                                        {t('auth.emailAddress')}
                                     </Text>
                                 </View>
                             )}
@@ -232,7 +234,7 @@ export default function SignUpScreen() {
                             }]}>
                                 <TextInput
                                     style={[styles.input, styles.inputWithIcon, { color: theme.text }]}
-                                    placeholder="Şifre (en az 6 karakter)"
+                                    placeholder={t('auth.passwordMinChars')}
                                     placeholderTextColor={theme.textMuted}
                                     value={password}
                                     onChangeText={setPassword}
@@ -260,7 +262,7 @@ export default function SignUpScreen() {
                                     <Text style={[styles.floatingLabel, {
                                         color: passwordFocused ? theme.primaryGold : theme.textMuted,
                                     }]}>
-                                        Şifre
+                                        {t('auth.password')}
                                     </Text>
                                 </View>
                             )}
@@ -275,7 +277,7 @@ export default function SignUpScreen() {
                             }]}>
                                 <TextInput
                                     style={[styles.input, styles.inputWithIcon, { color: theme.text }]}
-                                    placeholder="Şifre Tekrar"
+                                    placeholder={t('auth.confirmPassword')}
                                     placeholderTextColor={theme.textMuted}
                                     value={confirmPassword}
                                     onChangeText={setConfirmPassword}
@@ -303,7 +305,7 @@ export default function SignUpScreen() {
                                     <Text style={[styles.floatingLabel, {
                                         color: confirmPasswordFocused ? theme.primaryGold : theme.textMuted,
                                     }]}>
-                                        Şifre Tekrar
+                                        {t('auth.confirmPassword')}
                                     </Text>
                                 </View>
                             )}
@@ -324,10 +326,10 @@ export default function SignUpScreen() {
                                 )}
                             </View>
                             <Text style={[styles.termsText, { color: theme.textMuted }]}>
-                                <Text style={{ color: theme.tealLink }}>Kullanım Koşulları</Text>
-                                {' '}ve{' '}
-                                <Text style={{ color: theme.tealLink }}>Gizlilik Politikası</Text>
-                                'nı kabul ediyorum.
+                                <Text style={{ color: theme.tealLink }}>{t('auth.termsOfService')}</Text>
+                                {' '}{t('common.and')}{' '}
+                                <Text style={{ color: theme.tealLink }}>{t('auth.privacyPolicy')}</Text>
+                                {t('auth.acceptSuffix')}
                             </Text>
                         </TouchableOpacity>
 
@@ -360,7 +362,7 @@ export default function SignUpScreen() {
                                     fontWeight: '700',
                                     color: isDark ? '#2C1810' : '#D4A574',
                                 }}>
-                                    Hesap Oluştur
+                                    {t('auth.createAccount')}
                                 </Text>
                             )}
                         </TouchableOpacity>
@@ -372,7 +374,7 @@ export default function SignUpScreen() {
                                 <Text style={[styles.dividerText, {
                                     color: isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.5)',
                                 }]}>
-                                    veya şununla kayıt ol
+                                    {t('auth.orSignupWith')}
                                 </Text>
                             </View>
                             <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
@@ -418,12 +420,12 @@ export default function SignUpScreen() {
                             <Text style={[styles.loginLinkText, {
                                 color: isDark ? 'rgba(245, 241, 232, 0.6)' : 'rgba(44, 24, 16, 0.6)'
                             }]}>
-                                Zaten hesabın var mı?{' '}
+                                {t('auth.alreadyHaveAccount')}{' '}
                             </Text>
                             <Link href="/login" asChild>
                                 <TouchableOpacity>
                                     <Text style={[styles.loginLink, { color: theme.tealLink }]}>
-                                        Giriş Yap
+                                        {t('auth.login')}
                                     </Text>
                                 </TouchableOpacity>
                             </Link>
@@ -435,7 +437,7 @@ export default function SignUpScreen() {
                         <Text style={[styles.footerText, {
                             color: isDark ? 'rgba(245, 241, 232, 0.4)' : 'rgba(44, 24, 16, 0.5)',
                         }]}>
-                            © 2026 Odyssey Journal. Tüm hakları saklıdır.
+                            {t('auth.copyright')}
                         </Text>
                     </View>
                 </View>

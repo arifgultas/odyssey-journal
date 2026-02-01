@@ -1,5 +1,6 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useFollowUser } from '@/hooks/use-follow';
 import { useProfile, useUserPosts } from '@/hooks/use-profile';
@@ -44,6 +45,7 @@ const DesignColors = {
 };
 
 export default function UserProfileScreen() {
+    const { t, language } = useLanguage();
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
@@ -143,7 +145,7 @@ export default function UserProfileScreen() {
                     <Ionicons name="arrow-back" size={28} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={[styles.headerLabel, { color: `${theme.primary}CC` }]}>
-                    PASAPORT
+                    {t('profile.passport')}
                 </Text>
                 <TouchableOpacity style={styles.headerButton}>
                     <Ionicons name="ellipsis-vertical" size={24} color={theme.primary} />
@@ -181,7 +183,7 @@ export default function UserProfileScreen() {
                         {/* Approved Traveler Stamp */}
                         <View style={styles.approvedStamp}>
                             <Text style={[styles.approvedText, { color: `${theme.primary}99` }]}>
-                                Approved{'\n'}Traveler{'\n'}2024
+                                {t('profile.approvedTraveler')}{'\n'}2024
                             </Text>
                         </View>
                     </View>
@@ -190,11 +192,11 @@ export default function UserProfileScreen() {
                 {/* Name and Username */}
                 <View style={styles.nameSection}>
                     <Text style={[styles.fullName, { color: theme.primary }]}>
-                        {profileData.full_name || 'Traveler'}
+                        {profileData.full_name || t('profile.defaultUser')}
                     </Text>
                     <View style={styles.usernameRow}>
                         <Text style={[styles.username, { color: theme.textMain, opacity: 0.7 }]}>
-                            @{profileData.username || 'traveler'}
+                            @{profileData.username || t('profile.defaultUser').toLowerCase()}
                         </Text>
                         {profileData.stats && profileData.stats.countriesVisited > 5 && (
                             <Ionicons name="checkmark-circle" size={16} color="#60A5FA" />
@@ -207,19 +209,19 @@ export default function UserProfileScreen() {
                             <Text style={[styles.statNumber, { color: theme.textMain }]}>
                                 {profileData.stats?.countriesVisited || 0}
                             </Text>
-                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Ülke</Text>
+                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>{t('profile.countries')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.statItem}>
                             <Text style={[styles.statNumber, { color: theme.textMain }]}>
                                 {profileData.stats?.postsCount || 0}
                             </Text>
-                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Gönderi</Text>
+                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>{t('profile.posts')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.statItem} onPress={handleFollowersPress}>
                             <Text style={[styles.statNumber, { color: theme.textMain }]}>
                                 {formatNumber(profileData.stats?.followersCount || 0)}
                             </Text>
-                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>Takipçi</Text>
+                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>{t('profile.followers')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -260,7 +262,7 @@ export default function UserProfileScreen() {
                                             color={theme.primary}
                                         />
                                         <Text style={[styles.followButtonText, { color: theme.primary }]}>
-                                            {profileData.isFollowing ? 'Takip Ediliyor' : 'Takip Et'}
+                                            {profileData.isFollowing ? t('profile.following') : t('follow.follow')}
                                         </Text>
                                     </>
                                 )}
@@ -283,7 +285,7 @@ export default function UserProfileScreen() {
                                 styles.messageButtonText,
                                 { color: isDark ? theme.primary : '#2C1810' }
                             ]}>
-                                Mesaj Gönder
+                                {t('profile.message')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -294,10 +296,10 @@ export default function UserProfileScreen() {
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
                             <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-                                Ortak Destinasyonlar
+                                {t('profile.commonDestinations')}
                             </Text>
                             <Text style={[styles.sectionSubtitle, { color: theme.primary }]}>
-                                4 Ortak Yer
+                                4 {t('profile.commonPlaces')}
                             </Text>
                         </View>
 
@@ -325,7 +327,7 @@ export default function UserProfileScreen() {
                                         {city}
                                     </Text>
                                     <Text style={[styles.destinationCountry, { color: theme.textMuted }]}>
-                                        {index === 0 ? 'Fransa' : index === 1 ? 'İtalya' : 'Japonya'}
+                                        {index === 0 ? t('countries.france') : index === 1 ? t('countries.italy') : t('countries.japan')}
                                     </Text>
                                 </View>
                             ))}
@@ -336,7 +338,7 @@ export default function UserProfileScreen() {
                             >
                                 <Ionicons name="map" size={24} color={theme.primary} />
                                 <Text style={[styles.openMapText, { color: theme.primary }]}>
-                                    Haritayı{'\n'}Aç
+                                    {t('profile.openMap').replace(' ', '\n')}
                                 </Text>
                             </TouchableOpacity>
                         </ScrollView>
@@ -347,7 +349,7 @@ export default function UserProfileScreen() {
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Text style={[styles.sectionTitle, { color: theme.primary }]}>
-                            Seyahat Günlüğü
+                            {t('profile.travelJournal')}
                         </Text>
                         <Ionicons name="grid" size={16} color={`${theme.primary}99`} />
                     </View>
@@ -469,7 +471,7 @@ export default function UserProfileScreen() {
                         <View style={styles.emptyState}>
                             <Ionicons name="images-outline" size={64} color={theme.textMuted} />
                             <Text style={[styles.emptyText, { color: theme.textMuted }]}>
-                                Henüz gönderi yok
+                                {t('empty.noPosts')}
                             </Text>
                         </View>
                     )}

@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePostsByCategory } from '@/hooks/use-search';
 import { TRAVEL_CATEGORIES } from '@/lib/types/categories';
@@ -18,6 +19,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CategoryPostsScreen() {
+    const { t, language } = useLanguage();
     const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
@@ -57,7 +59,7 @@ export default function CategoryPostsScreen() {
                 </View>
                 <View style={styles.postContent}>
                     <Text style={[styles.postTitle, { color: theme.text }]} numberOfLines={2}>
-                        {item.title || 'Başlıksız Gönderi'}
+                        {item.title || t('explore.untitledPost')}
                     </Text>
                     <Text style={[styles.postDescription, { color: theme.textSecondary }]} numberOfLines={2}>
                         {item.content}
@@ -76,7 +78,7 @@ export default function CategoryPostsScreen() {
                                 </View>
                             )}
                             <Text style={[styles.authorName, { color: theme.textSecondary }]}>
-                                {item.profiles?.full_name?.split(' ')[0] || item.profiles?.username || 'Kullanıcı'}
+                                {item.profiles?.full_name?.split(' ')[0] || item.profiles?.username || t('explore.user')}
                             </Text>
                         </View>
                         <View style={styles.postStats}>
@@ -95,10 +97,10 @@ export default function CategoryPostsScreen() {
         <View style={styles.emptyContainer}>
             <Ionicons name="albums-outline" size={64} color={theme.border} />
             <Text style={[styles.emptyTitle, { color: theme.text }]}>
-                Henüz gönderi yok
+                {t('empty.noPosts')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                Bu kategoride henüz paylaşım yapılmamış
+                {t('explore.noCategoryPosts')}
             </Text>
         </View>
     );
@@ -120,7 +122,7 @@ export default function CategoryPostsScreen() {
                         </View>
                     )}
                     <Text style={[styles.headerTitle, { color: theme.text }]}>
-                        {category?.nameTr || 'Kategori'}
+                        {category ? t('categories.' + category.id) : t('explore.category')}
                     </Text>
                 </View>
                 <View style={styles.headerSpacer} />
@@ -135,7 +137,7 @@ export default function CategoryPostsScreen() {
                 <View style={styles.errorContainer}>
                     <Ionicons name="alert-circle-outline" size={48} color={theme.error} />
                     <Text style={[styles.errorText, { color: theme.text }]}>
-                        Bir hata oluştu
+                        {t('errors.generic')}
                     </Text>
                 </View>
             ) : (

@@ -59,7 +59,7 @@ export default function SettingsScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const { user, signOut } = useAuth();
-    const { language } = useLanguage();
+    const { t, language } = useLanguage();
 
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -68,12 +68,12 @@ export default function SettingsScreen() {
 
     const handleLogout = () => {
         Alert.alert(
-            'Çıkış Yap',
-            'Çıkış yapmak istediğinize emin misiniz?',
+            t('auth.logout'),
+            t('settings.logoutConfirm'),
             [
-                { text: 'İptal', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: 'Çıkış Yap',
+                    text: t('auth.logout'),
                     style: 'destructive',
                     onPress: signOut,
                 },
@@ -125,7 +125,7 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
 
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : colors.textPrimary }]}>
-                    AYARLAR
+                    {t('settings.title').toUpperCase()}
                 </Text>
 
                 <View style={styles.headerSpacer} />
@@ -149,7 +149,7 @@ export default function SettingsScreen() {
 
                     <View style={styles.profileContent}>
                         <Text style={[styles.profileSectionLabel, { color: colors.accent, borderBottomColor: colors.border }]}>
-                            Pasaport Sahibi / Holder
+                            {t('settings.passportHolder')}
                         </Text>
 
                         {/* Avatar */}
@@ -191,7 +191,7 @@ export default function SettingsScreen() {
                             onPress={() => setEditModalVisible(true)}
                         >
                             <Text style={[styles.editProfileButtonText, { color: colors.accent }]}>
-                                Profili Düzenle
+                                {t('profile.editProfile')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -204,13 +204,13 @@ export default function SettingsScreen() {
                 >
                     <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
                         <Ionicons name="eye-outline" size={20} color={colors.accent} />
-                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>GÖRÜNÜM</Text>
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.appearance').toUpperCase()}</Text>
                     </View>
                     <View style={styles.sectionContent}>
                         <View style={styles.settingRow}>
                             <View style={styles.settingInfo}>
-                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Tema</Text>
-                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>Aydınlık / Karanlık</Text>
+                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.theme')}</Text>
+                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.lightDark')}</Text>
                             </View>
                             <View style={styles.themeToggle}>
                                 <Ionicons
@@ -245,7 +245,7 @@ export default function SettingsScreen() {
                 >
                     <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
                         <Ionicons name="language-outline" size={20} color={colors.accent} />
-                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>DİL SEÇENEKLERİ</Text>
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.languageOptions').toUpperCase()}</Text>
                     </View>
                     <View style={styles.sectionContent}>
                         <TouchableOpacity
@@ -283,7 +283,7 @@ export default function SettingsScreen() {
                         <View style={[styles.logoutButtonInner, { backgroundColor: isDark ? 'rgba(30, 25, 20, 0.9)' : 'rgba(248, 247, 246, 0.9)' }]}>
                             <Ionicons name="log-out-outline" size={24} color={colors.stampRed} />
                             <Text style={[styles.logoutButtonText, { color: colors.stampRed }]}>
-                                ÇIKIŞ / EXIT
+                                {t('settings.exitLabel')}
                             </Text>
                         </View>
                     </TouchableOpacity>

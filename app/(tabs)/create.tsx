@@ -1,4 +1,5 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
@@ -62,13 +63,13 @@ const DesignColors = {
     },
 };
 
-// Category options with custom SVG icons
+// Category options with custom SVG icons - labels are translation keys
 const CATEGORIES = [
-    { id: 'nature', label: 'Doğa', icon: 'tree' },
-    { id: 'city', label: 'Şehir', icon: 'city' },
-    { id: 'food', label: 'Yemek', icon: 'food' },
-    { id: 'history', label: 'Tarih', icon: 'history' },
-    { id: 'art', label: 'Sanat', icon: 'art' },
+    { id: 'nature', labelKey: 'categories.nature', icon: 'tree' },
+    { id: 'city', labelKey: 'categories.city', icon: 'city' },
+    { id: 'food', labelKey: 'categories.food', icon: 'food' },
+    { id: 'history', labelKey: 'categories.history', icon: 'history' },
+    { id: 'art', labelKey: 'categories.art', icon: 'art' },
 ];
 
 // Custom SVG Icons Component
@@ -133,6 +134,7 @@ const CategoryIcon = ({ icon, color, size = 20 }: { icon: string; color: string;
 
 // Loading Overlay Component - Premium Compass Animation
 const LoadingOverlay = ({ isVisible, isDark }: { isVisible: boolean; isDark: boolean }) => {
+    const { t, language } = useLanguage();
     const compassRotation = useSharedValue(0);
     const overlayOpacity = useSharedValue(0);
     const dashOffset = useSharedValue(0);
@@ -209,7 +211,7 @@ const LoadingOverlay = ({ isVisible, isDark }: { isVisible: boolean; isDark: boo
 
                 {/* Loading Text */}
                 <Text style={[styles.loadingText, { color: isDark ? '#D4A574' : '#2C1810' }]}>
-                    Anıların mühürleniyor...
+                    {t('create.sealingMemories')}
                 </Text>
 
                 {/* Progress Bar */}
@@ -234,12 +236,14 @@ const AnimatedCategoryButton = ({
     onPress,
     theme,
     isDark,
+    t,
 }: {
     category: typeof CATEGORIES[0];
     isSelected: boolean;
     onPress: () => void;
     theme: typeof DesignColors.light;
     isDark: boolean;
+    t: (key: string) => string;
 }) => {
     const scale = useSharedValue(1);
     const backgroundColor = useSharedValue(isSelected ? 1 : 0);
@@ -292,7 +296,7 @@ const AnimatedCategoryButton = ({
                         { color: isSelected ? '#2C1810' : (isDark ? theme.primary : theme.textMain) },
                     ]}
                 >
-                    {category.label}
+                    {t(category.labelKey)}
                 </Animated.Text>
             </Animated.View>
         </TouchableOpacity>
@@ -315,6 +319,7 @@ const AnimatedPolaroidCard = ({
     caption: string;
     onCaptionChange: (text: string) => void;
 }) => {
+    const { t, language } = useLanguage();
     const scale = useSharedValue(0.8);
     const opacity = useSharedValue(0);
     const imageScale = useSharedValue(1.1);
@@ -355,7 +360,7 @@ const AnimatedPolaroidCard = ({
                     style={styles.polaroidCaptionInput}
                     value={caption}
                     onChangeText={onCaptionChange}
-                    placeholder="Not ekle..."
+                    placeholder={t('create.addNote')}
                     placeholderTextColor="#999"
                     maxLength={100}
                     multiline={false}
@@ -476,6 +481,7 @@ const AnimatedLocationCard = ({
     onConfirm: () => void;
     onChangeLocation: () => void;
 }) => {
+    const { t, language } = useLanguage();
     const cardTranslateY = useSharedValue(40);
     const cardScale = useSharedValue(0.95);
     const cardOpacity = useSharedValue(0);
@@ -539,7 +545,7 @@ const AnimatedLocationCard = ({
                             onPress={onConfirm}
                             activeOpacity={0.8}
                         >
-                            <Text style={styles.locationConfirmButtonText}>Konumu onayla</Text>
+                            <Text style={styles.locationConfirmButtonText}>{t('create.confirmLocation')}</Text>
                             <Ionicons name="checkmark" size={16} color="#2C1810" />
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -548,7 +554,7 @@ const AnimatedLocationCard = ({
                             activeOpacity={0.8}
                         >
                             <Text style={[styles.locationChangeButtonText, { color: theme.accentBrown }]}>
-                                Değiştir
+                                {t('create.changeLocation')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -562,6 +568,7 @@ const AnimatedLocationCard = ({
 
 // Add Photo Button Component
 const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof DesignColors.light }) => {
+    const { t, language } = useLanguage();
     const scale = useSharedValue(1);
 
     const handlePressIn = () => {
@@ -592,7 +599,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
                     <Ionicons name="add-outline" size={24} color={theme.accentBrown} />
                 </View>
                 <Text style={[styles.addPhotoText, { color: theme.accentBrown }]}>
-                    Fotoğraf Ekle
+                    {t('create.addPhoto')}
                 </Text>
             </Animated.View>
         </TouchableOpacity>
@@ -604,6 +611,7 @@ export default function CreatePostScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
+    const { t, language } = useLanguage();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -668,12 +676,12 @@ export default function CreatePostScreen() {
 
     const handleSubmit = async () => {
         if (!title.trim()) {
-            Alert.alert('Hata', 'Lütfen bir başlık girin');
+            Alert.alert(t('common.error'), t('create.titleRequired'));
             return;
         }
 
         if (!content.trim()) {
-            Alert.alert('Hata', 'Lütfen hikayenizi yazın');
+            Alert.alert(t('common.error'), t('create.contentRequired'));
             return;
         }
 
@@ -689,9 +697,9 @@ export default function CreatePostScreen() {
                 categories: selectedCategories,
             });
 
-            Alert.alert('Başarılı', 'Günlük girişiniz oluşturuldu!', [
+            Alert.alert(t('common.success'), t('create.postSuccess'), [
                 {
-                    text: 'Tamam',
+                    text: t('common.done'),
                     onPress: () => {
                         resetForm();
                         router.push('/(tabs)');
@@ -700,24 +708,24 @@ export default function CreatePostScreen() {
             ]);
         } catch (error) {
             console.error('Error creating post:', error);
-            Alert.alert('Hata', 'Gönderi oluşturulamadı. Lütfen tekrar deneyin.');
+            Alert.alert(t('common.error'), t('create.postError'));
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const showImageOptions = () => {
-        Alert.alert('Fotoğraf Ekle', 'Bir seçenek belirleyin', [
+        Alert.alert(t('create.addPhoto'), t('create.chooseOption'), [
             {
-                text: 'Fotoğraf Çek',
+                text: t('create.takePhoto'),
                 onPress: takePhoto,
             },
             {
-                text: 'Galeriden Seç',
+                text: t('create.pickFromGallery'),
                 onPress: () => pickMultipleImages(5),
             },
             {
-                text: 'İptal',
+                text: t('common.cancel'),
                 style: 'cancel',
             },
         ]);
@@ -725,7 +733,7 @@ export default function CreatePostScreen() {
 
     const formatDate = () => {
         const date = new Date();
-        return date.toLocaleDateString('tr-TR', {
+        return date.toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -778,7 +786,7 @@ export default function CreatePostScreen() {
                     <View style={styles.headerSpacer} />
 
                     <Text style={[styles.headerTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
-                        Yeni Günlük Girişi
+                        {t('create.newEntry')}
                     </Text>
 
                     <TouchableOpacity
@@ -790,7 +798,7 @@ export default function CreatePostScreen() {
                         {isSubmitting ? (
                             <ActivityIndicator size="small" color="#2C1810" />
                         ) : (
-                            <Text style={styles.publishText}>Paylaş</Text>
+                            <Text style={styles.publishText}>{t('create.post')}</Text>
                         )}
                     </TouchableOpacity>
                 </Animated.View>
@@ -834,7 +842,7 @@ export default function CreatePostScreen() {
 
                         <View style={styles.imagesSectionHeader}>
                             <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                                GÖRSELLER
+                                {t('create.images')}
                             </Text>
                         </View>
 
@@ -885,7 +893,7 @@ export default function CreatePostScreen() {
                         style={styles.section}
                     >
                         <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            LOKASYON
+                            {t('create.location')}
                         </Text>
 
                         <TouchableOpacity
@@ -950,7 +958,7 @@ export default function CreatePostScreen() {
                                         ]}
                                     >
                                         <Ionicons name="checkmark" size={12} color="#2C1810" />
-                                        <Text style={styles.locationConfirmedText}>Konum seçildi</Text>
+                                        <Text style={styles.locationConfirmedText}>{t('create.locationSelected')}</Text>
                                     </Animated.View>
                                 )}
 
@@ -958,7 +966,7 @@ export default function CreatePostScreen() {
                                 {!location && !isGettingLocation && (
                                     <View style={[styles.pinInstruction, { backgroundColor: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)' }]}>
                                         <Text style={[styles.pinInstructionText, { color: theme.textSub }]}>
-                                            Konum eklemek için dokun
+                                            {t('create.tapToAddLocation')}
                                         </Text>
                                     </View>
                                 )}
@@ -972,7 +980,7 @@ export default function CreatePostScreen() {
                         style={styles.section}
                     >
                         <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            KATEGORİLER
+                            {t('create.categories').toUpperCase()}
                         </Text>
 
                         <View style={styles.categoriesContainer}>
@@ -984,6 +992,7 @@ export default function CreatePostScreen() {
                                     onPress={() => toggleCategory(category.id)}
                                     theme={theme}
                                     isDark={isDark}
+                                    t={t}
                                 />
                             ))}
                         </View>
@@ -1011,7 +1020,7 @@ export default function CreatePostScreen() {
                                     borderBottomColor: `${theme.accentBrown}20`,
                                 }
                             ]}
-                            placeholder="Başlık"
+                            placeholder={t('create.titlePlaceholder')}
                             placeholderTextColor={`${theme.accentBrown}40`}
                             value={title}
                             onChangeText={setTitle}
@@ -1025,7 +1034,7 @@ export default function CreatePostScreen() {
                                     styles.contentInput,
                                     { color: theme.textMain }
                                 ]}
-                                placeholder="Hikayeni anlatmaya başla..."
+                                placeholder={t('create.storyPlaceholder')}
                                 placeholderTextColor={`${theme.accentBrown}40`}
                                 value={content}
                                 onChangeText={setContent}

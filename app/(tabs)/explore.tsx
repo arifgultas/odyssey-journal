@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useFollowUser } from '@/hooks/use-follow';
 import {
@@ -66,12 +67,12 @@ const VintageColors = {
   }
 };
 
-// Typing animation placeholder texts
-const TYPING_TEXTS = [
-  'Rotaları keşfet...',
-  'Şehirleri ara...',
-  'Gezginleri bul...',
-  'Yeni yerler keşfet...',
+// Typing animation placeholder texts - these will be replaced with translations dynamically
+const TYPING_TEXTS_KEYS = [
+  'explore.discoverRoutes',
+  'explore.searchCities',
+  'explore.findTravelers',
+  'explore.discoverPlaces',
 ];
 
 type TabType = 'all' | 'locations' | 'users';
@@ -83,6 +84,7 @@ export default function ExploreScreen() {
   const vintageTheme = VintageColors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [sortBy, setSortBy] = useState<SortType>('recent');
@@ -145,7 +147,7 @@ export default function ExploreScreen() {
         }),
       ]).start();
 
-      setCurrentTypingIndex((prev) => (prev + 1) % TYPING_TEXTS.length);
+      setCurrentTypingIndex((prev) => (prev + 1) % TYPING_TEXTS_KEYS.length);
     }, 3000);
 
     return () => clearInterval(interval);
@@ -283,7 +285,7 @@ export default function ExploreScreen() {
                     { color: vintageTheme.textMuted, opacity: typingOpacity }
                   ]}
                 >
-                  {TYPING_TEXTS[currentTypingIndex]}
+                  {t(TYPING_TEXTS_KEYS[currentTypingIndex])}
                 </Animated.Text>
               )}
             </View>
@@ -353,7 +355,7 @@ export default function ExploreScreen() {
   // Render categories section
   const renderCategories = () => (
     <View style={styles.section}>
-      <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Kategoriler</Text>
+      <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>{t('explore.categories')}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -374,7 +376,7 @@ export default function ExploreScreen() {
                 />
               </View>
               <Text style={[styles.categoryLabel, { color: vintageTheme.textSecondary }]}>
-                {category.nameTr}
+                {t('categories.' + category.id)}
               </Text>
             </TouchableOpacity>
           );
@@ -407,9 +409,9 @@ export default function ExploreScreen() {
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Popüler Gönderiler</Text>
+          <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>{t('explore.popularPosts')}</Text>
           <TouchableOpacity onPress={() => router.push('/popular-posts' as any)}>
-            <Text style={[styles.viewAllText, { color: vintageTheme.primary }]}>Tümünü Gör</Text>
+            <Text style={[styles.viewAllText, { color: vintageTheme.primary }]}>{t('explore.viewAll')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -435,10 +437,10 @@ export default function ExploreScreen() {
             <View style={styles.postContent}>
               <View style={[styles.trendingBadge, { backgroundColor: `${vintageTheme.goldenrod}20`, borderColor: `${vintageTheme.goldenrod}50` }]}>
                 <Ionicons name="trending-up" size={12} color={vintageTheme.goldenrod} />
-                <Text style={[styles.trendingText, { color: vintageTheme.goldenrod }]}>Trending</Text>
+                <Text style={[styles.trendingText, { color: vintageTheme.goldenrod }]}>{t('explore.trending')}</Text>
               </View>
               <Text style={[styles.postTitle, { color: vintageTheme.text }]} numberOfLines={2}>
-                {post.title || post.location_name || 'Untitled Post'}
+                {post.title || post.location_name || t('explore.untitledPost')}
               </Text>
               <View style={styles.postMeta}>
                 <View style={styles.postLikes}>
@@ -458,7 +460,7 @@ export default function ExploreScreen() {
                     <Ionicons name="person" size={10} color={vintageTheme.textMuted} />
                   )}
                   <Text style={[styles.authorName, { color: vintageTheme.textSecondary }]}>
-                    {post.profiles?.full_name?.split(' ')[0] || post.profiles?.username || 'User'}
+                    {post.profiles?.full_name?.split(' ')[0] || post.profiles?.username || t('explore.user')}
                   </Text>
                 </View>
               </View>
@@ -492,7 +494,7 @@ export default function ExploreScreen() {
     const postLocationsRaw = trendingPosts?.filter((post: any) =>
       post.location?.city || post.location?.country || post.location_name
     ).map((post: any) => ({
-      name: post.location?.city || post.location?.country || post.location_name?.split(',')[0] || 'Bilinmeyen',
+      name: post.location?.city || post.location?.country || post.location_name?.split(',')[0] || t('explore.unknown'),
       imageUrl: post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400',
     })) || [];
 
@@ -518,7 +520,7 @@ export default function ExploreScreen() {
 
     return (
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Popüler Destinasyonlar</Text>
+        <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>{t('explore.popularDestinations')}</Text>
         <View style={styles.destinationsGrid}>
           {destinations.map((dest, index) => (
             <TouchableOpacity
@@ -547,7 +549,7 @@ export default function ExploreScreen() {
                 <View style={styles.destinationMeta}>
                   <View style={[styles.routeDot, { backgroundColor: dest.dotColor }]} />
                   <Text style={[styles.routeCount, { color: vintageTheme.textSecondary }]}>
-                    {dest.postCount} Rota
+                    {dest.postCount} {t('explore.routes')}
                   </Text>
                 </View>
               </View>
@@ -587,7 +589,7 @@ export default function ExploreScreen() {
     return (
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Haftalık Keşif</Text>
+          <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>{t('explore.weeklyDiscovery')}</Text>
           <Ionicons name="sparkles" size={20} color={vintageTheme.goldenrod} />
         </View>
 
@@ -606,7 +608,7 @@ export default function ExploreScreen() {
           />
           <View style={[styles.editorBadge, { backgroundColor: vintageTheme.goldenrod, borderColor: '#c1921a' }]}>
             <Ionicons name="checkmark-circle" size={12} color="#221910" />
-            <Text style={styles.editorBadgeText}>Editörün Seçimi</Text>
+            <Text style={styles.editorBadgeText}>{t('explore.editorsChoice')}</Text>
           </View>
           <View style={styles.weeklyContent}>
             <Text style={styles.weeklyTitle}>
@@ -626,22 +628,22 @@ export default function ExploreScreen() {
     // Always show this section - with loading, empty, or data state
     return (
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>Önerilen Gezginler</Text>
+        <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>{t('explore.suggestedTravelers')}</Text>
 
         {suggestedUsersLoading ? (
           <View style={{ alignItems: 'center', paddingVertical: 40 }}>
             <ActivityIndicator size="small" color={vintageTheme.primary} />
-            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>Yükleniyor...</Text>
+            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>{t('explore.loading')}</Text>
           </View>
         ) : suggestedUsersError ? (
           <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 40 }} onPress={() => refetchSuggestedUsers()}>
             <Ionicons name="alert-circle-outline" size={40} color={vintageTheme.border} />
-            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>Yüklenemedi - Tekrar dene</Text>
+            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>{t('explore.loadFailed')}</Text>
           </TouchableOpacity>
         ) : !suggestedUsers || suggestedUsers.length === 0 ? (
           <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 40 }} onPress={() => refetchSuggestedUsers()}>
             <Ionicons name="people-outline" size={40} color={vintageTheme.border} />
-            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>Henüz öneri yok - Yenile</Text>
+            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>{t('explore.noSuggestionsYet')}</Text>
           </TouchableOpacity>
         ) : (
           <ScrollView
@@ -672,7 +674,7 @@ export default function ExploreScreen() {
                   )}
                 </View>
                 <Text style={[styles.userName, { color: vintageTheme.text }]} numberOfLines={1}>
-                  {user.full_name?.split(' ')[0] || user.username || 'User'}
+                  {user.full_name?.split(' ')[0] || user.username || t('explore.user')}
                 </Text>
                 <Text style={[styles.userLabel, { color: vintageTheme.textSecondary }]} numberOfLines={1}>
                   {getUserLabel(user)}
@@ -682,7 +684,7 @@ export default function ExploreScreen() {
                   onPress={() => handleFollowPress(user.id, false)}
                 >
                   <Ionicons name="person-add" size={12} color="white" />
-                  <Text style={styles.followButtonText}>Takip Et</Text>
+                  <Text style={styles.followButtonText}>{t('explore.follow')}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             ))}
@@ -717,8 +719,8 @@ export default function ExploreScreen() {
       return (
         <View style={[styles.emptyState, { backgroundColor: vintageTheme.background }]}>
           <Ionicons name="search-outline" size={64} color={vintageTheme.border} />
-          <Text style={[styles.emptyText, { color: vintageTheme.textSecondary }]}>Sonuç bulunamadı</Text>
-          <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted }]}>Farklı anahtar kelimeler deneyin</Text>
+          <Text style={[styles.emptyText, { color: vintageTheme.textSecondary }]}>{t('explore.noResults')}</Text>
+          <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted }]}>{t('explore.tryDifferent')}</Text>
         </View>
       );
     }
@@ -727,7 +729,7 @@ export default function ExploreScreen() {
       <View style={styles.searchResults}>
         {searchResults.locations.length > 0 && (
           <View style={styles.resultSection}>
-            <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>Lokasyonlar</Text>
+            <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>{t('explore.locations')}</Text>
             {searchResults.locations.map((loc: any, index: number) => (
               <TouchableOpacity
                 key={index}
@@ -739,7 +741,7 @@ export default function ExploreScreen() {
                 </View>
                 <View style={styles.resultInfo}>
                   <Text style={[styles.resultName, { color: vintageTheme.text }]}>{loc.name}</Text>
-                  <Text style={[styles.resultMeta, { color: vintageTheme.textMuted }]}>{loc.postCount} gönderi</Text>
+                  <Text style={[styles.resultMeta, { color: vintageTheme.textMuted }]}>{loc.postCount} {t('explore.posts')}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -748,7 +750,7 @@ export default function ExploreScreen() {
 
         {searchResults.users.length > 0 && (
           <View style={styles.resultSection}>
-            <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>Kullanıcılar</Text>
+            <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>{t('explore.users')}</Text>
             {searchResults.users.map((user: any) => (
               <TouchableOpacity
                 key={user.id}
@@ -781,7 +783,7 @@ export default function ExploreScreen() {
     if (isSearchFocused && searchHistory && searchHistory.length > 0 && !searchQuery) {
       return (
         <View style={[styles.historyContainer, { backgroundColor: vintageTheme.background }]}>
-          <Text style={[styles.historyTitle, { color: vintageTheme.text }]}>Son Aramalar</Text>
+          <Text style={[styles.historyTitle, { color: vintageTheme.text }]}>{t('explore.recentSearches')}</Text>
           {searchHistory.map((item) => (
             <TouchableOpacity
               key={item.id}
@@ -865,7 +867,7 @@ export default function ExploreScreen() {
                       { color: vintageTheme.textMuted, opacity: typingOpacity }
                     ]}
                   >
-                    {TYPING_TEXTS[currentTypingIndex]}
+                    {t(TYPING_TEXTS_KEYS[currentTypingIndex])}
                   </Animated.Text>
                 )}
               </View>

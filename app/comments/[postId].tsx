@@ -3,6 +3,7 @@ import { CommentsList } from '@/components/comments-list';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { addComment, Comment, deleteComment, getComments } from '@/lib/comments';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function CommentsScreen() {
     const { postId } = useLocalSearchParams<{ postId: string }>();
     const insets = useSafeAreaInsets();
+    const { t } = useLanguage();
     const [comments, setComments] = useState<Comment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -54,7 +56,7 @@ export default function CommentsScreen() {
             setPage(pageNum);
         } catch (error) {
             console.error('Error loading comments:', error);
-            Alert.alert('Error', 'Failed to load comments');
+            Alert.alert(t('common.error'), t('comments.loadError'));
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
@@ -93,7 +95,7 @@ export default function CommentsScreen() {
             setComments([commentWithUser, ...comments]);
         } catch (error) {
             console.error('Error adding comment:', error);
-            Alert.alert('Error', 'Failed to add comment');
+            Alert.alert(t('common.error'), t('comments.addError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -105,7 +107,7 @@ export default function CommentsScreen() {
             setComments(comments.filter(c => c.id !== commentId));
         } catch (error) {
             console.error('Error deleting comment:', error);
-            Alert.alert('Error', 'Failed to delete comment');
+            Alert.alert(t('common.error'), t('comments.deleteError'));
         }
     };
 
@@ -117,7 +119,7 @@ export default function CommentsScreen() {
                         <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <ThemedText type="title" style={styles.headerTitle}>
-                        Comments
+                        {t('comments.title')}
                     </ThemedText>
                     <View style={{ width: 40 }} />
                 </View>
@@ -140,7 +142,7 @@ export default function CommentsScreen() {
                         <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
                     </TouchableOpacity>
                     <ThemedText type="title" style={styles.headerTitle}>
-                        Comments
+                        {t('comments.title')}
                     </ThemedText>
                     <View style={{ width: 40 }} />
                 </View>

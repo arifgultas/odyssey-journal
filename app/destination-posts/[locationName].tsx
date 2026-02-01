@@ -1,5 +1,6 @@
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePostsByLocation } from '@/hooks/use-search';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ export default function DestinationPostsScreen() {
     const decodedLocationName = locationName ? decodeURIComponent(locationName) : '';
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
+    const { t } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
 
     const { data: posts, isLoading, error } = usePostsByLocation(decodedLocationName);
@@ -54,7 +56,7 @@ export default function DestinationPostsScreen() {
                 </View>
                 <View style={styles.postContent}>
                     <Text style={[styles.postTitle, { color: theme.text }]} numberOfLines={2}>
-                        {item.title || 'Başlıksız Gönderi'}
+                        {item.title || t('destinationPosts.untitledPost')}
                     </Text>
                     <Text style={[styles.postDescription, { color: theme.textSecondary }]} numberOfLines={2}>
                         {item.content}
@@ -73,7 +75,7 @@ export default function DestinationPostsScreen() {
                                 </View>
                             )}
                             <Text style={[styles.authorName, { color: theme.textSecondary }]}>
-                                {item.profiles?.full_name?.split(' ')[0] || item.profiles?.username || 'Kullanıcı'}
+                                {item.profiles?.full_name?.split(' ')[0] || item.profiles?.username || t('destinationPosts.user')}
                             </Text>
                         </View>
                         <View style={styles.postStats}>
@@ -92,10 +94,10 @@ export default function DestinationPostsScreen() {
         <View style={styles.emptyContainer}>
             <Ionicons name="location-outline" size={64} color={theme.border} />
             <Text style={[styles.emptyTitle, { color: theme.text }]}>
-                Bu lokasyonda gönderi yok
+                {t('destinationPosts.empty')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                Bu destinasyonda henüz paylaşım yapılmamış
+                {t('destinationPosts.emptyDesc')}
             </Text>
         </View>
     );
@@ -113,7 +115,7 @@ export default function DestinationPostsScreen() {
                 <View style={styles.headerTitleContainer}>
                     <Ionicons name="location" size={20} color="#4A6FA5" style={{ marginRight: 8 }} />
                     <Text style={[styles.headerTitle, { color: theme.text }]} numberOfLines={1}>
-                        {decodedLocationName || 'Destinasyon'}
+                        {decodedLocationName || t('destinationPosts.destination')}
                     </Text>
                 </View>
                 <View style={styles.headerSpacer} />
@@ -128,7 +130,7 @@ export default function DestinationPostsScreen() {
                 <View style={styles.errorContainer}>
                     <Ionicons name="alert-circle-outline" size={48} color={theme.error} />
                     <Text style={[styles.errorText, { color: theme.text }]}>
-                        Bir hata oluştu
+                        {t('destinationPosts.error')}
                     </Text>
                 </View>
             ) : (

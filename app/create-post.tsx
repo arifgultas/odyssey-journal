@@ -1,4 +1,5 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
@@ -523,6 +524,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
 export default function CreatePostScreen() {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
+    const { t } = useLanguage();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
 
@@ -572,12 +574,12 @@ export default function CreatePostScreen() {
 
     const handleSubmit = async () => {
         if (!title.trim()) {
-            Alert.alert('Hata', 'Lütfen bir başlık girin');
+            Alert.alert(t('createPost.errorTitle'), t('createPost.enterTitle'));
             return;
         }
 
         if (!content.trim()) {
-            Alert.alert('Hata', 'Lütfen hikayenizi yazın');
+            Alert.alert(t('createPost.errorTitle'), t('createPost.enterStory'));
             return;
         }
 
@@ -593,32 +595,32 @@ export default function CreatePostScreen() {
                 categories: selectedCategories,
             });
 
-            Alert.alert('Başarılı', 'Günlük girişiniz oluşturuldu!', [
+            Alert.alert(t('createPost.success'), t('createPost.entryCreated'), [
                 {
-                    text: 'Tamam',
+                    text: t('createPost.ok'),
                     onPress: () => router.back(),
                 },
             ]);
         } catch (error) {
             console.error('Error creating post:', error);
-            Alert.alert('Hata', 'Gönderi oluşturulamadı. Lütfen tekrar deneyin.');
+            Alert.alert(t('createPost.errorTitle'), t('createPost.createError'));
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const showImageOptions = () => {
-        Alert.alert('Fotoğraf Ekle', 'Bir seçenek belirleyin', [
+        Alert.alert(t('createPost.addPhotoTitle'), t('createPost.chooseOption'), [
             {
-                text: 'Fotoğraf Çek',
+                text: t('createPost.takePhoto'),
                 onPress: takePhoto,
             },
             {
-                text: 'Galeriden Seç',
+                text: t('createPost.pickFromGallery'),
                 onPress: () => pickMultipleImages(5),
             },
             {
-                text: 'İptal',
+                text: t('common.cancel'),
                 style: 'cancel',
             },
         ]);
