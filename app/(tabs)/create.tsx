@@ -733,7 +733,23 @@ export default function CreatePostScreen() {
 
     const formatDate = () => {
         const date = new Date();
-        return date.toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+        // Map language codes to correct locale codes
+        const localeMap: Record<string, string> = {
+            en: 'en-US',
+            tr: 'tr-TR',
+            es: 'es-ES',
+            pt: 'pt-BR',
+            fr: 'fr-FR',
+            de: 'de-DE',
+            it: 'it-IT',
+            ja: 'ja-JP',
+            ko: 'ko-KR',
+            zh: 'zh-CN',
+            ru: 'ru-RU',
+            ar: 'ar-SA',
+        };
+        const locale = localeMap[language] || 'en-US';
+        return date.toLocaleDateString(locale, {
             day: 'numeric',
             month: 'long',
             year: 'numeric',

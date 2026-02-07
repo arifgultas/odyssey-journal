@@ -1,4 +1,5 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useUpdateProfile, useUploadAvatar } from '@/hooks/use-profile';
 import type { Profile } from '@/lib/types/profile';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,6 +37,7 @@ export function EditProfileModal({
     const [website, setWebsite] = useState(profile.website || '');
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
 
+    const { t } = useLanguage();
     const updateProfile = useUpdateProfile();
     const uploadAvatar = useUploadAvatar();
 
@@ -43,7 +45,7 @@ export function EditProfileModal({
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== 'granted') {
-            Alert.alert('Permission needed', 'Please grant permission to access your photos');
+            Alert.alert(t('editProfile.permissionNeeded'), t('editProfile.permissionMessage'));
             return;
         }
 
@@ -94,11 +96,11 @@ export function EditProfileModal({
                 await onSuccess();
             }
 
-            Alert.alert('Success', 'Profile updated successfully');
+            Alert.alert(t('common.success'), t('editProfile.updateSuccess'));
             onClose();
         } catch (error: any) {
             console.error('Error in handleSave:', error);
-            Alert.alert('Error', error.message || 'Failed to update profile');
+            Alert.alert(t('common.error'), error.message || t('editProfile.updateError'));
         }
     };
 
@@ -115,14 +117,14 @@ export function EditProfileModal({
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={onClose} disabled={isLoading}>
-                        <Text style={styles.cancelButton}>Cancel</Text>
+                        <Text style={styles.cancelButton}>{t('editProfile.cancel')}</Text>
                     </TouchableOpacity>
-                    <Text style={styles.title}>Edit Profile</Text>
+                    <Text style={styles.title}>{t('editProfile.title')}</Text>
                     <TouchableOpacity onPress={handleSave} disabled={isLoading}>
                         {isLoading ? (
                             <ActivityIndicator size="small" color={Colors.light.primary} />
                         ) : (
-                            <Text style={styles.saveButton}>Save</Text>
+                            <Text style={styles.saveButton}>{t('editProfile.save')}</Text>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -152,30 +154,30 @@ export function EditProfileModal({
                                 <Ionicons name="camera" size={20} color={Colors.light.surface} />
                             </View>
                         </TouchableOpacity>
-                        <Text style={styles.changePhotoText}>Change Profile Photo</Text>
+                        <Text style={styles.changePhotoText}>{t('editProfile.changePhoto')}</Text>
                     </View>
 
                     {/* Form Fields */}
                     <View style={styles.form}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Full Name</Text>
+                            <Text style={styles.label}>{t('editProfile.fullName')}</Text>
                             <TextInput
                                 style={styles.input}
                                 value={fullName}
                                 onChangeText={setFullName}
-                                placeholder="Enter your full name"
+                                placeholder={t('editProfile.fullNamePlaceholder')}
                                 placeholderTextColor={Colors.light.textSecondary}
                                 editable={!isLoading}
                             />
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Username</Text>
+                            <Text style={styles.label}>{t('editProfile.username')}</Text>
                             <TextInput
                                 style={styles.input}
                                 value={username}
                                 onChangeText={setUsername}
-                                placeholder="Enter username"
+                                placeholder={t('editProfile.usernamePlaceholder')}
                                 placeholderTextColor={Colors.light.textSecondary}
                                 autoCapitalize="none"
                                 editable={!isLoading}
@@ -183,12 +185,12 @@ export function EditProfileModal({
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Bio</Text>
+                            <Text style={styles.label}>{t('editProfile.bio')}</Text>
                             <TextInput
                                 style={[styles.input, styles.textArea]}
                                 value={bio}
                                 onChangeText={setBio}
-                                placeholder="Tell us about yourself"
+                                placeholder={t('editProfile.bioPlaceholder')}
                                 placeholderTextColor={Colors.light.textSecondary}
                                 multiline
                                 numberOfLines={4}
@@ -198,12 +200,12 @@ export function EditProfileModal({
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Website</Text>
+                            <Text style={styles.label}>{t('editProfile.website')}</Text>
                             <TextInput
                                 style={styles.input}
                                 value={website}
                                 onChangeText={setWebsite}
-                                placeholder="https://yourwebsite.com"
+                                placeholder={t('editProfile.websitePlaceholder')}
                                 placeholderTextColor={Colors.light.textSecondary}
                                 autoCapitalize="none"
                                 keyboardType="url"

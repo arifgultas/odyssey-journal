@@ -58,6 +58,7 @@ const DesignColors = {
 };
 
 import { useLanguage } from '@/context/language-context';
+import { getWeatherTranslationKey } from '@/lib/weather';
 
 export default function PostDetailScreen() {
     const insets = useSafeAreaInsets();
@@ -383,7 +384,7 @@ export default function PostDetailScreen() {
                                         {post.weather_data.temperature}°C
                                     </Text>
                                     <Text style={[styles.weatherCondition, { color: theme.textSubtle }]}>
-                                        {post.weather_data.condition}
+                                        {t(`weather.${getWeatherTranslationKey(post.weather_data.condition)}`)}
                                     </Text>
                                 </View>
                             ) : null}

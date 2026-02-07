@@ -12,35 +12,36 @@ export interface WeatherData {
 }
 
 // WMO Weather Codes to condition and icon mapping
+// condition values are translation keys (weather.*)
 const WEATHER_CODE_MAP: Record<number, { condition: string; icon: string }> = {
-    0: { condition: 'Clear', icon: 'sunny' },
-    1: { condition: 'Mainly Clear', icon: 'sunny' },
-    2: { condition: 'Partly Cloudy', icon: 'partly-sunny' },
-    3: { condition: 'Overcast', icon: 'cloudy' },
-    45: { condition: 'Foggy', icon: 'cloudy' },
-    48: { condition: 'Depositing Rime Fog', icon: 'cloudy' },
-    51: { condition: 'Light Drizzle', icon: 'rainy' },
-    53: { condition: 'Moderate Drizzle', icon: 'rainy' },
-    55: { condition: 'Dense Drizzle', icon: 'rainy' },
-    56: { condition: 'Freezing Drizzle', icon: 'snow' },
-    57: { condition: 'Dense Freezing Drizzle', icon: 'snow' },
-    61: { condition: 'Slight Rain', icon: 'rainy' },
-    63: { condition: 'Moderate Rain', icon: 'rainy' },
-    65: { condition: 'Heavy Rain', icon: 'rainy' },
-    66: { condition: 'Freezing Rain', icon: 'snow' },
-    67: { condition: 'Heavy Freezing Rain', icon: 'snow' },
-    71: { condition: 'Slight Snow', icon: 'snow' },
-    73: { condition: 'Moderate Snow', icon: 'snow' },
-    75: { condition: 'Heavy Snow', icon: 'snow' },
-    77: { condition: 'Snow Grains', icon: 'snow' },
-    80: { condition: 'Slight Rain Showers', icon: 'rainy' },
-    81: { condition: 'Moderate Rain Showers', icon: 'rainy' },
-    82: { condition: 'Violent Rain Showers', icon: 'thunderstorm' },
-    85: { condition: 'Slight Snow Showers', icon: 'snow' },
-    86: { condition: 'Heavy Snow Showers', icon: 'snow' },
-    95: { condition: 'Thunderstorm', icon: 'thunderstorm' },
-    96: { condition: 'Thunderstorm with Slight Hail', icon: 'thunderstorm' },
-    99: { condition: 'Thunderstorm with Heavy Hail', icon: 'thunderstorm' },
+    0: { condition: 'clear', icon: 'sunny' },
+    1: { condition: 'mainlyClear', icon: 'sunny' },
+    2: { condition: 'partlyCloudy', icon: 'partly-sunny' },
+    3: { condition: 'overcast', icon: 'cloudy' },
+    45: { condition: 'foggy', icon: 'cloudy' },
+    48: { condition: 'depositingRimeFog', icon: 'cloudy' },
+    51: { condition: 'lightDrizzle', icon: 'rainy' },
+    53: { condition: 'moderateDrizzle', icon: 'rainy' },
+    55: { condition: 'denseDrizzle', icon: 'rainy' },
+    56: { condition: 'freezingDrizzle', icon: 'snow' },
+    57: { condition: 'denseFreezingDrizzle', icon: 'snow' },
+    61: { condition: 'slightRain', icon: 'rainy' },
+    63: { condition: 'moderateRain', icon: 'rainy' },
+    65: { condition: 'heavyRain', icon: 'rainy' },
+    66: { condition: 'freezingRain', icon: 'snow' },
+    67: { condition: 'heavyFreezingRain', icon: 'snow' },
+    71: { condition: 'slightSnow', icon: 'snow' },
+    73: { condition: 'moderateSnow', icon: 'snow' },
+    75: { condition: 'heavySnow', icon: 'snow' },
+    77: { condition: 'snowGrains', icon: 'snow' },
+    80: { condition: 'slightRainShowers', icon: 'rainy' },
+    81: { condition: 'moderateRainShowers', icon: 'rainy' },
+    82: { condition: 'violentRainShowers', icon: 'thunderstorm' },
+    85: { condition: 'slightSnowShowers', icon: 'snow' },
+    86: { condition: 'heavySnowShowers', icon: 'snow' },
+    95: { condition: 'thunderstorm', icon: 'thunderstorm' },
+    96: { condition: 'thunderstormSlightHail', icon: 'thunderstorm' },
+    99: { condition: 'thunderstormHeavyHail', icon: 'thunderstorm' },
 };
 
 /**
@@ -72,7 +73,7 @@ export async function fetchWeatherData(
 
         const temperature = Math.round(data.current.temperature_2m);
         const weatherCode = data.current.weather_code;
-        const weatherInfo = WEATHER_CODE_MAP[weatherCode] || { condition: 'Unknown', icon: 'cloudy' };
+        const weatherInfo = WEATHER_CODE_MAP[weatherCode] || { condition: 'unknown', icon: 'cloudy' };
 
         return {
             temperature,
@@ -101,5 +102,55 @@ export function getWeatherIcon(weatherCode: number): string {
  * Get weather condition text based on weather code
  */
 export function getWeatherCondition(weatherCode: number): string {
-    return WEATHER_CODE_MAP[weatherCode]?.condition || 'Unknown';
+    return WEATHER_CODE_MAP[weatherCode]?.condition || 'unknown';
 }
+
+/**
+ * Legacy condition string to translation key mapping
+ * Used to convert old database values to new translation keys
+ */
+const LEGACY_CONDITION_MAP: Record<string, string> = {
+    'Clear': 'clear',
+    'Mainly Clear': 'mainlyClear',
+    'Partly Cloudy': 'partlyCloudy',
+    'Overcast': 'overcast',
+    'Foggy': 'foggy',
+    'Depositing Rime Fog': 'depositingRimeFog',
+    'Light Drizzle': 'lightDrizzle',
+    'Moderate Drizzle': 'moderateDrizzle',
+    'Dense Drizzle': 'denseDrizzle',
+    'Freezing Drizzle': 'freezingDrizzle',
+    'Dense Freezing Drizzle': 'denseFreezingDrizzle',
+    'Slight Rain': 'slightRain',
+    'Moderate Rain': 'moderateRain',
+    'Heavy Rain': 'heavyRain',
+    'Freezing Rain': 'freezingRain',
+    'Heavy Freezing Rain': 'heavyFreezingRain',
+    'Slight Snow': 'slightSnow',
+    'Moderate Snow': 'moderateSnow',
+    'Heavy Snow': 'heavySnow',
+    'Snow Grains': 'snowGrains',
+    'Slight Rain Showers': 'slightRainShowers',
+    'Moderate Rain Showers': 'moderateRainShowers',
+    'Violent Rain Showers': 'violentRainShowers',
+    'Slight Snow Showers': 'slightSnowShowers',
+    'Heavy Snow Showers': 'heavySnowShowers',
+    'Thunderstorm': 'thunderstorm',
+    'Thunderstorm with Slight Hail': 'thunderstormSlightHail',
+    'Thunderstorm with Heavy Hail': 'thunderstormHeavyHail',
+    'Unknown': 'unknown',
+};
+
+/**
+ * Convert a condition string (either legacy or new format) to a translation key
+ * This ensures backward compatibility with existing database records
+ */
+export function getWeatherTranslationKey(condition: string): string {
+    // Check if it's already a camelCase key
+    if (condition && !condition.includes(' ') && condition[0] === condition[0].toLowerCase()) {
+        return condition;
+    }
+    // Convert legacy format to translation key
+    return LEGACY_CONDITION_MAP[condition] || 'unknown';
+}
+

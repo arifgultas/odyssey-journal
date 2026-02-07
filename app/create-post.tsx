@@ -4,7 +4,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
 import { createPost } from '@/lib/posts';
-import { fetchWeatherData, WeatherData } from '@/lib/weather';
+import { fetchWeatherData, getWeatherTranslationKey, WeatherData } from '@/lib/weather';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -382,6 +382,7 @@ const AnimatedLocationCard = ({
     onConfirm,
     onChangeLocation,
     weatherData,
+    t,
 }: {
     location: { latitude: number; longitude: number; name?: string };
     theme: typeof DesignColors.light;
@@ -389,6 +390,7 @@ const AnimatedLocationCard = ({
     onConfirm: () => void;
     onChangeLocation: () => void;
     weatherData: WeatherData | null;
+    t: (key: string, params?: Record<string, any>) => string;
 }) => {
     const cardTranslateY = useSharedValue(40);
     const cardScale = useSharedValue(0.95);
@@ -449,7 +451,7 @@ const AnimatedLocationCard = ({
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
                                     <Ionicons name={weatherData.icon as any} size={14} color={theme.accentBrown} style={{ marginRight: 4 }} />
                                     <Text style={{ fontFamily: Typography.fonts.ui, fontSize: 12, color: theme.accentBrown }}>
-                                        {weatherData.temperature}°C • {weatherData.condition}
+                                        {weatherData.temperature}°C • {t(`weather.${getWeatherTranslationKey(weatherData.condition)}`)}
                                     </Text>
                                 </View>
                             )}
@@ -870,6 +872,7 @@ export default function CreatePostScreen() {
                                         onConfirm={handleLocationConfirm}
                                         onChangeLocation={handleLocationChange}
                                         weatherData={weatherData}
+                                        t={t}
                                     />
                                 )}
 
@@ -893,7 +896,7 @@ export default function CreatePostScreen() {
                                             <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12 }}>
                                                 <Ionicons name={weatherData.icon as any} size={14} color="#2C1810" style={{ marginRight: 4 }} />
                                                 <Text style={{ fontFamily: Typography.fonts.uiBold, fontSize: 12, color: '#2C1810' }}>
-                                                    {weatherData.temperature}°C {weatherData.condition}
+                                                    {weatherData.temperature}°C {t(`weather.${getWeatherTranslationKey(weatherData.condition)}`)}
                                                 </Text>
                                             </View>
                                         ) : null}
