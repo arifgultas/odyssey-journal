@@ -38,3 +38,10 @@ export interface UpdateProfileData {
     website?: string;
     avatar_url?: string;
 }
+
+export interface CommonDestination {
+    city: string;
+    country: string;
+    currentUserCount: number;
+    targetUserCount: number;
+}

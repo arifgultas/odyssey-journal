@@ -533,7 +533,7 @@ export default function CreatePostScreen() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(['nature']); // Default selection
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [locationConfirmed, setLocationConfirmed] = useState(false);
     const [imageCaptions, setImageCaptions] = useState<string[]>([]);
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -1041,7 +1041,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: -0.3,
     },
     publishButton: {
@@ -1063,7 +1062,6 @@ const styles = StyleSheet.create({
     publishText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 14,
-        fontWeight: '700',
         color: '#2C1810',
     },
 
@@ -1390,7 +1388,6 @@ const styles = StyleSheet.create({
     locationConfirmTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 20,
-        fontWeight: '700',
         lineHeight: 24,
     },
     locationConfirmSubtitle: {
@@ -1427,7 +1424,6 @@ const styles = StyleSheet.create({
     locationConfirmButtonText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 12,
-        fontWeight: '700',
         color: '#2C1810',
     },
     locationChangeButton: {
@@ -1439,7 +1435,6 @@ const styles = StyleSheet.create({
     locationChangeButtonText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 12,
-        fontWeight: '700',
     },
     locationCardCorner: {
         position: 'absolute',
@@ -1525,7 +1520,6 @@ const styles = StyleSheet.create({
     titleInput: {
         fontFamily: Typography.fonts.heading,
         fontSize: 30,
-        fontWeight: '700',
         letterSpacing: -0.5,
         padding: 0,
         paddingBottom: Spacing.sm,

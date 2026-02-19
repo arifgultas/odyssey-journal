@@ -260,6 +260,8 @@ export default {
         message: 'メッセージ',
         commonDestinations: '共通の目的地',
         commonPlaces: '共通の場所',
+        noCommonDestinations: 'まだ共通の目的地がありません',
+        noCommonDestinationsSubtext: '世界の探検を続けましょう！',
         openMap: '地図を開く',
         travelJournal: '旅行日記',
         defaultUser: 'トラベラー',

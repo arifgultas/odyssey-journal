@@ -13,6 +13,7 @@ import {
     ActivityIndicator,
     Alert,
     Dimensions,
+    Keyboard,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -685,6 +686,9 @@ export default function CreatePostScreen() {
             return;
         }
 
+        // Dismiss keyboard first
+        Keyboard.dismiss();
+
         setIsSubmitting(true);
         try {
             await createPost({
@@ -697,20 +701,16 @@ export default function CreatePostScreen() {
                 categories: selectedCategories,
             });
 
-            Alert.alert(t('common.success'), t('create.postSuccess'), [
-                {
-                    text: t('common.done'),
-                    onPress: () => {
-                        resetForm();
-                        router.push('/(tabs)');
-                    },
-                },
-            ]);
+            // Let the sealing animation play for a moment, then navigate
+            setTimeout(() => {
+                resetForm();
+                setIsSubmitting(false);
+                router.replace('/(tabs)');
+            }, 1500);
         } catch (error) {
             console.error('Error creating post:', error);
-            Alert.alert(t('common.error'), t('create.postError'));
-        } finally {
             setIsSubmitting(false);
+            Alert.alert(t('common.error'), t('create.postError'));
         }
     };
 
@@ -1111,7 +1111,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: -0.3,
     },
     publishButton: {
@@ -1133,7 +1132,6 @@ const styles = StyleSheet.create({
     publishText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 14,
-        fontWeight: '700',
         color: '#2C1810',
     },
 
@@ -1460,7 +1458,6 @@ const styles = StyleSheet.create({
     locationConfirmTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 20,
-        fontWeight: '700',
         lineHeight: 24,
     },
     locationConfirmSubtitle: {
@@ -1497,7 +1494,6 @@ const styles = StyleSheet.create({
     locationConfirmButtonText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 12,
-        fontWeight: '700',
         color: '#2C1810',
     },
     locationChangeButton: {
@@ -1509,7 +1505,6 @@ const styles = StyleSheet.create({
     locationChangeButtonText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 12,
-        fontWeight: '700',
     },
     locationCardCorner: {
         position: 'absolute',
@@ -1595,7 +1590,6 @@ const styles = StyleSheet.create({
     titleInput: {
         fontFamily: Typography.fonts.heading,
         fontSize: 30,
-        fontWeight: '700',
         letterSpacing: -0.5,
         padding: 0,
         paddingBottom: Spacing.sm,

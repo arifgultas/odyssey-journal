@@ -260,6 +260,8 @@ export default {
         message: '发消息',
         commonDestinations: '共同目的地',
         commonPlaces: '共同地点',
+        noCommonDestinations: '暂无共同目的地',
+        noCommonDestinationsSubtext: '继续探索世界吧！',
         openMap: '打开地图',
         travelJournal: '旅行日记',
         defaultUser: '旅行者',

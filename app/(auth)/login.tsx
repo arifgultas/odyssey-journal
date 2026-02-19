@@ -242,7 +242,6 @@ export default function LoginScreen() {
                                     <Text style={{
                                         fontFamily: Typography.fonts.heading,
                                         fontSize: 18,
-                                        fontWeight: '700',
                                         color: isDark ? '#2C1810' : '#D4A574',
                                     }}>
                                         {t('auth.login')}
@@ -325,7 +324,6 @@ export default function LoginScreen() {
                                 <Text style={{
                                     fontFamily: Typography.fonts.heading,
                                     fontSize: 16,
-                                    fontWeight: '700',
                                     color: isDark ? '#D4A574' : '#2C1810',
                                 }}>
                                     {t('auth.createAccount')}
@@ -395,7 +393,6 @@ const styles = StyleSheet.create({
     appTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 32,
-        fontWeight: '700',
         letterSpacing: -0.5,
         textAlign: 'center',
     },
@@ -468,7 +465,6 @@ const styles = StyleSheet.create({
     primaryButtonText: {
         fontFamily: Typography.fonts.heading,
         fontSize: 18,
-        fontWeight: '700',
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -526,7 +522,6 @@ const styles = StyleSheet.create({
     secondaryButtonText: {
         fontFamily: Typography.fonts.heading,
         fontSize: 16,
-        fontWeight: '700',
     },
     footer: {
         alignItems: 'center',

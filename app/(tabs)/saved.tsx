@@ -501,9 +501,7 @@ export default function SavedPostsScreen() {
                     <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('saved.title')}</Text>
-                <TouchableOpacity style={styles.headerButton}>
-                    <MaterialIcons name="search" size={24} color={colors.textPrimary} />
-                </TouchableOpacity>
+                <View style={styles.headerButton} />
             </View>
 
             <FlatList
@@ -566,7 +564,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
         color: '#F5F1E8',
         fontFamily: Typography.fonts.heading,
         letterSpacing: 0.5,
@@ -591,7 +588,6 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
         fontFamily: Typography.fonts.heading,
         letterSpacing: 0.5,
     },
@@ -607,11 +603,10 @@ const styles = StyleSheet.create({
     },
     newCollectionText: {
         fontSize: 12,
-        fontWeight: 'bold',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         color: '#2C1810',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
     },
     collectionsScroll: {
         paddingHorizontal: Spacing.md,
@@ -659,7 +654,6 @@ const styles = StyleSheet.create({
     },
     collectionName: {
         fontSize: 18,
-        fontWeight: '600',
         color: '#F5F1E8',
         fontFamily: Typography.fonts.heading,
         marginBottom: 4,
@@ -697,8 +691,7 @@ const styles = StyleSheet.create({
     },
     emptyCollectionText: {
         fontSize: 14,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
         marginTop: Spacing.xs,
     },
     emptyCollectionSubtext: {
@@ -820,9 +813,8 @@ const styles = StyleSheet.create({
     },
     polaroidTitle: {
         fontSize: 14,
-        fontWeight: 'bold',
         color: '#2C1810',
-        fontFamily: Typography.fonts.body,
+        fontFamily: Typography.fonts.bodyBold,
         marginBottom: 4,
     },
     polaroidLocation: {
@@ -857,8 +849,7 @@ const styles = StyleSheet.create({
     },
     backLabel: {
         fontSize: 12,
-        fontWeight: 'bold',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },

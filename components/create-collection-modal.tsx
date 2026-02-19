@@ -332,7 +332,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
         fontFamily: Typography.fonts.heading,
     },
     saveButton: {
@@ -348,7 +347,6 @@ const styles = StyleSheet.create({
     },
     saveButtonText: {
         color: '#2C1810',
-        fontWeight: 'bold',
         fontFamily: Typography.fonts.uiBold,
         fontSize: 14,
     },
@@ -364,8 +362,7 @@ const styles = StyleSheet.create({
     },
     sectionLabel: {
         fontSize: 13,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
         marginBottom: Spacing.sm,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
@@ -457,7 +454,6 @@ const styles = StyleSheet.create({
     },
     previewName: {
         fontSize: 16,
-        fontWeight: '600',
         color: '#F5F1E8',
         fontFamily: Typography.fonts.heading,
         marginBottom: 4,

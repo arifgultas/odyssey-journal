@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Comment } from '@/lib/comments';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -13,6 +14,8 @@ interface CommentItemProps {
 
 export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemProps) {
     const [showActions, setShowActions] = useState(false);
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -57,7 +60,7 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
         <View style={styles.container}>
             <View style={styles.content}>
                 {/* Avatar */}
-                <View style={styles.avatar}>
+                <View style={[styles.avatar, { backgroundColor: theme.background }]}>
                     {comment.avatar_url ? (
                         <Image
                             source={{ uri: comment.avatar_url }}
@@ -65,19 +68,19 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
                             contentFit="cover"
                         />
                     ) : (
-                        <Ionicons name="person" size={16} color={Colors.light.textMuted} />
+                        <Ionicons name="person" size={16} color={theme.textMuted} />
                     )}
                 </View>
 
                 {/* Comment Content */}
                 <View style={styles.commentContent}>
                     <View style={styles.header}>
-                        <Text style={styles.username}>
+                        <Text style={[styles.username, { color: theme.text }]}>
                             {comment.full_name || comment.username || 'Unknown User'}
                         </Text>
-                        <Text style={styles.timestamp}>{formatDate(comment.created_at)}</Text>
+                        <Text style={[styles.timestamp, { color: theme.textMuted }]}>{formatDate(comment.created_at)}</Text>
                     </View>
-                    <Text style={styles.text}>{comment.content}</Text>
+                    <Text style={[styles.text, { color: theme.text }]}>{comment.content}</Text>
                 </View>
 
                 {/* Actions */}
@@ -86,17 +89,17 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
                         style={styles.moreButton}
                         onPress={() => setShowActions(!showActions)}
                     >
-                        <Ionicons name="ellipsis-horizontal" size={16} color={Colors.light.textMuted} />
+                        <Ionicons name="ellipsis-horizontal" size={16} color={theme.textMuted} />
                     </TouchableOpacity>
                 )}
             </View>
 
             {/* Action Menu */}
             {showActions && isOwner && (
-                <View style={styles.actionsMenu}>
+                <View style={[styles.actionsMenu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <TouchableOpacity style={styles.actionItem} onPress={handleDelete}>
-                        <Ionicons name="trash-outline" size={16} color={Colors.light.error} />
-                        <Text style={styles.deleteText}>Delete</Text>
+                        <Ionicons name="trash-outline" size={16} color={theme.error} />
+                        <Text style={[styles.deleteText, { color: theme.error }]}>Delete</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -116,7 +119,6 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: Colors.light.background,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
@@ -137,17 +139,14 @@ const styles = StyleSheet.create({
     username: {
         fontFamily: Typography.fonts.bodyBold,
         fontSize: 14,
-        color: Colors.light.text,
     },
     timestamp: {
         fontFamily: Typography.fonts.body,
         fontSize: 12,
-        color: Colors.light.textMuted,
     },
     text: {
         fontFamily: Typography.fonts.body,
         fontSize: 14,
-        color: Colors.light.text,
         lineHeight: 20,
     },
     moreButton: {
@@ -156,11 +155,9 @@ const styles = StyleSheet.create({
     actionsMenu: {
         marginLeft: 40,
         marginTop: Spacing.xs,
-        backgroundColor: Colors.light.surface,
         borderRadius: BorderRadius.sm,
         padding: Spacing.xs,
         borderWidth: 1,
-        borderColor: Colors.light.border,
     },
     actionItem: {
         flexDirection: 'row',
@@ -171,6 +168,5 @@ const styles = StyleSheet.create({
     deleteText: {
         fontFamily: Typography.fonts.body,
         fontSize: 14,
-        color: Colors.light.error,
     },
 });

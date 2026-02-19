@@ -260,6 +260,8 @@ export default {
         message: 'Nachricht',
         commonDestinations: 'Gemeinsame Ziele',
         commonPlaces: 'Gemeinsame Orte',
+        noCommonDestinations: 'Noch keine gemeinsamen Reiseziele',
+        noCommonDestinationsSubtext: 'Entdecken Sie weiter die Welt!',
         openMap: 'Karte öffnen',
         travelJournal: 'Reisetagebuch',
         defaultUser: 'Reisender',

@@ -1,6 +1,7 @@
 import { CommentItem } from '@/components/comment-item';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Comment } from '@/lib/comments';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -27,14 +28,17 @@ export function CommentsList({
     refreshing = false,
     hasMore = false,
 }: CommentsListProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     const renderEmpty = () => {
         if (loading) return null;
 
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="chatbubbles-outline" size={48} color={Colors.light.textMuted} />
-                <ThemedText style={styles.emptyText}>No comments yet</ThemedText>
-                <ThemedText style={styles.emptySubtext}>Be the first to comment!</ThemedText>
+                <Ionicons name="chatbubbles-outline" size={48} color={theme.textMuted} />
+                <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>No comments yet</ThemedText>
+                <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>Be the first to comment!</ThemedText>
             </View>
         );
     };
@@ -44,7 +48,7 @@ export function CommentsList({
 
         return (
             <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color={Colors.light.accent} />
+                <ActivityIndicator size="small" color={theme.accent} />
             </View>
         );
     };
@@ -66,7 +70,7 @@ export function CommentsList({
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor={Colors.light.accent}
+                        tintColor={theme.accent}
                     />
                 ) : undefined
             }
@@ -95,12 +99,10 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 16,
-        color: Colors.light.textMuted,
         marginTop: Spacing.sm,
     },
     emptySubtext: {
         fontSize: 14,
-        color: Colors.light.textMuted,
     },
     footerLoader: {
         paddingVertical: Spacing.md,

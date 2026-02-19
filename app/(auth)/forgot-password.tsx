@@ -140,7 +140,6 @@ export default function ForgotPasswordScreen() {
                             <Text style={{
                                 fontFamily: Typography.fonts.heading,
                                 fontSize: 18,
-                                fontWeight: '700',
                                 color: isDark ? '#2C1810' : '#D4A574',
                             }}>
                                 {t('auth.backToLogin')}
@@ -293,7 +292,6 @@ export default function ForgotPasswordScreen() {
                                     <Text style={{
                                         fontFamily: Typography.fonts.heading,
                                         fontSize: 16,
-                                        fontWeight: '700',
                                         color: isDark ? '#2C1810' : '#D4A574',
                                     }}>
                                         {t('auth.sendResetLink')}
@@ -396,7 +394,6 @@ const styles = StyleSheet.create({
     appTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 28,
-        fontWeight: '700',
         letterSpacing: -0.5,
         textAlign: 'center',
     },
@@ -459,7 +456,6 @@ const styles = StyleSheet.create({
     loginLink: {
         fontFamily: Typography.fonts.bodyBold,
         fontSize: 14,
-        fontWeight: '600',
     },
     securityNote: {
         flexDirection: 'row',
@@ -507,7 +503,6 @@ const styles = StyleSheet.create({
     successTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 28,
-        fontWeight: '700',
         textAlign: 'center',
         marginBottom: 16,
     },
@@ -533,6 +528,5 @@ const styles = StyleSheet.create({
     resendText: {
         fontFamily: Typography.fonts.bodyBold,
         fontSize: 14,
-        fontWeight: '600',
     },
 });

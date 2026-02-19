@@ -286,6 +286,8 @@ export default {
         message: 'Message',
         commonDestinations: 'Common Destinations',
         commonPlaces: 'Common Places',
+        noCommonDestinations: 'No common destinations yet',
+        noCommonDestinationsSubtext: 'Keep exploring the world!',
         openMap: 'Open Map',
         travelJournal: 'Travel Journal',
 

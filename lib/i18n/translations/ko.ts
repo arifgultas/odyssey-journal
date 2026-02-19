@@ -260,6 +260,8 @@ export default {
         message: '메시지',
         commonDestinations: '공통 목적지',
         commonPlaces: '공통 장소',
+        noCommonDestinations: '아직 공통 목적지가 없습니다',
+        noCommonDestinationsSubtext: '세계를 계속 탐험하세요!',
         openMap: '지도 열기',
         travelJournal: '여행 일지',
         defaultUser: '여행자',

@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Notification, getNotificationMessage } from '@/lib/notifications';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -11,6 +12,9 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notification, onPress }: NotificationItemProps) {
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -35,13 +39,13 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
     const getIcon = () => {
         switch (notification.type) {
             case 'like':
-                return <Ionicons name="heart" size={20} color={Colors.light.error} />;
+                return <Ionicons name="heart" size={20} color={theme.error} />;
             case 'comment':
-                return <Ionicons name="chatbubble" size={20} color={Colors.light.accent} />;
+                return <Ionicons name="chatbubble" size={20} color={theme.accent} />;
             case 'follow':
-                return <Ionicons name="person-add" size={20} color={Colors.light.success} />;
+                return <Ionicons name="person-add" size={20} color={theme.success} />;
             default:
-                return <Ionicons name="notifications" size={20} color={Colors.light.textMuted} />;
+                return <Ionicons name="notifications" size={20} color={theme.textMuted} />;
         }
     };
 
@@ -49,16 +53,17 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
         <TouchableOpacity
             style={[
                 styles.container,
-                !notification.read && styles.unreadContainer,
+                { backgroundColor: theme.surface, borderBottomColor: theme.border },
+                !notification.read && { backgroundColor: theme.background },
             ]}
             onPress={onPress}
             activeOpacity={0.7}
         >
             {/* Unread Indicator */}
-            {!notification.read && <View style={styles.unreadDot} />}
+            {!notification.read && <View style={[styles.unreadDot, { backgroundColor: theme.accent }]} />}
 
             {/* Actor Avatar */}
-            <View style={styles.avatar}>
+            <View style={[styles.avatar, { backgroundColor: theme.background }]}>
                 {notification.actor_avatar_url ? (
                     <Image
                         source={{ uri: notification.actor_avatar_url }}
@@ -66,27 +71,27 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
                         contentFit="cover"
                     />
                 ) : (
-                    <Ionicons name="person" size={20} color={Colors.light.textMuted} />
+                    <Ionicons name="person" size={20} color={theme.textMuted} />
                 )}
             </View>
 
             {/* Content */}
             <View style={styles.content}>
                 <View style={styles.textContainer}>
-                    <Text style={styles.message}>
+                    <Text style={[styles.message, { color: theme.text }]}>
                         {getNotificationMessage(notification)}
                     </Text>
                     {notification.post_title && (
-                        <Text style={styles.postTitle} numberOfLines={1}>
+                        <Text style={[styles.postTitle, { color: theme.textSecondary }]} numberOfLines={1}>
                             "{notification.post_title}"
                         </Text>
                     )}
                 </View>
-                <Text style={styles.timestamp}>{formatDate(notification.created_at)}</Text>
+                <Text style={[styles.timestamp, { color: theme.textMuted }]}>{formatDate(notification.created_at)}</Text>
             </View>
 
             {/* Icon */}
-            <View style={styles.iconContainer}>
+            <View style={[styles.iconContainer, { backgroundColor: theme.background }]}>
                 {getIcon()}
             </View>
 
@@ -107,19 +112,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: Spacing.md,
-        backgroundColor: Colors.light.surface,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
         gap: Spacing.sm,
-    },
-    unreadContainer: {
-        backgroundColor: Colors.light.background,
     },
     unreadDot: {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: Colors.light.accent,
         position: 'absolute',
         left: Spacing.xs,
         top: '50%',
@@ -129,11 +128,11 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: Colors.light.background,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
         marginLeft: Spacing.xs,
+        flexShrink: 0,
     },
     avatarImage: {
         width: '100%',
@@ -149,31 +148,29 @@ const styles = StyleSheet.create({
     message: {
         fontFamily: Typography.fonts.body,
         fontSize: 14,
-        color: Colors.light.text,
         lineHeight: 20,
     },
     postTitle: {
         fontFamily: Typography.fonts.body,
         fontSize: 13,
-        color: Colors.light.textSecondary,
         fontStyle: 'italic',
     },
     timestamp: {
         fontFamily: Typography.fonts.body,
         fontSize: 12,
-        color: Colors.light.textMuted,
     },
     iconContainer: {
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: Colors.light.background,
         alignItems: 'center',
         justifyContent: 'center',
+        flexShrink: 0,
     },
     postThumbnail: {
         width: 50,
         height: 50,
         borderRadius: BorderRadius.sm,
+        flexShrink: 0,
     },
 });

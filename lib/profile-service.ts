@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
+import type { CommonDestination, Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
 
 /**
  * Profile Service
@@ -321,6 +321,91 @@ export class ProfileService {
             return data || [];
         } catch (error) {
             console.error('Error fetching user posts:', error);
+            return [];
+        }
+    }
+
+
+    /**
+     * Get common destinations between two users
+     * Finds cities that both users have posted from
+     */
+    static async getCommonDestinations(
+        currentUserId: string,
+        targetUserId: string
+    ): Promise<CommonDestination[]> {
+        try {
+            // Fetch posts with location data for both users in parallel
+            const [currentUserPosts, targetUserPosts] = await Promise.all([
+                supabase
+                    .from('posts')
+                    .select('location')
+                    .eq('user_id', currentUserId)
+                    .not('location', 'is', null),
+                supabase
+                    .from('posts')
+                    .select('location')
+                    .eq('user_id', targetUserId)
+                    .not('location', 'is', null),
+            ]);
+
+            if (currentUserPosts.error || targetUserPosts.error) {
+                throw currentUserPosts.error || targetUserPosts.error;
+            }
+
+            // Extract city counts for each user
+            const extractCities = (posts: Array<{ location: unknown }>) => {
+                const cityMap = new Map<string, { country: string; count: number }>();
+                for (const post of posts) {
+                    const loc = post.location as {
+                        city?: string;
+                        country?: string;
+                    } | null;
+                    if (loc?.city) {
+                        const key = loc.city.toLowerCase().trim();
+                        const existing = cityMap.get(key);
+                        if (existing) {
+                            existing.count++;
+                        } else {
+                            cityMap.set(key, {
+                                country: loc.country || '',
+                                count: 1,
+                            });
+                        }
+                    }
+                }
+                return cityMap;
+            };
+
+            const currentCities = extractCities(currentUserPosts.data || []);
+            const targetCities = extractCities(targetUserPosts.data || []);
+
+            // Find common cities
+            const commonDestinations: CommonDestination[] = [];
+            for (const [cityKey, currentData] of currentCities) {
+                const targetData = targetCities.get(cityKey);
+                if (targetData) {
+                    // Use the display name from whichever has more data
+                    const displayCity = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
+                    commonDestinations.push({
+                        city: displayCity,
+                        country: currentData.country || targetData.country,
+                        currentUserCount: currentData.count,
+                        targetUserCount: targetData.count,
+                    });
+                }
+            }
+
+            // Sort by total posts count (most common first)
+            commonDestinations.sort(
+                (a, b) =>
+                    (b.currentUserCount + b.targetUserCount) -
+                    (a.currentUserCount + a.targetUserCount)
+            );
+
+            return commonDestinations;
+        } catch (error) {
+            console.error('Error fetching common destinations:', error);
             return [];
         }
     }

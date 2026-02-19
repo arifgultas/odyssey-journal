@@ -85,3 +85,17 @@ export function useSearchProfiles(query: string, enabled = true) {
         enabled: enabled && query.length > 0,
     });
 }
+
+/**
+ * Hook to fetch common destinations between two users
+ */
+export function useCommonDestinations(currentUserId: string | null, targetUserId: string | null) {
+    return useQuery({
+        queryKey: ['commonDestinations', currentUserId, targetUserId],
+        queryFn: () =>
+            currentUserId && targetUserId
+                ? ProfileService.getCommonDestinations(currentUserId, targetUserId)
+                : [],
+        enabled: !!currentUserId && !!targetUserId && currentUserId !== targetUserId,
+    });
+}

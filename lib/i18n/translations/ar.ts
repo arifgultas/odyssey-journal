@@ -261,6 +261,8 @@ export default {
         message: 'رسالة',
         commonDestinations: 'وجهات شائعة',
         commonPlaces: 'أماكن مشتركة',
+        noCommonDestinations: 'لا توجد وجهات مشتركة بعد',
+        noCommonDestinationsSubtext: 'واصلوا استكشاف العالم!',
         openMap: 'فتح الخريطة',
         travelJournal: 'يوميات السفر',
         defaultUser: 'مسافر',

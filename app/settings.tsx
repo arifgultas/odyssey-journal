@@ -340,7 +340,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: 3,
         fontFamily: Typography.fonts.heading,
     },
@@ -453,7 +452,6 @@ const styles = StyleSheet.create({
     },
     profileName: {
         fontSize: 24,
-        fontWeight: '700',
         fontFamily: Typography.fonts.heading,
     },
     profileEmail: {
@@ -512,8 +510,7 @@ const styles = StyleSheet.create({
     },
     settingLabel: {
         fontSize: 18,
-        fontWeight: '700',
-        fontFamily: Typography.fonts.body,
+        fontFamily: Typography.fonts.bodyBold,
     },
     settingSubLabel: {
         fontSize: 11,
@@ -562,8 +559,7 @@ const styles = StyleSheet.create({
     },
     languageName: {
         fontSize: 18,
-        fontWeight: '700',
-        fontFamily: Typography.fonts.body,
+        fontFamily: Typography.fonts.bodyBold,
         letterSpacing: 0.5,
     },
     chevronContainer: {

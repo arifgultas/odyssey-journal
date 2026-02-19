@@ -39,6 +39,17 @@ function RootLayoutNav() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         <Stack.Screen name="comments/[postId]" options={{ headerShown: false }} />
+        <Stack.Screen name="post-detail/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="user-profile/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="followers/[userId]" options={{ headerShown: false }} />
+        <Stack.Screen name="following/[userId]" options={{ headerShown: false }} />
+        <Stack.Screen name="collection/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="destination-posts/[locationName]" options={{ headerShown: false }} />
+        <Stack.Screen name="category-posts/[categoryId]" options={{ headerShown: false }} />
+        <Stack.Screen name="popular-posts" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="map" options={{ headerShown: false }} />
+        <Stack.Screen name="create-post" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <OfflineIndicator position="top" />

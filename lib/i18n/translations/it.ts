@@ -260,6 +260,8 @@ export default {
         message: 'Messaggio',
         commonDestinations: 'Destinazioni comuni',
         commonPlaces: 'Luoghi comuni',
+        noCommonDestinations: 'Nessuna destinazione comune ancora',
+        noCommonDestinationsSubtext: 'Continuate a esplorare il mondo!',
         openMap: 'Apri Mappa',
         travelJournal: 'Diario di viaggio',
         defaultUser: 'Viaggiatore',

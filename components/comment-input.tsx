@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
@@ -17,6 +18,8 @@ export function CommentInput({
 }: CommentInputProps) {
     const [comment, setComment] = useState('');
     const insets = useSafeAreaInsets();
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
 
     const handleSubmit = () => {
         if (comment.trim() && !loading) {
@@ -28,11 +31,19 @@ export function CommentInput({
     const canSubmit = comment.trim().length > 0 && !loading;
 
     return (
-        <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, Spacing.lg) }]}>
+        <View style={[styles.container, {
+            paddingBottom: Math.max(insets.bottom, Spacing.lg),
+            backgroundColor: theme.surface,
+            borderTopColor: theme.accent,
+        }]}>
             <TextInput
-                style={styles.input}
+                style={[styles.input, {
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                    color: theme.text,
+                }]}
                 placeholder={placeholder}
-                placeholderTextColor={Colors.light.textMuted}
+                placeholderTextColor={theme.textMuted}
                 value={comment}
                 onChangeText={setComment}
                 multiline
@@ -44,18 +55,19 @@ export function CommentInput({
             <TouchableOpacity
                 style={[
                     styles.sendButton,
-                    canSubmit && styles.sendButtonActive,
+                    { backgroundColor: theme.border, borderColor: theme.border },
+                    canSubmit && { backgroundColor: theme.primary, borderColor: theme.primary },
                 ]}
                 onPress={handleSubmit}
                 disabled={!canSubmit}
             >
                 {loading ? (
-                    <ActivityIndicator size="small" color={Colors.light.surface} />
+                    <ActivityIndicator size="small" color={theme.surface} />
                 ) : (
                     <Ionicons
                         name="send"
                         size={20}
-                        color={canSubmit ? Colors.light.surface : Colors.light.textMuted}
+                        color={canSubmit ? theme.surface : theme.textMuted}
                     />
                 )}
             </TouchableOpacity>
@@ -69,10 +81,8 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         gap: Spacing.md,
         padding: Spacing.lg,
-        backgroundColor: Colors.light.surface,
         borderTopWidth: 2,
-        borderTopColor: Colors.light.accent,
-        shadowColor: Colors.light.primary,
+        shadowColor: '#2C1810',
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
@@ -80,20 +90,16 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        backgroundColor: Colors.light.background,
         borderRadius: BorderRadius.md,
         borderWidth: 1.5,
-        borderColor: Colors.light.border,
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.md,
         fontFamily: Typography.fonts.body,
         fontSize: 15,
-        color: Colors.light.text,
         maxHeight: 100,
         minHeight: 44,
         lineHeight: 22,
-        // Paper-like texture
-        shadowColor: Colors.light.primary,
+        shadowColor: '#2C1810',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.03,
         shadowRadius: 2,
@@ -103,19 +109,8 @@ const styles = StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: BorderRadius.md,
-        backgroundColor: Colors.light.border,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderColor: Colors.light.border,
-    },
-    sendButtonActive: {
-        backgroundColor: Colors.light.primary,
-        borderColor: Colors.light.primary,
-        shadowColor: Colors.light.primary,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 2,
     },
 });

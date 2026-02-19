@@ -9,6 +9,7 @@ import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
+import { getUnreadNotificationCount } from '@/lib/notifications';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
 import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
 import { supabase } from '@/lib/supabase';
@@ -17,8 +18,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 // Custom SVG icons
 import BellIcon from '@/assets/icons/bell-notification.svg';
 import GlobeIcon from '@/assets/icons/globe-earth-world.svg';
-import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -48,6 +49,7 @@ export default function HomeScreen() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showCollectionPicker, setShowCollectionPicker] = useState(false);
   const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
   // Spinning compass animation
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -66,6 +68,36 @@ export default function HomeScreen() {
     loadPosts(0);
   }, []);
 
+  // Poll for unread notification count every 15 seconds
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    let isMounted = true;
+
+    const pollUnreadCount = async () => {
+      try {
+        const count = await getUnreadNotificationCount();
+        if (isMounted) {
+          setUnreadNotificationCount(count);
+        }
+      } catch (error) {
+        console.error('Error polling unread count:', error);
+      }
+    };
+
+    // Load immediately on mount
+    pollUnreadCount();
+
+    // Poll every 5 seconds (lightweight HEAD-only count query)
+    intervalId = setInterval(pollUnreadCount, 5000);
+
+    return () => {
+      isMounted = false;
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
+
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
@@ -77,6 +109,23 @@ export default function HomeScreen() {
       setCurrentUserId(user.id);
     }
   };
+
+  // Refresh feed and unread count when screen gains focus (e.g., coming back from create post or notifications)
+  useFocusEffect(
+    useCallback(() => {
+      const refreshOnFocus = async () => {
+        try {
+          const count = await getUnreadNotificationCount();
+          setUnreadNotificationCount(count);
+        } catch (error) {
+          console.error('Error loading unread count:', error);
+        }
+      };
+      refreshOnFocus();
+      // Refresh posts feed silently
+      loadPosts(0, true);
+    }, [])
+  );
 
   const loadPosts = async (pageNum: number = 0, refresh: boolean = false) => {
     try {
@@ -307,12 +356,28 @@ export default function HomeScreen() {
         style={styles.headerButton}
         onPress={() => router.push('/notifications')}
       >
-        <BellIcon
-          width={40}
-          height={40}
-          fill={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
-          color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
-        />
+        <View>
+          <BellIcon
+            width={40}
+            height={40}
+            fill={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+            color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+          />
+          {unreadNotificationCount > 0 && (
+            <View style={[
+              styles.notificationBadge,
+              {
+                borderColor: colorScheme === 'dark'
+                  ? 'rgba(26, 20, 16, 0.95)'
+                  : 'rgba(245, 241, 232, 0.95)',
+              }
+            ]}>
+              <Text style={styles.notificationBadgeText}>
+                {unreadNotificationCount <= 9 ? unreadNotificationCount : '9+'}
+              </Text>
+            </View>
+          )}
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -482,5 +547,23 @@ const styles = StyleSheet.create({
   footerLoader: {
     paddingVertical: Spacing.lg,
     alignItems: 'center',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 0,
+    backgroundColor: '#c62828',
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    borderWidth: 2,
+  },
+  notificationBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

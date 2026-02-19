@@ -775,9 +775,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     dateText: {
-        fontFamily: Typography.fonts.handwriting,
+        fontFamily: Typography.fonts.handwritingBold,
         fontSize: 44,
-        fontWeight: '700',
         letterSpacing: 1,
         transform: [{ rotate: '-2deg' }],
     },
@@ -813,7 +812,6 @@ const styles = StyleSheet.create({
     weatherTemp: {
         fontFamily: Typography.fonts.heading,
         fontSize: 14,
-        fontWeight: '700',
         marginTop: 4,
         borderTopWidth: 1,
         borderStyle: 'dashed',
@@ -832,7 +830,6 @@ const styles = StyleSheet.create({
     postTitle: {
         fontFamily: Typography.fonts.heading,
         fontSize: 40,
-        fontWeight: '700',
         lineHeight: 44,
         letterSpacing: -0.5,
         marginBottom: Spacing.xl,
@@ -912,10 +909,9 @@ const styles = StyleSheet.create({
         lineHeight: 30,
     },
     dropCap: {
-        fontFamily: Typography.fonts.handwriting,
+        fontFamily: Typography.fonts.handwritingBold,
         fontSize: 72,
         lineHeight: 72,
-        fontWeight: '700',
         marginRight: 12,
     },
 
@@ -971,7 +967,6 @@ const styles = StyleSheet.create({
     mapLocationName: {
         fontFamily: Typography.fonts.heading,
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: 1,
     },
     mapLocationCountry: {
@@ -1032,9 +1027,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
     },
     notesSectionTitle: {
-        fontFamily: Typography.fonts.handwriting,
+        fontFamily: Typography.fonts.handwritingBold,
         fontSize: 30,
-        fontWeight: '700',
     },
     notesCount: {
         paddingHorizontal: 12,

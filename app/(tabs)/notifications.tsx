@@ -203,7 +203,12 @@ export default function NotificationsScreen() {
         }
 
         if (notification.type === 'follow') {
-            console.log('Navigate to user profile:', notification.actor_id);
+            if (notification.actor_id) {
+                router.push({
+                    pathname: '/user-profile/[id]',
+                    params: { id: notification.actor_id },
+                });
+            }
         } else if (notification.post_id) {
             router.push({
                 pathname: '/post-detail/[id]',
@@ -349,7 +354,7 @@ export default function NotificationsScreen() {
                             <Ionicons
                                 name={getNotificationIcon(notification.type)}
                                 size={22}
-                                color={isOld ? '#888' : letterTheme.stampBrown}
+                                color={isOld ? letterTheme.inkMuted : letterTheme.stampBrown}
                                 style={styles.stampIcon}
                             />
                         </View>
@@ -519,7 +524,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: 3,
         fontFamily: Typography.fonts.heading,
         textTransform: 'uppercase',
@@ -602,11 +606,11 @@ const styles = StyleSheet.create({
     // Wax Seal
     waxSeal: {
         position: 'absolute',
-        top: -8,
-        right: -8,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+        top: 8,
+        right: 8,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
         backgroundColor: '#c62828',
         alignItems: 'center',
         justifyContent: 'center',
@@ -615,9 +619,9 @@ const styles = StyleSheet.create({
     },
     waxSealInner: {
         position: 'absolute',
-        width: 24,
-        height: 24,
-        borderRadius: 12,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.4)',
         borderStyle: 'dashed',
@@ -639,10 +643,10 @@ const styles = StyleSheet.create({
     // Text
     textContent: {
         flex: 1,
+        paddingRight: 24,
     },
     messageText: {
         fontSize: 15,
-        fontWeight: '500',
         lineHeight: 22,
         fontFamily: Typography.fonts.heading,
     },

@@ -409,7 +409,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
         fontFamily: Typography.fonts.heading,
     },
     closeButton: {
@@ -440,8 +439,7 @@ const styles = StyleSheet.create({
     },
     createButtonText: {
         fontSize: 15,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
     },
     skipButton: {
         flexDirection: 'row',
@@ -460,8 +458,7 @@ const styles = StyleSheet.create({
     },
     sectionLabel: {
         fontSize: 12,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: Spacing.sm,
@@ -495,8 +492,7 @@ const styles = StyleSheet.create({
     },
     collectionItemName: {
         fontSize: 15,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
         marginBottom: 2,
     },
     collectionItemCount: {
@@ -522,8 +518,7 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 16,
-        fontWeight: '600',
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
     },
     emptySubtext: {
         fontSize: 14,
@@ -570,7 +565,6 @@ const styles = StyleSheet.create({
     quickCreateSubmitText: {
         color: '#2C1810',
         fontSize: 14,
-        fontWeight: '600',
         fontFamily: Typography.fonts.uiBold,
     },
     buttonDisabled: {
@@ -592,7 +586,6 @@ const styles = StyleSheet.create({
     saveButtonText: {
         color: '#2C1810',
         fontSize: 16,
-        fontWeight: 'bold',
         fontFamily: Typography.fonts.uiBold,
     },
 });

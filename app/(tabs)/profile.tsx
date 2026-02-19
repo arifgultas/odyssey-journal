@@ -1,4 +1,4 @@
-import { EditProfileModal } from '@/components/edit-profile-modal';
+
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
@@ -66,7 +66,7 @@ export default function ProfileScreen() {
     const router = useRouter();
     const { user, signOut } = useAuth();
     const { t, language } = useLanguage();
-    const [editModalVisible, setEditModalVisible] = useState(false);
+
     const [refreshing, setRefreshing] = useState(false);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
@@ -109,12 +109,7 @@ export default function ProfileScreen() {
         );
     };
 
-    const handleEditSuccess = async () => {
-        await Promise.all([
-            refetchProfile(),
-            refetchStats(),
-        ]);
-    };
+
 
     const handlePostPress = (postId: string) => {
         router.push(`/post-detail/${postId}`);
@@ -280,14 +275,7 @@ export default function ProfileScreen() {
                                 </View>
                             )}
 
-                            {/* Edit Profile Button */}
-                            <TouchableOpacity
-                                style={[styles.editButton, { backgroundColor: passportTheme.text, borderColor: `${passportTheme.gold}33` }]}
-                                onPress={() => setEditModalVisible(true)}
-                            >
-                                <Ionicons name="create-outline" size={18} color={passportTheme.gold} />
-                                <Text style={[styles.editButtonText, { color: passportTheme.gold }]}>{t('profile.editProfile')}</Text>
-                            </TouchableOpacity>
+
                         </View>
                     </View>
                 </View>
@@ -485,13 +473,7 @@ export default function ProfileScreen() {
                 <View style={{ height: 100 }} />
             </ScrollView>
 
-            {/* Edit Profile Modal */}
-            <EditProfileModal
-                visible={editModalVisible}
-                profile={displayProfile}
-                onClose={() => setEditModalVisible(false)}
-                onSuccess={handleEditSuccess}
-            />
+
         </ThemedView>
     );
 }
@@ -542,7 +524,6 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: 2.5,
         textTransform: 'uppercase',
         fontFamily: Typography.fonts.heading,
@@ -614,13 +595,11 @@ const styles = StyleSheet.create({
     },
     fieldValue: {
         fontSize: 22,
-        fontWeight: '700',
         letterSpacing: 1,
         fontFamily: Typography.fonts.heading,
     },
     fieldValueSmall: {
         fontSize: 18,
-        fontWeight: '700',
         letterSpacing: 1,
         fontFamily: Typography.fonts.heading,
     },
@@ -669,29 +648,12 @@ const styles = StyleSheet.create({
     },
     bioText: {
         fontSize: 20,
-        fontFamily: Typography.fonts.handwriting,
-        fontWeight: '700',
+        fontFamily: Typography.fonts.handwritingBold,
         textAlign: 'center',
         lineHeight: 28,
     },
 
-    // Edit Button
-    editButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 14,
-        borderRadius: 12,
-        gap: 8,
-        borderWidth: 1,
-        ...Shadows.md,
-    },
-    editButtonText: {
-        fontSize: 13,
-        fontWeight: '700',
-        letterSpacing: 2,
-        textTransform: 'uppercase',
-    },
+
 
     // Language Button
     languageButton: {
@@ -744,7 +706,6 @@ const styles = StyleSheet.create({
     },
     statNumber: {
         fontSize: 22,
-        fontWeight: '700',
         fontFamily: Typography.fonts.heading,
     },
     statLabel: {
@@ -768,7 +729,6 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 18,
-        fontWeight: '700',
         fontFamily: Typography.fonts.heading,
         letterSpacing: 0.5,
     },
@@ -919,8 +879,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         fontSize: 18,
-        fontFamily: Typography.fonts.handwriting,
-        fontWeight: '700',
+        fontFamily: Typography.fonts.handwritingBold,
         color: '#2c241b',
         textAlign: 'center',
     },

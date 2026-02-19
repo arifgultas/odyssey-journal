@@ -512,7 +512,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         flex: 1,
         fontSize: 18,
-        fontWeight: 'bold',
         fontFamily: Typography.fonts.heading,
         textAlign: 'center',
         marginHorizontal: Spacing.sm,
@@ -542,7 +541,6 @@ const styles = StyleSheet.create({
     },
     collectionName: {
         fontSize: 28,
-        fontWeight: 'bold',
         color: '#F5F1E8',
         fontFamily: Typography.fonts.heading,
         marginBottom: Spacing.xs,
@@ -623,9 +621,8 @@ const styles = StyleSheet.create({
     },
     polaroidTitle: {
         fontSize: 14,
-        fontWeight: 'bold',
         color: '#2C1810',
-        fontFamily: Typography.fonts.body,
+        fontFamily: Typography.fonts.bodyBold,
         marginBottom: 4,
     },
     polaroidLocation: {
@@ -654,10 +651,9 @@ const styles = StyleSheet.create({
     },
     backLabel: {
         fontSize: 10,
-        fontWeight: '600',
         textTransform: 'uppercase',
         letterSpacing: 1,
-        fontFamily: Typography.fonts.ui,
+        fontFamily: Typography.fonts.uiBold,
     },
     backNote: {
         flex: 1,

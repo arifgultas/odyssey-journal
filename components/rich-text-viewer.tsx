@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
     },
     bold: {
         fontFamily: Typography.fonts.bodyBold,
-        fontWeight: '600',
     },
     italic: {
         fontFamily: Typography.fonts.bodyItalic,

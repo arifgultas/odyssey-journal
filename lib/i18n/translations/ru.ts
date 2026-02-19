@@ -260,6 +260,8 @@ export default {
         message: 'Сообщение',
         commonDestinations: 'Общие направления',
         commonPlaces: 'Общие места',
+        noCommonDestinations: 'Пока нет общих направлений',
+        noCommonDestinationsSubtext: 'Продолжайте исследовать мир!',
         openMap: 'Открыть карту',
         travelJournal: 'Дневник путешествий',
         defaultUser: 'Путешественник',

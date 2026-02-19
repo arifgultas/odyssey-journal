@@ -286,6 +286,8 @@ export default {
         message: 'Mesaj Gönder',
         commonDestinations: 'Ortak Destinasyonlar',
         commonPlaces: 'Ortak Yer',
+        noCommonDestinations: 'Henüz ortak destinasyonunuz yok',
+        noCommonDestinationsSubtext: 'Dünyayı keşfetmeye devam edin!',
         openMap: 'Haritayı Aç',
         travelJournal: 'Seyahat Günlüğü',
     },

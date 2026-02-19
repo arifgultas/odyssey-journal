@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { addComment, Comment, deleteComment, getComments } from '@/lib/comments';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,8 @@ export default function CommentsScreen() {
     const { postId } = useLocalSearchParams<{ postId: string }>();
     const insets = useSafeAreaInsets();
     const { t } = useLanguage();
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
     const [comments, setComments] = useState<Comment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -114,17 +117,17 @@ export default function CommentsScreen() {
     if (isLoading && comments.length === 0) {
         return (
             <ThemedView style={styles.container}>
-                <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, borderBottomColor: theme.border }]}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+                        <Ionicons name="arrow-back" size={24} color={theme.text} />
                     </TouchableOpacity>
-                    <ThemedText type="title" style={styles.headerTitle}>
+                    <ThemedText style={styles.headerTitle}>
                         {t('comments.title')}
                     </ThemedText>
                     <View style={{ width: 40 }} />
                 </View>
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={Colors.light.accent} />
+                    <ActivityIndicator size="large" color={theme.accent} />
                 </View>
             </ThemedView>
         );
@@ -137,11 +140,11 @@ export default function CommentsScreen() {
             keyboardVerticalOffset={0}
         >
             <ThemedView style={styles.container}>
-                <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, borderBottomColor: theme.border }]}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+                        <Ionicons name="arrow-back" size={24} color={theme.text} />
                     </TouchableOpacity>
-                    <ThemedText type="title" style={styles.headerTitle}>
+                    <ThemedText style={styles.headerTitle}>
                         {t('comments.title')}
                     </ThemedText>
                     <View style={{ width: 40 }} />
@@ -178,12 +181,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.md,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
     },
     backButton: {
         padding: Spacing.xs,
     },
     headerTitle: {
+        fontSize: 20,
         fontFamily: Typography.fonts.heading,
     },
     loadingContainer: {

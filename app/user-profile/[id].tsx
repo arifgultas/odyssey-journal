@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useFollowUser } from '@/hooks/use-follow';
-import { useProfile, useUserPosts } from '@/hooks/use-profile';
+import { useCommonDestinations, useProfile, useUserPosts } from '@/hooks/use-profile';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -58,6 +58,10 @@ export default function UserProfileScreen() {
     const { data: profileData, isLoading: profileLoading } = useProfile(id);
     const { data: posts, isLoading: postsLoading } = useUserPosts(id);
     const followMutation = useFollowUser();
+    const { data: commonDestinations, isLoading: commonDestinationsLoading } = useCommonDestinations(
+        currentUser?.id || null,
+        id || null
+    );
 
     const isCurrentUser = currentUser?.id === id;
 
@@ -94,10 +98,7 @@ export default function UserProfileScreen() {
         router.push(`/post-detail/${postId}`);
     };
 
-    const handleMessage = () => {
-        // TODO: Implement messaging
-        console.log('Message pressed');
-    };
+
 
     // Format large numbers
     const formatNumber = (num: number): string => {
@@ -147,9 +148,7 @@ export default function UserProfileScreen() {
                 <Text style={[styles.headerLabel, { color: `${theme.primary}CC` }]}>
                     {t('profile.passport')}
                 </Text>
-                <TouchableOpacity style={styles.headerButton}>
-                    <Ionicons name="ellipsis-vertical" size={24} color={theme.primary} />
-                </TouchableOpacity>
+                <View style={styles.headerButton} />
             </View>
 
             <ScrollView
@@ -180,12 +179,7 @@ export default function UserProfileScreen() {
                             )}
                         </View>
 
-                        {/* Approved Traveler Stamp */}
-                        <View style={styles.approvedStamp}>
-                            <Text style={[styles.approvedText, { color: `${theme.primary}99` }]}>
-                                {t('profile.approvedTraveler')}{'\n'}2024
-                            </Text>
-                        </View>
+
                     </View>
                 </View>
 
@@ -268,26 +262,6 @@ export default function UserProfileScreen() {
                                 )}
                             </View>
                         </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[
-                                styles.messageButton,
-                                { borderColor: isDark ? theme.primary : '#2C1810' }
-                            ]}
-                            onPress={handleMessage}
-                        >
-                            <Ionicons
-                                name="mail-outline"
-                                size={20}
-                                color={isDark ? theme.primary : '#2C1810'}
-                            />
-                            <Text style={[
-                                styles.messageButtonText,
-                                { color: isDark ? theme.primary : '#2C1810' }
-                            ]}>
-                                {t('profile.message')}
-                            </Text>
-                        </TouchableOpacity>
                     </View>
                 )}
 
@@ -298,50 +272,64 @@ export default function UserProfileScreen() {
                             <Text style={[styles.sectionTitle, { color: theme.primary }]}>
                                 {t('profile.commonDestinations')}
                             </Text>
-                            <Text style={[styles.sectionSubtitle, { color: theme.primary }]}>
-                                4 {t('profile.commonPlaces')}
-                            </Text>
+                            {commonDestinations && commonDestinations.length > 0 && (
+                                <Text style={[styles.sectionSubtitle, { color: theme.primary }]}>
+                                    {commonDestinations.length} {t('profile.commonPlaces')}
+                                </Text>
+                            )}
                         </View>
 
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.destinationsContainer}
-                        >
-                            {/* Destination Cards - Sample data */}
-                            {['Paris', 'Roma', 'Kyoto'].map((city, index) => (
-                                <View
-                                    key={city}
-                                    style={[
-                                        styles.destinationCard,
-                                        { backgroundColor: isDark ? '#3E2723' : theme.surface }
-                                    ]}
-                                >
-                                    <View style={[styles.destinationPin, { borderColor: `${theme.primary}80` }]} />
-                                    <Ionicons
-                                        name={index === 0 ? 'location' : index === 1 ? 'business' : 'leaf'}
-                                        size={24}
-                                        color={theme.primary}
-                                    />
-                                    <Text style={[styles.destinationName, { color: isDark ? theme.primary : '#2C1810' }]}>
-                                        {city}
-                                    </Text>
-                                    <Text style={[styles.destinationCountry, { color: theme.textMuted }]}>
-                                        {index === 0 ? t('countries.france') : index === 1 ? t('countries.italy') : t('countries.japan')}
-                                    </Text>
-                                </View>
-                            ))}
-
-                            {/* Open Map Button */}
-                            <TouchableOpacity
-                                style={[styles.openMapButton, { borderColor: `${theme.primary}50` }]}
+                        {commonDestinationsLoading ? (
+                            <View style={styles.destinationsLoadingContainer}>
+                                <ActivityIndicator size="small" color={theme.primary} />
+                            </View>
+                        ) : commonDestinations && commonDestinations.length > 0 ? (
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.destinationsContainer}
                             >
-                                <Ionicons name="map" size={24} color={theme.primary} />
-                                <Text style={[styles.openMapText, { color: theme.primary }]}>
-                                    {t('profile.openMap').replace(' ', '\n')}
+                                {commonDestinations.map((dest) => (
+                                    <View
+                                        key={`${dest.city}-${dest.country}`}
+                                        style={[
+                                            styles.destinationCard,
+                                            { backgroundColor: isDark ? '#3E2723' : theme.surface }
+                                        ]}
+                                    >
+                                        <View style={[styles.destinationPin, { borderColor: `${theme.primary}80` }]} />
+                                        <Ionicons
+                                            name="location"
+                                            size={24}
+                                            color={theme.primary}
+                                        />
+                                        <Text
+                                            style={[styles.destinationName, { color: isDark ? theme.primary : '#2C1810' }]}
+                                            numberOfLines={1}
+                                            adjustsFontSizeToFit
+                                            minimumFontScale={0.75}
+                                        >
+                                            {dest.city}
+                                        </Text>
+                                        <Text style={[styles.destinationCountry, { color: theme.textMuted }]}>
+                                            {dest.country}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                        ) : (
+                            <View style={styles.emptyDestinations}>
+                                <View style={[styles.emptyDestinationsIcon, { borderColor: `${theme.primary}30` }]}>
+                                    <Ionicons name="compass-outline" size={32} color={`${theme.primary}80`} />
+                                </View>
+                                <Text style={[styles.emptyDestinationsText, { color: theme.textMuted }]}>
+                                    {t('profile.noCommonDestinations')}
                                 </Text>
-                            </TouchableOpacity>
-                        </ScrollView>
+                                <Text style={[styles.emptyDestinationsSubtext, { color: `${theme.textMuted}99` }]}>
+                                    {t('profile.noCommonDestinationsSubtext')}
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 )}
 
@@ -590,25 +578,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    approvedStamp: {
-        position: 'absolute',
-        bottom: -16,
-        right: -24,
-        width: 80,
-        height: 80,
-        borderWidth: 4,
-        borderColor: 'rgba(212, 170, 115, 0.4)',
-        borderRadius: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        transform: [{ rotate: '-15deg' }],
-    },
-    approvedText: {
-        fontFamily: Typography.fonts.uiBold,
-        fontSize: 9,
-        textAlign: 'center',
-        textTransform: 'uppercase',
-    },
+
 
     // Name Section
     nameSection: {
@@ -619,7 +589,6 @@ const styles = StyleSheet.create({
     fullName: {
         fontFamily: Typography.fonts.heading,
         fontSize: 30,
-        fontWeight: '700',
         letterSpacing: -0.5,
     },
     usernameRow: {
@@ -685,8 +654,7 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.md,
     },
     followButton: {
-        flex: 1,
-        maxWidth: 160,
+        width: 200,
         height: 48,
         borderRadius: BorderRadius.lg,
         ...Platform.select({
@@ -715,25 +683,6 @@ const styles = StyleSheet.create({
     followButtonText: {
         fontFamily: Typography.fonts.heading,
         fontSize: 12,
-        fontWeight: '700',
-        textTransform: 'uppercase',
-        letterSpacing: 2,
-    },
-    messageButton: {
-        flex: 1,
-        maxWidth: 160,
-        height: 48,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: Spacing.xs,
-        borderRadius: BorderRadius.lg,
-        borderWidth: 2,
-    },
-    messageButtonText: {
-        fontFamily: Typography.fonts.heading,
-        fontSize: 12,
-        fontWeight: '700',
         textTransform: 'uppercase',
         letterSpacing: 2,
     },
@@ -753,7 +702,6 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontFamily: Typography.fonts.bodyItalic,
         fontSize: 18,
-        fontWeight: '700',
         borderBottomWidth: 2,
         borderColor: 'rgba(212, 170, 115, 0.2)',
         paddingBottom: 4,
@@ -773,7 +721,7 @@ const styles = StyleSheet.create({
         paddingBottom: Spacing.sm,
     },
     destinationCard: {
-        width: 96,
+        width: 120,
         height: 128,
         borderRadius: BorderRadius.md,
         borderWidth: 1,
@@ -810,23 +758,37 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.bodyItalic,
         fontSize: 10,
     },
-    openMapButton: {
-        width: 96,
-        height: 128,
-        borderRadius: BorderRadius.md,
+    destinationsLoadingContainer: {
+        paddingVertical: Spacing.xl,
+        alignItems: 'center',
+    },
+    emptyDestinations: {
+        alignItems: 'center',
+        paddingVertical: Spacing.xl,
+        paddingHorizontal: Spacing.lg,
+    },
+    emptyDestinationsIcon: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         borderWidth: 2,
         borderStyle: 'dashed',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 4,
+        marginBottom: Spacing.md,
     },
-    openMapText: {
-        fontFamily: Typography.fonts.uiBold,
-        fontSize: 9,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
+    emptyDestinationsText: {
+        fontFamily: Typography.fonts.bodyItalic,
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: Spacing.xs,
+    },
+    emptyDestinationsSubtext: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 12,
         textAlign: 'center',
     },
+
 
     // Masonry Grid
     masonryGrid: {
@@ -885,9 +847,8 @@ const styles = StyleSheet.create({
         padding: Spacing.sm,
     },
     journalTitle: {
-        fontFamily: Typography.fonts.handwriting,
+        fontFamily: Typography.fonts.handwritingBold,
         fontSize: 24,
-        fontWeight: '700',
         color: '#F5F1E8',
     },
     journalSubtitle: {
