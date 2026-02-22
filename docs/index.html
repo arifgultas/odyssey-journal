@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odyssey Journal — Legal</title>
+    <style>
+        :root {
+            --bg: #F5F1E8;
+            --text: #2C1810;
+            --accent: #D4A574;
+            --muted: #8B7355;
+            --card: rgba(255, 255, 255, 0.8);
+            --border: #E8DCC8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 480px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(44, 24, 16, 0.08);
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: var(--muted);
+            font-style: italic;
+            margin-bottom: 32px;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        a {
+            display: block;
+            padding: 14px 24px;
+            background: var(--text);
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 24, 16, 0.2);
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">🗺️</div>
+        <h1>Odyssey Journal</h1>
+        <p class="tagline">Your travel story, beautifully told.</p>
+        <div class="links">
+            <a href="privacy-policy.html">📋 Privacy Policy</a>
+            <a href="terms-of-service.html">📜 Terms of Service</a>
+        </div>
+        <p class="footer">© 2026 Odyssey Journal. All rights reserved.</p>
+    </div>
+</body>
+
+</html>

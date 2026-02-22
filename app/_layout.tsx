@@ -3,6 +3,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-context';
 import { useBookFonts } from '@/hooks/use-book-fonts';
+import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
 import { persistOptions, queryClientConfig } from '@/lib/query-persister';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient } from '@tanstack/react-query';
@@ -29,6 +30,7 @@ export const unstable_settings = {
 function RootLayoutNav() {
   const { colorScheme, isDark } = useTheme();
   const { language } = useLanguage();
+  useDeepLinkHandler();
 
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>

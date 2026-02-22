@@ -189,9 +189,8 @@ You may not assign these Terms. We may assign them without notice.
 
 If you have questions about these Terms, contact us at:
 
-- **Email**: legal@odysseyjournal.com
-- **Website**: https://odysseyjournal.com/terms
-- **Address**: [Your Business Address]
+- **Email**: gultassoftware@gmail.com
+- **Website**: https://arifgultas.github.io/odyssey-journal/terms-of-service.html
 
 ## 16. Special Provisions
 

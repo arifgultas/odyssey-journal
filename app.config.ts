@@ -38,6 +38,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
             },
         },
+        permissions: [
+            'CAMERA',
+            'READ_EXTERNAL_STORAGE',
+            'WRITE_EXTERNAL_STORAGE',
+            'ACCESS_FINE_LOCATION',
+            'ACCESS_COARSE_LOCATION',
+            'INTERNET',
+            'ACCESS_NETWORK_STATE',
+        ],
     },
     web: {
         output: 'static',
@@ -48,17 +57,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         [
             'expo-splash-screen',
             {
-                image: './assets/images/android-icon-foreground.png',
-                imageWidth: 200,
+                image: './assets/images/icon.png',
+                imageWidth: 280,
                 resizeMode: 'contain',
                 backgroundColor: '#F5F1E8',
                 dark: {
                     backgroundColor: '#1A1410',
-                    image: './assets/images/android-icon-foreground.png',
+                    image: './assets/images/icon.png',
                 },
             },
         ],
         'expo-font',
+        [
+            'expo-notifications',
+            {
+                icon: './assets/images/icon.png',
+                color: '#D4A574',
+            },
+        ],
     ],
     experiments: {
         typedRoutes: true,

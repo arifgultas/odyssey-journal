@@ -7,6 +7,7 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
+import { removePushToken } from '@/lib/push-notifications';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -76,7 +77,10 @@ export default function SettingsScreen() {
                 {
                     text: t('auth.logout'),
                     style: 'destructive',
-                    onPress: signOut,
+                    onPress: async () => {
+                        await removePushToken();
+                        signOut();
+                    },
                 },
             ]
         );

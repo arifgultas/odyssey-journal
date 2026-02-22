@@ -85,7 +85,7 @@ We may update this privacy policy from time to time. We will notify you of signi
 If you have questions about this privacy policy, please contact us at:
 
 - **Email**: gultassoftware@gmail.com
-- **Website**: https://gultassoftware.com/odyssey-journal/privacy
+- **Website**: https://arifgultas.github.io/odyssey-journal/privacy-policy.html
 
 ## Data Protection Rights (GDPR)
 
@@ -99,7 +99,7 @@ If you are in the European Economic Area (EEA), you have additional rights under
 - Right to object
 - Rights related to automated decision-making
 
-To exercise these rights, contact us at gdpr@odysseyjournal.com
+To exercise these rights, contact us at gultassoftware@gmail.com
 
 ## California Privacy Rights (CCPA)
 

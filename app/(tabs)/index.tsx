@@ -8,6 +8,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 import { likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { getUnreadNotificationCount } from '@/lib/notifications';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
@@ -48,6 +49,9 @@ export default function HomeScreen() {
   const [showCollectionPicker, setShowCollectionPicker] = useState(false);
   const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+  // Register for push notifications
+  usePushNotifications(currentUserId ?? undefined);
 
   useEffect(() => {
     loadCurrentUser();
