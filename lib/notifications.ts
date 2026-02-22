@@ -178,12 +178,13 @@ export async function getUnreadNotificationCount(): Promise<number> {
             .eq('read', false);
 
         if (error) {
-            throw error;
+            // Silently return 0 for non-critical badge count failures
+            return 0;
         }
 
         return count || 0;
     } catch (error) {
-        console.error('Error getting unread count:', error);
+        // Silently return 0 — badge count is non-critical
         return 0;
     }
 }

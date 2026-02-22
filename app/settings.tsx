@@ -7,6 +7,7 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
+import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -76,6 +77,51 @@ export default function SettingsScreen() {
                     text: t('auth.logout'),
                     style: 'destructive',
                     onPress: signOut,
+                },
+            ]
+        );
+    };
+
+    const handleDeleteAccount = () => {
+        Alert.alert(
+            t('settings.deleteAccount'),
+            t('settings.deleteAccountConfirm'),
+            [
+                { text: t('common.cancel'), style: 'cancel' },
+                {
+                    text: t('settings.deleteAccountButton'),
+                    style: 'destructive',
+                    onPress: () => {
+                        // Second confirmation
+                        Alert.alert(
+                            `⚠️ ${t('settings.deleteAccount')}`,
+                            t('settings.deleteAccountWarning'),
+                            [
+                                { text: t('common.cancel'), style: 'cancel' },
+                                {
+                                    text: t('settings.deleteAccountButton'),
+                                    style: 'destructive',
+                                    onPress: async () => {
+                                        try {
+                                            // Call the database function to delete all user data
+                                            const { error } = await supabase.rpc('delete_user_account');
+                                            if (error) throw error;
+                                            Alert.alert(t('common.success'), t('settings.accountDeleted'));
+                                            signOut();
+                                        } catch (error) {
+                                            // Fallback: sign out even if server-side deletion fails
+                                            // The user can contact support for data deletion
+                                            console.error('Account deletion error:', error);
+                                            Alert.alert(
+                                                t('common.error'),
+                                                t('errors.generic'),
+                                            );
+                                        }
+                                    },
+                                },
+                            ]
+                        );
+                    },
                 },
             ]
         );
@@ -268,9 +314,33 @@ export default function SettingsScreen() {
                     </View>
                 </Animated.View>
 
-                {/* Logout Section */}
+                {/* Account Section */}
                 <Animated.View
                     entering={FadeInDown.delay(400).duration(400)}
+                    style={[styles.sectionCard, { backgroundColor: colors.cardBg, borderColor: `${colors.accent}99` }]}
+                >
+                    <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
+                        <Ionicons name="person-outline" size={20} color={colors.accent} />
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.account').toUpperCase()}</Text>
+                    </View>
+                    <View style={styles.sectionContent}>
+                        <TouchableOpacity
+                            style={[styles.deleteAccountRow]}
+                            onPress={handleDeleteAccount}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingInfo}>
+                                <Text style={[styles.settingLabel, { color: colors.stampRed }]}>{t('settings.deleteAccount')}</Text>
+                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.deleteAccountWarning')}</Text>
+                            </View>
+                            <Ionicons name="trash-outline" size={22} color={colors.stampRed} />
+                        </TouchableOpacity>
+                    </View>
+                </Animated.View>
+
+                {/* Logout Section */}
+                <Animated.View
+                    entering={FadeInDown.delay(500).duration(400)}
                     style={styles.logoutSection}
                 >
 
@@ -618,5 +688,13 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
         textTransform: 'uppercase',
         marginTop: Spacing.md,
+    },
+    deleteAccountRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.md,
+        borderRadius: BorderRadius.lg,
     },
 });

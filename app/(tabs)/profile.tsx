@@ -166,9 +166,9 @@ export default function ProfileScreen() {
             }]}>
                 <TouchableOpacity
                     style={[styles.headerButton, { borderColor: colorScheme === 'dark' ? `${passportTheme.gold}33` : `${passportTheme.text}20` }]}
-                    onPress={() => router.back()}
+                    onPress={() => router.push('/create-post')}
                 >
-                    <Ionicons name="arrow-back" size={20} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.text} />
+                    <Ionicons name="create-outline" size={20} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.text} />
                 </TouchableOpacity>
 
                 <View style={styles.headerCenter}>
@@ -254,7 +254,7 @@ export default function ProfileScreen() {
                                     <View style={styles.infoRow}>
                                         <View style={styles.infoFieldSmall}>
                                             <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>{t('profile.nationalityTitle')}</Text>
-                                            <Text style={[styles.fieldValueMono, { color: passportTheme.text }]}>TUR</Text>
+                                            <Text style={[styles.fieldValueMono, { color: passportTheme.text }]}>{language?.toUpperCase().slice(0, 3) || '—'}</Text>
                                         </View>
                                         <View style={styles.infoFieldSmall}>
                                             <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>ID</Text>
@@ -329,7 +329,7 @@ export default function ProfileScreen() {
                                             // Calculate center point
                                             const avgLat = locations.reduce((sum, loc) => sum + loc.latitude, 0) / locations.length;
                                             const avgLng = locations.reduce((sum, loc) => sum + loc.longitude, 0) / locations.length;
-                                            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${markers}/${avgLng},${avgLat},2,0/400x200?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw`;
+                                            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${markers}/${avgLng},${avgLat},2,0/400x200?access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`;
                                         })()
                                     }}
                                     style={styles.mapImage}

@@ -4,3 +4,8 @@
  */
 
 import '../global.css';
+
+// Default export required by Expo Router for files in the app/ directory
+export default function GlobalStyles() {
+    return null;
+}

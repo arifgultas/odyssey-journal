@@ -31,7 +31,7 @@ export const SUPPORTED_LANGUAGES = {
     es: { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
     fr: { name: 'French', nativeName: 'Français', flag: '🇫🇷' },
     de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
-    pt: { name: 'Portuguese', nativeName: 'Português', flag: '🇧🇷' },
+    pt: { name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹' },
     it: { name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
     ru: { name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
     ja: { name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },

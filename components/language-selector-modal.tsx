@@ -138,8 +138,8 @@ const styles = StyleSheet.create({
     modalContent: {
         borderTopLeftRadius: BorderRadius.xl,
         borderTopRightRadius: BorderRadius.xl,
-        maxHeight: '60%',
-        minHeight: 200,
+        maxHeight: '100%',
+        minHeight: '70%',
     },
     safeArea: {
         flex: 1,

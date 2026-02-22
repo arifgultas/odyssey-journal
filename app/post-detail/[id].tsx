@@ -109,7 +109,7 @@ export default function PostDetailScreen() {
             setIsBookmarked(bookmarked);
         } catch (error) {
             console.error('Error loading post:', error);
-            Alert.alert('Error', 'Failed to load post details');
+            Alert.alert(t('common.error'), t('errors.generic'));
             router.back();
         } finally {
             setIsLoading(false);
@@ -509,7 +509,7 @@ export default function PostDetailScreen() {
                                 <View style={[styles.mapPreview, { borderColor: isDark ? 'rgba(139, 94, 60, 0.3)' : 'rgba(139, 94, 60, 0.3)' }]}>
                                     <Image
                                         source={{
-                                            uri: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${post.location.longitude},${post.location.latitude},10,0/400x200?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw`
+                                            uri: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${post.location.longitude},${post.location.latitude},10,0/400x200?access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
                                         }}
                                         style={styles.mapImage}
                                         contentFit="cover"

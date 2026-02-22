@@ -13,17 +13,15 @@ import { getUnreadNotificationCount } from '@/lib/notifications';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
 import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
 import { supabase } from '@/lib/supabase';
-import { MaterialIcons } from '@expo/vector-icons';
 
 // Custom SVG icons
 import BellIcon from '@/assets/icons/bell-notification.svg';
 import GlobeIcon from '@/assets/icons/globe-earth-world.svg';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Animated,
   FlatList,
   Platform,
   RefreshControl,
@@ -51,19 +49,7 @@ export default function HomeScreen() {
   const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
-  // Spinning compass animation
-  const spinValue = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
-    // Start compass spinning animation
-    Animated.loop(
-      Animated.timing(spinValue, {
-        toValue: 1,
-        duration: 8000,
-        useNativeDriver: true,
-      })
-    ).start();
-
     loadCurrentUser();
     loadPosts(0);
   }, []);
@@ -98,10 +84,7 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+
 
   const loadCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -147,7 +130,7 @@ export default function HomeScreen() {
       setPage(pageNum);
     } catch (error) {
       console.error('Error loading posts:', error);
-      Alert.alert('Error', 'Failed to load posts');
+      Alert.alert(t('common.error'), t('errors.generic'));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -263,21 +246,21 @@ export default function HomeScreen() {
 
   const handleDelete = async (postId: string) => {
     Alert.alert(
-      'Delete Post',
-      'Are you sure you want to delete this post?',
+      t('post.deleteTitle'),
+      t('post.deleteConfirm'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await deletePost(postId);
               setPosts(posts.filter(p => p.id !== postId));
-              Alert.alert('Success', 'Post deleted successfully');
+              Alert.alert(t('common.success'), t('post.deleteSuccess'));
             } catch (error) {
               console.error('Error deleting post:', error);
-              Alert.alert('Error', 'Failed to delete post');
+              Alert.alert(t('common.error'), t('post.deleteError'));
             }
           },
         },
@@ -343,14 +326,6 @@ export default function HomeScreen() {
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           {t('home.title')}
         </Text>
-        <Animated.View style={{ transform: [{ rotate: spin }] }}>
-          <MaterialIcons
-            name="explore"
-            size={24}
-            color={theme.accent}
-            style={styles.compassIcon}
-          />
-        </Animated.View>
       </View>
       <TouchableOpacity
         style={styles.headerButton}
@@ -505,12 +480,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     letterSpacing: 0.5,
   },
-  compassIcon: {
-    // Drop shadow for the compass
-    textShadowColor: 'rgba(0, 0, 0, 0.15)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
+
   headerButton: {
     padding: Spacing.xs,
   },

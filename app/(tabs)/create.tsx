@@ -930,7 +930,7 @@ export default function CreatePostScreen() {
                                     <>
                                         <Image
                                             source={{
-                                                uri: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${location.longitude},${location.latitude},12,0/400x200?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw`
+                                                uri: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${location.longitude},${location.latitude},12,0/400x200?access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
                                             }}
                                             style={styles.mapImage}
                                             contentFit="cover"
