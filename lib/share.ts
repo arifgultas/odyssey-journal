@@ -50,9 +50,8 @@ export async function sharePost(data: SharePostData): Promise<boolean> {
  * Generate shareable post URL
  */
 export function generatePostShareUrl(postId: string): string {
-    // TODO: Replace with your actual app URL/deep link
-    const baseUrl = 'https://odyssey-journal.app'; // Replace with your domain
-    return `${baseUrl}/post/${postId}`;
+    // Uses the app's deep link scheme defined in app.config.ts
+    return `odysseyjournal://post/${postId}`;
 }
 
 /**

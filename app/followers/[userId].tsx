@@ -83,12 +83,10 @@ export default function FollowersScreen() {
     };
 
     const handleUserPress = (user: UserProfile) => {
-        // TODO: Create user profile screen
-        // router.push({
-        //     pathname: '/user-profile/[id]',
-        //     params: { id: user.id }
-        // });
-        console.log('User pressed:', user.username);
+        router.push({
+            pathname: '/user-profile/[id]',
+            params: { id: user.id }
+        });
     };
 
     const renderEmpty = () => {

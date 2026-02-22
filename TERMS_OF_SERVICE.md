@@ -157,7 +157,7 @@ We may terminate or suspend your account if you:
 
 ### 13.1 Governing Law
 
-These Terms are governed by the laws of [Your Jurisdiction].
+These Terms are governed by the laws of the Republic of Turkey.
 
 ### 13.2 Arbitration
 
