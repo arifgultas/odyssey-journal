@@ -167,6 +167,8 @@ export default {
         tapToAddLocation: 'Toque para adicionar local',
         titlePlaceholder: 'Título',
         storyPlaceholder: 'Comece a contar sua história...',
+        emailNotVerifiedTitle: 'Verificação de e-mail necessária',
+        emailNotVerifiedDesc: 'Por favor, verifique seu endereço de e-mail para compartilhar novas entradas no diário com a comunidade.',
     },
     categories: {
         nature: 'Natureza',
@@ -268,6 +270,11 @@ export default {
         surnameTitle: 'Sobrenome',
         nameTitle: 'Nome',
         nationalityTitle: 'Nacionalidade',
+        blockUserTitle: 'Bloquear usuário',
+        blockUserDesc: 'Tem certeza de que deseja bloquear este usuário? Ele não poderá interagir com você e as publicações dele serão ocultadas no seu feed.',
+        block: 'Bloquear',
+        blockSuccess: 'Usuário bloqueado com sucesso.',
+        blockError: 'Erro ao bloquear o usuário.',
     },
     editProfile: {
         title: 'Editar Perfil',
@@ -381,6 +388,15 @@ export default {
         theme: 'Tema',
         lightDark: 'Claro / Escuro',
         exitLabel: 'SAIR',
+        exportDataTitle: 'Baixar meus dados',
+        exportDataDesc: 'Isso gerará um arquivo contendo todas as informações do seu perfil, publicações, comentários, coleções e conexões. O processo pode demorar um pouco. Deseja continuar?',
+        exportDataSubdesc: 'Solicite uma cópia dos seus dados pessoais',
+        exportSuccess: 'Dados exportados com sucesso.',
+        exportError: 'Falha ao exportar os dados.',
+        download: 'Baixar',
+        legal: 'LEGAL E COMUNIDADE',
+        communityGuidelines: 'Diretrizes da Comunidade',
+        communityGuidelinesDesc: 'Regras para manter nossa comunidade segura',
     },
     errors: {
         generic: 'Algo deu errado',
@@ -524,4 +540,18 @@ export default {
         thunderstormHeavyHail: 'Tempestade com Granizo Forte',
         unknown: 'Desconhecido',
     },
+    guidelines: {
+        intro: 'Bem-vindo ao Odyssey Journal! Queremos manter este espaço seguro, inspirador e focado em experiências de viagem genuínas. Siga estas diretrizes.',
+        respectTitle: 'Respeite a comunidade',
+        respectDesc: 'O Odyssey Journal é um lugar para compartilhar experiências reais de viagem. Trate os outros com respeito. Discurso de ódio, assédio, bullying e discriminação de qualquer tipo são estritamente proibidos.',
+        authenticTitle: 'Compartilhe viagens autênticas',
+        authenticDesc: 'Concentre-se em viagens, lugares, cultura e na sua jornada pessoal. Não publique spam, anúncios, propaganda política ou conteúdo não relacionado.',
+        safeTitle: 'Mantenha seguro e apropriado',
+        safeDesc: 'Não publique nudez, conteúdo sexualmente explícito ou violência gráfica. Garanta que suas fotos e textos sejam apropriados para o público em geral.',
+        privacyTitle: 'Respeite a privacidade',
+        privacyDesc: 'Não compartilhe informações pessoais de terceiros sem o consentimento explícito deles. Preste atenção a quem e o que você captura em suas fotos.',
+        enforcementTitle: 'Aplicação',
+        enforcementDesc: 'Analisamos conteúdos e contas denunciados. Violar estas diretrizes pode resultar na remoção de conteúdo, acesso restrito ou exclusão permanente da conta sem aviso prévio.',
+        thankYou: 'Obrigado por nos ajudar a fazer do Odyssey Journal um ótimo lugar para viajantes!'
+    }
 };

@@ -4,12 +4,14 @@ import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useFollowUser } from '@/hooks/use-follow';
 import { useCommonDestinations, useProfile, useUserPosts } from '@/hooks/use-profile';
+import { blockUser } from '@/lib/block';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
     ActivityIndicator,
+    Alert,
     Dimensions,
     Platform,
     ScrollView,
@@ -98,7 +100,29 @@ export default function UserProfileScreen() {
         router.push(`/post-detail/${postId}`);
     };
 
-
+    const handleBlockOptions = () => {
+        Alert.alert(
+            t('profile.blockUserTitle') || 'Block User',
+            t('profile.blockUserDesc') || 'Are you sure you want to block this user? They will not be able to interact with you, and their posts will be hidden from your feed.',
+            [
+                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                {
+                    text: t('profile.block') || 'Block',
+                    style: 'destructive',
+                    onPress: async () => {
+                        if (!id) return;
+                        try {
+                            await blockUser(id);
+                            Alert.alert('Success', t('profile.blockSuccess') || 'User blocked successfully.');
+                            router.back();
+                        } catch (error) {
+                            Alert.alert('Error', t('profile.blockError') || 'Failed to block user.');
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     // Format large numbers
     const formatNumber = (num: number): string => {
@@ -148,7 +172,13 @@ export default function UserProfileScreen() {
                 <Text style={[styles.headerLabel, { color: `${theme.primary}CC` }]}>
                     {t('profile.passport')}
                 </Text>
-                <View style={styles.headerButton} />
+                {!isCurrentUser ? (
+                    <TouchableOpacity onPress={handleBlockOptions} style={styles.headerButton}>
+                        <Ionicons name="ellipsis-horizontal" size={24} color={theme.primary} />
+                    </TouchableOpacity>
+                ) : (
+                    <View style={styles.headerButton} />
+                )}
             </View>
 
             <ScrollView

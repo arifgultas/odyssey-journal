@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
+import { exportUserData } from '@/lib/export-data';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { removePushToken } from '@/lib/push-notifications';
 import { supabase } from '@/lib/supabase';
@@ -127,6 +128,25 @@ export default function SettingsScreen() {
                         );
                     },
                 },
+            ]
+        );
+    };
+
+    const handleDownloadData = async () => {
+        Alert.alert(
+            t('settings.exportDataTitle') || 'Download Data',
+            t('settings.exportDataDesc') || 'This will generate a file containing all your profile information, posts, comments, collections, and connections. The process may take a moment. Do you want to proceed?',
+            [
+                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                {
+                    text: t('settings.download') || 'Download',
+                    onPress: async () => {
+                        const success = await exportUserData(t);
+                        if (success) {
+                            Alert.alert('Success', t('settings.exportSuccess') || 'Data exported successfully.');
+                        }
+                    }
+                }
             ]
         );
     };
@@ -318,6 +338,30 @@ export default function SettingsScreen() {
                     </View>
                 </Animated.View>
 
+                {/* Community & Legal Section */}
+                <Animated.View
+                    entering={FadeInDown.delay(350).duration(400)}
+                    style={[styles.sectionCard, { backgroundColor: colors.cardBg, borderColor: `${colors.accent}99`, marginBottom: Spacing.md }]}
+                >
+                    <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
+                        <Ionicons name="book-outline" size={20} color={colors.accent} />
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.legal').toUpperCase() || 'LEGAL & COMMUNITY'}</Text>
+                    </View>
+                    <View style={styles.sectionContent}>
+                        <TouchableOpacity
+                            style={styles.settingRow}
+                            onPress={() => router.push('/community-guidelines' as any)}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingInfo}>
+                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.communityGuidelines') || 'Community Guidelines'}</Text>
+                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.communityGuidelinesDesc') || 'Rules to keep our community safe'}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                        </TouchableOpacity>
+                    </View>
+                </Animated.View>
+
                 {/* Account Section */}
                 <Animated.View
                     entering={FadeInDown.delay(400).duration(400)}
@@ -329,7 +373,19 @@ export default function SettingsScreen() {
                     </View>
                     <View style={styles.sectionContent}>
                         <TouchableOpacity
-                            style={[styles.deleteAccountRow]}
+                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
+                            onPress={handleDownloadData}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingInfo}>
+                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.exportDataTitle') || 'Download My Data'}</Text>
+                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.exportDataSubdesc') || 'Request a copy of your personal data'}</Text>
+                            </View>
+                            <Ionicons name="download-outline" size={22} color={colors.accent} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.deleteAccountRow, { paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
                             onPress={handleDeleteAccount}
                             activeOpacity={0.7}
                         >

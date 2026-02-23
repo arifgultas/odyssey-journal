@@ -167,6 +167,8 @@ export default {
         tapToAddLocation: 'Toucher pour ajouter un lieu',
         titlePlaceholder: 'Titre',
         storyPlaceholder: 'Commencez à raconter votre histoire...',
+        emailNotVerifiedTitle: 'Vérification de l\'e-mail requise',
+        emailNotVerifiedDesc: 'Veuillez vérifier votre adresse e-mail pour partager de nouvelles entrées de journal avec la communauté.',
     },
     categories: {
         nature: 'Nature',
@@ -268,6 +270,11 @@ export default {
         surnameTitle: 'Nom',
         nameTitle: 'Prénom',
         nationalityTitle: 'Nationalité',
+        blockUserTitle: 'Bloquer l\'utilisateur',
+        blockUserDesc: 'Êtes-vous sûr de vouloir bloquer cet utilisateur ? Il ne pourra plus interagir avec vous et ses publications seront masquées de votre fil.',
+        block: 'Bloquer',
+        blockSuccess: 'Utilisateur bloqué avec succès.',
+        blockError: 'Erreur lors du blocage de l\'utilisateur.',
     },
     editProfile: {
         title: 'Modifier le Profil',
@@ -381,6 +388,15 @@ export default {
         theme: 'Thème',
         lightDark: 'Clair / Sombre',
         exitLabel: 'QUITTER',
+        exportDataTitle: 'Télécharger mes données',
+        exportDataDesc: 'Ceci générera un fichier contenant toutes les informations de votre profil, vos publications, vos commentaires, vos collections et vos connexions. Le processus peut prendre un moment. Voulez-vous continuer ?',
+        exportDataSubdesc: 'Demandez une copie de vos données personnelles',
+        exportSuccess: 'Données exportées avec succès.',
+        exportError: 'Échec de l\'exportation des données.',
+        download: 'Télécharger',
+        legal: 'LÉGAL ET COMMUNAUTÉ',
+        communityGuidelines: 'Règles de la communauté',
+        communityGuidelinesDesc: 'Règles pour assurer la sécurité de notre communauté',
     },
     errors: {
         generic: 'Une erreur s\'est produite',
@@ -529,4 +545,18 @@ export default {
         thunderstormHeavyHail: 'Orage avec Grêle Forte',
         unknown: 'Inconnu',
     },
+    guidelines: {
+        intro: 'Bienvenue sur Odyssey Journal ! Nous voulons garder cet espace sûr, inspirant et axé sur des expériences de voyage authentiques. Veuillez suivre ces règles.',
+        respectTitle: 'Respectez la communauté',
+        respectDesc: 'Odyssey Journal est un endroit où les voyageurs partagent de vraies expériences. Traitez les autres avec respect. Les discours de haine, le harcèlement, l\'intimidation et la discrimination de toute sorte sont strictement interdits.',
+        authenticTitle: 'Partagez des voyages authentiques',
+        authenticDesc: 'Concentrez-vous sur les voyages, les lieux, la culture et votre parcours personnel. Ne publiez pas de spam, de publicités, de propagande politique ou de contenu sans rapport.',
+        safeTitle: 'Gardez-le sûr et approprié',
+        safeDesc: 'Ne publiez pas de nudité, de contenu sexuellement explicite ou de violence graphique. Assurez-vous que vos photos et textes sont appropriés pour le grand public.',
+        privacyTitle: 'Respectez la vie privée',
+        privacyDesc: 'Ne partagez pas les informations personnelles d\'autres personnes sans leur consentement explicite. Faites attention à qui et à ce que vous capturez sur vos photos.',
+        enforcementTitle: 'Application',
+        enforcementDesc: 'Nous examinons le contenu et les comptes signalés. Violer ces règles peut entraîner la suppression du contenu, un accès restreint ou la suppression permanente du compte sans avertissement.',
+        thankYou: 'Merci de nous aider à faire de Odyssey Journal un endroit merveilleux pour les voyageurs !'
+    }
 };

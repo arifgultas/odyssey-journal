@@ -167,6 +167,8 @@ export default {
         tapToAddLocation: '탭하여 위치 추가',
         titlePlaceholder: '제목',
         storyPlaceholder: '이야기를 시작하세요...',
+        emailNotVerifiedTitle: '이메일 확인 필요',
+        emailNotVerifiedDesc: '커뮤니티와 새로운 일기 항목을 공유하려면 이메일 주소를 확인하십시오.',
     },
     categories: {
         nature: '자연',
@@ -268,6 +270,11 @@ export default {
         surnameTitle: '성',
         nameTitle: '이름',
         nationalityTitle: '국적',
+        blockUserTitle: '사용자 차단',
+        blockUserDesc: '이 사용자를 차단하시겠습니까? 이 사용자와 상호 작용할 수 없으며 피드에서 이 사용자의 게시물이 숨겨집니다.',
+        block: '차단',
+        blockSuccess: '사용자가 성공적으로 차단되었습니다.',
+        blockError: '사용자 차단에 실패했습니다.',
     },
     editProfile: {
         title: '프로필 편집',
@@ -381,6 +388,15 @@ export default {
         theme: '테마',
         lightDark: '라이트 / 다크',
         exitLabel: '종료',
+        exportDataTitle: '내 데이터 다운로드',
+        exportDataDesc: '모든 프로필 정보, 게시물, 댓글, 컬렉션 및 연결 정보가 포함된 파일이 생성됩니다. 시간이 다소 걸릴 수 있습니다. 계속하시겠습니까?',
+        exportDataSubdesc: '개인 데이터 사본 요청',
+        exportSuccess: '데이터가 성공적으로 내보내졌습니다.',
+        exportError: '데이터 내보내기에 실패했습니다.',
+        download: '다운로드',
+        legal: '법률 및 커뮤니티',
+        communityGuidelines: '커뮤니티 가이드라인',
+        communityGuidelinesDesc: '커뮤니티를 안전하게 유지하기 위한 규칙',
     },
     errors: {
         generic: '문제가 발생했습니다',
@@ -524,4 +540,18 @@ export default {
         thunderstormHeavyHail: '강한 우박을 동반한 뇌우',
         unknown: '알 수 없음',
     },
+    guidelines: {
+        intro: 'Odyssey Journal에 오신 것을 환영합니다! 우리는 이 공간이 안전하고, 영감을 주며, 진정한 여행 경험에 집중되기를 원합니다. 다음 가이드라인을 준수해 주세요.',
+        respectTitle: '커뮤니티 존중',
+        respectDesc: 'Odyssey Journal은 여행자가 실제 경험을 공유하는 곳입니다. 타인을 존중해 주세요. 혐오 발언, 괴롭힘, 학대 및 모든 형태의 차별은 엄격히 금지됩니다.',
+        authenticTitle: '진정한 여행 공유',
+        authenticDesc: '여행, 장소, 문화 및 개인적인 여정에 집중해 주세요. 스팸, 광고, 정치적 선전 또는 관련 없는 콘텐츠를 게시하지 마세요.',
+        safeTitle: '안전하고 건전한 환경 유지',
+        safeDesc: '과도한 노출, 성적으로 노골적인 콘텐츠 또는 잔혹한 폭력물을 게시하지 마세요. 사진과 텍스트가 일반 대중에게 적합한지 확인해 주세요.',
+        privacyTitle: '개인정보 존중',
+        privacyDesc: '명시적 동의 없이 타인의 개인정보를 공유하지 마세요. 사진을 촬영할 때 주의해 주세요.',
+        enforcementTitle: '제재 조치',
+        enforcementDesc: '신고된 콘텐츠와 계정을 검토합니다. 이러한 가이드라인을 위반하면 경고 없이 콘텐츠 삭제, 액세스 제한 또는 계정 영구 삭제가 발생할 수 있습니다.',
+        thankYou: 'Odyssey Journal을 여행자들을 위한 멋진 공간으로 만드는 데 도움을 주셔서 감사합니다!'
+    }
 };

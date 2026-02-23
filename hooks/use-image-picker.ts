@@ -1,3 +1,4 @@
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -41,10 +42,18 @@ export function useImagePicker() {
 
             if (!result.canceled && result.assets[0]) {
                 const asset = result.assets[0];
+
+                // Strip EXIF metadata and validate/compress
+                const manipulatedImage = await ImageManipulator.manipulateAsync(
+                    asset.uri,
+                    [],
+                    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+                );
+
                 const newImage: SelectedImage = {
-                    uri: asset.uri,
-                    width: asset.width,
-                    height: asset.height,
+                    uri: manipulatedImage.uri,
+                    width: manipulatedImage.width,
+                    height: manipulatedImage.height,
                     type: asset.type,
                     fileName: asset.fileName,
                 };
@@ -72,14 +81,26 @@ export function useImagePicker() {
             });
 
             if (!result.canceled && result.assets.length > 0) {
-                const newImages: SelectedImage[] = result.assets.map((asset: ImagePicker.ImagePickerAsset) => ({
-                    uri: asset.uri,
-                    width: asset.width,
-                    height: asset.height,
-                    type: asset.type,
-                    fileName: asset.fileName,
-                }));
-                setImages([...images, ...newImages].slice(0, maxImages));
+                const processedImages: SelectedImage[] = [];
+
+                for (const asset of result.assets) {
+                    // Strip EXIF metadata and validate/compress
+                    const manipulatedImage = await ImageManipulator.manipulateAsync(
+                        asset.uri,
+                        [],
+                        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+                    );
+
+                    processedImages.push({
+                        uri: manipulatedImage.uri,
+                        width: manipulatedImage.width,
+                        height: manipulatedImage.height,
+                        type: asset.type,
+                        fileName: asset.fileName,
+                    });
+                }
+
+                setImages([...images, ...processedImages].slice(0, maxImages));
             }
         } catch (error) {
             console.error('Error picking images:', error);
@@ -109,10 +130,18 @@ export function useImagePicker() {
 
             if (!result.canceled && result.assets[0]) {
                 const asset = result.assets[0];
+
+                // Strip EXIF metadata and validate/compress
+                const manipulatedImage = await ImageManipulator.manipulateAsync(
+                    asset.uri,
+                    [],
+                    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+                );
+
                 const newImage: SelectedImage = {
-                    uri: asset.uri,
-                    width: asset.width,
-                    height: asset.height,
+                    uri: manipulatedImage.uri,
+                    width: manipulatedImage.width,
+                    height: manipulatedImage.height,
                     type: asset.type,
                     fileName: asset.fileName,
                 };

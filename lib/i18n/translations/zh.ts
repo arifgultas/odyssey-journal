@@ -167,6 +167,8 @@ export default {
         tapToAddLocation: '点击添加位置',
         titlePlaceholder: '标题',
         storyPlaceholder: '开始讲述你的故事...',
+        emailNotVerifiedTitle: '需要进行电子邮件验证',
+        emailNotVerifiedDesc: '请验证您的电子邮件地址，以便与社区分享新的日记条目。',
     },
     categories: {
         nature: '自然',
@@ -268,6 +270,11 @@ export default {
         surnameTitle: '姓',
         nameTitle: '名',
         nationalityTitle: '国籍',
+        blockUserTitle: '屏蔽用户',
+        blockUserDesc: '您确定要屏蔽此用户吗？他们将无法与您互动，并且他们的帖子将从您的动态中隐藏。',
+        block: '屏蔽',
+        blockSuccess: '成功屏蔽用户。',
+        blockError: '屏蔽用户失败。',
     },
     editProfile: {
         title: '编辑资料',
@@ -381,6 +388,15 @@ export default {
         theme: '主题',
         lightDark: '浅色 / 深色',
         exitLabel: '退出',
+        exportDataTitle: '下载我的数据',
+        exportDataDesc: '这将生成一个包含您所有个人资料信息、帖子、评论、收藏和联系记录的文件。此过程可能需要一点时间。您要继续吗？',
+        exportDataSubdesc: '请求您的个人数据副本',
+        exportSuccess: '数据成功导出。',
+        exportError: '导出数据失败。',
+        download: '下载',
+        legal: '法律与社区',
+        communityGuidelines: '社区准则',
+        communityGuidelinesDesc: '维护社区安全的准则',
     },
     errors: {
         generic: '出错了',
@@ -524,4 +540,18 @@ export default {
         thunderstormHeavyHail: '强冰雹雷暴',
         unknown: '未知',
     },
+    guidelines: {
+        intro: '欢迎来到 Odyssey Journal！我们希望保持这个空间安全、充满灵感，并专注于真实的旅行体验。请遵守以下准则。',
+        respectTitle: '尊重社区',
+        respectDesc: 'Odyssey Journal 是旅行者分享真实体验的地方。请尊重他人。严禁任何仇恨言论、骚扰、欺凌和歧视。',
+        authenticTitle: '分享真实的旅行',
+        authenticDesc: '专注于旅行、地点、文化和您的个人旅程。请勿发布垃圾信息、广告、政治宣传或无关内容。',
+        safeTitle: '保持安全和适宜',
+        safeDesc: '请勿发布裸体、性暗示内容或暴力血腥画面。确保您的照片和文字适合大众受众。',
+        privacyTitle: '尊重隐私',
+        privacyDesc: '未经他人明确同意，请勿分享他人的个人信息。注意您在照片中拍摄的人物和事物。',
+        enforcementTitle: '违规处理',
+        enforcementDesc: '我们会审查被举报的内容和帐户。违反这些准则可能会导致内容被删除、访问受限或帐户被永久删除，恕不另行通知。',
+        thankYou: '感谢您帮助我们使 Odyssey Journal 成为旅行者的绝佳场所！'
+    }
 };

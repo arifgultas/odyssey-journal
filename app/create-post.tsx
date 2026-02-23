@@ -4,6 +4,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
 import { createPost } from '@/lib/posts';
+import { supabase } from '@/lib/supabase';
 import { fetchWeatherData, getWeatherTranslationKey, WeatherData } from '@/lib/weather';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -587,6 +588,17 @@ export default function CreatePostScreen() {
 
         setIsSubmitting(true);
         try {
+            // Check if user email is verified
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && user.email_confirmed_at === null) {
+                setIsSubmitting(false);
+                Alert.alert(
+                    t('createPost.emailNotVerifiedTitle') || 'Email Verification Required',
+                    t('createPost.emailNotVerifiedDesc') || 'Please verify your email address to share new journal entries.'
+                );
+                return;
+            }
+
             await createPost({
                 title: title.trim(),
                 content: content.trim(),

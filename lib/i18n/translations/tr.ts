@@ -181,6 +181,8 @@ export default {
         tapToAddLocation: 'Konum eklemek için dokun',
         titlePlaceholder: 'Başlık',
         storyPlaceholder: 'Hikayeni anlatmaya başla...',
+        emailNotVerifiedTitle: 'E-posta Doğrulaması Gerekli',
+        emailNotVerifiedDesc: 'Toplulukla yeni günlük girişleri paylaşmak için lütfen e-posta adresinizi doğrulayın.',
     },
 
     // Categories
@@ -290,6 +292,11 @@ export default {
         noCommonDestinationsSubtext: 'Dünyayı keşfetmeye devam edin!',
         openMap: 'Haritayı Aç',
         travelJournal: 'Seyahat Günlüğü',
+        blockUserTitle: 'Kullanıcıyı Engelle',
+        blockUserDesc: 'Bu kullanıcıyı engellemek istediğinizden emin misiniz? Sizinle etkileşime geçemeyecekler ve gönderileri akışınızda gizlenecektir.',
+        block: 'Engelle',
+        blockSuccess: 'Kullanıcı başarıyla engellendi.',
+        blockError: 'Kullanıcı engellenemedi.',
     },
 
     // Edit Profile
@@ -429,6 +436,15 @@ export default {
         theme: 'Tema',
         lightDark: 'Aydınlık / Karanlık',
         exitLabel: 'ÇIKIŞ / EXIT',
+        exportDataTitle: 'Verilerimi İndir',
+        exportDataDesc: 'Bu işlem, profil bilgilerinizi, gönderilerinizi, yorumlarınızı, koleksiyonlarınızı ve bağlantılarınızı içeren bir dosya oluşturur. İşlem biraz sürebilir. Devam etmek istiyor musunuz?',
+        exportDataSubdesc: 'Kişisel verilerinizin bir kopyasını isteyin',
+        exportSuccess: 'Veriler başarıyla dışa aktarıldı.',
+        exportError: 'Veriler dışa aktarılamadı.',
+        download: 'İndir',
+        legal: 'YASAL & TOPLULUK',
+        communityGuidelines: 'Topluluk Kuralları',
+        communityGuidelinesDesc: 'Topluluğumuzu güvende tutmak için kurallar',
     },
 
     // Errors
@@ -592,4 +608,18 @@ export default {
         thunderstormHeavyHail: 'Şiddetli Dolu ile Fırtına',
         unknown: 'Bilinmiyor',
     },
+    guidelines: {
+        intro: 'Odyssey Journal\'a hoş geldiniz! Bu alanı güvenli, ilham verici ve gerçek seyahat deneyimlerine odaklanmış tutmak istiyoruz. Lütfen aşağıdaki kurallara uyun.',
+        respectTitle: 'Topluluğa Saygı Gösterin',
+        respectDesc: 'Odyssey Journal, gezginlerin gerçek deneyimlerini paylaştığı bir yerdir. Başkalarına saygılı davranın. Nefret söylemi, taciz, zorbalık ve her türlü ayrımcılık kesinlikle yasaktır.',
+        authenticTitle: 'Gerçek Seyahatleri Paylaşın',
+        authenticDesc: 'Seyahate, mekanlara, kültüre ve kişisel yolculuğunuza odaklanın. Spam, reklam, siyasi propaganda veya ilgisiz içerik yayınlamayın.',
+        safeTitle: 'Güvenli ve Uygun Tutun',
+        safeDesc: 'Çıplaklık, cinsel içerik veya şiddet içeren paylaşımlar yapmayın. Fotoğraflarınızın ve metinlerinizin genel izleyici kitlesine uygun olduğundan emin olun.',
+        privacyTitle: 'Gizliliğe Saygı Gösterin',
+        privacyDesc: 'Başkalarının kişisel bilgilerini açık rızası olmadan paylaşmayın. Fotoğraflarınızda kimi ve neyi çektiğinize dikkat edin.',
+        enforcementTitle: 'Uygulama ve Yaptırım',
+        enforcementDesc: 'Şikayet edilen içeriği ve hesapları inceliyoruz. Bu kuralların ihlali, uyarısız içerik kaldırma, erişim kısıtlaması veya kalıcı hesap silinmesiyle sonuçlanabilir.',
+        thankYou: 'Odyssey Journal\'ı gezginler için harika bir yer yapmamıza yardımcı olduğunuz için teşekkür ederiz!'
+    }
 };

@@ -180,6 +180,8 @@ export default {
         tapToAddLocation: 'Tap to add location',
         titlePlaceholder: 'Title',
         storyPlaceholder: 'Start telling your story...',
+        emailNotVerifiedTitle: 'Email Verification Required',
+        emailNotVerifiedDesc: 'Please verify your email address to share new journal entries with the community.',
     },
 
     // Categories
@@ -290,7 +292,11 @@ export default {
         noCommonDestinationsSubtext: 'Keep exploring the world!',
         openMap: 'Open Map',
         travelJournal: 'Travel Journal',
-
+        blockUserTitle: 'Block User',
+        blockUserDesc: 'Are you sure you want to block this user? They will not be able to interact with you, and their posts will be hidden from your feed.',
+        block: 'Block',
+        blockSuccess: 'User blocked successfully.',
+        blockError: 'Failed to block user.',
     },
 
     // Edit Profile
@@ -430,6 +436,15 @@ export default {
         theme: 'Theme',
         lightDark: 'Light / Dark',
         exitLabel: 'EXIT',
+        exportDataTitle: 'Download My Data',
+        exportDataDesc: 'This will generate a file containing all your profile information, posts, comments, collections, and connections. The process may take a moment. Do you want to proceed?',
+        exportDataSubdesc: 'Request a copy of your personal data',
+        exportSuccess: 'Data exported successfully.',
+        exportError: 'Failed to export data.',
+        download: 'Download',
+        legal: 'LEGAL & COMMUNITY',
+        communityGuidelines: 'Community Guidelines',
+        communityGuidelinesDesc: 'Rules to keep our community safe',
     },
 
     // Errors
@@ -593,4 +608,18 @@ export default {
         thunderstormHeavyHail: 'Thunderstorm with Heavy Hail',
         unknown: 'Unknown',
     },
+    guidelines: {
+        intro: 'Welcome to Odyssey Journal! We want to keep this space safe, inspiring, and focused on genuine travel experiences. Please follow these guidelines.',
+        respectTitle: 'Respect the Community',
+        respectDesc: 'Odyssey Journal is a place for travelers to share their real experiences. Treat others with respect. Hate speech, harassment, bullying, and discrimination of any kind are strictly prohibited.',
+        authenticTitle: 'Share Authentic Travel',
+        authenticDesc: 'Focus on travel, places, culture, and your personal journey. Do not post spam, advertisements, political propaganda, or unrelated content.',
+        safeTitle: 'Keep it Safe & SFW',
+        safeDesc: 'Do not post nudity, sexually explicit content, or graphic violence. Ensure your photos and text are appropriate for a general audience.',
+        privacyTitle: 'Respect Privacy',
+        privacyDesc: 'Do not share personal information of others without their explicit consent. Be mindful of who and what you capture in your photos.',
+        enforcementTitle: 'Enforcement',
+        enforcementDesc: 'We review reported content and accounts. Violating these guidelines may result in content removal, restricted access, or permanent account deletion without warning.',
+        thankYou: 'Thank you for helping us make Odyssey Journal a great place for travelers!'
+    }
 };

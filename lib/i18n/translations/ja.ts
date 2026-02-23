@@ -167,6 +167,8 @@ export default {
         tapToAddLocation: 'タップして場所を追加',
         titlePlaceholder: 'タイトル',
         storyPlaceholder: 'ストーリーを書き始めてください...',
+        emailNotVerifiedTitle: 'メールアドレスの確認が必要です',
+        emailNotVerifiedDesc: 'コミュニティと新しい日記を共有するには、メールアドレスを確認してください。',
     },
     categories: {
         nature: '自然',
@@ -268,6 +270,11 @@ export default {
         surnameTitle: '姓',
         nameTitle: '名',
         nationalityTitle: '国籍',
+        blockUserTitle: 'ユーザーをブロック',
+        blockUserDesc: 'このユーザーをブロックしてもよろしいですか？やり取りができなくなり、そのユーザーの投稿はフィードから非表示になります。',
+        block: 'ブロック',
+        blockSuccess: 'ユーザーをブロックしました。',
+        blockError: 'ユーザーのブロックに失敗しました。',
     },
     editProfile: {
         title: 'プロフィール編集',
@@ -381,6 +388,15 @@ export default {
         theme: 'テーマ',
         lightDark: 'ライト / ダーク',
         exitLabel: '終了',
+        exportDataTitle: 'データをダウンロード',
+        exportDataDesc: 'これにより、すべてのプロフィール情報、投稿、コメント、コレクション、およびつながりを含むファイルが生成されます。処理には少し時間がかかる場合があります。続行しますか？',
+        exportDataSubdesc: '個人データのコピーをリクエストする',
+        exportSuccess: 'データが正常にエクスポートされました。',
+        exportError: 'データのエクスポートに失敗しました。',
+        download: 'ダウンロード',
+        legal: '法的情報とコミュニティ',
+        communityGuidelines: 'コミュニティガイドライン',
+        communityGuidelinesDesc: 'コミュニティを安全に保つためのルール',
     },
     errors: {
         generic: 'エラーが発生しました',
@@ -524,4 +540,18 @@ export default {
         thunderstormHeavyHail: '大きなひょうを伴う雷雨',
         unknown: '不明',
     },
+    guidelines: {
+        intro: 'Odyssey Journal へようこそ！私たちは、この場所を安全で、インスピレーションに満ち、本物の旅行体験に焦点を当てたものにしたいと考えています。以下のガイドラインに従ってください。',
+        respectTitle: 'コミュニティを尊重する',
+        respectDesc: 'Odyssey Journal は、旅行者が実際の体験を共有する場所です。他者に敬意を払ってください。ヘイトスピーチ、嫌がらせ、いじめ、あらゆる種類の差別は固く禁じられています。',
+        authenticTitle: '本物の旅行を共有する',
+        authenticDesc: '旅行、場所、文化、そしてあなたの個人的な旅に焦点を当ててください。スパム、広告、政治的宣伝、または無関係なコンテンツを投稿しないでください。',
+        safeTitle: '安全で適切な内容に保つ',
+        safeDesc: 'ヌード、性的に露骨なコンテンツ、または生々しい暴力を投稿しないでください。写真とテキストが一般のユーザーに適していることを確認してください。',
+        privacyTitle: 'プライバシーを尊重する',
+        privacyDesc: '他人の明示的な同意なしに、個人情報を共有しないでください。写真に誰を、何を撮影するかに注意してください。',
+        enforcementTitle: '違反への対応',
+        enforcementDesc: '報告されたコンテンツとアカウントを確認します。これらのガイドラインに違反すると、警告なしにコンテンツの削除、アクセスの制限、またはアカウントの完全な削除が行われる可能性があります。',
+        thankYou: 'Odyssey Journal を旅行者にとって素晴らしい場所にするためにご協力いただきありがとうございます！'
+    }
 };
