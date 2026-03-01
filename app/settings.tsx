@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
+import { isAdmin } from '@/lib/admin-service';
 import { exportUserData } from '@/lib/export-data';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { removePushToken } from '@/lib/push-notifications';
@@ -66,8 +67,14 @@ export default function SettingsScreen() {
 
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
+    const [isUserAdmin, setIsUserAdmin] = useState(false);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
+
+    // Check admin status on mount
+    React.useEffect(() => {
+        isAdmin().then(setIsUserAdmin);
+    }, []);
 
     const handleLogout = () => {
         Alert.alert(
@@ -337,6 +344,32 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
                 </Animated.View>
+
+                {/* Admin Panel (only visible to admins) */}
+                {isUserAdmin && (
+                    <Animated.View
+                        entering={FadeInDown.delay(350).duration(400)}
+                        style={[styles.sectionCard, { backgroundColor: colors.cardBg, borderColor: `${colors.accent}99` }]}
+                    >
+                        <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
+                            <Ionicons name="shield-checkmark-outline" size={20} color={colors.accent} />
+                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>ADMIN</Text>
+                        </View>
+                        <View style={styles.sectionContent}>
+                            <TouchableOpacity
+                                style={styles.settingRow}
+                                onPress={() => router.push('/admin' as any)}
+                                activeOpacity={0.7}
+                            >
+                                <View style={styles.settingInfo}>
+                                    <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Moderation Panel</Text>
+                                    <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>Review reports, manage users</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                            </TouchableOpacity>
+                        </View>
+                    </Animated.View>
+                )}
 
                 {/* Community & Legal Section */}
                 <Animated.View

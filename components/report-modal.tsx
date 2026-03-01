@@ -69,7 +69,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
                     </View>
 
                     {/* Content */}
-                    <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+                    <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
                         <Text style={styles.subtitle}>Why are you reporting this post?</Text>
 
                         {/* Reason Options */}
@@ -189,6 +189,9 @@ const styles = StyleSheet.create({
     },
     content: {
         padding: Spacing.lg,
+    },
+    contentContainer: {
+        paddingBottom: 48,
     },
     subtitle: {
         fontFamily: Typography.fonts.bodyBold,

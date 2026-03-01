@@ -1,3 +1,4 @@
+import { sanitizeBio, sanitizeFullName, sanitizeText, sanitizeUsername } from './sanitize';
 import { supabase } from './supabase';
 import type { CommonDestination, Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
 
@@ -245,10 +246,25 @@ export class ProfileService {
                 throw new Error('No authenticated user');
             }
 
+            // Sanitize text fields before update
+            const sanitizedUpdates: Partial<UpdateProfileData> = { ...updates };
+            if (sanitizedUpdates.username) {
+                sanitizedUpdates.username = sanitizeUsername(sanitizedUpdates.username);
+            }
+            if (sanitizedUpdates.full_name) {
+                sanitizedUpdates.full_name = sanitizeFullName(sanitizedUpdates.full_name);
+            }
+            if (sanitizedUpdates.bio) {
+                sanitizedUpdates.bio = sanitizeBio(sanitizedUpdates.bio);
+            }
+            if (sanitizedUpdates.website) {
+                sanitizedUpdates.website = sanitizeText(sanitizedUpdates.website, 200);
+            }
+
             const { data, error } = await supabase
                 .from('profiles')
                 .update({
-                    ...updates,
+                    ...sanitizedUpdates,
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', user.id)
@@ -415,10 +431,14 @@ export class ProfileService {
      */
     static async searchProfiles(query: string, limit = 20) {
         try {
+            // Sanitize search query to prevent injection
+            const sanitizedQuery = sanitizeText(query, 50);
+            if (!sanitizedQuery) return [];
+
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
+                .or(`username.ilike.%${sanitizedQuery}%,full_name.ilike.%${sanitizedQuery}%`)
                 .limit(limit);
 
             if (error) throw error;

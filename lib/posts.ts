@@ -1,4 +1,6 @@
+import { getModerationMessage, moderatePost, moderateText } from './content-moderation';
 import { deleteImage, uploadMultipleImages } from './image-upload';
+import { LIMITS, sanitizePostContent, sanitizePostTitle, sanitizeText } from './sanitize';
 import { supabase } from './supabase';
 import { WeatherData } from './weather';
 
@@ -71,16 +73,29 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             imageUrls = await uploadMultipleImages(data.images, 'posts', user.id);
         }
 
+        // Sanitize text fields
+        const sanitizedTitle = sanitizePostTitle(data.title);
+        const sanitizedContent = sanitizePostContent(data.content);
+        const sanitizedCaptions = (data.imageCaptions || []).map(
+            (c) => sanitizeText(c, LIMITS.POST_TITLE)
+        );
+
+        // AI Content Moderation — check text before publishing
+        const textModeration = await moderateText(`${sanitizedTitle}\n\n${sanitizedContent}`);
+        if (!textModeration.approved) {
+            throw new Error(getModerationMessage(textModeration.flaggedCategories));
+        }
+
         // Create post in database
         const { data: post, error: postError } = await supabase
             .from('posts')
             .insert({
                 user_id: user.id,
-                title: data.title,
-                content: data.content,
+                title: sanitizedTitle,
+                content: sanitizedContent,
                 location: data.location,
                 images: imageUrls,
-                image_captions: data.imageCaptions || [],
+                image_captions: sanitizedCaptions,
                 weather_data: data.weatherData || null,
                 categories: data.categories || [],
             })
@@ -93,6 +108,17 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 await Promise.all(imageUrls.map((url) => deleteImage(url, 'posts')));
             }
             throw postError;
+        }
+
+        // AI Content Moderation — check images after upload (needs public URLs)
+        if (imageUrls.length > 0) {
+            const imageModeration = await moderatePost('', '', imageUrls);
+            if (!imageModeration.approved) {
+                // Delete the post and images if flagged
+                await supabase.from('posts').delete().eq('id', post.id);
+                await Promise.all(imageUrls.map((url) => deleteImage(url, 'posts')));
+                throw new Error(getModerationMessage(imageModeration.flaggedCategories));
+            }
         }
 
         return post;
@@ -129,8 +155,8 @@ export async function updatePost(
             updated_at: new Date().toISOString(),
         };
 
-        if (data.title !== undefined) updateData.title = data.title;
-        if (data.content !== undefined) updateData.content = data.content;
+        if (data.title !== undefined) updateData.title = sanitizePostTitle(data.title);
+        if (data.content !== undefined) updateData.content = sanitizePostContent(data.content);
         if (data.location !== undefined) updateData.location = data.location;
         if (imageUrls !== undefined) updateData.images = imageUrls;
 

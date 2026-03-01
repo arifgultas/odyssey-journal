@@ -1,7 +1,14 @@
 import { decode } from 'base64-arraybuffer';
+import * as ExpoFileSystem from 'expo-file-system';
 import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from './supabase';
+
+// Image upload limits
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_IMAGES_PER_POST = 10;
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
 
 /**
  * Upload an image to Supabase Storage
@@ -16,6 +23,18 @@ export async function uploadImage(
     userId: string
 ): Promise<string> {
     try {
+        // 0. Validate file size before processing (best-effort)
+        try {
+            const fileInfo = await ExpoFileSystem.getInfoAsync(uri);
+            if (fileInfo.exists && 'size' in fileInfo && fileInfo.size && fileInfo.size > MAX_FILE_SIZE_BYTES) {
+                throw new Error(`Image file is too large (max ${MAX_FILE_SIZE_MB}MB)`);
+            }
+        } catch (sizeError: any) {
+            // Only re-throw if it's our own size limit error
+            if (sizeError?.message?.includes('too large')) throw sizeError;
+            // Otherwise ignore — some URI formats don't support getInfoAsync
+        }
+
         // 1. Compress and resize image
         const manipulatedImage = await ImageManipulator.manipulateAsync(
             uri,
@@ -116,6 +135,11 @@ export async function uploadMultipleImages(
     userId: string
 ): Promise<string[]> {
     try {
+        // Validate image count
+        if (uris.length > MAX_IMAGES_PER_POST) {
+            throw new Error(`Maximum ${MAX_IMAGES_PER_POST} images allowed per post`);
+        }
+
         const uploadPromises = uris.map(uri => uploadImage(uri, bucket, userId));
         const urls = await Promise.all(uploadPromises);
         return urls;

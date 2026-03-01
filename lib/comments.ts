@@ -1,3 +1,5 @@
+import { getModerationMessage, moderateText } from './content-moderation';
+import { sanitizeComment } from './sanitize';
 import { supabase } from './supabase';
 
 export interface Comment {
@@ -31,8 +33,15 @@ export async function addComment(data: CreateCommentData): Promise<Comment> {
             throw new Error('User not authenticated');
         }
 
-        if (!data.content.trim()) {
+        const sanitizedContent = sanitizeComment(data.content);
+        if (!sanitizedContent) {
             throw new Error('Comment content cannot be empty');
+        }
+
+        // AI Content Moderation — check comment text
+        const moderation = await moderateText(sanitizedContent);
+        if (!moderation.approved) {
+            throw new Error(getModerationMessage(moderation.flaggedCategories));
         }
 
         const { data: comment, error } = await supabase
@@ -40,7 +49,7 @@ export async function addComment(data: CreateCommentData): Promise<Comment> {
             .insert({
                 post_id: data.post_id,
                 user_id: user.id,
-                content: data.content.trim(),
+                content: sanitizedContent,
             })
             .select()
             .single();
@@ -155,13 +164,20 @@ export async function updateComment(
             throw new Error('User not authenticated');
         }
 
-        if (!content.trim()) {
+        const sanitizedContent = sanitizeComment(content);
+        if (!sanitizedContent) {
             throw new Error('Comment content cannot be empty');
+        }
+
+        // AI Content Moderation — check updated comment text
+        const moderation = await moderateText(sanitizedContent);
+        if (!moderation.approved) {
+            throw new Error(getModerationMessage(moderation.flaggedCategories));
         }
 
         const { data: comment, error } = await supabase
             .from('comments')
-            .update({ content: content.trim() })
+            .update({ content: sanitizedContent })
             .eq('id', commentId)
             .eq('user_id', user.id)
             .select()
