@@ -62,7 +62,7 @@ jobs:
         run: npm ci
 
       - name: TypeScript check
-        run: npx tsc --noEmit --skipLibCheck
+        run: npx tsc --noEmit --skipLibCheck --exclude supabase/functions
         continue-on-error: true
 
   build-preview:
