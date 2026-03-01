@@ -28,44 +28,16 @@ export interface CreateReportData {
 }
 
 /**
- * Report reasons with user-friendly labels
+ * Report reason keys — labels come from translations (report namespace)
  */
-export const REPORT_REASONS: { value: ReportReason; label: string; description: string }[] = [
-    {
-        value: 'spam',
-        label: 'Spam',
-        description: 'Repetitive or irrelevant content',
-    },
-    {
-        value: 'harassment',
-        label: 'Harassment or Bullying',
-        description: 'Targeting or attacking someone',
-    },
-    {
-        value: 'hate_speech',
-        label: 'Hate Speech',
-        description: 'Discriminatory or offensive content',
-    },
-    {
-        value: 'violence',
-        label: 'Violence or Threats',
-        description: 'Promoting or threatening violence',
-    },
-    {
-        value: 'nudity',
-        label: 'Nudity or Sexual Content',
-        description: 'Inappropriate sexual content',
-    },
-    {
-        value: 'false_information',
-        label: 'False Information',
-        description: 'Misleading or false content',
-    },
-    {
-        value: 'other',
-        label: 'Other',
-        description: 'Something else',
-    },
+export const REPORT_REASON_KEYS: ReportReason[] = [
+    'spam',
+    'harassment',
+    'hate_speech',
+    'violence',
+    'nudity',
+    'false_information',
+    'other',
 ];
 
 /**
@@ -188,10 +160,3 @@ export async function getUserReports(
     }
 }
 
-/**
- * Get report reason label
- */
-export function getReportReasonLabel(reason: ReportReason): string {
-    const reportReason = REPORT_REASONS.find(r => r.value === reason);
-    return reportReason?.label || reason;
-}

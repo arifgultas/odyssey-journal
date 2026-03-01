@@ -386,17 +386,21 @@ export default {
 
     // Report
     report: {
-        title: 'Şikayet Et',
-        reason: 'Şikayet Nedeni',
-        spam: 'Spam',
-        inappropriate: 'Uygunsuz İçerik',
-        harassment: 'Taciz',
-        violence: 'Şiddet',
-        falseInfo: 'Yanlış Bilgi',
-        other: 'Diğer',
-        details: 'Detaylar (opsiyonel)',
-        submit: 'Gönder',
+        title: 'Gönderiyi Şikayet Et',
+        whyReporting: 'Bu gönderiyi neden şikayet ediyorsunuz?',
+        additionalDetails: 'Ek detaylar (opsiyonel)',
+        detailsPlaceholder: 'Daha fazla bilgi verin...',
+        submit: 'Şikayeti Gönder',
         success: 'Şikayetiniz alındı',
+        reasons: {
+            spam: { label: 'Spam', desc: 'Tekrarlayan veya alakasız içerik' },
+            harassment: { label: 'Taciz veya Zorbalık', desc: 'Birini hedef alma veya saldırma' },
+            hate_speech: { label: 'Nefret Söylemi', desc: 'Ayrımcı veya saldırgan içerik' },
+            violence: { label: 'Şiddet veya Tehdit', desc: 'Şiddeti teşvik eden veya tehdit içeren' },
+            nudity: { label: 'Çıplaklık veya Cinsel İçerik', desc: 'Uygunsuz cinsel içerik' },
+            false_information: { label: 'Yanlış Bilgi', desc: 'Yanıltıcı veya yanlış içerik' },
+            other: { label: 'Diğer', desc: 'Başka bir şey' },
+        },
     },
 
     // Follow

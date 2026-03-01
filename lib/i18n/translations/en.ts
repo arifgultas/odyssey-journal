@@ -386,17 +386,21 @@ export default {
 
     // Report
     report: {
-        title: 'Report',
-        reason: 'Reason for Report',
-        spam: 'Spam',
-        inappropriate: 'Inappropriate Content',
-        harassment: 'Harassment',
-        violence: 'Violence',
-        falseInfo: 'False Information',
-        other: 'Other',
-        details: 'Details (optional)',
-        submit: 'Submit',
+        title: 'Report Post',
+        whyReporting: 'Why are you reporting this post?',
+        additionalDetails: 'Additional details (optional)',
+        detailsPlaceholder: 'Provide more context...',
+        submit: 'Submit Report',
         success: 'Report received',
+        reasons: {
+            spam: { label: 'Spam', desc: 'Repetitive or irrelevant content' },
+            harassment: { label: 'Harassment or Bullying', desc: 'Targeting or attacking someone' },
+            hate_speech: { label: 'Hate Speech', desc: 'Discriminatory or offensive content' },
+            violence: { label: 'Violence or Threats', desc: 'Promoting or threatening violence' },
+            nudity: { label: 'Nudity or Sexual Content', desc: 'Inappropriate sexual content' },
+            false_information: { label: 'False Information', desc: 'Misleading or false content' },
+            other: { label: 'Other', desc: 'Something else' },
+        },
     },
 
     // Follow

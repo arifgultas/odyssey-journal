@@ -5,6 +5,7 @@ import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-con
 import { useBookFonts } from '@/hooks/use-book-fonts';
 import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
 import { persistOptions, queryClientConfig } from '@/lib/query-persister';
+import { initSentry, SentryErrorBoundary } from '@/lib/sentry';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
@@ -14,6 +15,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Initialize Sentry error monitoring
+initSentry();
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -59,7 +63,7 @@ function RootLayoutNav() {
   );
 }
 
-export default function RootLayout() {
+function RootLayoutInner() {
   const { fontsLoaded, fontError } = useBookFonts();
 
   useEffect(() => {
@@ -86,3 +90,6 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+// Wrap with Sentry error boundary for automatic crash reporting
+export default SentryErrorBoundary(RootLayoutInner);

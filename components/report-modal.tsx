@@ -1,5 +1,6 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
-import { REPORT_REASONS, reportPost, ReportReason } from '@/lib/reports';
+import { useLanguage } from '@/context/language-context';
+import { REPORT_REASON_KEYS, reportPost, ReportReason } from '@/lib/reports';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -24,6 +25,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
     const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
     const [description, setDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { t } = useLanguage();
 
     const handleSubmit = async () => {
         if (!selectedReason) return;
@@ -62,7 +64,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
                 <View style={styles.container}>
                     {/* Header */}
                     <View style={styles.header}>
-                        <Text style={styles.title}>Report Post</Text>
+                        <Text style={styles.title}>{t('report.title')}</Text>
                         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                             <Ionicons name="close" size={24} color={Colors.light.text} />
                         </TouchableOpacity>
@@ -70,35 +72,35 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
 
                     {/* Content */}
                     <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-                        <Text style={styles.subtitle}>Why are you reporting this post?</Text>
+                        <Text style={styles.subtitle}>{t('report.whyReporting')}</Text>
 
                         {/* Reason Options */}
                         <View style={styles.reasonsContainer}>
-                            {REPORT_REASONS.map((reason) => (
+                            {REPORT_REASON_KEYS.map((reason) => (
                                 <TouchableOpacity
-                                    key={reason.value}
+                                    key={reason}
                                     style={[
                                         styles.reasonOption,
-                                        selectedReason === reason.value && styles.reasonOptionSelected,
+                                        selectedReason === reason && styles.reasonOptionSelected,
                                     ]}
-                                    onPress={() => setSelectedReason(reason.value)}
+                                    onPress={() => setSelectedReason(reason)}
                                 >
                                     <View style={styles.reasonContent}>
                                         <Text style={[
                                             styles.reasonLabel,
-                                            selectedReason === reason.value && styles.reasonLabelSelected,
+                                            selectedReason === reason && styles.reasonLabelSelected,
                                         ]}>
-                                            {reason.label}
+                                            {t(`report.reasons.${reason}.label`)}
                                         </Text>
                                         <Text style={styles.reasonDescription}>
-                                            {reason.description}
+                                            {t(`report.reasons.${reason}.desc`)}
                                         </Text>
                                     </View>
                                     <View style={[
                                         styles.radio,
-                                        selectedReason === reason.value && styles.radioSelected,
+                                        selectedReason === reason && styles.radioSelected,
                                     ]}>
-                                        {selectedReason === reason.value && (
+                                        {selectedReason === reason && (
                                             <View style={styles.radioDot} />
                                         )}
                                     </View>
@@ -110,11 +112,11 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
                         {selectedReason && (
                             <View style={styles.descriptionContainer}>
                                 <Text style={styles.descriptionLabel}>
-                                    Additional details (optional)
+                                    {t('report.additionalDetails')}
                                 </Text>
                                 <TextInput
                                     style={styles.descriptionInput}
-                                    placeholder="Provide more context..."
+                                    placeholder={t('report.detailsPlaceholder')}
                                     placeholderTextColor={Colors.light.textMuted}
                                     value={description}
                                     onChangeText={setDescription}
@@ -136,7 +138,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
                             onPress={handleClose}
                             disabled={isSubmitting}
                         >
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                            <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[
@@ -149,7 +151,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
                             {isSubmitting ? (
                                 <ActivityIndicator size="small" color={Colors.light.surface} />
                             ) : (
-                                <Text style={styles.submitButtonText}>Submit Report</Text>
+                                <Text style={styles.submitButtonText}>{t('report.submit')}</Text>
                             )}
                         </TouchableOpacity>
                     </View>

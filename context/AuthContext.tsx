@@ -1,3 +1,4 @@
+import { clearSentryUser, setSentryUser } from '@/lib/sentry';
 import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 import { useRouter, useSegments } from 'expo-router';
@@ -38,6 +39,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setSession(session);
                 setUser(session?.user ?? null);
                 setIsLoading(false);
+                // Track user in Sentry for error context
+                if (session?.user) {
+                    setSentryUser({ id: session.user.id, email: session.user.email });
+                } else {
+                    clearSentryUser();
+                }
             }
         );
 
@@ -72,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [session, segments, isLoading]);
 
     const signOut = async () => {
+        clearSentryUser();
         await supabase.auth.signOut();
         router.replace('/(auth)/login');
     };
