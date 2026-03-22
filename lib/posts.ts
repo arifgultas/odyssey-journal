@@ -159,6 +159,13 @@ export async function updatePost(
         if (data.content !== undefined) updateData.content = sanitizePostContent(data.content);
         if (data.location !== undefined) updateData.location = data.location;
         if (imageUrls !== undefined) updateData.images = imageUrls;
+        if (data.categories !== undefined) updateData.categories = data.categories;
+        if (data.imageCaptions !== undefined) {
+            updateData.image_captions = data.imageCaptions.map(
+                (c) => sanitizeText(c, LIMITS.POST_TITLE)
+            );
+        }
+        if (data.weatherData !== undefined) updateData.weather_data = data.weatherData;
 
         const { data: post, error: postError } = await supabase
             .from('posts')

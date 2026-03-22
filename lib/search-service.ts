@@ -8,6 +8,14 @@ import type {
 } from './types/search';
 
 /**
+ * Escape special characters for Supabase ilike filters
+ * Prevents filter manipulation via crafted search terms
+ */
+function escapeIlike(value: string): string {
+    return value.replace(/[%_\\]/g, '\\$&');
+}
+
+/**
  * Search Service
  * Handles all search and discovery operations
  */
@@ -53,7 +61,7 @@ export class SearchService {
 
             // Search by location
             if (filters?.location || query) {
-                const searchTerm = filters?.location || query;
+                const searchTerm = escapeIlike(filters?.location || query);
                 queryBuilder = queryBuilder.or(
                     `location_name.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`
                 );
@@ -114,7 +122,7 @@ export class SearchService {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
+                .or(`username.ilike.%${escapeIlike(query)}%,full_name.ilike.%${escapeIlike(query)}%`)
                 .limit(20);
 
             if (error) throw error;
@@ -134,7 +142,7 @@ export class SearchService {
                 .from('posts')
                 .select('location_name, latitude, longitude')
                 .not('location_name', 'is', null)
-                .ilike('location_name', `%${query}%`);
+                .ilike('location_name', `%${escapeIlike(query)}%`);
 
             if (error) throw error;
 

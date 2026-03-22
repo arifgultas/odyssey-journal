@@ -126,7 +126,26 @@ export default function NotificationsScreen() {
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     useEffect(() => {
-        loadCurrentUser();
+        let unsubscribe: (() => void) | undefined;
+
+        const init = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setCurrentUserId(user.id);
+                unsubscribe = subscribeToNotifications(user.id, (newNotification) => {
+                    setNotifications(prev => [newNotification, ...prev]);
+                    setUnreadCount(prev => prev + 1);
+                });
+            }
+        };
+
+        init();
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
     }, []);
 
     useFocusEffect(
@@ -135,18 +154,6 @@ export default function NotificationsScreen() {
             loadUnreadCount();
         }, [])
     );
-
-    const loadCurrentUser = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            setCurrentUserId(user.id);
-            const unsubscribe = subscribeToNotifications(user.id, (newNotification) => {
-                setNotifications(prev => [newNotification, ...prev]);
-                setUnreadCount(prev => prev + 1);
-            });
-            return unsubscribe;
-        }
-    };
 
     const loadNotifications = async (pageNum: number = 0, refresh: boolean = false) => {
         try {
@@ -161,7 +168,7 @@ export default function NotificationsScreen() {
             if (refresh || pageNum === 0) {
                 setNotifications(data);
             } else {
-                setNotifications([...notifications, ...data]);
+                setNotifications(prev => [...prev, ...data]);
             }
 
             setHasMore(data.length === 20);

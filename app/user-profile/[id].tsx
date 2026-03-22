@@ -1,3 +1,4 @@
+import { BoardingPassCard } from '@/components/boarding-pass-card';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
@@ -185,84 +186,19 @@ export default function UserProfileScreen() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
             >
-                {/* Profile Photo Section */}
-                <View style={styles.photoSection}>
-                    <View style={styles.photoFrame}>
-                        {/* Corner decorations */}
-                        <View style={[styles.cornerTL, { borderColor: `${theme.primary}99` }]} />
-                        <View style={[styles.cornerTR, { borderColor: `${theme.primary}99` }]} />
-                        <View style={[styles.cornerBL, { borderColor: `${theme.primary}99` }]} />
-                        <View style={[styles.cornerBR, { borderColor: `${theme.primary}99` }]} />
-
-                        {/* Photo container */}
-                        <View style={[styles.photoContainer, { backgroundColor: theme.surface }]}>
-                            {profileData.avatar_url ? (
-                                <Image
-                                    source={{ uri: profileData.avatar_url }}
-                                    style={styles.profilePhoto}
-                                    contentFit="cover"
-                                />
-                            ) : (
-                                <View style={[styles.photoPlaceholder, { backgroundColor: theme.surface }]}>
-                                    <Ionicons name="person" size={48} color={theme.textMuted} />
-                                </View>
-                            )}
-                        </View>
-
-
-                    </View>
+                {/* Boarding Pass Card */}
+                <View style={{ paddingHorizontal: Spacing.md, paddingTop: Spacing.lg }}>
+                    <BoardingPassCard
+                        avatarUrl={profileData.avatar_url}
+                        fullName={profileData.full_name || t('profile.defaultUser')}
+                        username={profileData.username || t('profile.defaultUser').toLowerCase()}
+                        bio={profileData.bio}
+                        countriesVisited={profileData.stats?.countriesVisited || 0}
+                        totalDistanceKm={profileData.stats?.totalDistanceKm || 0}
+                        travelDays={profileData.stats?.travelDays || 0}
+                        t={t}
+                    />
                 </View>
-
-                {/* Name and Username */}
-                <View style={styles.nameSection}>
-                    <Text style={[styles.fullName, { color: theme.primary }]}>
-                        {profileData.full_name || t('profile.defaultUser')}
-                    </Text>
-                    <View style={styles.usernameRow}>
-                        <Text style={[styles.username, { color: theme.textMain, opacity: 0.7 }]}>
-                            @{profileData.username || t('profile.defaultUser').toLowerCase()}
-                        </Text>
-                        {profileData.stats && profileData.stats.countriesVisited > 5 && (
-                            <Ionicons name="checkmark-circle" size={16} color="#60A5FA" />
-                        )}
-                    </View>
-
-                    {/* Stats Row */}
-                    <View style={[styles.statsRow, { borderBottomColor: `${theme.primary}30` }]}>
-                        <TouchableOpacity style={styles.statItem}>
-                            <Text style={[styles.statNumber, { color: theme.textMain }]}>
-                                {profileData.stats?.countriesVisited || 0}
-                            </Text>
-                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>{t('profile.countries')}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.statItem}>
-                            <Text style={[styles.statNumber, { color: theme.textMain }]}>
-                                {profileData.stats?.postsCount || 0}
-                            </Text>
-                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>{t('profile.posts')}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.statItem} onPress={handleFollowersPress}>
-                            <Text style={[styles.statNumber, { color: theme.textMain }]}>
-                                {formatNumber(profileData.stats?.followersCount || 0)}
-                            </Text>
-                            <Text style={[styles.statLabel, { color: theme.textMuted }]}>{t('profile.followers')}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                {/* Bio Section */}
-                {profileData.bio && (
-                    <View style={styles.bioSection}>
-                        <Text style={[styles.bioText, { color: theme.textMain }]}>
-                            "{profileData.bio}"
-                        </Text>
-                        {profileData.website && (
-                            <Text style={[styles.bioMeta, { color: theme.textMuted }]}>
-                                🌍 | {profileData.website}
-                            </Text>
-                        )}
-                    </View>
-                )}
 
                 {/* Action Buttons */}
                 {!isCurrentUser && (

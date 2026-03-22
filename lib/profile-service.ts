@@ -438,7 +438,7 @@ export class ProfileService {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .or(`username.ilike.%${sanitizedQuery}%,full_name.ilike.%${sanitizedQuery}%`)
+                .or(`username.ilike.%${sanitizedQuery.replace(/[%_\\]/g, '\\$&')}%,full_name.ilike.%${sanitizedQuery.replace(/[%_\\]/g, '\\$&')}%`)
                 .limit(limit);
 
             if (error) throw error;

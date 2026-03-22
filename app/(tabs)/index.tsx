@@ -77,8 +77,8 @@ export default function HomeScreen() {
     // Load immediately on mount
     pollUnreadCount();
 
-    // Poll every 5 seconds (lightweight HEAD-only count query)
-    intervalId = setInterval(pollUnreadCount, 5000);
+    // Poll every 30 seconds (lightweight HEAD-only count query)
+    intervalId = setInterval(pollUnreadCount, 30000);
 
     return () => {
       isMounted = false;
@@ -127,7 +127,7 @@ export default function HomeScreen() {
       if (refresh || pageNum === 0) {
         setPosts(newPosts);
       } else {
-        setPosts([...posts, ...newPosts]);
+        setPosts(prev => [...prev, ...newPosts]);
       }
 
       setHasMore(newPosts.length === 10);

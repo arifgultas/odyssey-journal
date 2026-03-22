@@ -1,4 +1,5 @@
 
+import { BoardingPassCard } from '@/components/boarding-pass-card';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
@@ -177,7 +178,7 @@ export default function ProfileScreen() {
                         <Text style={[styles.headerSubtitle, { color: colorScheme === 'dark' ? `${passportTheme.gold}CC` : `${passportTheme.text}B3` }]}>
                             {t('profile.republicOf')}
                         </Text>
-                        <Ionicons name="airplane" size={10} color={colorScheme === 'dark' ? `${passportTheme.gold}CC` : `${passportTheme.text}B3`} style={{ transform: [{ rotate: '180deg' }] }} />
+                        <Ionicons name="airplane" size={10} color={colorScheme === 'dark' ? `${passportTheme.gold}CC` : `${passportTheme.text}B3`} style={{ transform: [{ scaleX: -1 }] }} />
                     </View>
                     <Text style={[styles.headerTitle, { color: colorScheme === 'dark' ? passportTheme.gold : passportTheme.text }]}>
                         ODYSSEY JOURNAL
@@ -203,110 +204,18 @@ export default function ProfileScreen() {
                     />
                 }
             >
-                {/* Passport Card */}
+                {/* Boarding Pass Card */}
                 <View style={styles.passportSection}>
-                    <View style={[styles.passportCard, {
-                        backgroundColor: passportTheme.paper,
-                        borderColor: `${passportTheme.gold}33`,
-                    }]}>
-                        {/* Passport Content */}
-                        <View style={styles.passportContent}>
-                            {/* Photo and Info Row */}
-                            <View style={styles.passportRow}>
-                                {/* Photo */}
-                                <View style={styles.photoContainer}>
-                                    <View style={[styles.photoFrame, { borderColor: colorScheme === 'dark' ? `${passportTheme.gold}99` : passportTheme.passportLeather }]}>
-                                        {displayProfile.avatar_url ? (
-                                            <Image
-                                                source={{ uri: displayProfile.avatar_url }}
-                                                style={styles.photoImage}
-                                                contentFit="cover"
-                                            />
-                                        ) : (
-                                            <View style={[styles.photoPlaceholder, { backgroundColor: passportTheme.paperDark }]}>
-                                                <Ionicons name="person" size={50} color={passportTheme.textMuted} />
-                                            </View>
-                                        )}
-                                    </View>
-                                    {/* Verified Stamp */}
-                                    <View style={styles.verifiedStamp}>
-                                        <Ionicons name="checkmark-circle" size={40} color={`${passportTheme.gold}CC`} />
-                                    </View>
-                                </View>
-
-                                {/* Info Section */}
-                                <View style={styles.infoSection}>
-                                    {/* Surname */}
-                                    <View style={[styles.infoField, { borderBottomColor: `${passportTheme.gold}33` }]}>
-                                        <Text style={[styles.fieldLabel, { color: passportTheme.textMuted }]}>{t('profile.surnameTitle')}</Text>
-                                        <Text style={[styles.fieldValue, { color: passportTheme.text }]}>{surname}</Text>
-                                    </View>
-
-                                    {/* Given Names */}
-                                    <View style={styles.infoField}>
-                                        <Text style={[styles.fieldLabel, { color: passportTheme.textMuted }]}>{t('profile.nameTitle')}</Text>
-                                        <Text style={[styles.fieldValueSmall, { color: passportTheme.text }]}>
-                                            {givenNames || surname}
-                                        </Text>
-                                    </View>
-
-                                    {/* Nationality & ID Row */}
-                                    <View style={styles.infoRow}>
-                                        <View style={styles.infoFieldSmall}>
-                                            <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>{t('profile.nationalityTitle')}</Text>
-                                            <Text style={[styles.fieldValueMono, { color: passportTheme.text }]}>{language?.toUpperCase().slice(0, 3) || '—'}</Text>
-                                        </View>
-                                        <View style={styles.infoFieldSmall}>
-                                            <Text style={[styles.fieldLabelSmall, { color: passportTheme.textMuted }]}>ID</Text>
-                                            <Text style={[styles.fieldValueMono, { color: passportTheme.gold }]}>@{displayProfile.username || 'user'}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-
-                            {/* Bio Section */}
-                            {displayProfile.bio && (
-                                <View style={[styles.bioContainer, { backgroundColor: passportTheme.paperDark }]}>
-                                    <Ionicons name="airplane" size={48} color={passportTheme.textSecondary} style={styles.bioIcon1} />
-                                    <Ionicons name="globe-outline" size={48} color={passportTheme.textSecondary} style={styles.bioIcon2} />
-                                    <Text style={[styles.bioText, { color: colorScheme === 'dark' ? '#d4c5b0' : passportTheme.passportLeather }]}>
-                                        "{displayProfile.bio}"
-                                    </Text>
-                                </View>
-                            )}
-
-
-                        </View>
-                    </View>
-                </View>
-
-                {/* Stats Section */}
-                <View style={styles.statsSection}>
-                    <View style={styles.statsGrid}>
-                        {/* Countries */}
-                        <View style={[styles.statCard, { backgroundColor: passportTheme.parchment, borderColor: colorScheme === 'dark' ? passportTheme.border : '#e6e0d4' }]}>
-                            <Ionicons name="globe-outline" size={28} color={passportTheme.goldDim} style={styles.statIconBg} />
-                            <Ionicons name="globe-outline" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={styles.statIcon} />
-                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.countriesVisited || 0}</Text>
-                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>{t('profile.countries')}</Text>
-                        </View>
-
-                        {/* Distance */}
-                        <View style={[styles.statCard, { backgroundColor: passportTheme.parchment, borderColor: colorScheme === 'dark' ? passportTheme.border : '#e6e0d4' }]}>
-                            <Ionicons name="airplane" size={28} color={passportTheme.goldDim} style={[styles.statIconBg, { transform: [{ rotate: '30deg' }] }]} />
-                            <Ionicons name="airplane" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={[styles.statIcon, { transform: [{ rotate: '30deg' }] }]} />
-                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{formatDistance(stats?.totalDistanceKm || 0)}</Text>
-                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>{t('profile.kilometers')}</Text>
-                        </View>
-
-                        {/* Days */}
-                        <View style={[styles.statCard, { backgroundColor: passportTheme.parchment, borderColor: colorScheme === 'dark' ? passportTheme.border : '#e6e0d4' }]}>
-                            <Ionicons name="calendar-outline" size={28} color={passportTheme.goldDim} style={styles.statIconBg} />
-                            <Ionicons name="calendar-outline" size={28} color={colorScheme === 'dark' ? passportTheme.gold : passportTheme.goldDim} style={[styles.statIcon, { transform: [{ rotate: '2deg' }] }]} />
-                            <Text style={[styles.statNumber, { color: passportTheme.text }]}>{stats?.travelDays || 0}</Text>
-                            <Text style={[styles.statLabel, { color: passportTheme.textSecondary }]}>{t('profile.days')}</Text>
-                        </View>
-                    </View>
+                    <BoardingPassCard
+                        avatarUrl={displayProfile.avatar_url}
+                        fullName={displayProfile.full_name || t('profile.defaultUser')}
+                        username={displayProfile.username || 'user'}
+                        bio={displayProfile.bio}
+                        countriesVisited={stats?.countriesVisited || 0}
+                        totalDistanceKm={stats?.totalDistanceKm || 0}
+                        travelDays={stats?.travelDays || 0}
+                        t={t}
+                    />
                 </View>
 
                 {/* Travel Map Section */}
