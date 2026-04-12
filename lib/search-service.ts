@@ -1,3 +1,4 @@
+import { getBlockedUsers } from './block';
 import { supabase } from './supabase';
 import type {
     RecommendedPlace,
@@ -47,6 +48,8 @@ export class SearchService {
      */
     static async searchPosts(query: string, filters?: SearchFilters) {
         try {
+            const blockedUsers = await getBlockedUsers();
+            
             let queryBuilder = supabase
                 .from('posts')
                 .select(`
@@ -58,6 +61,10 @@ export class SearchService {
             avatar_url
           )
         `);
+
+            if (blockedUsers.length > 0) {
+                queryBuilder = queryBuilder.not('user_id', 'in', `(${blockedUsers.join(',')})`);
+            }
 
             // Search by location
             if (filters?.location || query) {
@@ -119,11 +126,18 @@ export class SearchService {
      */
     static async searchUsers(query: string) {
         try {
-            const { data, error } = await supabase
+            const blockedUsers = await getBlockedUsers();
+            
+            let queryBuilder = supabase
                 .from('profiles')
                 .select('*')
-                .or(`username.ilike.%${escapeIlike(query)}%,full_name.ilike.%${escapeIlike(query)}%`)
-                .limit(20);
+                .or(`username.ilike.%${escapeIlike(query)}%,full_name.ilike.%${escapeIlike(query)}%`);
+
+            if (blockedUsers.length > 0) {
+                queryBuilder = queryBuilder.not('id', 'in', `(${blockedUsers.join(',')})`);
+            }
+
+            const { data, error } = await queryBuilder.limit(20);
 
             if (error) throw error;
             return data || [];

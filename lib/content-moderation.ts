@@ -1,14 +1,4 @@
-/**
- * Content Moderation — Direct OpenAI Moderation API
- * Uses the free omni-moderation-latest model for text + image screening.
- * No Edge Function needed — calls OpenAI directly from the client.
- */
-
-const OPENAI_MODERATION_URL = 'https://api.openai.com/v1/moderations';
-
-function getApiKey(): string {
-    return process.env.EXPO_PUBLIC_OPENAI_API_KEY || '';
-}
+import { supabase } from './supabase';
 
 export interface ModerationResult {
     approved: boolean;
@@ -16,69 +6,31 @@ export interface ModerationResult {
     error?: string;
 }
 
-// Human-readable labels for moderation categories
-const CATEGORY_LABELS: Record<string, string> = {
-    'sexual': 'Sexual Content',
-    'sexual/minors': 'Sexual Content (Minors)',
-    'harassment': 'Harassment',
-    'harassment/threatening': 'Threatening Harassment',
-    'hate': 'Hate Speech',
-    'hate/threatening': 'Threatening Hate Speech',
-    'illicit': 'Illicit Content',
-    'illicit/violent': 'Violent Illicit Content',
-    'self-harm': 'Self-Harm',
-    'self-harm/intent': 'Self-Harm Intent',
-    'self-harm/instructions': 'Self-Harm Instructions',
-    'violence': 'Violence',
-    'violence/graphic': 'Graphic Violence',
-};
-
 /**
- * Extract flagged category names from the API response
- */
-function getFlaggedCategories(categories: Record<string, boolean>): string[] {
-    return Object.entries(categories)
-        .filter(([_, flagged]) => flagged)
-        .map(([category]) => CATEGORY_LABELS[category] || category);
-}
-
-/**
- * Moderate text content (post titles, content, comments)
+ * Moderate text content (post titles, content, comments) via Edge Function
  */
 export async function moderateText(text: string): Promise<ModerationResult> {
-    try {
-        const apiKey = getApiKey();
-        if (!apiKey || !text || text.trim().length === 0) {
-            return { approved: true, flaggedCategories: [] };
-        }
+    if (!text || text.trim().length === 0) {
+        return { approved: true, flaggedCategories: [] };
+    }
 
-        const response = await fetch(OPENAI_MODERATION_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'omni-moderation-latest',
-                input: [{ type: 'text', text }],
-            }),
+    try {
+        const { data, error } = await supabase.functions.invoke<{
+            approved: boolean;
+            flaggedCategories: string[];
+            error?: string;
+        }>('moderate-content', {
+            body: { text },
         });
 
-        if (!response.ok) {
-            console.warn('OpenAI Moderation API error:', response.status);
+        if (error) {
+            console.warn('Edge Function invocation error:', error);
             return { approved: true, flaggedCategories: [] }; // Fail-open
         }
 
-        const data = await response.json();
-        const result = data.results?.[0];
-
-        if (!result) {
-            return { approved: true, flaggedCategories: [] };
-        }
-
         return {
-            approved: !result.flagged,
-            flaggedCategories: result.flagged ? getFlaggedCategories(result.categories) : [],
+            approved: data?.approved ?? true,
+            flaggedCategories: data?.flaggedCategories || [],
         };
     } catch (error) {
         console.warn('Content moderation error:', error);
@@ -87,59 +39,30 @@ export async function moderateText(text: string): Promise<ModerationResult> {
 }
 
 /**
- * Moderate image content via OpenAI omni-moderation model
+ * Moderate image content via Edge Function
  */
 export async function moderateImages(imageUrls: string[]): Promise<ModerationResult> {
+    if (!imageUrls || imageUrls.length === 0) {
+        return { approved: true, flaggedCategories: [] };
+    }
+
     try {
-        const apiKey = getApiKey();
-        if (!apiKey || !imageUrls || imageUrls.length === 0) {
-            return { approved: true, flaggedCategories: [] };
-        }
+        const { data, error } = await supabase.functions.invoke<{
+            approved: boolean;
+            flaggedCategories: string[];
+            error?: string;
+        }>('moderate-content', {
+            body: { imageUrls },
+        });
 
-        const allFlagged: string[] = [];
-        let anyFlagged = false;
-
-        // Check each image individually
-        for (const url of imageUrls) {
-            try {
-                const response = await fetch(OPENAI_MODERATION_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        model: 'omni-moderation-latest',
-                        input: [{ type: 'image_url', image_url: { url } }],
-                    }),
-                });
-
-                if (!response.ok) {
-                    console.warn('Image moderation API error:', response.status);
-                    continue;
-                }
-
-                const data = await response.json();
-                const result = data.results?.[0];
-
-                if (result?.flagged) {
-                    anyFlagged = true;
-                    const categories = getFlaggedCategories(result.categories);
-                    for (const cat of categories) {
-                        if (!allFlagged.includes(cat)) {
-                            allFlagged.push(cat);
-                        }
-                    }
-                }
-            } catch {
-                // Skip individual image errors — don't block the whole post
-                continue;
-            }
+        if (error) {
+            console.warn('Edge Function invocation error:', error);
+            return { approved: true, flaggedCategories: [] }; // Fail-open
         }
 
         return {
-            approved: !anyFlagged,
-            flaggedCategories: allFlagged,
+            approved: data?.approved ?? true,
+            flaggedCategories: data?.flaggedCategories || [],
         };
     } catch (error) {
         console.warn('Image moderation error:', error);
@@ -148,28 +71,36 @@ export async function moderateImages(imageUrls: string[]): Promise<ModerationRes
 }
 
 /**
- * Full moderation check for a post (text + images in parallel)
+ * Full moderation check for a post (text + images) via Edge Function
  */
 export async function moderatePost(
     title: string,
     content: string,
     imageUrls?: string[]
 ): Promise<ModerationResult> {
+    const text = [title, content].filter(Boolean).join('\n\n');
+    
+    if (!text && (!imageUrls || imageUrls.length === 0)) {
+        return { approved: true, flaggedCategories: [] };
+    }
+
     try {
-        const fullText = [title, content].filter(Boolean).join('\n\n');
+        const { data, error } = await supabase.functions.invoke<{
+            approved: boolean;
+            flaggedCategories: string[];
+            error?: string;
+        }>('moderate-content', {
+            body: { text, imageUrls },
+        });
 
-        const [textResult, imageResult] = await Promise.all([
-            fullText ? moderateText(fullText) : Promise.resolve({ approved: true, flaggedCategories: [] } as ModerationResult),
-            imageUrls && imageUrls.length > 0
-                ? moderateImages(imageUrls)
-                : Promise.resolve({ approved: true, flaggedCategories: [] } as ModerationResult),
-        ]);
-
-        const uniqueCategories = [...new Set([...textResult.flaggedCategories, ...imageResult.flaggedCategories])];
+        if (error) {
+            console.warn('Edge Function invocation error:', error);
+            return { approved: true, flaggedCategories: [] }; // Fail-open
+        }
 
         return {
-            approved: textResult.approved && imageResult.approved,
-            flaggedCategories: uniqueCategories,
+            approved: data?.approved ?? true,
+            flaggedCategories: data?.flaggedCategories || [],
         };
     } catch (error) {
         console.warn('Post moderation error:', error);

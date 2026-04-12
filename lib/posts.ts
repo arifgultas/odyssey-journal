@@ -1,3 +1,4 @@
+import { getBlockedUsers } from './block';
 import { getModerationMessage, moderatePost, moderateText } from './content-moderation';
 import { deleteImage, uploadMultipleImages } from './image-upload';
 import { LIMITS, sanitizePostContent, sanitizePostTitle, sanitizeText } from './sanitize';
@@ -241,10 +242,11 @@ export async function fetchPosts(
     pageSize: number = 10
 ): Promise<Post[]> {
     try {
+        const blockedUsers = await getBlockedUsers();
         const from = page * pageSize;
         const to = from + pageSize - 1;
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('posts')
             .select(`
                 *,
@@ -254,7 +256,13 @@ export async function fetchPosts(
                     full_name,
                     avatar_url
                 )
-            `)
+            `);
+
+        if (blockedUsers.length > 0) {
+            query = query.not('user_id', 'in', `(${blockedUsers.join(',')})`);
+        }
+
+        const { data, error } = await query
             .order('created_at', { ascending: false })
             .range(from, to);
 

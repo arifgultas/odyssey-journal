@@ -10,10 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.odysseyjournal.app",
-      "config": {
-        "googleMapsApiKey": "AIzaSyCEGoGob9ZgEVb4-3xQRwyQAjs7IB3vujA"
-      }
+      "bundleIdentifier": "com.odysseyjournal.app"
     },
     "android": {
       "package": "com.odysseyjournal.app",
@@ -24,13 +21,7 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyCEGoGob9ZgEVb4-3xQRwyQAjs7IB3vujA"
-        }
-      }
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "output": "static",
@@ -42,21 +33,35 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/android-icon-foreground.png",
-          "imageWidth": 200,
+          "image": "./assets/images/icon.png",
+          "imageWidth": 280,
           "resizeMode": "contain",
           "backgroundColor": "#F5F1E8",
           "dark": {
             "backgroundColor": "#1A1410",
-            "image": "./assets/images/android-icon-foreground.png"
+            "image": "./assets/images/icon.png"
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#D4A574"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2da91dc9-2c6f-484d-a0cc-51877fbb46a6"
+      }
+    },
+    "owner": "arifgultas"
   }
 }

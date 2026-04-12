@@ -1,3 +1,4 @@
+import { getBlockedUsers } from './block';
 import { supabase } from './supabase';
 
 export type NotificationType = 'like' | 'comment' | 'follow';
@@ -60,9 +61,14 @@ export async function getNotifications(
                     images
                 )
             `)
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
-            .range(from, to);
+            .eq('user_id', user.id);
+
+        const blockedUsers = await getBlockedUsers();
+        if (blockedUsers.length > 0) {
+            query = query.not('actor_id', 'in', `(${blockedUsers.join(',')})`);
+        }
+
+        query = query.order('created_at', { ascending: false }).range(from, to);
 
         if (unreadOnly) {
             query = query.eq('read', false);
