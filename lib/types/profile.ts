@@ -1,3 +1,9 @@
+export interface NotificationPreferences {
+    likes: boolean;
+    comments: boolean;
+    follows: boolean;
+}
+
 export interface Profile {
     id: string;
     username: string | null;
@@ -6,6 +12,7 @@ export interface Profile {
     bio: string | null;
     website: string | null;
     updated_at: string | null;
+    notification_preferences?: NotificationPreferences;
 }
 
 export interface VisitedLocation {

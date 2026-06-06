@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { Post } from './posts';
+import { captureError } from './sentry';
 
 /**
  * Like a post
@@ -32,6 +34,7 @@ export async function likePost(postId: string): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error liking post:', error);
+        captureError(error as Error, { context: 'likePost', postId });
         throw error;
     }
 }
@@ -63,6 +66,7 @@ export async function unlikePost(postId: string): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error unliking post:', error);
+        captureError(error as Error, { context: 'unlikePost', postId });
         throw error;
     }
 }
@@ -96,6 +100,7 @@ export async function checkIfLiked(postId: string): Promise<boolean> {
         return !!data;
     } catch (error) {
         console.error('Error checking like status:', error);
+        captureError(error as Error, { context: 'checkIfLiked', postId });
         return false;
     }
 }
@@ -133,6 +138,7 @@ export async function bookmarkPost(postId: string, collectionId?: string): Promi
         return true;
     } catch (error) {
         console.error('Error bookmarking post:', error);
+        captureError(error as Error, { context: 'bookmarkPost', postId, collectionId });
         throw error;
     }
 }
@@ -164,6 +170,7 @@ export async function unbookmarkPost(postId: string): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error removing bookmark:', error);
+        captureError(error as Error, { context: 'unbookmarkPost', postId });
         throw error;
     }
 }
@@ -196,6 +203,7 @@ export async function checkIfBookmarked(postId: string): Promise<boolean> {
         return !!data;
     } catch (error) {
         console.error('Error checking bookmark status:', error);
+        captureError(error as Error, { context: 'checkIfBookmarked', postId });
         return false;
     }
 }
@@ -206,7 +214,7 @@ export async function checkIfBookmarked(postId: string): Promise<boolean> {
 export async function getBookmarkedPosts(
     page: number = 0,
     pageSize: number = 10
-): Promise<any[]> {
+): Promise<Post[]> {
     try {
         const {
             data: { user },
@@ -234,9 +242,17 @@ export async function getBookmarkedPosts(
             throw error;
         }
 
-        return data?.map((bookmark: any) => bookmark.posts) || [];
+        type BookmarkedPostRow = {
+            created_at: string;
+            posts: Post | null;
+        };
+
+        return (data as unknown as BookmarkedPostRow[])
+            ?.map((bookmark) => bookmark.posts)
+            .filter((post): post is Post => post !== null) || [];
     } catch (error) {
         console.error('Error fetching bookmarked posts:', error);
+        captureError(error as Error, { context: 'getBookmarkedPosts' });
         throw error;
     }
 }
@@ -258,6 +274,7 @@ export async function getLikeCount(postId: string): Promise<number> {
         return count || 0;
     } catch (error) {
         console.error('Error getting like count:', error);
+        captureError(error as Error, { context: 'getLikeCount', postId });
         return 0;
     }
 }

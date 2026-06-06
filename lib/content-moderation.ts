@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { t, hasTranslation } from './i18n';
 
 export interface ModerationResult {
     approved: boolean;
@@ -113,8 +114,14 @@ export async function moderatePost(
  */
 export function getModerationMessage(flaggedCategories: string[]): string {
     if (flaggedCategories.length === 0) {
-        return 'Your content was flagged for review. Please ensure it follows our community guidelines.';
+        return t('moderation.flaggedNoReasons');
     }
-    const reasons = flaggedCategories.join(', ');
-    return `Your content was flagged for: ${reasons}. Please ensure your post follows our community guidelines.`;
+    
+    const translatedCategories = flaggedCategories.map(cat => {
+        const key = `moderation.categories.${cat}`;
+        return hasTranslation(key) ? t(key) : cat;
+    });
+    
+    const reasons = translatedCategories.join(', ');
+    return t('moderation.flaggedWithReasons', { reasons });
 }

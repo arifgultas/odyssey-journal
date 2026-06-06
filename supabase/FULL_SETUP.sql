@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     is_admin BOOLEAN DEFAULT false,
     is_banned BOOLEAN DEFAULT false,
     banned_at TIMESTAMP WITH TIME ZONE,
+    notification_preferences JSONB DEFAULT '{"likes": true, "comments": true, "follows": true}'::jsonb,
     CONSTRAINT username_length CHECK (char_length(username) >= 3)
 );
 
@@ -298,6 +299,11 @@ CREATE POLICY "Users can create their own bookmarks"
     ON public.bookmarks FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+CREATE POLICY "Users can update their own bookmarks"
+    ON public.bookmarks FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
 CREATE POLICY "Users can delete their own bookmarks"
     ON public.bookmarks FOR DELETE
     USING (auth.uid() = user_id);
@@ -473,14 +479,26 @@ CREATE TRIGGER trigger_update_comments_count
 -- 5.5 Beğeni bildirimi oluştur
 CREATE OR REPLACE FUNCTION public.create_like_notification()
 RETURNS TRIGGER AS $$
+DECLARE
+    target_user_id uuid;
+    likes_enabled boolean := true;
 BEGIN
-    IF (SELECT user_id FROM public.posts WHERE id = NEW.post_id) != NEW.user_id THEN
+    target_user_id := (SELECT user_id FROM public.posts WHERE id = NEW.post_id);
+    
+    -- Check if notifications are enabled for likes in target user's preferences
+    SELECT COALESCE((notification_preferences->>'likes')::boolean, true) 
+    INTO likes_enabled 
+    FROM public.profiles 
+    WHERE id = target_user_id;
+
+    -- Don't create notification if user likes their own post or has disabled like notifications
+    IF target_user_id != NEW.user_id AND likes_enabled THEN
         INSERT INTO public.notifications (user_id, actor_id, type, post_id)
-        VALUES ((SELECT user_id FROM public.posts WHERE id = NEW.post_id), NEW.user_id, 'like', NEW.post_id);
+        VALUES (target_user_id, NEW.user_id, 'like', NEW.post_id);
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 DROP TRIGGER IF EXISTS trigger_like_notification ON public.likes;
 CREATE TRIGGER trigger_like_notification
@@ -490,14 +508,26 @@ CREATE TRIGGER trigger_like_notification
 -- 5.6 Yorum bildirimi oluştur
 CREATE OR REPLACE FUNCTION public.create_comment_notification()
 RETURNS TRIGGER AS $$
+DECLARE
+    target_user_id uuid;
+    comments_enabled boolean := true;
 BEGIN
-    IF (SELECT user_id FROM public.posts WHERE id = NEW.post_id) != NEW.user_id THEN
+    target_user_id := (SELECT user_id FROM public.posts WHERE id = NEW.post_id);
+
+    -- Check if notifications are enabled for comments in target user's preferences
+    SELECT COALESCE((notification_preferences->>'comments')::boolean, true) 
+    INTO comments_enabled 
+    FROM public.profiles 
+    WHERE id = target_user_id;
+
+    -- Don't create notification if user comments on their own post or has disabled comment notifications
+    IF target_user_id != NEW.user_id AND comments_enabled THEN
         INSERT INTO public.notifications (user_id, actor_id, type, post_id)
-        VALUES ((SELECT user_id FROM public.posts WHERE id = NEW.post_id), NEW.user_id, 'comment', NEW.post_id);
+        VALUES (target_user_id, NEW.user_id, 'comment', NEW.post_id);
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 DROP TRIGGER IF EXISTS trigger_comment_notification ON public.comments;
 CREATE TRIGGER trigger_comment_notification
@@ -507,12 +537,22 @@ CREATE TRIGGER trigger_comment_notification
 -- 5.7 Takip bildirimi oluştur
 CREATE OR REPLACE FUNCTION public.create_follow_notification()
 RETURNS TRIGGER AS $$
+DECLARE
+    follows_enabled boolean := true;
 BEGIN
-    INSERT INTO public.notifications (user_id, actor_id, type, post_id)
-    VALUES (NEW.following_id, NEW.follower_id, 'follow', NULL);
+    -- Check if notifications are enabled for follows in target user's preferences
+    SELECT COALESCE((notification_preferences->>'follows')::boolean, true) 
+    INTO follows_enabled 
+    FROM public.profiles 
+    WHERE id = NEW.following_id;
+
+    IF follows_enabled THEN
+        INSERT INTO public.notifications (user_id, actor_id, type, post_id)
+        VALUES (NEW.following_id, NEW.follower_id, 'follow', NULL);
+    END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 DROP TRIGGER IF EXISTS trigger_follow_notification ON public.follows;
 CREATE TRIGGER trigger_follow_notification
@@ -932,6 +972,103 @@ CREATE POLICY "Collection covers are publicly accessible" ON storage.objects FOR
 CREATE POLICY "Users can upload collection covers" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'collection-covers' AND auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Users can update collection covers" ON storage.objects FOR UPDATE USING (bucket_id = 'collection-covers' AND auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Users can delete collection covers" ON storage.objects FOR DELETE USING (bucket_id = 'collection-covers' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+
+-- ================================================================
+-- BÖLÜM 10: PERFORMANCE IMPROVEMENTS FUNCTIONS
+-- ================================================================
+
+-- 1. Popular Destinations
+CREATE OR REPLACE FUNCTION public.get_popular_destinations(p_limit int DEFAULT 10)
+RETURNS TABLE (
+    location_name text,
+    latitude double precision,
+    longitude double precision,
+    post_count bigint,
+    image_url text
+) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH ranked_posts AS (
+        SELECT 
+            p.location_name,
+            p.latitude,
+            p.longitude,
+            p.images[1] as first_image,
+            ROW_NUMBER() OVER (PARTITION BY p.location_name ORDER BY p.created_at DESC) as rn
+        FROM public.posts p
+        WHERE p.location_name IS NOT NULL
+    )
+    SELECT 
+        p.location_name,
+        MIN(p.latitude) as latitude,
+        MIN(p.longitude) as longitude,
+        COUNT(*) as post_count,
+        (SELECT rp.first_image FROM ranked_posts rp WHERE rp.location_name = p.location_name AND rp.rn = 1) as image_url
+    FROM public.posts p
+    WHERE p.location_name IS NOT NULL
+    GROUP BY p.location_name
+    ORDER BY post_count DESC
+    LIMIT p_limit;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_popular_destinations(int) TO authenticated;
+
+-- 2. Trending Locations (Son 7 gün içinde trend skoruna göre)
+CREATE OR REPLACE FUNCTION public.get_trending_locations(p_limit int DEFAULT 10)
+RETURNS TABLE (
+    location_name text,
+    latitude double precision,
+    longitude double precision,
+    post_count bigint,
+    recent_post_count bigint,
+    trend_score bigint,
+    image_url text
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH post_scores AS (
+        SELECT 
+            p.location_name,
+            p.latitude,
+            p.longitude,
+            p.created_at,
+            p.images[1] as first_image,
+            GREATEST(7 - EXTRACT(DAY FROM (now() - p.created_at)), 1)::bigint as score
+        FROM public.posts p
+        WHERE p.location_name IS NOT NULL
+          AND p.created_at >= now() - INTERVAL '7 days'
+    ),
+    ranked_posts AS (
+        SELECT 
+            ps.location_name,
+            ps.first_image,
+            ROW_NUMBER() OVER (PARTITION BY ps.location_name ORDER BY ps.created_at DESC) as rn
+        FROM post_scores ps
+    )
+    SELECT 
+        ps.location_name,
+        MIN(ps.latitude) as latitude,
+        MIN(ps.longitude) as longitude,
+        (SELECT COUNT(*) FROM public.posts p2 WHERE p2.location_name = ps.location_name)::bigint as post_count,
+        COUNT(*)::bigint as recent_post_count,
+        SUM(ps.score)::bigint as trend_score,
+        (SELECT rp.first_image FROM ranked_posts rp WHERE rp.location_name = ps.location_name AND rp.rn = 1) as image_url
+    FROM post_scores ps
+    GROUP BY ps.location_name
+    ORDER BY trend_score DESC
+    LIMIT p_limit;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_trending_locations(int) TO authenticated;
 
 
 -- ================================================================

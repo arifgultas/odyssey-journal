@@ -1,5 +1,6 @@
 import { EditProfileModal } from '@/components/edit-profile-modal';
 import { LanguageSelectorModal } from '@/components/language-selector-modal';
+import { ChangePasswordModal } from '@/components/change-password-modal';
 import { ThemedView } from '@/components/themed-view';
 import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
@@ -13,6 +14,7 @@ import { removePushToken } from '@/lib/push-notifications';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -67,6 +69,7 @@ export default function SettingsScreen() {
 
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
+    const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
     const [isUserAdmin, setIsUserAdmin] = useState(false);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
@@ -137,6 +140,32 @@ export default function SettingsScreen() {
                 },
             ]
         );
+    };
+
+    const handleTogglePreference = async (key: 'likes' | 'comments' | 'follows', currentValue: boolean) => {
+        if (!profile) return;
+
+        const currentPrefs = profile.notification_preferences || { likes: true, comments: true, follows: true };
+        const newPrefs = {
+            ...currentPrefs,
+            [key]: !currentValue
+        };
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    notification_preferences: newPrefs,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', profile.id);
+
+            if (error) throw error;
+            refetchProfile();
+        } catch (error) {
+            console.error('Error updating notification preferences:', error);
+            Alert.alert(t('common.error') || 'Hata', 'Tercihler güncellenirken bir hata oluştu.');
+        }
     };
 
     const handleDownloadData = async () => {
@@ -345,6 +374,67 @@ export default function SettingsScreen() {
                     </View>
                 </Animated.View>
 
+                {/* Notification Preferences Section */}
+                <Animated.View
+                    entering={FadeInDown.delay(320).duration(400)}
+                    style={[styles.sectionCard, { backgroundColor: colors.cardBg, borderColor: `${colors.accent}99` }]}
+                >
+                    <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
+                        <Ionicons name="notifications-outline" size={20} color={colors.accent} />
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.notificationPreferences') || 'BİLDİRİM TERCİHLERİ'}</Text>
+                    </View>
+                    <View style={styles.sectionContent}>
+                        {(() => {
+                            const prefs = profile?.notification_preferences || { likes: true, comments: true, follows: true };
+                            return (
+                                <>
+                                    <View style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: Spacing.sm }]}>
+                                        <View style={styles.settingInfo}>
+                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.likeNotifications') || 'Beğeniler'}</Text>
+                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.likeNotificationsDesc') || 'Gönderileriniz beğenildiğinde bildirim alın'}</Text>
+                                        </View>
+                                        <Switch
+                                            value={prefs.likes}
+                                            onValueChange={() => handleTogglePreference('likes', prefs.likes)}
+                                            trackColor={{ false: `${colors.accentDark}30`, true: `${colors.accent}30` }}
+                                            thumbColor={prefs.likes ? colors.accent : colors.accentDark}
+                                            ios_backgroundColor={`${colors.accentDark}30`}
+                                        />
+                                    </View>
+
+                                    <View style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.sm }]}>
+                                        <View style={styles.settingInfo}>
+                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.commentNotifications') || 'Yorumlar'}</Text>
+                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.commentNotificationsDesc') || 'Gönderilerinize yorum yapıldığında bildirim alın'}</Text>
+                                        </View>
+                                        <Switch
+                                            value={prefs.comments}
+                                            onValueChange={() => handleTogglePreference('comments', prefs.comments)}
+                                            trackColor={{ false: `${colors.accentDark}30`, true: `${colors.accent}30` }}
+                                            thumbColor={prefs.comments ? colors.accent : colors.accentDark}
+                                            ios_backgroundColor={`${colors.accentDark}30`}
+                                        />
+                                    </View>
+
+                                    <View style={[styles.settingRow, { paddingTop: Spacing.sm }]}>
+                                        <View style={styles.settingInfo}>
+                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.followNotifications') || 'Takipçiler'}</Text>
+                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.followNotificationsDesc') || 'Biri sizi takip etmeye başladığında bildirim alın'}</Text>
+                                        </View>
+                                        <Switch
+                                            value={prefs.follows}
+                                            onValueChange={() => handleTogglePreference('follows', prefs.follows)}
+                                            trackColor={{ false: `${colors.accentDark}30`, true: `${colors.accent}30` }}
+                                            thumbColor={prefs.follows ? colors.accent : colors.accentDark}
+                                            ios_backgroundColor={`${colors.accentDark}30`}
+                                        />
+                                    </View>
+                                </>
+                            );
+                        })()}
+                    </View>
+                </Animated.View>
+
                 {/* Admin Panel (only visible to admins) */}
                 {isUserAdmin && (
                     <Animated.View
@@ -353,7 +443,7 @@ export default function SettingsScreen() {
                     >
                         <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
                             <Ionicons name="shield-checkmark-outline" size={20} color={colors.accent} />
-                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>ADMIN</Text>
+                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.adminTitle') || 'ADMIN'}</Text>
                         </View>
                         <View style={styles.sectionContent}>
                             <TouchableOpacity
@@ -362,8 +452,8 @@ export default function SettingsScreen() {
                                 activeOpacity={0.7}
                             >
                                 <View style={styles.settingInfo}>
-                                    <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Moderation Panel</Text>
-                                    <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>Review reports, manage users</Text>
+                                    <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.moderationPanel') || 'Moderation Panel'}</Text>
+                                    <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.moderationPanelDesc') || 'Review reports, manage users'}</Text>
                                 </View>
                                 <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
                             </TouchableOpacity>
@@ -405,6 +495,18 @@ export default function SettingsScreen() {
                         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.account').toUpperCase()}</Text>
                     </View>
                     <View style={styles.sectionContent}>
+                        <TouchableOpacity
+                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
+                            onPress={() => setChangePasswordModalVisible(true)}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingInfo}>
+                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.changePassword') || 'Şifre Değiştir'}</Text>
+                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.changePasswordDesc') || 'Hesap şifrenizi güncelleyin'}</Text>
+                            </View>
+                            <Ionicons name="key-outline" size={22} color={colors.accent} />
+                        </TouchableOpacity>
+
                         <TouchableOpacity
                             style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
                             onPress={handleDownloadData}
@@ -453,7 +555,7 @@ export default function SettingsScreen() {
 
                     {/* Version Info */}
                     <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-                        V. 1.0.0 • Build 2026
+                        V. {Constants.expoConfig?.version || '1.0.0'} • Build {Constants.expoConfig?.android?.versionCode || Constants.expoConfig?.ios?.buildNumber || '1'}
                     </Text>
                 </Animated.View>
             </ScrollView>
@@ -470,6 +572,12 @@ export default function SettingsScreen() {
             <LanguageSelectorModal
                 visible={languageModalVisible}
                 onClose={() => setLanguageModalVisible(false)}
+            />
+
+            {/* Change Password Modal */}
+            <ChangePasswordModal
+                visible={changePasswordModalVisible}
+                onClose={() => setChangePasswordModalVisible(false)}
             />
         </View>
     );

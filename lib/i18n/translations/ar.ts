@@ -402,6 +402,9 @@ export default {
         legal: 'القانون والمجتمع',
         communityGuidelines: 'إرشادات المجتمع',
         communityGuidelinesDesc: 'قواعد للحفاظ على مجتمعنا آمنًا',
+        adminTitle: 'ADMIN',
+        moderationPanel: 'Moderation Panel',
+        moderationPanelDesc: 'Review reports, manage users',
     },
     errors: {
         generic: 'حدث خطأ ما',
@@ -411,6 +414,12 @@ export default {
         notFound: 'غير موجود',
         unauthorized: 'غير مصرح',
         serverError: 'خطأ في الخادم',
+        boundaryTitle: 'Our Compass is Lost!',
+        boundarySubtitle: 'An unexpected error occurred. We are working to get back on track.',
+        boundaryErrorDetails: 'Error Details',
+        boundaryRetry: 'Restart App',
+        boundaryShowDetails: 'Show Error Details',
+        boundaryHideDetails: 'Hide Error Details',
     },
     time: {
         now: 'الآن',
@@ -558,5 +567,23 @@ export default {
         enforcementTitle: 'التطبيق',
         enforcementDesc: 'نحن نراجع المحتوى والحسابات المُبلّغ عنها. قد يؤدي انتهاك هذه الإرشادات إلى إزالة المحتوى أو تقييد الوصول أو حذف الحساب نهائياً دون إنذار.',
         thankYou: 'شكراً لمساعدتك في جعل Odyssey Journal مكاناً موثوقاً للمسافرين!'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: 'Your content was flagged for review. Please ensure it follows our community guidelines.',
+        flaggedWithReasons: 'Your content was flagged for: {{reasons}}. Please ensure your post follows our community guidelines.',
+        categories: {
+            harassment: 'harassment',
+            'harassment/threatening': 'harassment/threatening',
+            hate: 'hate',
+            'hate/threatening': 'hate/threatening',
+            'self-harm': 'self-harm',
+            'self-harm/intent': 'self-harm/intent',
+            'self-harm/instructions': 'self-harm/instructions',
+            sexual: 'sexual',
+            'sexual/minors': 'sexual/minors',
+            violence: 'violence',
+            'violence/graphic': 'violence/graphic'
+        }
     }
 };

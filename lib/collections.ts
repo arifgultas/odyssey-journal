@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { Post } from './posts';
+import { captureError } from './sentry';
 
 // Collection type
 export interface Collection {
@@ -60,6 +62,7 @@ export async function createCollection(data: CreateCollectionData): Promise<Coll
         return collection;
     } catch (error) {
         console.error('Error creating collection:', error);
+        captureError(error as Error, { context: 'createCollection', data });
         throw error;
     }
 }
@@ -96,6 +99,7 @@ export async function updateCollection(
         return collection;
     } catch (error) {
         console.error('Error updating collection:', error);
+        captureError(error as Error, { context: 'updateCollection', collectionId, data });
         throw error;
     }
 }
@@ -134,6 +138,7 @@ export async function deleteCollection(collectionId: string): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error deleting collection:', error);
+        captureError(error as Error, { context: 'deleteCollection', collectionId });
         throw error;
     }
 }
@@ -165,6 +170,7 @@ export async function getCollections(): Promise<Collection[]> {
         return data || [];
     } catch (error) {
         console.error('Error fetching collections:', error);
+        captureError(error as Error, { context: 'getCollections' });
         throw error;
     }
 }
@@ -197,6 +203,7 @@ export async function getCollectionById(collectionId: string): Promise<Collectio
         return data;
     } catch (error) {
         console.error('Error fetching collection:', error);
+        captureError(error as Error, { context: 'getCollectionById', collectionId });
         throw error;
     }
 }
@@ -208,7 +215,7 @@ export async function getCollectionPosts(
     collectionId: string,
     page: number = 0,
     pageSize: number = 20
-): Promise<any[]> {
+): Promise<Post[]> {
     try {
         const {
             data: { user },
@@ -237,9 +244,17 @@ export async function getCollectionPosts(
             throw error;
         }
 
-        return data?.map((bookmark: any) => bookmark.posts) || [];
+        type BookmarkedPostRow = {
+            created_at: string;
+            posts: Post | null;
+        };
+
+        return (data as unknown as BookmarkedPostRow[])
+            ?.map((bookmark) => bookmark.posts)
+            .filter((post): post is Post => post !== null) || [];
     } catch (error) {
         console.error('Error fetching collection posts:', error);
+        captureError(error as Error, { context: 'getCollectionPosts', collectionId });
         throw error;
     }
 }
@@ -274,6 +289,7 @@ export async function addPostToCollection(
         return true;
     } catch (error) {
         console.error('Error adding post to collection:', error);
+        captureError(error as Error, { context: 'addPostToCollection', postId, collectionId });
         throw error;
     }
 }
@@ -305,6 +321,7 @@ export async function removePostFromCollection(postId: string): Promise<boolean>
         return true;
     } catch (error) {
         console.error('Error removing post from collection:', error);
+        captureError(error as Error, { context: 'removePostFromCollection', postId });
         throw error;
     }
 }
@@ -341,6 +358,7 @@ export async function getCollectionFirstImage(collectionId: string): Promise<str
         return images?.[0] || null;
     } catch (error) {
         console.error('Error fetching collection first image:', error);
+        captureError(error as Error, { context: 'getCollectionFirstImage', collectionId });
         return null;
     }
 }
@@ -395,6 +413,7 @@ export async function uploadCollectionCover(
         return urlData.publicUrl;
     } catch (error) {
         console.error('Error uploading collection cover:', error);
+        captureError(error as Error, { context: 'uploadCollectionCover', collectionId, imageUri });
         throw error;
     }
 }

@@ -401,6 +401,9 @@ export default {
         legal: '법률 및 커뮤니티',
         communityGuidelines: '커뮤니티 가이드라인',
         communityGuidelinesDesc: '커뮤니티를 안전하게 유지하기 위한 규칙',
+        adminTitle: '관리자',
+        moderationPanel: '중재 패널',
+        moderationPanelDesc: '신고 검토 및 사용자 관리',
     },
     errors: {
         generic: '문제가 발생했습니다',
@@ -410,6 +413,12 @@ export default {
         notFound: '찾을 수 없음',
         unauthorized: '권한 없음',
         serverError: '서버 오류',
+        boundaryTitle: '나침반을 잃어버렸습니다!',
+        boundarySubtitle: '예기치 않은 오류가 발생했습니다. 신속히 복구하기 위해 노력하고 있습니다.',
+        boundaryErrorDetails: '오류 상세 정보',
+        boundaryRetry: '앱 재시작',
+        boundaryShowDetails: '오류 상세 보기',
+        boundaryHideDetails: '오류 상세 숨기기',
     },
     time: {
         now: '지금',
@@ -557,5 +566,23 @@ export default {
         enforcementTitle: '제재 조치',
         enforcementDesc: '신고된 콘텐츠와 계정을 검토합니다. 이러한 가이드라인을 위반하면 경고 없이 콘텐츠 삭제, 액세스 제한 또는 계정 영구 삭제가 발생할 수 있습니다.',
         thankYou: 'Odyssey Journal을 여행자들을 위한 멋진 공간으로 만드는 데 도움을 주셔서 감사합니다!'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: '콘텐츠가 검토를 위해 플래그되었습니다. 커뮤니티 가이드라인을 준수하는지 확인해 주세요.',
+        flaggedWithReasons: '콘텐츠가 다음 사유로 인해 플래그되었습니다: {{reasons}}. 게시물이 커뮤니티 가이드라인을 준수하는지 확인해 주세요.',
+        categories: {
+            harassment: '괴롭힘',
+            'harassment/threatening': '협박성 괴롭힘',
+            hate: '증오 발언',
+            'hate/threatening': '협박성 증오 발언',
+            'self-harm': '자해',
+            'self-harm/intent': '자해 의도',
+            'self-harm/instructions': '자해 방법 지시',
+            sexual: '성적 콘텐츠',
+            'sexual/minors': '미성년자 관련 성적 콘텐츠',
+            violence: '폭력',
+            'violence/graphic': '사실적 폭력 묘사'
+        }
     }
 };

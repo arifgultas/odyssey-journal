@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { Post } from './posts';
+import { captureError } from './sentry';
 
 export interface UserProfile {
     id: string;
@@ -50,6 +52,7 @@ export async function followUser(userId: string): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error following user:', error);
+        captureError(error as Error, { context: 'followUser', userId });
         throw error;
     }
 }
@@ -81,6 +84,7 @@ export async function unfollowUser(userId: string): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error unfollowing user:', error);
+        captureError(error as Error, { context: 'unfollowUser', userId });
         throw error;
     }
 }
@@ -113,6 +117,7 @@ export async function checkIfFollowing(userId: string): Promise<boolean> {
         return !!data;
     } catch (error) {
         console.error('Error checking follow status:', error);
+        captureError(error as Error, { context: 'checkIfFollowing', userId });
         return false;
     }
 }
@@ -154,6 +159,7 @@ export async function getFollowers(
         return data?.map((follow: any) => follow.profiles) || [];
     } catch (error) {
         console.error('Error fetching followers:', error);
+        captureError(error as Error, { context: 'getFollowers', userId });
         throw error;
     }
 }
@@ -195,6 +201,7 @@ export async function getFollowing(
         return data?.map((follow: any) => follow.profiles) || [];
     } catch (error) {
         console.error('Error fetching following:', error);
+        captureError(error as Error, { context: 'getFollowing', userId });
         throw error;
     }
 }
@@ -235,6 +242,7 @@ export async function getFollowSuggestions(limit: number = 10): Promise<UserProf
         return data || [];
     } catch (error) {
         console.error('Error fetching follow suggestions:', error);
+        captureError(error as Error, { context: 'getFollowSuggestions' });
         throw error;
     }
 }
@@ -257,6 +265,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
         return data;
     } catch (error) {
         console.error('Error fetching user profile:', error);
+        captureError(error as Error, { context: 'getUserProfile', userId });
         return null;
     }
 }
@@ -278,6 +287,7 @@ export async function getCurrentUserProfile(): Promise<UserProfile | null> {
         return getUserProfile(user.id);
     } catch (error) {
         console.error('Error fetching current user profile:', error);
+        captureError(error as Error, { context: 'getCurrentUserProfile' });
         return null;
     }
 }
@@ -310,6 +320,7 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
         return data;
     } catch (error) {
         console.error('Error updating user profile:', error);
+        captureError(error as Error, { context: 'updateUserProfile', updates });
         throw error;
     }
 }
@@ -320,7 +331,7 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
 export async function getFollowingFeed(
     page: number = 0,
     pageSize: number = 10
-): Promise<any[]> {
+): Promise<Post[]> {
     try {
         const {
             data: { user },
@@ -358,9 +369,10 @@ export async function getFollowingFeed(
             throw error;
         }
 
-        return data || [];
+        return (data as unknown as Post[]) || [];
     } catch (error) {
         console.error('Error fetching following feed:', error);
+        captureError(error as Error, { context: 'getFollowingFeed' });
         throw error;
     }
 }

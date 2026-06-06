@@ -401,6 +401,9 @@ export default {
         legal: 'RECHTLICHES & COMMUNITY',
         communityGuidelines: 'Community-Richtlinien',
         communityGuidelinesDesc: 'Regeln für eine sichere Community',
+        adminTitle: 'ADMIN',
+        moderationPanel: 'Moderationspanel',
+        moderationPanelDesc: 'Berichte prüfen, Benutzer verwalten',
     },
     errors: {
         generic: 'Etwas ist schief gelaufen',
@@ -410,6 +413,12 @@ export default {
         notFound: 'Nicht gefunden',
         unauthorized: 'Unbefugter Zugriff',
         serverError: 'Serverfehler',
+        boundaryTitle: 'Unser Kompass ist verloren gegangen!',
+        boundarySubtitle: 'Ein unerwarteter Fehler ist aufgetreten. Wir arbeiten daran, wieder auf Kurs zu kommen.',
+        boundaryErrorDetails: 'Fehlerdetails',
+        boundaryRetry: 'App neu starten',
+        boundaryShowDetails: 'Fehlerdetails anzeigen',
+        boundaryHideDetails: 'Fehlerdetails ausblenden',
     },
     time: {
         now: 'Jetzt',
@@ -562,5 +571,23 @@ export default {
         enforcementTitle: 'Durchsetzung',
         enforcementDesc: 'Wir überprüfen gemeldete Inhalte und Konten. Verstöße gegen diese Richtlinien können zur Entfernung von Inhalten, eingeschränktem Zugriff oder dauerhafter Löschung des Kontos ohne Vorwarnung führen.',
         thankYou: 'Danke, dass du uns hilfst, Odyssey Journal zu einem großartigen Ort für Reisende zu machen!'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: 'Ihre Inhalte wurden zur Überprüfung markiert. Bitte stellen Sie sicher, dass sie unseren Richtlinien entsprechen.',
+        flaggedWithReasons: 'Ihre Inhalte wurden aus folgenden Gründen markiert: {{reasons}}. Bitte stellen Sie sicher, dass Ihr Beitrag unseren Richtlinien entspricht.',
+        categories: {
+            harassment: 'Belästigung',
+            'harassment/threatening': 'bedrohliche Belästigung',
+            hate: 'Hassrede',
+            'hate/threatening': 'bedrohlicher Hass',
+            'self-harm': 'Selbstverletzung',
+            'self-harm/intent': 'Absicht zur Selbstverletzung',
+            'self-harm/instructions': 'Anleitung zur Selbstverletzung',
+            sexual: 'sexuelle Inhalte',
+            'sexual/minors': 'sexuelle Inhalte mit Minderjährigen',
+            violence: 'Gewalt',
+            'violence/graphic': 'anschauliche Gewalt'
+        }
     }
 };

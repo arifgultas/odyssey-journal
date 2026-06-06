@@ -9,6 +9,7 @@ import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
+import { getFollowingFeed } from '@/lib/follow';
 import { likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { getUnreadNotificationCount } from '@/lib/notifications';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
@@ -50,43 +51,61 @@ export default function HomeScreen() {
   const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
+  const [feedType, setFeedType] = useState<'public' | 'following'>('public');
+
   // Register for push notifications
   usePushNotifications(currentUserId ?? undefined);
 
   useEffect(() => {
     loadCurrentUser();
-    loadPosts(0);
   }, []);
 
-  // Poll for unread notification count every 15 seconds
   useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval> | null = null;
+    loadPosts(0, true);
+  }, [feedType]);
+
+  // Subscribe to real-time notification changes to update badge count
+  useEffect(() => {
+    if (!currentUserId) return;
+
     let isMounted = true;
 
-    const pollUnreadCount = async () => {
+    const updateCount = async () => {
       try {
         const count = await getUnreadNotificationCount();
         if (isMounted) {
           setUnreadNotificationCount(count);
         }
       } catch (error) {
-        console.error('Error polling unread count:', error);
+        console.error('Error fetching unread count:', error);
       }
     };
 
-    // Load immediately on mount
-    pollUnreadCount();
+    // Load initial count
+    updateCount();
 
-    // Poll every 30 seconds (lightweight HEAD-only count query)
-    intervalId = setInterval(pollUnreadCount, 30000);
+    // Subscribe to all event changes (INSERT, UPDATE, DELETE) on user's notifications
+    const channel = supabase
+      .channel(`unread-count-${currentUserId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${currentUserId}`,
+        },
+        () => {
+          updateCount();
+        }
+      )
+      .subscribe();
 
     return () => {
       isMounted = false;
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      supabase.removeChannel(channel);
     };
-  }, []);
+  }, [currentUserId]);
 
 
 
@@ -122,7 +141,9 @@ export default function HomeScreen() {
         setIsLoading(true);
       }
 
-      const newPosts = await fetchPosts(pageNum, 10);
+      const newPosts = feedType === 'public'
+        ? await fetchPosts(pageNum, 10)
+        : await getFollowingFeed(pageNum, 10);
 
       if (refresh || pageNum === 0) {
         setPosts(newPosts);
@@ -304,6 +325,48 @@ export default function HomeScreen() {
     );
   };
 
+  const renderFeedTabs = () => (
+    <View style={[
+      styles.tabsContainer,
+      {
+        backgroundColor: colorScheme === 'dark'
+          ? 'rgba(26, 20, 16, 0.95)'
+          : 'rgba(245, 241, 232, 0.95)',
+        borderBottomColor: `${theme.accent}22`,
+      }
+    ]}>
+      <TouchableOpacity
+        style={[
+          styles.tabButton,
+          feedType === 'public' && { borderBottomColor: theme.accent }
+        ]}
+        onPress={() => setFeedType('public')}
+      >
+        <Text style={[
+          styles.tabText,
+          feedType === 'public' ? { color: theme.accent } : { color: theme.textMuted }
+        ]}>
+          {t('home.publicFeed') || 'Herkese Açık'}
+        </Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={[
+          styles.tabButton,
+          feedType === 'following' && { borderBottomColor: theme.accent }
+        ]}
+        onPress={() => setFeedType('following')}
+      >
+        <Text style={[
+          styles.tabText,
+          feedType === 'following' ? { color: theme.accent } : { color: theme.textMuted }
+        ]}>
+          {t('home.followingFeed') || 'Takip Ettiklerim'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   const renderHeader = () => (
     <View style={[
       styles.header,
@@ -368,6 +431,7 @@ export default function HomeScreen() {
         <View style={[styles.mapTexture, { opacity: colorScheme === 'dark' ? 0.04 : 0.08 }]} />
 
         {renderHeader()}
+        {renderFeedTabs()}
 
         <View style={styles.listContent}>
           <PostCardSkeleton />
@@ -384,6 +448,7 @@ export default function HomeScreen() {
       <View style={[styles.mapTexture, { opacity: colorScheme === 'dark' ? 0.04 : 0.08 }]} />
 
       {renderHeader()}
+      {renderFeedTabs()}
 
       <FlatList
         data={posts}
@@ -539,5 +604,23 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '700',
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    height: 48,
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabText: {
+    fontSize: 12,
+    fontFamily: Typography.fonts.uiBold,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
 });

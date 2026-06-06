@@ -401,6 +401,9 @@ export default {
         legal: 'LÉGAL ET COMMUNAUTÉ',
         communityGuidelines: 'Règles de la communauté',
         communityGuidelinesDesc: 'Règles pour assurer la sécurité de notre communauté',
+        adminTitle: 'ADMIN',
+        moderationPanel: 'Panneau de Modération',
+        moderationPanelDesc: 'Examiner les rapports, gérer les utilisateurs',
     },
     errors: {
         generic: 'Une erreur s\'est produite',
@@ -410,6 +413,12 @@ export default {
         notFound: 'Non trouvé',
         unauthorized: 'Accès non autorisé',
         serverError: 'Erreur du serveur',
+        boundaryTitle: 'Notre boussole est perdue !',
+        boundarySubtitle: 'Une erreur inattendue est survenue. Nous travaillons à rétablir la situation.',
+        boundaryErrorDetails: 'Détails de l\'erreur',
+        boundaryRetry: 'Redémarrer l\'application',
+        boundaryShowDetails: 'Afficher les détails de l\'erreur',
+        boundaryHideDetails: 'Masquer les détails de l\'erreur',
     },
     time: {
         now: 'Maintenant',
@@ -562,5 +571,23 @@ export default {
         enforcementTitle: 'Application',
         enforcementDesc: 'Nous examinons le contenu et les comptes signalés. Violer ces règles peut entraîner la suppression du contenu, un accès restreint ou la suppression permanente du compte sans avertissement.',
         thankYou: 'Merci de nous aider à faire de Odyssey Journal un endroit merveilleux pour les voyageurs !'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: 'Votre contenu a été signalé pour examen. Veuillez vous assurer qu\'il respecte nos directives communautaires.',
+        flaggedWithReasons: 'Votre contenu a été signalé pour : {{reasons}}. Veuillez vous assurer qu\'il respecte nos directives communautaires.',
+        categories: {
+            harassment: 'harcèlement',
+            'harassment/threatening': 'harcèlement menaçant',
+            hate: 'discours de haine',
+            'hate/threatening': 'haine menaçante',
+            'self-harm': 'automutilation',
+            'self-harm/intent': 'intention d\'automutilation',
+            'self-harm/instructions': 'instructions d\'automutilation',
+            sexual: 'contenu sexuel',
+            'sexual/minors': 'contenu sexuel de mineurs',
+            violence: 'violence',
+            'violence/graphic': 'violence graphique'
+        }
     }
 };

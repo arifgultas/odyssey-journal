@@ -1,5 +1,7 @@
 import { getBlockedUsers } from './block';
 import { supabase } from './supabase';
+import { captureError } from './sentry';
+import { t } from './i18n';
 
 export type NotificationType = 'like' | 'comment' | 'follow';
 
@@ -18,6 +20,25 @@ export interface Notification {
     // Post info (from join)
     post_title?: string | null;
     post_images?: string[] | null;
+}
+
+interface RawNotification {
+    id: string;
+    user_id: string;
+    actor_id: string;
+    type: NotificationType;
+    post_id: string | null;
+    read: boolean;
+    created_at: string;
+    profiles: {
+        username: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+    } | null;
+    posts: {
+        title: string;
+        images: string[] | null;
+    } | null;
 }
 
 /**
@@ -81,7 +102,7 @@ export async function getNotifications(
         }
 
         // Flatten the nested data
-        return (data || []).map((notification: any) => ({
+        return ((data as unknown as RawNotification[]) || []).map((notification) => ({
             id: notification.id,
             user_id: notification.user_id,
             actor_id: notification.actor_id,
@@ -97,6 +118,7 @@ export async function getNotifications(
         }));
     } catch (error) {
         console.error('Error fetching notifications:', error);
+        captureError(error as Error, { context: 'getNotifications' });
         throw error;
     }
 }
@@ -128,6 +150,7 @@ export async function markNotificationAsRead(notificationId: string): Promise<bo
         return true;
     } catch (error) {
         console.error('Error marking notification as read:', error);
+        captureError(error as Error, { context: 'markNotificationAsRead', notificationId });
         throw error;
     }
 }
@@ -159,6 +182,7 @@ export async function markAllNotificationsAsRead(): Promise<boolean> {
         return true;
     } catch (error) {
         console.error('Error marking all notifications as read:', error);
+        captureError(error as Error, { context: 'markAllNotificationsAsRead' });
         throw error;
     }
 }
@@ -222,6 +246,7 @@ export async function deleteNotification(notificationId: string): Promise<boolea
         return true;
     } catch (error) {
         console.error('Error deleting notification:', error);
+        captureError(error as Error, { context: 'deleteNotification', notificationId });
         throw error;
     }
 }
@@ -263,19 +288,20 @@ export function subscribeToNotifications(
                     .single();
 
                 if (data) {
+                    const rawNotification = data as unknown as RawNotification;
                     const notification: Notification = {
-                        id: data.id,
-                        user_id: data.user_id,
-                        actor_id: data.actor_id,
-                        type: data.type,
-                        post_id: data.post_id,
-                        read: data.read,
-                        created_at: data.created_at,
-                        actor_username: (data as any).profiles?.username,
-                        actor_full_name: (data as any).profiles?.full_name,
-                        actor_avatar_url: (data as any).profiles?.avatar_url,
-                        post_title: (data as any).posts?.title,
-                        post_images: (data as any).posts?.images,
+                        id: rawNotification.id,
+                        user_id: rawNotification.user_id,
+                        actor_id: rawNotification.actor_id,
+                        type: rawNotification.type,
+                        post_id: rawNotification.post_id,
+                        read: rawNotification.read,
+                        created_at: rawNotification.created_at,
+                        actor_username: rawNotification.profiles?.username,
+                        actor_full_name: rawNotification.profiles?.full_name,
+                        actor_avatar_url: rawNotification.profiles?.avatar_url,
+                        post_title: rawNotification.posts?.title,
+                        post_images: rawNotification.posts?.images,
                     };
                     onNotification(notification);
                 }
@@ -292,16 +318,16 @@ export function subscribeToNotifications(
  * Get notification message text
  */
 export function getNotificationMessage(notification: Notification): string {
-    const actorName = notification.actor_full_name || notification.actor_username || 'Someone';
+    const actorName = notification.actor_full_name || notification.actor_username || t('notifications.someone');
 
     switch (notification.type) {
         case 'like':
-            return `${actorName} liked your post`;
+            return `${actorName} ${t('notifications.likedPost', { postTitle: notification.post_title || '' })}`;
         case 'comment':
-            return `${actorName} commented on your post`;
+            return `${actorName} ${t('notifications.commented', { postTitle: notification.post_title || '' })}`;
         case 'follow':
-            return `${actorName} started following you`;
+            return `${actorName} ${t('notifications.followed')}`;
         default:
-            return 'New notification';
+            return t('notifications.newNotification');
     }
 }

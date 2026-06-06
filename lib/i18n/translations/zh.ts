@@ -401,6 +401,9 @@ export default {
         legal: '法律与社区',
         communityGuidelines: '社区准则',
         communityGuidelinesDesc: '维护社区安全的准则',
+        adminTitle: '管理员',
+        moderationPanel: '审核面板',
+        moderationPanelDesc: '审查举报，管理用户',
     },
     errors: {
         generic: '出错了',
@@ -410,6 +413,12 @@ export default {
         notFound: '未找到',
         unauthorized: '未授权',
         serverError: '服务器错误',
+        boundaryTitle: '我们的指南针失效了！',
+        boundarySubtitle: '发生了意外错误。我们正在努力恢复正常。',
+        boundaryErrorDetails: '错误详情',
+        boundaryRetry: '重启应用',
+        boundaryShowDetails: '显示错误详情',
+        boundaryHideDetails: '隐藏错误详情',
     },
     time: {
         now: '刚刚',
@@ -557,5 +566,23 @@ export default {
         enforcementTitle: '违规处理',
         enforcementDesc: '我们会审查被举报的内容和帐户。违反这些准则可能会导致内容被删除、访问受限或帐户被永久删除，恕不另行通知。',
         thankYou: '感谢您帮助我们使 Odyssey Journal 成为旅行者的绝佳场所！'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: '您的内容已被标记以待审查。请确保它符合我们的社区准则。',
+        flaggedWithReasons: '您的内容因以下原因被标记: {{reasons}}。请确保您的帖子符合我们的社区准则。',
+        categories: {
+            harassment: '骚扰',
+            'harassment/threatening': '威胁性骚扰',
+            hate: '仇恨言论',
+            'hate/threatening': '威胁性仇恨言论',
+            'self-harm': '自残',
+            'self-harm/intent': '自残意图',
+            'self-harm/instructions': '自残指示',
+            sexual: '色情内容',
+            'sexual/minors': '未成年人色情内容',
+            violence: '暴力',
+            'violence/graphic': '血腥暴力画面'
+        }
     }
 };

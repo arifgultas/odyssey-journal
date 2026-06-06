@@ -1,8 +1,9 @@
 import { ThemedView } from '@/components/themed-view';
+import { mapStyleDark, mapStyleLight } from '@/constants/map-styles';
 import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { calculateMapCenter, calculateZoomDelta, fetchPostLocations, LocationCluster } from '@/lib/map-locations';
+import { calculateMapCenter, calculateZoomDelta, fetchPostsWithLocation, clusterLocations, LocationCluster } from '@/lib/map-locations';
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -13,7 +14,7 @@ import {
     Animated,
     Dimensions,
     FlatList,
-    Modal,
+    PanResponder,
     Platform,
     ScrollView,
     StyleSheet,
@@ -22,23 +23,13 @@ import {
     View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
-// react-native-maps requires a Development Build and is not compatible with Expo Go
-// To enable maps, create a development build and uncomment the import below
-// For now, we show a fallback UI with location list
-
-// Uncomment the following to enable maps in Development Build:
-// import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-
-// Placeholder - maps disabled for Expo Go compatibility
-let MapView: any = null;
-let Marker: any = null;
-let PROVIDER_GOOGLE: any = null;
-const mapsAvailable = false; // Set to true when using Development Build with react-native-maps
+const mapsAvailable = true; // Set to true when using Development Build with react-native-maps
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Design Colors
+// ─── Design Colors ──────────────────────────────────────────────────────
 const MapColors = {
     light: {
         background: '#F5F1E8',
@@ -68,7 +59,8 @@ const MapColors = {
     },
 };
 
-interface PostListModalProps {
+// ─── Bottom Sheet Post Preview ──────────────────────────────────────────
+interface BottomSheetProps {
     visible: boolean;
     cluster: LocationCluster | null;
     onClose: () => void;
@@ -76,13 +68,52 @@ interface PostListModalProps {
     theme: typeof MapColors.light;
 }
 
-// Post List Modal Component
-function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostListModalProps) {
+/**
+ * BottomSheetPreview — Marker'a tıklanınca alttan kayarak çıkan post önizleme paneli.
+ * PanResponder ile aşağı sürüklenerek kapatılabilir.
+ */
+function BottomSheetPreview({ visible, cluster, onClose, onPostPress, theme }: BottomSheetProps) {
     const { t } = useLanguage();
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+    const panY = useRef(new Animated.Value(0)).current;
+
+    // Drag-to-dismiss PanResponder
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => false,
+            onMoveShouldSetPanResponder: (_, gestureState) => gestureState.dy > 8,
+            onPanResponderMove: (_, gestureState) => {
+                if (gestureState.dy > 0) {
+                    panY.setValue(gestureState.dy);
+                }
+            },
+            onPanResponderRelease: (_, gestureState) => {
+                if (gestureState.dy > 80 || gestureState.vy > 0.5) {
+                    // Dismiss
+                    Animated.timing(slideAnim, {
+                        toValue: SCREEN_HEIGHT,
+                        duration: 250,
+                        useNativeDriver: true,
+                    }).start(() => {
+                        panY.setValue(0);
+                        onClose();
+                    });
+                } else {
+                    // Snap back
+                    Animated.spring(panY, {
+                        toValue: 0,
+                        useNativeDriver: true,
+                        tension: 100,
+                        friction: 10,
+                    }).start();
+                }
+            },
+        })
+    ).current;
 
     useEffect(() => {
         if (visible) {
+            panY.setValue(0);
             Animated.spring(slideAnim, {
                 toValue: 0,
                 useNativeDriver: true,
@@ -165,44 +196,121 @@ function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostLi
 
     if (!cluster) return null;
 
+    const isSinglePost = cluster.postCount === 1;
+    const singlePost = cluster.posts[0];
+
     return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="none"
-            statusBarTranslucent
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalOverlay}>
-                <TouchableOpacity style={styles.modalBackdrop} onPress={onClose} activeOpacity={1} />
-                <Animated.View
-                    style={[
-                        styles.modalContent,
-                        { backgroundColor: theme.background, transform: [{ translateY: slideAnim }] },
-                    ]}
-                >
-                    {/* Modal Header */}
-                    <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
-                        <View style={styles.modalHandle} />
-                        <View style={styles.modalTitleRow}>
-                            <View style={styles.modalTitleContainer}>
-                                <Ionicons name="location" size={24} color={theme.accent} />
-                                <View>
-                                    <Text style={[styles.modalTitle, { color: theme.text }]}>
-                                        {cluster.locationName || cluster.city || t('map.unknownLocation')}
-                                    </Text>
-                                    <Text style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
-                                        {t('map.postCount', { count: cluster.postCount })}
+        <View style={styles.bottomSheetOverlay} pointerEvents={visible ? 'auto' : 'none'}>
+            {/* Backdrop */}
+            {visible && (
+                <TouchableOpacity
+                    style={styles.bottomSheetBackdrop}
+                    onPress={onClose}
+                    activeOpacity={1}
+                />
+            )}
+
+            {/* Sheet */}
+            <Animated.View
+                {...panResponder.panHandlers}
+                style={[
+                    styles.bottomSheetContent,
+                    {
+                        backgroundColor: theme.background,
+                        transform: [
+                            { translateY: Animated.add(slideAnim, panY) },
+                        ],
+                    },
+                ]}
+            >
+                {/* Drag Handle */}
+                <View style={styles.bottomSheetHandleArea}>
+                    <View style={[styles.bottomSheetHandle, { backgroundColor: theme.border }]} />
+                </View>
+
+                {/* Header */}
+                <View style={[styles.bottomSheetHeader, { borderBottomColor: theme.border }]}>
+                    <View style={styles.bottomSheetTitleRow}>
+                        <View style={styles.bottomSheetTitleContainer}>
+                            <View style={[styles.bottomSheetIconCircle, { backgroundColor: `${theme.accent}20` }]}>
+                                <Ionicons name="location" size={22} color={theme.accent} />
+                            </View>
+                            <View>
+                                <Text style={[styles.bottomSheetTitle, { color: theme.text }]}>
+                                    {cluster.locationName || cluster.city || t('map.unknownLocation')}
+                                </Text>
+                                <Text style={[styles.bottomSheetSubtitle, { color: theme.textSecondary }]}>
+                                    {t('map.postCount', { count: cluster.postCount })}
+                                    {cluster.country ? ` • ${cluster.country}` : ''}
+                                </Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity
+                            onPress={onClose}
+                            style={[styles.bottomSheetCloseBtn, { backgroundColor: `${theme.border}80` }]}
+                        >
+                            <Ionicons name="close" size={18} color={theme.text} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {isSinglePost ? (
+                    <View style={styles.singlePostCard}>
+                        {singlePost.images?.[0] ? (
+                            <Image
+                                source={{ uri: singlePost.images[0] }}
+                                style={styles.singlePostImage}
+                                contentFit="cover"
+                            />
+                        ) : (
+                            <View style={[styles.singlePostPlaceholder, { backgroundColor: theme.border }]}>
+                                <Ionicons name="image-outline" size={48} color={theme.textSecondary} />
+                            </View>
+                        )}
+                        <View style={styles.singlePostContent}>
+                            <Text style={[styles.singlePostTitle, { color: theme.text }]} numberOfLines={2}>
+                                {singlePost.title || t('explore.untitledPost')}
+                            </Text>
+                            
+                            <View style={styles.singlePostMetaRow}>
+                                <View style={styles.singlePostAuthor}>
+                                    {singlePost.profiles?.avatar_url ? (
+                                        <Image
+                                            source={{ uri: singlePost.profiles.avatar_url }}
+                                            style={styles.singlePostAvatar}
+                                            contentFit="cover"
+                                        />
+                                    ) : (
+                                        <View style={[styles.singlePostAvatarPlaceholder, { backgroundColor: theme.border }]}>
+                                            <Ionicons name="person" size={12} color={theme.textSecondary} />
+                                        </View>
+                                    )}
+                                    <Text style={[styles.singlePostUsername, { color: theme.textSecondary }]}>
+                                        @{singlePost.profiles?.username || t('profile.defaultUser').toLowerCase()}
                                     </Text>
                                 </View>
+                                <Text style={[styles.singlePostDate, { color: theme.textSecondary }]}>
+                                    {formatDate(singlePost.created_at)}
+                                </Text>
                             </View>
-                            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                                <Ionicons name="close" size={24} color={theme.text} />
+
+                            <TouchableOpacity
+                                style={[styles.detailsButton, { backgroundColor: theme.accent }]}
+                                onPress={() => {
+                                    onClose();
+                                    onPostPress(singlePost.id);
+                                }}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={[styles.detailsButtonText, { color: theme.background }]}>
+                                    {t('explore.readPost') || 'Gönderiyi Oku'}
+                                </Text>
+                                <Ionicons name="arrow-forward" size={16} color={theme.background} />
                             </TouchableOpacity>
                         </View>
                     </View>
-
-                    {/* Post List */}
+                ) : (
+                    /* Post List */
                     <FlatList
                         data={cluster.posts}
                         keyExtractor={(item) => item.id}
@@ -210,28 +318,48 @@ function PostListModal({ visible, cluster, onClose, onPostPress, theme }: PostLi
                         contentContainerStyle={styles.postList}
                         showsVerticalScrollIndicator={false}
                     />
-                </Animated.View>
-            </View>
-        </Modal>
+                )}
+            </Animated.View>
+        </View>
     );
 }
 
-// Custom Marker Component
+// ─── Animated Cluster Marker ────────────────────────────────────────────
 interface ClusterMarkerProps {
     cluster: LocationCluster;
     onPress: () => void;
     theme: typeof MapColors.light;
+    index: number;
 }
 
-function ClusterMarker({ cluster, onPress, theme }: ClusterMarkerProps) {
+/**
+ * AnimatedClusterMarker — scale-in animasyonlu harita marker bileşeni.
+ * Her marker sahneye gelirken sırasıyla (index * 60ms gecikme) büyüyerek belirlenebilir.
+ */
+function AnimatedClusterMarker({ cluster, onPress, theme, index }: ClusterMarkerProps) {
+    const entryAnim = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    useEffect(() => {
+        // Staggered entry animation — marker'lar sırayla ortaya çıkar
+        const delay = index * 60;
+        Animated.sequence([
+            Animated.delay(delay),
+            Animated.spring(entryAnim, {
+                toValue: 1,
+                useNativeDriver: true,
+                tension: 80,
+                friction: 8,
+            }),
+        ]).start();
+    }, []);
 
     const handlePressIn = () => {
         Animated.spring(scaleAnim, {
-            toValue: 0.9,
+            toValue: 0.85,
             useNativeDriver: true,
-            tension: 100,
-            friction: 10,
+            tension: 120,
+            friction: 8,
         }).start();
     };
 
@@ -239,30 +367,67 @@ function ClusterMarker({ cluster, onPress, theme }: ClusterMarkerProps) {
         Animated.spring(scaleAnim, {
             toValue: 1,
             useNativeDriver: true,
-            tension: 100,
-            friction: 10,
+            tension: 120,
+            friction: 8,
         }).start();
     };
+
+    // Entry: scale 0→1  +  slight bounce
+    const entryScale = entryAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+    });
+    const entryOpacity = entryAnim.interpolate({
+        inputRange: [0, 0.5, 1],
+        outputRange: [0, 0.8, 1],
+    });
+
+    const isMultiPost = cluster.postCount > 1;
 
     return (
         <Marker
             coordinate={{ latitude: cluster.latitude, longitude: cluster.longitude }}
             onPress={onPress}
+            tracksViewChanges={false}
         >
             <TouchableOpacity
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 activeOpacity={1}
             >
-                <Animated.View style={[styles.markerContainer, { transform: [{ scale: scaleAnim }] }]}>
+                <Animated.View
+                    style={[
+                        styles.markerContainer,
+                        {
+                            opacity: entryOpacity,
+                            transform: [
+                                { scale: Animated.multiply(entryScale, scaleAnim) },
+                            ],
+                        },
+                    ]}
+                >
                     <View style={[styles.markerCircle, { backgroundColor: theme.markerBg, borderColor: theme.markerBorder }]}>
-                        <Ionicons name="location" size={20} color={theme.accent} />
+                        {cluster.posts[0]?.images?.[0] ? (
+                            <Image
+                                source={{ uri: cluster.posts[0].images[0] }}
+                                style={styles.markerImage}
+                                contentFit="cover"
+                            />
+                        ) : (
+                            <Ionicons name="location" size={20} color={theme.accent} />
+                        )}
                     </View>
-                    <View style={[styles.markerCountBadge, { backgroundColor: theme.clusterBg }]}>
-                        <Text style={[styles.markerCountText, { color: theme.clusterText }]}>
-                            {cluster.postCount}
-                        </Text>
-                    </View>
+
+                    {/* Post count badge */}
+                    {isMultiPost && (
+                        <View style={[styles.markerCountBadge, { backgroundColor: theme.clusterBg }]}>
+                            <Text style={[styles.markerCountText, { color: theme.clusterText }]}>
+                                {cluster.postCount}
+                            </Text>
+                        </View>
+                    )}
+
+                    {/* Tail / arrow */}
                     <View style={[styles.markerTail, { borderTopColor: theme.markerBg }]} />
                 </Animated.View>
             </TouchableOpacity>
@@ -270,7 +435,7 @@ function ClusterMarker({ cluster, onPress, theme }: ClusterMarkerProps) {
     );
 }
 
-// Main Map Screen
+// ─── Main Map Screen ────────────────────────────────────────────────────
 export default function MapScreen() {
     const { t, language } = useLanguage();
     const colorScheme = useColorScheme();
@@ -278,10 +443,11 @@ export default function MapScreen() {
     const insets = useSafeAreaInsets();
     const mapRef = useRef<any>(null);
 
+    const [allPosts, setAllPosts] = useState<Post[]>([]);
     const [clusters, setClusters] = useState<LocationCluster[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedCluster, setSelectedCluster] = useState<LocationCluster | null>(null);
-    const [showModal, setShowModal] = useState(false);
+    const [showSheet, setShowSheet] = useState(false);
     const [region, setRegion] = useState<{ latitude: number; longitude: number; latitudeDelta: number; longitudeDelta: number }>({
         latitude: 39.0,
         longitude: 35.0,
@@ -296,18 +462,26 @@ export default function MapScreen() {
     const loadLocationData = async () => {
         try {
             setIsLoading(true);
-            const data = await fetchPostLocations();
-            setClusters(data);
+            const posts = await fetchPostsWithLocation();
+            setAllPosts(posts);
 
-            if (data.length > 0) {
-                const center = calculateMapCenter(data);
-                const delta = calculateZoomDelta(data);
-                setRegion({
+            if (posts.length > 0) {
+                // Calculate temporary clusters for framing
+                const initialZoom = Math.round(Math.log2(360 / region.longitudeDelta));
+                const tempClusters = clusterLocations(posts, initialZoom);
+                const center = calculateMapCenter(tempClusters);
+                const delta = calculateZoomDelta(tempClusters);
+                const newRegion = {
                     latitude: center.latitude,
                     longitude: center.longitude,
                     latitudeDelta: delta.latDelta,
                     longitudeDelta: delta.lngDelta,
-                });
+                };
+                setRegion(newRegion);
+
+                // Run clustering for the target zoom level
+                const finalZoom = Math.round(Math.log2(360 / newRegion.longitudeDelta));
+                setClusters(clusterLocations(posts, finalZoom));
             }
         } catch (error) {
             console.error('Error loading map data:', error);
@@ -316,16 +490,43 @@ export default function MapScreen() {
         }
     };
 
+    const handleRegionChangeComplete = useCallback((newRegion: typeof region) => {
+        setRegion(newRegion);
+        // Calculate zoom level dynamically and cluster posts
+        const zoom = Math.round(Math.log2(360 / newRegion.longitudeDelta));
+        setClusters(clusterLocations(allPosts, zoom));
+    }, [allPosts]);
+
     const handleMarkerPress = useCallback((cluster: LocationCluster) => {
         setSelectedCluster(cluster);
-        setShowModal(true);
-    }, []);
+        setShowSheet(true);
+
+        // Animate map to center on the selected marker and zoom in if it is a cluster
+        if (mapRef.current) {
+            const targetLatDelta = cluster.postCount > 1 ? region.latitudeDelta / 2 : Math.min(region.latitudeDelta, 2);
+            const targetLngDelta = cluster.postCount > 1 ? region.longitudeDelta / 2 : Math.min(region.longitudeDelta, 2);
+
+            mapRef.current.animateToRegion(
+                {
+                    latitude: cluster.latitude,
+                    longitude: cluster.longitude,
+                    latitudeDelta: targetLatDelta,
+                    longitudeDelta: targetLngDelta,
+                },
+                400
+            );
+        }
+    }, [region]);
 
     const handlePostPress = useCallback((postId: string) => {
         router.push({
             pathname: '/post-detail/[id]',
             params: { id: postId },
         });
+    }, []);
+
+    const handleCloseSheet = useCallback(() => {
+        setShowSheet(false);
     }, []);
 
     const handleZoomIn = () => {
@@ -353,9 +554,10 @@ export default function MapScreen() {
     };
 
     const handleCenterMap = () => {
-        if (clusters.length > 0 && mapRef.current) {
-            const center = calculateMapCenter(clusters);
-            const delta = calculateZoomDelta(clusters);
+        if (allPosts.length > 0 && mapRef.current) {
+            const tempClusters = clusterLocations(allPosts, 5);
+            const center = calculateMapCenter(tempClusters);
+            const delta = calculateZoomDelta(tempClusters);
             mapRef.current.animateToRegion({
                 latitude: center.latitude,
                 longitude: center.longitude,
@@ -468,25 +670,27 @@ export default function MapScreen() {
                         )}
                     </ScrollView>
                 ) : (
-                    // Native map view
+                    // ──────── Native Map View ────────
                     <>
                         <MapView
                             ref={mapRef}
                             style={styles.map}
                             provider={PROVIDER_GOOGLE}
                             initialRegion={region}
-                            onRegionChangeComplete={setRegion}
+                            onRegionChangeComplete={handleRegionChangeComplete}
+                            customMapStyle={colorScheme === 'dark' ? mapStyleDark : mapStyleLight}
                             showsUserLocation
                             showsMyLocationButton={false}
                             showsCompass={false}
                             mapType="standard"
                         >
-                            {clusters.map((cluster) => (
-                                <ClusterMarker
+                            {clusters.map((cluster, index) => (
+                                <AnimatedClusterMarker
                                     key={cluster.id}
                                     cluster={cluster}
                                     onPress={() => handleMarkerPress(cluster)}
                                     theme={theme}
+                                    index={index}
                                 />
                             ))}
                         </MapView>
@@ -538,11 +742,11 @@ export default function MapScreen() {
                 )}
             </View>
 
-            {/* Post List Modal */}
-            <PostListModal
-                visible={showModal}
+            {/* Bottom Sheet Post Preview */}
+            <BottomSheetPreview
+                visible={showSheet}
                 cluster={selectedCluster}
-                onClose={() => setShowModal(false)}
+                onClose={handleCloseSheet}
                 onPostPress={handlePostPress}
                 theme={theme}
             />
@@ -550,6 +754,7 @@ export default function MapScreen() {
     );
 }
 
+// ─── Styles ─────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -590,17 +795,25 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.body,
         fontSize: 14,
     },
+
+    // ── Animated Marker ─────────────────────────────────────────────────
     markerContainer: {
         alignItems: 'center',
     },
     markerCircle: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: 46,
+        height: 46,
+        borderRadius: 23,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 2,
+        borderWidth: 2.5,
+        overflow: 'hidden',
         ...Shadows.md,
+    },
+    markerImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 21,
     },
     markerCountBadge: {
         position: 'absolute',
@@ -612,6 +825,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 6,
+        ...Shadows.sm,
     },
     markerCountText: {
         fontFamily: Typography.fonts.uiBold,
@@ -627,6 +841,8 @@ const styles = StyleSheet.create({
         borderRightColor: 'transparent',
         marginTop: -1,
     },
+
+    // ── Map Controls ────────────────────────────────────────────────────
     zoomControls: {
         position: 'absolute',
         right: Spacing.md,
@@ -676,55 +892,76 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.bodyBold,
         fontSize: 13,
     },
-    modalOverlay: {
-        flex: 1,
-        justifyContent: 'flex-end',
-    },
-    modalBackdrop: {
+
+    // ── Bottom Sheet ────────────────────────────────────────────────────
+    bottomSheetOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+        zIndex: 20,
     },
-    modalContent: {
-        maxHeight: SCREEN_HEIGHT * 0.6,
-        borderTopLeftRadius: BorderRadius.xl,
-        borderTopRightRadius: BorderRadius.xl,
+    bottomSheetBackdrop: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    },
+    bottomSheetContent: {
+        maxHeight: SCREEN_HEIGHT * 0.55,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
         paddingBottom: 34,
+        ...Shadows.lg,
     },
-    modalHeader: {
-        paddingTop: Spacing.sm,
+    bottomSheetHandleArea: {
+        alignItems: 'center',
+        paddingTop: 10,
+        paddingBottom: 4,
+    },
+    bottomSheetHandle: {
+        width: 40,
+        height: 4,
+        borderRadius: 2,
+    },
+    bottomSheetHeader: {
         paddingHorizontal: Spacing.lg,
+        paddingTop: Spacing.sm,
         paddingBottom: Spacing.md,
         borderBottomWidth: 1,
     },
-    modalHandle: {
-        width: 40,
-        height: 4,
-        backgroundColor: '#ccc',
-        borderRadius: 2,
-        alignSelf: 'center',
-        marginBottom: Spacing.md,
-    },
-    modalTitleRow: {
+    bottomSheetTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    modalTitleContainer: {
+    bottomSheetTitleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: Spacing.sm,
+        flex: 1,
     },
-    modalTitle: {
+    bottomSheetIconCircle: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    bottomSheetTitle: {
         fontFamily: Typography.fonts.heading,
-        fontSize: 18,
+        fontSize: 17,
     },
-    modalSubtitle: {
+    bottomSheetSubtitle: {
         fontFamily: Typography.fonts.body,
         fontSize: 13,
+        marginTop: 1,
     },
-    closeButton: {
-        padding: Spacing.xs,
+    bottomSheetCloseBtn: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
+
+    // ── Post Items ──────────────────────────────────────────────────────
     postList: {
         padding: Spacing.md,
     },
@@ -791,7 +1028,8 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.body,
         fontSize: 11,
     },
-    // Web Fallback Styles
+
+    // ── Web Fallback ────────────────────────────────────────────────────
     webFallback: {
         flex: 1,
     },
@@ -873,5 +1111,79 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: Spacing.xxl,
+    },
+
+    // ── Single Post Card ────────────────────────────────────────────────
+    singlePostCard: {
+        margin: Spacing.md,
+        borderRadius: BorderRadius.lg,
+        overflow: 'hidden',
+    },
+    singlePostImage: {
+        width: '100%',
+        height: 180,
+        borderRadius: BorderRadius.md,
+    },
+    singlePostPlaceholder: {
+        width: '100%',
+        height: 180,
+        borderRadius: BorderRadius.md,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    singlePostContent: {
+        marginTop: Spacing.md,
+    },
+    singlePostTitle: {
+        fontFamily: Typography.fonts.heading,
+        fontSize: 18,
+        lineHeight: 24,
+        marginBottom: Spacing.sm,
+    },
+    singlePostMetaRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: Spacing.md,
+    },
+    singlePostAuthor: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.xs,
+    },
+    singlePostAvatar: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+    },
+    singlePostAvatarPlaceholder: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+    },
+    singlePostUsername: {
+        fontFamily: Typography.fonts.bodyBold,
+        fontSize: 13,
+    },
+    singlePostDate: {
+        fontFamily: Typography.fonts.body,
+        fontSize: 12,
+    },
+    detailsButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: Spacing.xs,
+        paddingVertical: Spacing.sm,
+        borderRadius: BorderRadius.md,
+        ...Shadows.sm,
+    },
+    detailsButtonText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 14,
+        letterSpacing: 0.5,
     },
 });

@@ -401,6 +401,9 @@ export default {
         legal: '法的情報とコミュニティ',
         communityGuidelines: 'コミュニティガイドライン',
         communityGuidelinesDesc: 'コミュニティを安全に保つためのルール',
+        adminTitle: 'ADMIN',
+        moderationPanel: 'Moderation Panel',
+        moderationPanelDesc: 'Review reports, manage users',
     },
     errors: {
         generic: 'エラーが発生しました',
@@ -410,6 +413,12 @@ export default {
         notFound: '見つかりません',
         unauthorized: '権限がありません',
         serverError: 'サーバーエラー',
+        boundaryTitle: 'Our Compass is Lost!',
+        boundarySubtitle: 'An unexpected error occurred. We are working to get back on track.',
+        boundaryErrorDetails: 'Error Details',
+        boundaryRetry: 'Restart App',
+        boundaryShowDetails: 'Show Error Details',
+        boundaryHideDetails: 'Hide Error Details',
     },
     time: {
         now: '今',
@@ -557,5 +566,23 @@ export default {
         enforcementTitle: '違反への対応',
         enforcementDesc: '報告されたコンテンツとアカウントを確認します。これらのガイドラインに違反すると、警告なしにコンテンツの削除、アクセスの制限、またはアカウントの完全な削除が行われる可能性があります。',
         thankYou: 'Odyssey Journal を旅行者にとって素晴らしい場所にするためにご協力いただきありがとうございます！'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: 'Your content was flagged for review. Please ensure it follows our community guidelines.',
+        flaggedWithReasons: 'Your content was flagged for: {{reasons}}. Please ensure your post follows our community guidelines.',
+        categories: {
+            harassment: 'harassment',
+            'harassment/threatening': 'harassment/threatening',
+            hate: 'hate',
+            'hate/threatening': 'hate/threatening',
+            'self-harm': 'self-harm',
+            'self-harm/intent': 'self-harm/intent',
+            'self-harm/instructions': 'self-harm/instructions',
+            sexual: 'sexual',
+            'sexual/minors': 'sexual/minors',
+            violence: 'violence',
+            'violence/graphic': 'violence/graphic'
+        }
     }
 };

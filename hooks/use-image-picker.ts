@@ -165,6 +165,7 @@ export function useImagePicker() {
 
     return {
         images,
+        setImages,
         isLoading,
         pickImage,
         pickMultipleImages,

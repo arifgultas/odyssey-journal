@@ -449,6 +449,9 @@ export default {
         legal: 'LEGAL & COMMUNITY',
         communityGuidelines: 'Community Guidelines',
         communityGuidelinesDesc: 'Rules to keep our community safe',
+        adminTitle: 'ADMIN',
+        moderationPanel: 'Moderation Panel',
+        moderationPanelDesc: 'Review reports, manage users',
     },
 
     // Errors
@@ -460,6 +463,12 @@ export default {
         notFound: 'Not found',
         unauthorized: 'Unauthorized access',
         serverError: 'Server error',
+        boundaryTitle: 'Our Compass is Lost!',
+        boundarySubtitle: 'An unexpected error occurred. We are working to get back on track.',
+        boundaryErrorDetails: 'Error Details',
+        boundaryRetry: 'Restart App',
+        boundaryShowDetails: 'Show Error Details',
+        boundaryHideDetails: 'Hide Error Details',
     },
 
     // Time
@@ -625,5 +634,23 @@ export default {
         enforcementTitle: 'Enforcement',
         enforcementDesc: 'We review reported content and accounts. Violating these guidelines may result in content removal, restricted access, or permanent account deletion without warning.',
         thankYou: 'Thank you for helping us make Odyssey Journal a great place for travelers!'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: 'Your content was flagged for review. Please ensure it follows our community guidelines.',
+        flaggedWithReasons: 'Your content was flagged for: {{reasons}}. Please ensure your post follows our community guidelines.',
+        categories: {
+            harassment: 'harassment',
+            'harassment/threatening': 'harassment/threatening',
+            hate: 'hate',
+            'hate/threatening': 'hate/threatening',
+            'self-harm': 'self-harm',
+            'self-harm/intent': 'self-harm/intent',
+            'self-harm/instructions': 'self-harm/instructions',
+            sexual: 'sexual',
+            'sexual/minors': 'sexual/minors',
+            violence: 'violence',
+            'violence/graphic': 'violence/graphic'
+        }
     }
 };

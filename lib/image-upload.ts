@@ -1,5 +1,5 @@
 import { decode } from 'base64-arraybuffer';
-import * as ExpoFileSystem from 'expo-file-system';
+import * as ExpoFileSystem from 'expo-file-system/legacy';
 import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from './supabase';

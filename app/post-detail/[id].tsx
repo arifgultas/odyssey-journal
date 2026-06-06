@@ -638,12 +638,30 @@ export default function PostDetailScreen() {
                     {showMenu && (
                         <View style={[styles.menu, { backgroundColor: isDark ? theme.paper : '#FFFFFF', borderColor: theme.parchment }]}>
                             {isOwnPost ? (
-                                <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
-                                    <Ionicons name="trash-outline" size={20} color="#E57373" />
-                                    <Text style={[styles.menuText, { color: '#E57373' }]}>
-                                        {t('post.deleteTitle')}
-                                    </Text>
-                                </TouchableOpacity>
+                                <>
+                                    <TouchableOpacity 
+                                        style={styles.menuItem} 
+                                        onPress={() => {
+                                            setShowMenu(false);
+                                            router.push({
+                                                pathname: '/create-post',
+                                                params: { editPostId: post.id }
+                                            });
+                                        }}
+                                    >
+                                        <Ionicons name="create-outline" size={20} color={theme.textMain} />
+                                        <Text style={[styles.menuText, { color: theme.textMain }]}>
+                                            {t('post.editTitle') || 'Düzenle'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <View style={[styles.menuDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
+                                    <TouchableOpacity style={styles.menuItem} onPress={handleDelete}>
+                                        <Ionicons name="trash-outline" size={20} color="#E57373" />
+                                        <Text style={[styles.menuText, { color: '#E57373' }]}>
+                                            {t('post.deleteTitle')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
                             ) : (
                                 <TouchableOpacity style={styles.menuItem} onPress={handleReport}>
                                     <Ionicons name="flag-outline" size={20} color="#E57373" />
@@ -1210,5 +1228,9 @@ const styles = StyleSheet.create({
     followBtnText: {
         fontFamily: Typography.fonts.uiBold,
         fontSize: 14,
+    },
+    menuDivider: {
+        height: 1,
+        marginHorizontal: Spacing.md,
     },
 });

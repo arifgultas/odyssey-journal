@@ -1,6 +1,7 @@
 import { sanitizeBio, sanitizeFullName, sanitizeText, sanitizeUsername } from './sanitize';
 import { supabase } from './supabase';
 import type { CommonDestination, Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
+import { captureError } from './sentry';
 
 /**
  * Profile Service
@@ -118,31 +119,50 @@ export class ProfileService {
      */
     static async getProfileStats(userId: string): Promise<ProfileStats> {
         try {
-            // Get posts count
-            const { count: postsCount } = await supabase
-                .from('posts')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', userId);
+            // Fetch all statistics and profile info in parallel
+            const [
+                postsResult,
+                followersResult,
+                followingResult,
+                postsDataResult,
+                profileResult
+            ] = await Promise.all([
+                supabase
+                    .from('posts')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', userId),
+                supabase
+                    .from('follows')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('following_id', userId),
+                supabase
+                    .from('follows')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('follower_id', userId),
+                supabase
+                    .from('posts')
+                    .select('location, created_at')
+                    .eq('user_id', userId)
+                    .not('location', 'is', null)
+                    .order('created_at', { ascending: true }),
+                (async () => {
+                    try {
+                        return await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', userId)
+                            .single();
+                    } catch (e) {
+                        return { data: null, error: null };
+                    }
+                })()
+            ]);
 
-            // Get followers count
-            const { count: followersCount } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('following_id', userId);
-
-            // Get following count
-            const { count: followingCount } = await supabase
-                .from('follows')
-                .select('*', { count: 'exact', head: true })
-                .eq('follower_id', userId);
-
-            // Get all posts with location data for extended stats
-            const { data: posts } = await supabase
-                .from('posts')
-                .select('location, created_at')
-                .eq('user_id', userId)
-                .not('location', 'is', null)
-                .order('created_at', { ascending: true });
+            const postsCount = postsResult.count;
+            const followersCount = followersResult.count;
+            const followingCount = followingResult.count;
+            const posts = postsDataResult.data;
+            const profile = profileResult.data;
 
             // Process location data
             const visitedLocations: Array<{
@@ -156,8 +176,37 @@ export class ProfileService {
             const countryDays = new Map<string, Set<string>>(); // country -> Set of unique dates
             let totalDistanceKm = 0;
 
-            // User's home location (Turkey as default - can be made configurable later)
-            const homeLocation = { lat: 41.0082, lon: 28.9784 }; // Istanbul
+            // Fetch profile dynamically to see if home_location or home_latitude/longitude is set, otherwise use env or default to Istanbul
+            let homeLat = 41.0082;
+            let homeLon = 28.9784;
+
+            if (process.env.EXPO_PUBLIC_HOME_LATITUDE) {
+                homeLat = parseFloat(process.env.EXPO_PUBLIC_HOME_LATITUDE);
+            }
+            if (process.env.EXPO_PUBLIC_HOME_LONGITUDE) {
+                homeLon = parseFloat(process.env.EXPO_PUBLIC_HOME_LONGITUDE);
+            }
+
+            if (profile) {
+                const p = profile as any;
+                if (p.home_location) {
+                    if (typeof p.home_location === 'object') {
+                        const latVal = p.home_location.latitude || p.home_location.lat;
+                        const lonVal = p.home_location.longitude || p.home_location.lon;
+                        if (latVal !== undefined && lonVal !== undefined) {
+                            homeLat = Number(latVal);
+                            homeLon = Number(lonVal);
+                        }
+                    }
+                } else if (p.home_latitude !== undefined && p.home_longitude !== undefined) {
+                    if (p.home_latitude !== null && p.home_longitude !== null) {
+                        homeLat = Number(p.home_latitude);
+                        homeLon = Number(p.home_longitude);
+                    }
+                }
+            }
+
+            const homeLocation = { lat: homeLat, lon: homeLon };
 
             if (posts && posts.length > 0) {
                 for (const post of posts) {
@@ -223,6 +272,7 @@ export class ProfileService {
             };
         } catch (error) {
             console.error('Error fetching profile stats:', error);
+            captureError(error as Error, { context: 'getProfileStats', userId });
             return {
                 postsCount: 0,
                 followersCount: 0,

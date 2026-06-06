@@ -16,21 +16,21 @@ export interface LocationCluster {
 }
 
 /**
- * Fetches all posts with location data and groups them by proximity
+ * Fetches all posts that contain valid location data from Supabase
  */
-export async function fetchPostLocations(): Promise<LocationCluster[]> {
+export async function fetchPostsWithLocation(): Promise<Post[]> {
     try {
         const { data, error } = await supabase
             .from('posts')
             .select(`
-        *,
-        profiles:user_id (
-          id,
-          username,
-          full_name,
-          avatar_url
-        )
-      `)
+                *,
+                profiles:user_id (
+                    id,
+                    username,
+                    full_name,
+                    avatar_url
+                )
+            `)
             .not('location', 'is', null)
             .order('created_at', { ascending: false });
 
@@ -38,46 +38,61 @@ export async function fetchPostLocations(): Promise<LocationCluster[]> {
             throw error;
         }
 
-        if (!data || data.length === 0) {
-            return [];
-        }
-
-        // Group posts by location (using city/country as key for clustering)
-        const locationMap = new Map<string, LocationCluster>();
-
-        data.forEach((post: Post) => {
-            if (!post.location?.latitude || !post.location?.longitude) {
-                return;
-            }
-
-            // Create a location key based on city/country or rounded coordinates
-            const locationKey = post.location.city && post.location.country
-                ? `${post.location.city}-${post.location.country}`
-                : `${Math.round(post.location.latitude * 100) / 100}-${Math.round(post.location.longitude * 100) / 100}`;
-
-            if (locationMap.has(locationKey)) {
-                const cluster = locationMap.get(locationKey)!;
-                cluster.posts.push(post);
-                cluster.postCount++;
-            } else {
-                locationMap.set(locationKey, {
-                    id: locationKey,
-                    latitude: post.location.latitude,
-                    longitude: post.location.longitude,
-                    postCount: 1,
-                    posts: [post],
-                    city: post.location.city,
-                    country: post.location.country,
-                    locationName: post.location.city || post.location.country || 'Unknown Location',
-                });
-            }
-        });
-
-        return Array.from(locationMap.values());
+        return (data as Post[]) || [];
     } catch (error) {
-        console.error('Error fetching post locations:', error);
+        console.error('Error fetching posts with location:', error);
         throw error;
     }
+}
+
+/**
+ * Dynamically clusters posts based on coordinates and current zoom level
+ */
+export function clusterLocations(posts: Post[], zoom: number): LocationCluster[] {
+    if (!posts || posts.length === 0) return [];
+
+    // Clustering threshold in degrees depending on zoom level
+    // Lower threshold means points must be closer together to cluster (zoomed in)
+    // Higher threshold means points further apart will cluster (zoomed out)
+    const threshold = 40 / Math.pow(2, zoom);
+    const clusters: LocationCluster[] = [];
+
+    posts.forEach((post) => {
+        if (!post.location?.latitude || !post.location?.longitude) {
+            return;
+        }
+
+        const lat = post.location.latitude;
+        const lng = post.location.longitude;
+
+        // Find an existing cluster close enough
+        const match = clusters.find((c) => {
+            const latDiff = Math.abs(c.latitude - lat);
+            const lngDiff = Math.abs(c.longitude - lng);
+            return latDiff < threshold && lngDiff < threshold;
+        });
+
+        if (match) {
+            match.posts.push(post);
+            match.postCount++;
+            // Update cluster center to be the average (centroid) of all its posts
+            match.latitude = (match.latitude * (match.postCount - 1) + lat) / match.postCount;
+            match.longitude = (match.longitude * (match.postCount - 1) + lng) / match.postCount;
+        } else {
+            clusters.push({
+                id: `cluster-${post.id}`,
+                latitude: lat,
+                longitude: lng,
+                postCount: 1,
+                posts: [post],
+                city: post.location.city,
+                country: post.location.country,
+                locationName: post.location.city || post.location.country || 'Unknown Location',
+            });
+        }
+    });
+
+    return clusters;
 }
 
 /**

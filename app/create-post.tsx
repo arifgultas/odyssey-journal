@@ -3,12 +3,12 @@ import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker } from '@/hooks/use-location-picker';
-import { createPost } from '@/lib/posts';
+import { createPost, updatePost, fetchPostById } from '@/lib/posts';
 import { supabase } from '@/lib/supabase';
 import { fetchWeatherData, getWeatherTranslationKey, WeatherData } from '@/lib/weather';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -531,6 +531,9 @@ export default function CreatePostScreen() {
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
 
+    const { editPostId } = useLocalSearchParams<{ editPostId?: string }>();
+    const isEditMode = !!editPostId;
+
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -542,6 +545,7 @@ export default function CreatePostScreen() {
 
     const {
         images,
+        setImages,
         isLoading: isPickingImage,
         pickMultipleImages,
         takePhoto,
@@ -552,8 +556,42 @@ export default function CreatePostScreen() {
         location,
         isLoading: isGettingLocation,
         getCurrentLocation,
+        setCustomLocation,
         clearLocation,
     } = useLocationPicker();
+
+    // Fetch existing post data if in edit mode
+    useEffect(() => {
+        const loadPostData = async () => {
+            if (!editPostId) return;
+            try {
+                const post = await fetchPostById(editPostId);
+                setTitle(post.title || '');
+                setContent(post.content || '');
+                if (post.categories) setSelectedCategories(post.categories);
+                if (post.location) {
+                    setCustomLocation(post.location);
+                    setLocationConfirmed(true);
+                }
+                if (post.images) {
+                    setImages(
+                        post.images.map((url) => ({
+                            uri: url,
+                            width: 1080,
+                            height: 810,
+                        }))
+                    );
+                }
+                if (post.image_captions) setImageCaptions(post.image_captions);
+                if (post.weather_data) setWeatherData(post.weather_data);
+            } catch (error) {
+                console.error('Error loading post for editing:', error);
+                Alert.alert(t('common.error') || 'Hata', 'Günlük verileri yüklenirken bir hata oluştu.');
+                router.back();
+            }
+        };
+        loadPostData();
+    }, [editPostId]);
 
     // Auto-fetch weather when location is selected
     useEffect(() => {
@@ -599,7 +637,7 @@ export default function CreatePostScreen() {
                 return;
             }
 
-            await createPost({
+            const postPayload = {
                 title: title.trim(),
                 content: content.trim(),
                 location: location || undefined,
@@ -607,17 +645,28 @@ export default function CreatePostScreen() {
                 imageCaptions: imageCaptions,
                 weatherData: weatherData || undefined,
                 categories: selectedCategories,
-            });
+            };
 
-            Alert.alert(t('createPost.success'), t('createPost.entryCreated'), [
-                {
-                    text: t('createPost.ok'),
-                    onPress: () => router.back(),
-                },
-            ]);
+            if (isEditMode && editPostId) {
+                await updatePost(editPostId, postPayload);
+                Alert.alert(t('common.success') || 'Başarılı', 'Günlük girişi güncellendi.', [
+                    {
+                        text: t('createPost.ok'),
+                        onPress: () => router.back(),
+                    },
+                ]);
+            } else {
+                await createPost(postPayload);
+                Alert.alert(t('createPost.success'), t('createPost.entryCreated'), [
+                    {
+                        text: t('createPost.ok'),
+                        onPress: () => router.back(),
+                    },
+                ]);
+            }
         } catch (error) {
-            console.error('Error creating post:', error);
-            Alert.alert(t('createPost.errorTitle'), t('createPost.createError'));
+            console.error('Error saving post:', error);
+            Alert.alert(t('createPost.errorTitle'), isEditMode ? 'Günlük güncellenirken bir hata oluştu.' : t('createPost.createError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -724,7 +773,7 @@ export default function CreatePostScreen() {
                     </TouchableOpacity>
 
                     <Text style={[styles.headerTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
-                        Yeni Günlük Girişi
+                        {isEditMode ? 'Günlüğü Düzenle' : 'Yeni Günlük Girişi'}
                     </Text>
 
                     <TouchableOpacity
@@ -736,7 +785,7 @@ export default function CreatePostScreen() {
                         {isSubmitting ? (
                             <ActivityIndicator size="small" color="#2C1810" />
                         ) : (
-                            <Text style={styles.publishText}>Paylaş</Text>
+                            <Text style={styles.publishText}>{isEditMode ? 'Kaydet' : 'Paylaş'}</Text>
                         )}
                     </TouchableOpacity>
                 </Animated.View>

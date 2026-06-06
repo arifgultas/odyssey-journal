@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Alert, Platform, Share } from 'react-native';
 
@@ -7,7 +7,7 @@ import { Alert, Platform, Share } from 'react-native';
  * Gathers all user data and exports it as a JSON file
  * Complies with GDPR Right to Data Portability
  */
-export async function exportUserData(t: any): Promise<boolean> {
+export async function exportUserData(t: (key: string) => string): Promise<boolean> {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('Not authenticated');
@@ -83,10 +83,10 @@ export async function exportUserData(t: any): Promise<boolean> {
 
         // For Native, save to file system and share
         const fileName = `odyssey-data-${new Date().toISOString().split('T')[0]}.json`;
-        const fileUri = `${(FileSystem as any).documentDirectory}${fileName}`;
+        const fileUri = `${FileSystem.documentDirectory}${fileName}`;
 
         await FileSystem.writeAsStringAsync(fileUri, jsonString, {
-            encoding: (FileSystem as any).EncodingType.UTF8
+            encoding: FileSystem.EncodingType.UTF8
         });
 
         const canShare = await Sharing.isAvailableAsync();

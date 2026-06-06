@@ -449,6 +449,9 @@ export default {
         legal: 'YASAL & TOPLULUK',
         communityGuidelines: 'Topluluk Kuralları',
         communityGuidelinesDesc: 'Topluluğumuzu güvende tutmak için kurallar',
+        adminTitle: 'ADMİN',
+        moderationPanel: 'Moderasyon Paneli',
+        moderationPanelDesc: 'Şikayetleri inceleyin, kullanıcıları yönetin',
     },
 
     // Errors
@@ -460,6 +463,12 @@ export default {
         notFound: 'Bulunamadı',
         unauthorized: 'Yetkisiz erişim',
         serverError: 'Sunucu hatası',
+        boundaryTitle: 'Pusulamız Şaşırdı!',
+        boundarySubtitle: 'Beklenmedik bir hata oluştu. Seyahat rotamızı düzeltmek için çalışıyoruz.',
+        boundaryErrorDetails: 'Hata Detayları',
+        boundaryRetry: 'Yeniden Başlat',
+        boundaryShowDetails: 'Hata Detayını Göster',
+        boundaryHideDetails: 'Hata Detayını Gizle',
     },
 
     // Time
@@ -625,5 +634,23 @@ export default {
         enforcementTitle: 'Uygulama ve Yaptırım',
         enforcementDesc: 'Şikayet edilen içeriği ve hesapları inceliyoruz. Bu kuralların ihlali, uyarısız içerik kaldırma, erişim kısıtlaması veya kalıcı hesap silinmesiyle sonuçlanabilir.',
         thankYou: 'Odyssey Journal\'ı gezginler için harika bir yer yapmamıza yardımcı olduğunuz için teşekkür ederiz!'
+    },
+    // Content Moderation
+    moderation: {
+        flaggedNoReasons: 'İçeriğiniz inceleme için işaretlendi. Lütfen topluluk kurallarımıza uyduğundan emin olun.',
+        flaggedWithReasons: 'İçeriğiniz şu nedenlerden dolayı işaretlendi: {{reasons}}. Lütfen gönderinizin topluluk kurallarımıza uyduğundan emin olun.',
+        categories: {
+            harassment: 'taciz',
+            'harassment/threatening': 'tehditkar taciz',
+            hate: 'nefret söylemi',
+            'hate/threatening': 'tehditkar nefret söylemi',
+            'self-harm': 'kendine zarar verme',
+            'self-harm/intent': 'kendine zarar verme niyeti',
+            'self-harm/instructions': 'kendine zarar verme talimatları',
+            sexual: 'cinsel içerik',
+            'sexual/minors': 'reşit olmayanlara yönelik cinsel içerik',
+            violence: 'şiddet',
+            'violence/graphic': 'vahşi şiddet'
+        }
     }
 };

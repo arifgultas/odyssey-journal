@@ -1,3 +1,6 @@
+import { Post } from '../posts';
+import { Profile } from './profile';
+
 export interface SearchFilters {
     location?: string;
     tags?: string[];
@@ -8,8 +11,8 @@ export interface SearchFilters {
 }
 
 export interface SearchResult {
-    posts: any[];
-    users: any[];
+    posts: Post[];
+    users: Profile[];
     locations: LocationResult[];
 }
 

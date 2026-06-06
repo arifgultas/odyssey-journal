@@ -1,5 +1,6 @@
 import { getBlockedUsers } from './block';
 import { supabase } from './supabase';
+import { captureError } from './sentry';
 import type {
     RecommendedPlace,
     SearchFilters,
@@ -39,6 +40,7 @@ export class SearchService {
             };
         } catch (error) {
             console.error('Error performing search:', error);
+            captureError(error as Error, { context: 'search', query });
             throw error;
         }
     }
@@ -79,7 +81,7 @@ export class SearchService {
                 const { data: userProfile } = await supabase
                     .from('profiles')
                     .select('id')
-                    .ilike('username', `%${filters.username}%`)
+                    .ilike('username', `%${escapeIlike(filters.username)}%`)
                     .single();
 
                 if (userProfile) {
@@ -117,6 +119,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error searching posts:', error);
+            captureError(error as Error, { context: 'searchPosts', query });
             return [];
         }
     }
@@ -143,6 +146,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error searching users:', error);
+            captureError(error as Error, { context: 'searchUsers', query });
             return [];
         }
     }
@@ -187,77 +191,54 @@ export class SearchService {
                 .slice(0, 10);
         } catch (error) {
             console.error('Error searching locations:', error);
+            captureError(error as Error, { context: 'searchLocations', query });
             return [];
         }
     }
 
     /**
-     * Get trending locations (most posted in last 7 days)
+     * Get trending locations (most posted in last 7 days) using database RPC function
      */
     static async getTrendingLocations(limit = 10): Promise<TrendingLocation[]> {
         try {
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-
-            const { data, error } = await supabase
-                .from('posts')
-                .select('location_name, latitude, longitude, created_at')
-                .not('location_name', 'is', null)
-                .gte('created_at', weekAgo.toISOString());
+            const { data, error } = await supabase.rpc('get_trending_locations', { p_limit: limit });
 
             if (error) throw error;
 
-            // Group by location and calculate trend score
-            const locationMap = new Map();
-            data?.forEach((post) => {
-                const key = post.location_name;
-                if (key) {
-                    if (!locationMap.has(key)) {
-                        const parts = key.split(',').map((p: string) => p.trim());
-                        locationMap.set(key, {
-                            name: key,
-                            city: parts[0],
-                            country: parts[parts.length - 1],
-                            postCount: 0,
-                            recentPostCount: 0,
-                            trendScore: 0,
-                            coordinates: post.latitude && post.longitude ? {
-                                latitude: post.latitude,
-                                longitude: post.longitude,
-                            } : undefined,
-                        });
-                    }
-                    const location = locationMap.get(key);
-                    location.postCount++;
-                    location.recentPostCount++;
-
-                    // Calculate trend score (more recent = higher score)
-                    const daysAgo = Math.floor(
-                        (Date.now() - new Date(post.created_at).getTime()) / (1000 * 60 * 60 * 24)
-                    );
-                    location.trendScore += Math.max(7 - daysAgo, 1);
-                }
+            return (data || []).map((row: any) => {
+                const parts = row.location_name.split(',').map((p: string) => p.trim());
+                return {
+                    name: row.location_name,
+                    city: parts[0],
+                    country: parts[parts.length - 1],
+                    postCount: Number(row.post_count),
+                    recentPostCount: Number(row.recent_post_count),
+                    trendScore: Number(row.trend_score),
+                    coordinates: row.latitude && row.longitude ? {
+                        latitude: Number(row.latitude),
+                        longitude: Number(row.longitude),
+                    } : undefined,
+                };
             });
-
-            return Array.from(locationMap.values())
-                .sort((a, b) => b.trendScore - a.trendScore)
-                .slice(0, limit);
         } catch (error) {
             console.error('Error fetching trending locations:', error);
+            captureError(error as Error, { context: 'getTrendingLocations', limit });
             return [];
         }
     }
 
     /**
-     * Get recommended places based on user activity
+     * Get recommended places based on user activity (limited to latest 100 posts for performance)
      */
     static async getRecommendedPlaces(userId?: string, limit = 10): Promise<RecommendedPlace[]> {
         try {
-            // Get all locations with post counts
+            // Get locations with post counts, ordered by newest first and limited to 100
             const { data, error } = await supabase
                 .from('posts')
                 .select('location_name, latitude, longitude, images')
-                .not('location_name', 'is', null);
+                .not('location_name', 'is', null)
+                .order('created_at', { ascending: false })
+                .limit(100);
 
             if (error) throw error;
 
@@ -294,6 +275,7 @@ export class SearchService {
                 .slice(0, limit);
         } catch (error) {
             console.error('Error fetching recommended places:', error);
+            captureError(error as Error, { context: 'getRecommendedPlaces', userId, limit });
             return [];
         }
     }
@@ -334,6 +316,7 @@ export class SearchService {
             }
         } catch (error) {
             console.error('Error saving search history:', error);
+            captureError(error as Error, { context: 'saveSearchHistory', query, type });
         }
     }
 
@@ -356,6 +339,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error fetching search history:', error);
+            captureError(error as Error, { context: 'getSearchHistory', limit });
             return [];
         }
     }
@@ -374,6 +358,7 @@ export class SearchService {
                 .eq('user_id', user.id);
         } catch (error) {
             console.error('Error clearing search history:', error);
+            captureError(error as Error, { context: 'clearSearchHistory' });
             throw error;
         }
     }
@@ -389,6 +374,7 @@ export class SearchService {
                 .eq('id', id);
         } catch (error) {
             console.error('Error deleting search history item:', error);
+            captureError(error as Error, { context: 'deleteSearchHistoryItem', id });
             throw error;
         }
     }
@@ -420,6 +406,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error fetching trending posts:', error);
+            captureError(error as Error, { context: 'getTrendingPosts', limit });
             return [];
         }
     }
@@ -456,54 +443,37 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error fetching suggested users:', error);
+            captureError(error as Error, { context: 'getSuggestedUsers', limit });
             return [];
         }
     }
 
     /**
-     * Get popular destinations (locations with most posts)
+     * Get popular destinations (locations with most posts) using database RPC function
      */
     static async getPopularDestinations(limit = 10) {
         try {
-            const { data, error } = await supabase
-                .from('posts')
-                .select('location_name, latitude, longitude, images')
-                .not('location_name', 'is', null);
+            const { data, error } = await supabase.rpc('get_popular_destinations', { p_limit: limit });
 
             if (error) throw error;
 
-            // Group by location and count
-            const locationMap = new Map();
-            data?.forEach((post) => {
-                const key = post.location_name;
-                if (key) {
-                    if (!locationMap.has(key)) {
-                        const parts = key.split(',').map((p: string) => p.trim());
-                        locationMap.set(key, {
-                            name: key,
-                            city: parts[0],
-                            country: parts[parts.length - 1],
-                            postCount: 0,
-                            imageUrl: post.images?.[0],
-                            coordinates: post.latitude && post.longitude ? {
-                                latitude: post.latitude,
-                                longitude: post.longitude,
-                            } : undefined,
-                        });
-                    }
-                    const location = locationMap.get(key);
-                    location.postCount++;
-                    if (!location.imageUrl && post.images?.[0]) {
-                        location.imageUrl = post.images[0];
-                    }
-                }
+            return (data || []).map((row: any) => {
+                const parts = row.location_name.split(',').map((p: string) => p.trim());
+                return {
+                    name: row.location_name,
+                    city: parts[0],
+                    country: parts[parts.length - 1],
+                    postCount: Number(row.post_count),
+                    imageUrl: row.image_url || undefined,
+                    coordinates: row.latitude && row.longitude ? {
+                        latitude: Number(row.latitude),
+                        longitude: Number(row.longitude),
+                    } : undefined,
+                };
             });
-
-            return Array.from(locationMap.values())
-                .sort((a, b) => b.postCount - a.postCount)
-                .slice(0, limit);
         } catch (error) {
             console.error('Error fetching popular destinations:', error);
+            captureError(error as Error, { context: 'getPopularDestinations', limit });
             return [];
         }
     }
@@ -538,6 +508,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error fetching posts by category:', error);
+            captureError(error as Error, { context: 'getPostsByCategory', categoryId });
             return [];
         }
     }
@@ -553,6 +524,7 @@ export class SearchService {
             const from = page * pageSize;
             const to = from + pageSize - 1;
 
+            const escapedLocationName = escapeIlike(locationName);
             // Use ilike for partial matching (city or full location name)
             const { data, error } = await supabase
                 .from('posts')
@@ -565,7 +537,7 @@ export class SearchService {
                         avatar_url
                     )
                 `)
-                .or(`location->>city.ilike.%${locationName}%,location->>country.ilike.%${locationName}%`)
+                .or(`location->>city.ilike.%${escapedLocationName}%,location->>country.ilike.%${escapedLocationName}%`)
                 .order('created_at', { ascending: false })
                 .range(from, to);
 
@@ -573,6 +545,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error fetching posts by location:', error);
+            captureError(error as Error, { context: 'getPostsByLocation', locationName });
             return [];
         }
     }
@@ -605,6 +578,7 @@ export class SearchService {
             return data || [];
         } catch (error) {
             console.error('Error fetching all trending posts:', error);
+            captureError(error as Error, { context: 'getAllTrendingPosts' });
             return [];
         }
     }

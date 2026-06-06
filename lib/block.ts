@@ -1,5 +1,13 @@
 import { supabase } from '@/lib/supabase';
 
+let blockedUsersCache: {
+    userId: string;
+    blockedIds: string[];
+    timestamp: number;
+} | null = null;
+
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 export interface BlockRecord {
     blocker_id: string;
     blocked_id: string;
@@ -20,6 +28,9 @@ export async function blockUser(blockedId: string): Promise<boolean> {
             .upsert({ blocker_id: user.id, blocked_id: blockedId });
 
         if (error) throw error;
+
+        // Invalidate cache
+        blockedUsersCache = null;
         return true;
     } catch (error) {
         console.error('Error blocking user:', error);
@@ -42,6 +53,9 @@ export async function unblockUser(blockedId: string): Promise<boolean> {
             .match({ blocker_id: user.id, blocked_id: blockedId });
 
         if (error) throw error;
+
+        // Invalidate cache
+        blockedUsersCache = null;
         return true;
     } catch (error) {
         console.error('Error unblocking user:', error);
@@ -57,13 +71,29 @@ export async function getBlockedUsers(): Promise<string[]> {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
 
+        const now = Date.now();
+        if (
+            blockedUsersCache &&
+            blockedUsersCache.userId === user.id &&
+            now - blockedUsersCache.timestamp < CACHE_TTL_MS
+        ) {
+            return blockedUsersCache.blockedIds;
+        }
+
         const { data, error } = await supabase
             .from('user_blocks')
             .select('blocked_id')
             .eq('blocker_id', user.id);
 
         if (error) throw error;
-        return data.map(record => record.blocked_id);
+        
+        const blockedIds = data.map(record => record.blocked_id);
+        blockedUsersCache = {
+            userId: user.id,
+            blockedIds,
+            timestamp: now,
+        };
+        return blockedIds;
     } catch (error) {
         console.error('Error fetching blocked users:', error);
         return [];

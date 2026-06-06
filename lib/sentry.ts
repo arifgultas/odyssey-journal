@@ -9,6 +9,8 @@
  */
 import * as Sentry from '@sentry/react-native';
 import Constants from 'expo-constants';
+import React from 'react';
+import { ErrorBoundaryFallback } from '@/components/error-boundary-fallback';
 
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
@@ -35,7 +37,16 @@ export function initSentry() {
         // Only send errors in production
         beforeSend(event) {
             if (__DEV__) return null;
-            return event;
+            try {
+                // Stringify the event object to perform regex scrubbing on all text fields
+                const eventStr = JSON.stringify(event);
+                const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+                const sanitizedStr = eventStr.replace(emailRegex, '[MASKED_EMAIL]');
+                return JSON.parse(sanitizedStr);
+            } catch (e) {
+                console.error('[Sentry] Error scrubbing PII', e);
+                return event;
+            }
         },
     });
 }
@@ -63,7 +74,14 @@ export function captureError(error: Error, context?: Record<string, unknown>) {
  */
 export function setSentryUser(user: { id: string; email?: string; username?: string }) {
     if (!SENTRY_DSN) return;
-    Sentry.setUser(user);
+
+    // Scrub email from user object before sending to Sentry
+    const scrubbedUser = { ...user };
+    if (scrubbedUser.email) {
+        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+        scrubbedUser.email = scrubbedUser.email.replace(emailRegex, '[MASKED_EMAIL]');
+    }
+    Sentry.setUser(scrubbedUser);
 }
 
 /**
@@ -88,6 +106,15 @@ export function addBreadcrumb(message: string, category?: string, data?: Record<
 }
 
 /**
- * Wrap root component with Sentry error boundary
+ * Wrap component with Sentry error boundary and custom fallback UI
  */
-export const SentryErrorBoundary = Sentry.wrap;
+export function SentryErrorBoundary<P extends object>(
+    Component: React.ComponentType<P>
+): React.ComponentType<P> {
+    if (!SENTRY_DSN) {
+        return Component;
+    }
+    return Sentry.withErrorBoundary(Component, {
+        fallback: (errorData) => React.createElement(ErrorBoundaryFallback, errorData),
+    });
+}

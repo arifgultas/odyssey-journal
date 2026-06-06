@@ -1,9 +1,10 @@
 import { getBlockedUsers } from './block';
 import { getModerationMessage, moderatePost, moderateText } from './content-moderation';
-import { deleteImage, uploadMultipleImages } from './image-upload';
+import { deleteImage, uploadMultipleImages, uploadImage } from './image-upload';
 import { LIMITS, sanitizePostContent, sanitizePostTitle, sanitizeText } from './sanitize';
 import { supabase } from './supabase';
 import { WeatherData } from './weather';
+import { captureError } from './sentry';
 
 export interface CreatePostData {
     title: string;
@@ -125,6 +126,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
         return post;
     } catch (error) {
         console.error('Error creating post:', error);
+        captureError(error as Error, { context: 'createPost' });
         throw error;
     }
 }
@@ -146,13 +148,55 @@ export async function updatePost(
             throw new Error('User not authenticated');
         }
 
-        // Upload new images if provided
-        let imageUrls: string[] | undefined;
-        if (data.images && data.images.length > 0) {
-            imageUrls = await uploadMultipleImages(data.images, 'posts', user.id);
+        // Fetch the old post to see if any images were removed during editing
+        let oldPostImages: string[] = [];
+        try {
+            const { data: oldPost } = await supabase
+                .from('posts')
+                .select('images')
+                .eq('id', postId)
+                .single();
+            if (oldPost && oldPost.images) {
+                oldPostImages = oldPost.images;
+            }
+        } catch (fetchOldError) {
+            console.error('Error fetching old post images for cleanup:', fetchOldError);
         }
 
-        const updateData: any = {
+        // Upload new (local) images, keeping existing remote ones
+        let imageUrls: string[] | undefined;
+        if (data.images) {
+            const uploadPromises = data.images.map(async (uri) => {
+                if (uri.startsWith('http://') || uri.startsWith('https://')) {
+                    return uri; // Already uploaded remote image
+                }
+                return await uploadImage(uri, 'posts', user.id);
+            });
+            imageUrls = await Promise.all(uploadPromises);
+
+            // Clean up removed images from storage in background
+            const removedImages = oldPostImages.filter((url) => !imageUrls?.includes(url));
+            if (removedImages.length > 0) {
+                for (const url of removedImages) {
+                    try {
+                        await deleteImage(url, 'posts');
+                    } catch (deleteError) {
+                        console.error('Error deleting removed post image from storage:', deleteError);
+                    }
+                }
+            }
+        }
+
+        const updateData: {
+            updated_at: string;
+            title?: string;
+            content?: string;
+            location?: CreatePostData['location'];
+            images?: string[];
+            categories?: string[];
+            image_captions?: string[];
+            weather_data?: CreatePostData['weatherData'];
+        } = {
             updated_at: new Date().toISOString(),
         };
 
@@ -183,6 +227,7 @@ export async function updatePost(
         return post;
     } catch (error) {
         console.error('Error updating post:', error);
+        captureError(error as Error, { context: 'updatePost' });
         throw error;
     }
 }
@@ -230,6 +275,7 @@ export async function deletePost(postId: string): Promise<void> {
         }
     } catch (error) {
         console.error('Error deleting post:', error);
+        captureError(error as Error, { context: 'deletePost' });
         throw error;
     }
 }
@@ -273,6 +319,7 @@ export async function fetchPosts(
         return data || [];
     } catch (error) {
         console.error('Error fetching posts:', error);
+        captureError(error as Error, { context: 'fetchPosts' });
         throw error;
     }
 }
@@ -303,6 +350,7 @@ export async function fetchPostById(postId: string): Promise<Post> {
         return data;
     } catch (error) {
         console.error('Error fetching post:', error);
+        captureError(error as Error, { context: 'fetchPostById' });
         throw error;
     }
 }
@@ -333,6 +381,7 @@ export async function fetchPostsByUser(
         return data || [];
     } catch (error) {
         console.error('Error fetching user posts:', error);
+        captureError(error as Error, { context: 'fetchPostsByUser' });
         throw error;
     }
 }
