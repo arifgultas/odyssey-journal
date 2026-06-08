@@ -16,6 +16,7 @@ import {
     validateComment,
     validatePostContent,
     validatePostTitle,
+    sanitizeCollectionName,
 } from '../sanitize';
 
 describe('sanitize', () => {
@@ -123,6 +124,11 @@ describe('sanitize', () => {
         it('sanitizeBio respects limit', () => {
             const result = sanitizeBio('a'.repeat(500));
             expect(result.length).toBe(LIMITS.BIO);
+        });
+
+        it('sanitizeCollectionName respects limit', () => {
+            const result = sanitizeCollectionName('a'.repeat(200));
+            expect(result.length).toBe(LIMITS.COLLECTION_NAME);
         });
     });
 

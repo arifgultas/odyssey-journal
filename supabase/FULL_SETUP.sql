@@ -903,48 +903,61 @@ GRANT SELECT ON public.comments_with_users TO authenticated;
 -- BÖLÜM 8: İNDEKSLER
 -- ================================================================
 
-CREATE INDEX IF NOT EXISTS idx_posts_user_id ON public.posts(user_id);
-CREATE INDEX IF NOT EXISTS idx_posts_created_at_desc ON public.posts(created_at DESC);
+-- Posts
+CREATE INDEX IF NOT EXISTS idx_posts_user_id_created_at ON public.posts(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON public.posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_location_name ON public.posts(location_name);
-CREATE INDEX IF NOT EXISTS idx_posts_likes_count_desc ON public.posts(likes_count DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_likes_created ON public.posts(likes_count DESC, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_title_search ON public.posts USING gin(to_tsvector('english', title));
 CREATE INDEX IF NOT EXISTS idx_posts_content_search ON public.posts USING gin(to_tsvector('english', content));
+CREATE INDEX IF NOT EXISTS idx_posts_location ON public.posts USING gin(location);
 CREATE INDEX IF NOT EXISTS posts_categories_idx ON public.posts USING GIN (categories);
 
-CREATE INDEX IF NOT EXISTS idx_comments_post_id ON public.comments(post_id);
-CREATE INDEX IF NOT EXISTS idx_comments_user_id ON public.comments(user_id);
-CREATE INDEX IF NOT EXISTS idx_comments_created_at ON public.comments(created_at DESC);
+-- Comments
+CREATE INDEX IF NOT EXISTS idx_comments_post_id_created_at ON public.comments(post_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_user_id_created_at ON public.comments(user_id, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_likes_user_id ON public.likes(user_id);
+-- Likes
+CREATE INDEX IF NOT EXISTS idx_likes_user_post ON public.likes(user_id, post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_post_id ON public.likes(post_id);
-CREATE INDEX IF NOT EXISTS idx_likes_created_at ON public.likes(created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_bookmarks_user_id ON public.bookmarks(user_id);
-CREATE INDEX IF NOT EXISTS idx_bookmarks_post_id ON public.bookmarks(post_id);
-CREATE INDEX IF NOT EXISTS idx_bookmarks_created_at ON public.bookmarks(created_at DESC);
+-- Bookmarks
+CREATE INDEX IF NOT EXISTS idx_bookmarks_user_post ON public.bookmarks(user_id, post_id);
+CREATE INDEX IF NOT EXISTS idx_bookmarks_user_created ON public.bookmarks(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bookmarks_collection_id ON public.bookmarks(collection_id);
 
-CREATE INDEX IF NOT EXISTS idx_follows_follower_id ON public.follows(follower_id);
+-- Follows
+CREATE INDEX IF NOT EXISTS idx_follows_follower_following ON public.follows(follower_id, following_id);
 CREATE INDEX IF NOT EXISTS idx_follows_following_id ON public.follows(following_id);
-CREATE INDEX IF NOT EXISTS idx_follows_created_at ON public.follows(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_follows_follower_id ON public.follows(follower_id);
 
+-- Notifications
+CREATE INDEX IF NOT EXISTS idx_notifications_user_created ON public.notifications(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON public.notifications(user_id, read) WHERE read = false;
 CREATE INDEX IF NOT EXISTS idx_notifications_type ON public.notifications(type);
 
+-- Reports
 CREATE INDEX IF NOT EXISTS idx_reports_reporter_id ON public.reports(reporter_id);
 CREATE INDEX IF NOT EXISTS idx_reports_post_id ON public.reports(post_id);
 CREATE INDEX IF NOT EXISTS idx_reports_status ON public.reports(status);
 CREATE INDEX IF NOT EXISTS idx_reports_created_at ON public.reports(created_at DESC);
 
+-- Collections
 CREATE INDEX IF NOT EXISTS idx_collections_user_id ON public.collections(user_id);
 CREATE INDEX IF NOT EXISTS idx_collections_created_at ON public.collections(created_at DESC);
 
+-- Search History
 CREATE INDEX IF NOT EXISTS idx_search_history_user_id ON public.search_history(user_id);
 CREATE INDEX IF NOT EXISTS idx_search_history_timestamp ON public.search_history(timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_search_history_query ON public.search_history(query);
 
+-- Profiles
 CREATE INDEX IF NOT EXISTS idx_profiles_expo_push_token ON public.profiles(expo_push_token) WHERE expo_push_token IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
+CREATE INDEX IF NOT EXISTS idx_profiles_fullname_search ON public.profiles USING gin(to_tsvector('english', full_name));
 CREATE INDEX IF NOT EXISTS idx_profiles_search ON public.profiles USING gin(to_tsvector('english', coalesce(username, '') || ' ' || coalesce(full_name, '')));
 
+-- Push Queue
 CREATE INDEX IF NOT EXISTS idx_push_queue_unsent ON public.push_notification_queue(sent, created_at) WHERE sent = false;
 
 
@@ -956,11 +969,11 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', tru
 INSERT INTO storage.buckets (id, name, public) VALUES ('posts', 'posts', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO storage.buckets (id, name, public) VALUES ('collection-covers', 'collection-covers', true) ON CONFLICT (id) DO NOTHING;
 
--- Avatars storage policies
-CREATE POLICY "Avatar images are publicly accessible" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
-CREATE POLICY "Users can upload their own avatar" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
-CREATE POLICY "Users can update their own avatar" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
-CREATE POLICY "Users can delete their own avatar" ON storage.objects FOR DELETE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+-- Avatars storage policies (Simpler, working version from FIX_AVATAR_UPLOAD.sql)
+CREATE POLICY "Public Avatar Access" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+CREATE POLICY "Authenticated users can upload avatars" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'avatars');
+CREATE POLICY "Authenticated users can update avatars" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'avatars');
+CREATE POLICY "Authenticated users can delete avatars" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'avatars');
 
 -- Posts storage policies
 CREATE POLICY "Post images are publicly accessible" ON storage.objects FOR SELECT USING (bucket_id = 'posts');

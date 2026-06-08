@@ -1,0 +1,62 @@
+appId: com.odysseyjournal.app
+---
+- clearState
+- launchApp
+
+# --- 1. LOGIN FLOW ---
+# Wait for the email input placeholder and enter email
+- tapOn: "Email or Username"
+- inputText: "explorer@odyssey.com"
+
+# Tap password and enter password
+- tapOn: "Password"
+- inputText: "OdysseyPassword123!"
+
+# Tap the login button
+- tapOn: "Login"
+
+# --- 2. FEED & INTERACTIONS ---
+# Verify we landed on the Feed page
+- assertVisible: "Feed"
+
+# Like the first post on the feed
+- tapOn:
+    text: "Like"
+    index: 0
+
+# Bookmark the first post
+- tapOn:
+    text: "Bookmark"
+    index: 0
+
+# --- 3. COMMENT FLOW ---
+# Open the details of the first post
+- tapOn:
+    text: "Read More"
+    index: 0
+
+# Tap comment box, input a comment and submit
+- tapOn: "Add a comment..."
+- inputText: "Stunning view! Thanks for sharing this itinerary."
+- tapOn: "Send"
+
+# Go back to the feed
+- tapOn: "Back"
+
+# --- 4. CREATE NEW POST ---
+# Click on the middle Floating Action Button (FAB) or "+" tab to create post
+- tapOn: "Create"
+
+# Fill out post title and description
+- tapOn: "Title"
+- inputText: "Charming Weekend in Cappadocia"
+
+# Fill out description
+- tapOn: "Write about your journey..."
+- inputText: "Waking up to see hundreds of hot air balloons flying over volcanic rock valleys was a lifetime experience."
+
+# Press Publish button
+- tapOn: "Publish"
+
+# Assert the post is visible on the Feed
+- assertVisible: "Charming Weekend in Cappadocia"

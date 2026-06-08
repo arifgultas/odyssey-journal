@@ -6,6 +6,7 @@ import { useBookFonts } from '@/hooks/use-book-fonts';
 import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
 import { persistOptions, queryClientConfig } from '@/lib/query-persister';
 import { initSentry, SentryErrorBoundary } from '@/lib/sentry';
+import { validateEnv } from '@/lib/env';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
@@ -18,6 +19,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Initialize Sentry error monitoring
 initSentry();
+
+// Validate environment variables on start
+validateEnv();
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();

@@ -420,4 +420,70 @@ eas submit:list
 
 ---
 
+## 🚀 DevOps & Post-Launch Ops (Faz 7)
+
+### 1. Sentry Monitoring Dashboard & Hardening (Görev 7.6)
+
+Uygulamanın canlı ortamdaki kararlılığını izlemek için Sentry panelinizi aşağıdaki şekilde yapılandırın:
+
+#### Hata İzleme (Error Tracking) & Alerts
+1. **Alert Rules**: Sentry > Alerts > Create Alert altından yeni bir kural tanımlayın:
+   - **Kural**: Bir hata ilk defa görüldüğünde veya son 1 saatte 10 kereden fazla tetiklendiğinde Slack/Email ile bildirim gönder.
+2. **Issue Grouping**: Benzer hata bildirimlerini gruplandırmak için Sentry'nin default parmak izi (fingerprinting) ayarlarını kullanın.
+
+#### PII (Kişisel Bilgilerin) Maskelenmesi
+Sentry SDK'sı başlarken hassas verileri temizleyecek şekilde yapılandırılmıştır. Ancak ek güvenlik için:
+- **Sentry Dashboard > Settings > Security & Privacy > Data Scrubbing** alanına gidin.
+- "Scrub User Names", "Scrub IP Addresses" ve "Scrub Email Addresses" ayarlarını **aktif** hale getirin.
+
+#### Performans İzleme (Performance & Transactions)
+- **Transactions**: Harita yükleme süreleri, anasayfa feed çekme işlemi gibi kritik akışların sürelerini (latency) Sentry Performance ekranından takip edin.
+- **Apdex Score**: Kullanıcı memnuniyet sınırını 500ms (satisfying) olarak ayarlayarak performans anomalilerinde bildirim alın.
+
+---
+
+### 2. Google Maps API Key Sınırlandırmaları (Görev 7.7)
+
+API anahtarlarınızın çalınması durumunda bütçenizin zarar görmesini engellemek için **Google Cloud Console** üzerinde kesinlikle kısıtlamalar uygulayın:
+
+#### iOS API Anahtarı Kısıtlamaları (iOS App Restrictions)
+1. [Google Cloud Console](https://console.cloud.google.com/) adresine gidin.
+2. **APIs & Services > Credentials** sekmesine geçin.
+3. iOS için kullandığınız API anahtarına tıklayın.
+4. **Application restrictions** altından **iOS apps** seçeneğini seçin.
+5. **Add bundle identifier** butonuna tıklayarak uygulamanızın paket kimliğini girin:
+   - `com.odysseyjournal.app`
+6. **API restrictions** kısmından sadece **Maps SDK for iOS** iznini işaretleyin ve kaydedin.
+
+#### Android API Anahtarı Kısıtlamaları (Android App Restrictions)
+1. Android API anahtarının düzenleme sayfasına gidin.
+2. **Application restrictions** altından **Android apps** seçeneğini seçin.
+3. **Add package name and SHA-1 signing certificate fingerprint** butonuna tıklayın.
+4. **Package name** alanına girin:
+   - `com.odysseyjournal.app`
+5. **SHA-1 fingerprint** alanına Expo EAS build veya Google Play Console'dan aldığınız SHA-1 imza parmak izini girin (EAS'ten almak için `eas credentials` çalıştırabilirsiniz).
+6. **API restrictions** kısmından sadece **Maps SDK for Android** iznini işaretleyin ve kaydedin.
+
+---
+
+### 3. Supabase Pro Plan Değerlendirmesi (Görev 7.8)
+
+Projenin üretim (canlı) ortamı için Supabase Ücretsiz (Free) plandan Pro plana geçiş kararı aşağıdaki kriterler doğrultusunda değerlendirilmelidir:
+
+#### Pro Plan Avantajları (Neden Geçilmeli?)
+* **Otomatik Yedeklemeler (Backups)**: Free planda yedekleme bulunmazken, Pro planda günlük otomatik yedeklemeler yapılır ve 7 gün boyunca saklanır.
+* **PITR (Point-in-Time Recovery)**: Veritabanını son birkaç gün içindeki herhangi bir saniyeye geri yükleyebilme (olası veri kayıplarında can kurtarıcı).
+* **Veritabanı Boyutu**: Free plandaki 500 MB limit, Pro planda 8 GB'a (ve sonrasında kullandıkça öde modeliyle limitsiz) yükselir.
+* **Egress (Ağ Çıkış) Trafiği**: Resim paylaşımları yoğun olacağından aylık 5 GB limit yetersiz kalacaktır, Pro planda limit 50 GB'tır.
+* **Proje Kapanma Koruması**: Free projeler 1 hafta boyunca aktif istek almazsa otomatik durdurulurken (pause), Pro projeler her zaman açık kalır.
+
+#### Geçiş Kontrol Listesi (Migration Checklist)
+1. **Supabase Dashboard > Organization Settings > Subscription** sekmesine gidin.
+2. **Upgrade to Pro Plan** butonuna tıklayın (Aylık $25 taban ücret).
+3. **Daily Backups**'ı aktif edin.
+4. **Point-in-Time Recovery (PITR)** seçeneğini (özellikle kritik lansman haftasında) aktif hale getirmeyi değerlendirin.
+5. **Edge Function Limits**: Eşzamanlı istek limitlerinizi (concurrency limits) ve CPU kullanım grafiklerini takip edin.
+
+---
+
 **Good luck with your submission! 🚀**
