@@ -80,10 +80,24 @@ export function useLocationPicker() {
     const getLocationString = () => {
         if (!location) return '';
 
-        const parts = [];
-        if (location.name) parts.push(location.name);
-        if (location.city) parts.push(location.city);
-        if (location.country) parts.push(location.country);
+        const parts: string[] = [];
+        if (location.name) {
+            parts.push(location.name);
+        }
+        if (location.city) {
+            const cityLower = location.city.toLowerCase();
+            const alreadyExists = parts.some(p => p.toLowerCase().includes(cityLower) || cityLower.includes(p.toLowerCase()));
+            if (!alreadyExists) {
+                parts.push(location.city);
+            }
+        }
+        if (location.country) {
+            const countryLower = location.country.toLowerCase();
+            const alreadyExists = parts.some(p => p.toLowerCase().includes(countryLower) || countryLower.includes(p.toLowerCase()));
+            if (!alreadyExists) {
+                parts.push(location.country);
+            }
+        }
 
         return parts.join(', ') || `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`;
     };

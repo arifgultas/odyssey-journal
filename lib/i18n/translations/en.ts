@@ -108,6 +108,11 @@ export default {
         startSharing: 'Start sharing your travel memories!',
         createFirstPost: 'Create Your First Post',
         refreshing: 'Refreshing...',
+        publicFeed: 'Public Feed',
+        followingFeed: 'Following Feed',
+        noFollowingPosts: 'No Posts Yet',
+        exploreTravelers: 'Explore other travelers in the community and follow them to see their posts here.',
+        exploreButton: 'Explore Travelers',
     },
 
     // Explore
@@ -182,6 +187,9 @@ export default {
         storyPlaceholder: 'Start telling your story...',
         emailNotVerifiedTitle: 'Email Verification Required',
         emailNotVerifiedDesc: 'Please verify your email address to share new journal entries with the community.',
+        searchPlaceholder: 'Search city or place...',
+        useCurrentLocation: 'Use Current Location (GPS)',
+        noResults: 'No results found. Please try again.',
     },
 
     // Categories

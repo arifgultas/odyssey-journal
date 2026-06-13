@@ -99,6 +99,11 @@ export default {
         startSharing: '旅の思い出を共有しましょう！',
         createFirstPost: '最初の投稿を作成',
         refreshing: '更新中...',
+        publicFeed: '公開フィード',
+        followingFeed: 'フォロー中',
+        noFollowingPosts: '投稿はまだありません',
+        exploreTravelers: 'コミュニティの他の旅行者を探索し、フォローしてここに投稿を表示します。',
+        exploreButton: '旅行者を探す',
     },
     explore: {
         title: '探索',
@@ -169,6 +174,9 @@ export default {
         storyPlaceholder: 'ストーリーを書き始めてください...',
         emailNotVerifiedTitle: 'メールアドレスの確認が必要です',
         emailNotVerifiedDesc: 'コミュニティと新しい日記を共有するには、メールアドレスを確認してください。',
+        searchPlaceholder: '都市または場所を検索...',
+        useCurrentLocation: '現在地を使用 (GPS)',
+        noResults: '結果が見つかりません。もう一度お試しください。',
     },
     categories: {
         nature: '自然',

@@ -496,7 +496,7 @@ export default function SettingsScreen() {
                     </View>
                     <View style={styles.sectionContent}>
                         <TouchableOpacity
-                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
+                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm }]}
                             onPress={() => setChangePasswordModalVisible(true)}
                             activeOpacity={0.7}
                         >
@@ -508,7 +508,7 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
+                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm }]}
                             onPress={handleDownloadData}
                             activeOpacity={0.7}
                         >
@@ -520,7 +520,7 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.deleteAccountRow, { paddingVertical: Spacing.md, paddingHorizontal: Spacing.xs }]}
+                            style={[styles.deleteAccountRow, { paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm }]}
                             onPress={handleDeleteAccount}
                             activeOpacity={0.7}
                         >
@@ -628,12 +628,15 @@ const styles = StyleSheet.create({
 
     // Profile Card
     profileCard: {
+        width: '100%',
+        alignSelf: 'stretch',
         borderRadius: 24,
         borderWidth: 1,
         padding: 4,
         position: 'relative',
         overflow: 'hidden',
         ...Shadows.lg,
+        elevation: 0,
     },
     cornerDecoration: {
         position: 'absolute',
@@ -694,6 +697,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         overflow: 'hidden',
         ...Shadows.md,
+        elevation: 0,
     },
     avatarImage: {
         width: '100%',
@@ -716,6 +720,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         ...Shadows.sm,
+        elevation: 0,
     },
     profileInfo: {
         alignItems: 'center',
@@ -744,10 +749,13 @@ const styles = StyleSheet.create({
 
     // Section Card
     sectionCard: {
+        width: '100%',
+        alignSelf: 'stretch',
         borderRadius: 24,
         borderWidth: 1,
         overflow: 'hidden',
         ...Shadows.md,
+        elevation: 0,
     },
     sectionHeader: {
         flexDirection: 'row',
@@ -765,6 +773,7 @@ const styles = StyleSheet.create({
     },
     sectionContent: {
         padding: Spacing.sm,
+        width: '100%',
     },
 
     // Setting Row
@@ -775,18 +784,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.md,
         borderRadius: BorderRadius.lg,
+        width: '100%',
     },
     settingInfo: {
+        flex: 1,
         gap: 2,
+        marginRight: Spacing.sm,
     },
     settingLabel: {
         fontSize: 18,
         fontFamily: Typography.fonts.bodyBold,
+        flexShrink: 1,
     },
     settingSubLabel: {
         fontSize: 11,
         fontWeight: '500',
         letterSpacing: 0.5,
+        flexShrink: 1,
     },
     themeToggle: {
         flexDirection: 'row',
@@ -810,6 +824,7 @@ const styles = StyleSheet.create({
         borderRadius: BorderRadius.lg,
         borderWidth: 1,
         ...Shadows.sm,
+        elevation: 0,
     },
     languageSelectorLeft: {
         flexDirection: 'row',
@@ -824,6 +839,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         ...Shadows.sm,
+        elevation: 0,
     },
     flagEmoji: {
         fontSize: 20,
@@ -876,6 +892,7 @@ const styles = StyleSheet.create({
         borderColor: '#b91c1c',
         borderRadius: 8,
         ...Shadows.sm,
+        elevation: 0,
     },
     logoutButtonText: {
         fontSize: 20,
@@ -897,5 +914,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.md,
         borderRadius: BorderRadius.lg,
+        width: '100%',
     },
 });

@@ -100,6 +100,11 @@ export default {
         startSharing: 'ابدأ بمشاركة ذكريات سفرك!',
         createFirstPost: 'أنشئ منشورك الأول',
         refreshing: 'جاري التحديث...',
+        publicFeed: 'المنشورات العامة',
+        followingFeed: 'المنشورات المتابعة',
+        noFollowingPosts: 'لا توجد منشورات بعد',
+        exploreTravelers: 'استكشف مسافرين آخرين في المجتمع وتابعهم لرؤية منشوراتهم هنا.',
+        exploreButton: 'استكشف المسافرين',
     },
     explore: {
         title: 'استكشف',
@@ -170,6 +175,9 @@ export default {
         storyPlaceholder: 'ابدأ بسرد قصتك...',
         emailNotVerifiedTitle: 'مطلوب التحقق من البريد الإلكتروني',
         emailNotVerifiedDesc: 'يرجى التحقق من عنوان بريدك الإلكتروني لمشاركة إدخالات اليوميات الجديدة مع المجتمع.',
+        searchPlaceholder: 'ابحث عن مدينة أو مكان...',
+        useCurrentLocation: 'استخدام الموقع الحالي (GPS)',
+        noResults: 'لم يتم العثور على نتائج. يرجى المحاولة مرة أخرى.',
     },
     categories: {
         nature: 'الطبيعة',

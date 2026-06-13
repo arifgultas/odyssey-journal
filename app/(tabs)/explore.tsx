@@ -23,6 +23,7 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   Dimensions,
   Platform,
@@ -190,8 +191,11 @@ export default function ExploreScreen() {
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
-    if (text.length > 2) {
-      saveSearch.mutate({ query: text, type: 'location' });
+  };
+
+  const handleSubmitSearch = () => {
+    if (searchQuery.trim().length > 1) {
+      saveSearch.mutate({ query: searchQuery.trim(), type: 'location' });
     }
   };
 
@@ -214,8 +218,9 @@ export default function ExploreScreen() {
         targetUserId: userId,
         action: isFollowing ? 'unfollow' : 'follow',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error toggling follow:', error);
+      Alert.alert(t('common.error') || 'Hata', error?.message || 'Takip işlemi başarısız oldu.');
     }
   };
 
@@ -284,6 +289,7 @@ export default function ExploreScreen() {
                     styles.typingPlaceholder,
                     { color: vintageTheme.textMuted, opacity: typingOpacity }
                   ]}
+                  pointerEvents="none"
                 >
                   {t(TYPING_TEXTS_KEYS[currentTypingIndex])}
                 </Animated.Text>
@@ -361,7 +367,7 @@ export default function ExploreScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.categoriesScroll}
       >
-        {TRAVEL_CATEGORIES.slice(0, 5).map((category) => {
+        {TRAVEL_CATEGORIES.slice(0, 6).map((category) => {
           return (
             <TouchableOpacity
               key={category.id}
@@ -398,6 +404,7 @@ export default function ExploreScreen() {
       'mountain': 'triangle',
       'wildlife': 'paw',
       'art': 'color-palette',
+      'history': 'hourglass',
     };
     return iconMap[categoryId] || 'apps';
   };
@@ -652,41 +659,79 @@ export default function ExploreScreen() {
             contentContainerStyle={styles.usersScroll}
           >
             {suggestedUsers.slice(0, 5).map((user: any) => (
-              <TouchableOpacity
+              <View
                 key={user.id}
                 style={[styles.userCard, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-                onPress={() => handleUserPress(user.id)}
               >
+                <TouchableOpacity
+                  style={styles.userCardClickable}
+                  onPress={() => handleUserPress(user.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.userAvatarContainer, { borderColor: vintageTheme.border }]}>
+                    {user.avatar_url ? (
+                      <Image
+                        source={{ uri: user.avatar_url }}
+                        style={styles.userAvatar}
+                        contentFit="cover"
+                      />
+                    ) : (
+                      <View style={[styles.userAvatarPlaceholder, { backgroundColor: vintageTheme.parchment }]}>
+                        <Ionicons name="person" size={28} color={vintageTheme.textMuted} />
+                      </View>
+                    )}
+                  </View>
+                  <Text style={[styles.userName, { color: vintageTheme.text }]} numberOfLines={1}>
+                    {user.full_name?.split(' ')[0] || user.username || t('explore.user')}
+                  </Text>
+                  <Text style={[styles.userLabel, { color: vintageTheme.textSecondary }]} numberOfLines={1}>
+                    {getUserLabel(user)}
+                  </Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.bookmarkButton}>
                   <Ionicons name="bookmark-outline" size={16} color={vintageTheme.border} />
                 </TouchableOpacity>
-                <View style={[styles.userAvatarContainer, { borderColor: vintageTheme.border }]}>
-                  {user.avatar_url ? (
-                    <Image
-                      source={{ uri: user.avatar_url }}
-                      style={styles.userAvatar}
-                      contentFit="cover"
-                    />
-                  ) : (
-                    <View style={[styles.userAvatarPlaceholder, { backgroundColor: vintageTheme.parchment }]}>
-                      <Ionicons name="person" size={28} color={vintageTheme.textMuted} />
-                    </View>
-                  )}
-                </View>
-                <Text style={[styles.userName, { color: vintageTheme.text }]} numberOfLines={1}>
-                  {user.full_name?.split(' ')[0] || user.username || t('explore.user')}
-                </Text>
-                <Text style={[styles.userLabel, { color: vintageTheme.textSecondary }]} numberOfLines={1}>
-                  {getUserLabel(user)}
-                </Text>
+
                 <TouchableOpacity
-                  style={[styles.followButton, { backgroundColor: vintageTheme.primary }]}
-                  onPress={() => handleFollowPress(user.id, false)}
+                  style={[
+                    styles.followButton,
+                    user.isFollowing
+                      ? {
+                          backgroundColor: vintageTheme.surface,
+                          borderWidth: 1,
+                          borderColor: vintageTheme.primary,
+                          elevation: 0,
+                          shadowOpacity: 0,
+                        }
+                      : {
+                          backgroundColor: vintageTheme.primary,
+                        }
+                  ]}
+                  onPress={() => handleFollowPress(user.id, !!user.isFollowing)}
+                  disabled={followMutation.isPending}
                 >
-                  <Ionicons name="person-add" size={12} color="white" />
-                  <Text style={styles.followButtonText}>{t('explore.follow')}</Text>
+                  {followMutation.isPending && followMutation.variables?.targetUserId === user.id ? (
+                    <ActivityIndicator size="small" color={user.isFollowing ? vintageTheme.primary : "white"} />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name={user.isFollowing ? "checkmark" : "person-add"}
+                        size={12}
+                        color={user.isFollowing ? vintageTheme.primary : "white"}
+                      />
+                      <Text
+                        style={[
+                          styles.followButtonText,
+                          user.isFollowing ? { color: vintageTheme.primary } : { color: "white" }
+                        ]}
+                      >
+                        {user.isFollowing ? t('follow.following') : t('explore.follow')}
+                      </Text>
+                    </>
+                  )}
                 </TouchableOpacity>
-              </TouchableOpacity>
+              </View>
             ))}
           </ScrollView>
         )}
@@ -823,61 +868,53 @@ export default function ExploreScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {searchQuery.length > 0 ? (
-        <>
-          {/* Simple header when searching */}
-          <View style={[styles.simpleHeader, { paddingTop: insets.top + 16, backgroundColor: vintageTheme.background }]}>
-            <View style={[styles.searchBar, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border, borderWidth: 1 }]}>
-              <Ionicons name="compass-outline" size={24} color={vintageTheme.textMuted} />
-              <TextInput
-                style={[styles.searchInput, { color: vintageTheme.text, flex: 1 }]}
-                value={searchQuery}
-                onChangeText={handleSearch}
-                placeholder="Ara..."
-                placeholderTextColor={vintageTheme.textMuted}
-                autoFocus
-              />
-              <TouchableOpacity onPress={handleClearSearch}>
+      {/* Simple search header (unified and stabilized to prevent unmounting/keyboard focus loss) */}
+      <View style={[styles.exploreHeader, { paddingTop: insets.top + 16, backgroundColor: vintageTheme.background }]}>
+        <View style={[styles.searchBar, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border, borderWidth: 1 }]}>
+          <Ionicons name="compass-outline" size={24} color={vintageTheme.textMuted} />
+          <View style={styles.searchInputContainer}>
+            <TextInput
+              style={[styles.searchInput, { color: vintageTheme.text, paddingRight: searchQuery.length > 0 ? 28 : 0 }]}
+              value={searchQuery}
+              onChangeText={handleSearch}
+              placeholder=""
+              placeholderTextColor={vintageTheme.textMuted}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+              onSubmitEditing={handleSubmitSearch}
+              returnKeyType="search"
+            />
+            {!searchQuery && !isSearchFocused && (
+              <Animated.Text
+                style={[
+                  styles.typingPlaceholder,
+                  { color: vintageTheme.textMuted, opacity: typingOpacity }
+                ]}
+                pointerEvents="none"
+              >
+                {t(TYPING_TEXTS_KEYS[currentTypingIndex])}
+              </Animated.Text>
+            )}
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={handleClearSearch}
+                style={{ position: 'absolute', right: 0, padding: 4 }}
+              >
                 <Ionicons name="close-circle" size={20} color={vintageTheme.textMuted} />
               </TouchableOpacity>
-            </View>
+            )}
           </View>
-          {renderSearchResults()}
-        </>
-      ) : (
-        <>
-          {/* Simple search header without map */}
-          <View style={[styles.exploreHeader, { paddingTop: insets.top + 16, backgroundColor: vintageTheme.background }]}>
-            <View style={[styles.searchBar, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border, borderWidth: 1 }]}>
-              <Ionicons name="compass-outline" size={24} color={vintageTheme.textMuted} />
-              <View style={styles.searchInputContainer}>
-                <TextInput
-                  style={[styles.searchInput, { color: vintageTheme.text }]}
-                  value={searchQuery}
-                  onChangeText={handleSearch}
-                  placeholder=""
-                  placeholderTextColor={vintageTheme.textMuted}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                />
-                {!searchQuery && !isSearchFocused && (
-                  <Animated.Text
-                    style={[
-                      styles.typingPlaceholder,
-                      { color: vintageTheme.textMuted, opacity: typingOpacity }
-                    ]}
-                  >
-                    {t(TYPING_TEXTS_KEYS[currentTypingIndex])}
-                  </Animated.Text>
-                )}
-              </View>
-            </View>
-          </View>
-          <View style={[styles.contentContainer, { backgroundColor: vintageTheme.background }]}>
-            {renderDiscoverContent()}
-          </View>
-        </>
-      )}
+        </View>
+      </View>
+
+      {/* Main body changes based on whether there's a search query (stably wrapped to prevent keyboard focus loss) */}
+      <View style={[styles.contentContainer, { backgroundColor: vintageTheme.background }]}>
+        {searchQuery.length > 0 ? (
+          renderSearchResults()
+        ) : (
+          renderDiscoverContent()
+        )}
+      </View>
     </ThemedView>
   );
 }
@@ -1311,6 +1348,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
     ...Shadows.sm,
+  },
+  userCardClickable: {
+    alignItems: 'center',
+    width: '100%',
   },
   bookmarkButton: {
     position: 'absolute',

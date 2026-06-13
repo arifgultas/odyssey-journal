@@ -109,6 +109,11 @@ export default {
         startSharing: 'Seyahat anılarını paylaşmaya başla!',
         createFirstPost: 'İlk Gönderini Oluştur',
         refreshing: 'Yenileniyor...',
+        publicFeed: 'Herkese Açık',
+        followingFeed: 'Takip Ettiklerim',
+        noFollowingPosts: 'Henüz Paylaşım Yok',
+        exploreTravelers: 'Topluluktaki diğer gezginleri keşfedip takip ederek gönderilerini burada görebilirsiniz.',
+        exploreButton: 'Gezginleri Keşfet',
     },
 
     // Explore
@@ -183,6 +188,9 @@ export default {
         storyPlaceholder: 'Hikayeni anlatmaya başla...',
         emailNotVerifiedTitle: 'E-posta Doğrulaması Gerekli',
         emailNotVerifiedDesc: 'Toplulukla yeni günlük girişleri paylaşmak için lütfen e-posta adresinizi doğrulayın.',
+        searchPlaceholder: 'Şehir veya mekan ara...',
+        useCurrentLocation: 'Anlık Konumu Kullan (GPS)',
+        noResults: 'Sonuç bulunamadı. Lütfen tekrar deneyin.',
     },
 
     // Categories

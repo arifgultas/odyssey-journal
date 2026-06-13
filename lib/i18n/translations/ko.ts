@@ -99,6 +99,11 @@ export default {
         startSharing: '여행 추억을 공유해보세요!',
         createFirstPost: '첫 게시물 작성',
         refreshing: '새로고침 중...',
+        publicFeed: '공개 피드',
+        followingFeed: '팔로잉 피드',
+        noFollowingPosts: '아직 게시물이 없습니다',
+        exploreTravelers: '커뮤니티의 다른 여행자를 탐색하고 팔로우하여 게시물을 여기서 확인하세요.',
+        exploreButton: '여행자 탐색',
     },
     explore: {
         title: '탐색',
@@ -169,6 +174,9 @@ export default {
         storyPlaceholder: '이야기를 시작하세요...',
         emailNotVerifiedTitle: '이메일 확인 필요',
         emailNotVerifiedDesc: '커뮤니티와 새로운 일기 항목을 공유하려면 이메일 주소를 확인하십시오.',
+        searchPlaceholder: '도시 또는 장소 검색...',
+        useCurrentLocation: '현재 위치 사용 (GPS)',
+        noResults: '검색 결과가 없습니다. 다시 시도해 주세요.',
     },
     categories: {
         nature: '자연',

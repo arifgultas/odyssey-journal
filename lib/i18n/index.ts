@@ -112,7 +112,11 @@ export const loadPersistedLanguage = async (): Promise<LanguageCode> => {
  * Translate function with type safety
  */
 export const t = (key: string, options?: Record<string, any>): string => {
-    return i18n.t(key, options);
+    const translation = i18n.t(key, options);
+    if (typeof translation === 'string' && (translation.startsWith('[missing "') || translation.startsWith('[MISSING "'))) {
+        return '';
+    }
+    return translation;
 };
 
 /**

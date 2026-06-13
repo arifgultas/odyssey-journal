@@ -21,9 +21,30 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Platform
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Constants from 'expo-constants';
+import { mapStyleLight, mapStyleDark } from '@/constants/map-styles';
+
+const isExpoGoOnIos = Platform.OS === 'ios' && Constants.appOwnership === 'expo';
+const mapsAvailable = Platform.OS !== 'web' && !isExpoGoOnIos;
+
+let MapView: any = View;
+let Marker: any = View;
+let PROVIDER_GOOGLE: any = 'google';
+
+if (mapsAvailable) {
+    try {
+        const MapsModule = require('react-native-maps');
+        MapView = MapsModule.default;
+        Marker = MapsModule.Marker;
+        PROVIDER_GOOGLE = MapsModule.PROVIDER_GOOGLE;
+    } catch (error) {
+        console.warn('Failed to load react-native-maps dynamically in profile:', error);
+    }
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -227,25 +248,64 @@ export default function ProfileScreen() {
                     <View style={[styles.mapContainer, { borderColor: passportTheme.border }]}>
                         {stats?.visitedLocations && stats.visitedLocations.length > 0 ? (
                             <>
-                                <Image
-                                    source={{
-                                        uri: (() => {
-                                            // Create Mapbox Static API URL with markers
-                                            const locations = stats.visitedLocations.slice(0, 10); // Limit to 10 markers
-                                            const markers = locations
-                                                .map(loc => `pin-s+D4A574(${loc.longitude},${loc.latitude})`)
-                                                .join(',');
-                                            // Calculate center point
-                                            const avgLat = locations.reduce((sum, loc) => sum + loc.latitude, 0) / locations.length;
-                                            const avgLng = locations.reduce((sum, loc) => sum + loc.longitude, 0) / locations.length;
-                                            return `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${markers}/${avgLng},${avgLat},2,0/400x200?access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`;
-                                        })()
-                                    }}
-                                    style={styles.mapImage}
-                                    contentFit="cover"
-                                />
+                                {mapsAvailable ? (
+                                    (() => {
+                                        const locations = stats.visitedLocations.slice(0, 10); // Limit to 10 markers
+                                        const latitudes = locations.map(l => l.latitude);
+                                        const longitudes = locations.map(l => l.longitude);
+                                        const region = {
+                                            latitude: (Math.max(...latitudes) + Math.min(...latitudes)) / 2,
+                                            longitude: (Math.max(...longitudes) + Math.min(...longitudes)) / 2,
+                                            latitudeDelta: Math.max(...latitudes) - Math.min(...latitudes) + 0.5,
+                                            longitudeDelta: Math.max(...longitudes) - Math.min(...longitudes) + 0.5,
+                                        };
+                                        return (
+                                            <MapView
+                                                provider={PROVIDER_GOOGLE}
+                                                style={StyleSheet.absoluteFill}
+                                                initialRegion={region}
+                                                customMapStyle={colorScheme === 'dark' ? mapStyleDark : mapStyleLight}
+                                                showsUserLocation={false}
+                                                showsMyLocationButton={false}
+                                                zoomEnabled={true}
+                                                scrollEnabled={true}
+                                            >
+                                                {locations.map((loc, index) => (
+                                                    <Marker
+                                                        key={index}
+                                                        coordinate={{
+                                                            latitude: loc.latitude,
+                                                            longitude: loc.longitude,
+                                                        }}
+                                                        title={loc.name}
+                                                        description={loc.country}
+                                                    />
+                                                ))}
+                                            </MapView>
+                                        );
+                                    })()
+                                ) : (
+                                    <Image
+                                        source={{
+                                            uri: (() => {
+                                                // Create Google Maps Static API URL with markers
+                                                const locations = stats.visitedLocations.slice(0, 10); // Limit to 10 markers
+                                                const markers = locations
+                                                    .map(loc => `markers=color:d47311%7C${loc.latitude},${loc.longitude}`)
+                                                    .join('&');
+                                                // Calculate center point
+                                                const avgLat = locations.reduce((sum, loc) => sum + loc.latitude, 0) / locations.length;
+                                                const avgLng = locations.reduce((sum, loc) => sum + loc.longitude, 0) / locations.length;
+                                                return `https://maps.googleapis.com/maps/api/staticmap?center=${avgLat},${avgLng}&zoom=2&size=400x200&scale=2&maptype=roadmap&${markers}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+                                            })()
+                                        }}
+                                        style={styles.mapImage}
+                                        contentFit="cover"
+                                        onError={(error) => console.log('Travel Map image load error:', error.error)}
+                                    />
+                                )}
                                 {/* Sepia overlay for vintage effect */}
-                                <View style={[styles.mapOverlay, { backgroundColor: 'rgba(139, 115, 85, 0.1)' }]} />
+                                <View style={[styles.mapOverlay, { backgroundColor: 'rgba(139, 115, 85, 0.1)' }]} pointerEvents="none" />
                             </>
                         ) : (
                             <View style={[styles.mapPlaceholder, { backgroundColor: passportTheme.paperDark }]}>

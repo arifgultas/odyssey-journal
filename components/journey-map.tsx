@@ -3,8 +3,28 @@ import { mapStyleDark, mapStyleLight } from '@/constants/map-styles';
 import { useTheme } from '@/context/theme-context';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
+import { Animated, StyleSheet, Text, View, Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+const isExpoGoOnIos = Platform.OS === 'ios' && Constants.appOwnership === 'expo';
+const mapsAvailable = Platform.OS !== 'web' && !isExpoGoOnIos;
+
+let MapView: any = View;
+let Marker: any = View;
+let Polyline: any = View;
+let PROVIDER_GOOGLE: any = 'google';
+
+if (mapsAvailable) {
+    try {
+        const MapsModule = require('react-native-maps');
+        MapView = MapsModule.default;
+        Marker = MapsModule.Marker;
+        Polyline = MapsModule.Polyline;
+        PROVIDER_GOOGLE = MapsModule.PROVIDER_GOOGLE;
+    } catch (error) {
+        console.warn('Failed to load react-native-maps dynamically:', error);
+    }
+}
 
 interface JourneyLocation {
     id: string;
@@ -95,6 +115,23 @@ export function JourneyMap({ locations, style }: JourneyMapProps) {
                 <Ionicons name="map-outline" size={48} color={colors.border} />
                 <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No journey yet</Text>
                 <Text style={[styles.emptySubtext, { color: colors.textMuted }]}>Start exploring the world!</Text>
+            </View>
+        );
+    }
+
+    if (!mapsAvailable) {
+        return (
+            <View style={[styles.container, style, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border, padding: Spacing.md }]}>
+                <Ionicons name="map-outline" size={48} color={colors.compass} />
+                <Text style={{ fontFamily: Typography.fonts.heading, color: colors.text, marginTop: 12, fontSize: 16 }}>
+                    Yolculuk Rotası ({locations.length} Nokta)
+                </Text>
+                <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, marginTop: 6, fontSize: 13, textAlign: 'center', paddingHorizontal: Spacing.md }}>
+                    {locations.map(loc => loc.title).join(' → ')}
+                </Text>
+                <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, fontSize: 11, marginTop: 16, opacity: 0.7 }}>
+                    (Harita görünümü Expo Go iOS'ta desteklenmez)
+                </Text>
             </View>
         );
     }

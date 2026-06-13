@@ -68,11 +68,11 @@ export class SearchService {
                 queryBuilder = queryBuilder.not('user_id', 'in', `(${blockedUsers.join(',')})`);
             }
 
-            // Search by location
+            // Search by location (checks location_name, content, and the location JSON fields)
             if (filters?.location || query) {
                 const searchTerm = escapeIlike(filters?.location || query);
                 queryBuilder = queryBuilder.or(
-                    `location_name.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`
+                    `location_name.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%,"location->>city".ilike.%${searchTerm}%,"location->>country".ilike.%${searchTerm}%,"location->>address".ilike.%${searchTerm}%`
                 );
             }
 
@@ -152,34 +152,45 @@ export class SearchService {
     }
 
     /**
-     * Search locations from posts
+     * Search locations from posts (checks both location_name text and location JSONB columns)
      */
     static async searchLocations(query: string) {
         try {
+            const escapedQuery = escapeIlike(query);
             const { data, error } = await supabase
                 .from('posts')
-                .select('location_name, latitude, longitude')
-                .not('location_name', 'is', null)
-                .ilike('location_name', `%${escapeIlike(query)}%`);
+                .select('location_name, latitude, longitude, location')
+                .or(`location_name.ilike.%${escapedQuery}%,"location->>city".ilike.%${escapedQuery}%,"location->>country".ilike.%${escapedQuery}%,"location->>address".ilike.%${escapedQuery}%`);
 
             if (error) throw error;
 
             // Group by location and count posts
             const locationMap = new Map();
             data?.forEach((post) => {
-                const key = post.location_name;
+                let key = post.location_name;
+                if (!key && post.location) {
+                    if (post.location.city && post.location.country) {
+                        key = `${post.location.city}, ${post.location.country}`;
+                    } else {
+                        key = post.location.city || post.location.country || post.location.address;
+                    }
+                }
+
                 if (key) {
                     if (!locationMap.has(key)) {
                         const parts = key.split(',').map((p: string) => p.trim());
                         locationMap.set(key, {
                             name: key,
-                            city: parts[0],
-                            country: parts[parts.length - 1],
+                            city: post.location?.city || parts[0],
+                            country: post.location?.country || parts[parts.length - 1],
                             postCount: 0,
                             coordinates: post.latitude && post.longitude ? {
                                 latitude: post.latitude,
                                 longitude: post.longitude,
-                            } : undefined,
+                            } : (post.location?.latitude && post.location?.longitude ? {
+                                latitude: post.location.latitude,
+                                longitude: post.location.longitude,
+                            } : undefined),
                         });
                     }
                     locationMap.get(key).postCount++;
@@ -429,11 +440,24 @@ export class SearchService {
                 throw error;
             }
 
-            // Try to filter out current user client-side if authenticated
+            // Try to filter out current user client-side if authenticated and set follow status
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user && data) {
-                    return data.filter(profile => profile.id !== user.id);
+                    const filteredData = data.filter(profile => profile.id !== user.id);
+
+                    // Fetch follow relationships
+                    const { data: followsData } = await supabase
+                        .from('follows')
+                        .select('following_id')
+                        .eq('follower_id', user.id);
+
+                    const followingIds = new Set(followsData?.map(f => f.following_id) || []);
+
+                    return filteredData.map(profile => ({
+                        ...profile,
+                        isFollowing: followingIds.has(profile.id),
+                    }));
                 }
             } catch (authError) {
                 // Auth check failed, just return all data

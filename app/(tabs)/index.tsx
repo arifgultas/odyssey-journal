@@ -303,6 +303,19 @@ export default function HomeScreen() {
       return null;
     }
 
+    if (feedType === 'following') {
+      return (
+        <AnimatedEmptyState
+          icon="explore"
+          title={t('home.noFollowingPosts') || (language === 'tr' ? 'Henüz Paylaşım Yok' : 'No Posts Yet')}
+          description={t('home.exploreTravelers') || (language === 'tr' ? 'Topluluktaki diğer gezginleri keşfedip takip ederek gönderilerini burada görebilirsiniz.' : 'Explore other travelers in the community and follow them to see their posts here.')}
+          buttonText={t('home.exploreButton') || (language === 'tr' ? 'Gezginleri Keşfet' : 'Explore Travelers')}
+          onButtonPress={() => router.push('/explore')}
+          showTypewriter={false}
+        />
+      );
+    }
+
     return (
       <AnimatedEmptyState
         icon="explore"

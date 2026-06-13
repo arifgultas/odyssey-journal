@@ -69,6 +69,55 @@ Turkish, English, Spanish, French, German, Portuguese, Italian, Japanese, Korean
 ## Developer Info
 - **Developer**: Gultas Software
 - **Email**: gultassoftware@gmail.com
-- **Website**: https://arifgultas.github.io/odyssey-journal
-- **Privacy Policy**: https://arifgultas.github.io/odyssey-journal/privacy-policy.html
-- **Terms of Service**: https://arifgultas.github.io/odyssey-journal/terms-of-service.html
+- **Website**: https://odysseyjournal.github.io
+- **Privacy Policy**: https://odysseyjournal.github.io/privacy-policy.html
+- **Terms of Service**: https://odysseyjournal.github.io/terms-of-service.html
+
+---
+
+# Odyssey Journal — App Store & Play Store Listing (Turkish / Türkçe)
+
+## Uygulama Adı
+**Odyssey Journal — Seyahat Günlüğü**
+
+## Kısa Açıklama (Maksimum 80 karakter)
+Fotoğraflar, haritalar ve küresel bir toplulukla seyahatlerinizi paylaşın. 🌍
+
+## Tam Açıklama
+
+**Seyahat hikayeniz, en güzel haliyle.**
+
+Odyssey Journal, seyahat maceralarınızı belgelemek ve paylaşmak için mükemmel bir dijital seyahat arkadaşıdır. Fotoğraflarla anılarınızı yakalayın, etkileşimli bir harita üzerinde konumları etiketleyin ve dünya çapındaki seyahat severlerden oluşan küresel bir toplulukla bağlantı kurun.
+
+**📸 Yakala ve Paylaş**
+• Birden fazla fotoğraf ve açıklama içeren zengin seyahat gönderileri oluşturun
+• Konumları etiketleyin ve hava durumunu otomatik olarak görün
+• Gönderilerinizi özel seyahat koleksiyonları halinde düzenleyin
+• Maceralarınızı toplulukla paylaşarak ilham verin
+
+**🗺️ Dünyayı Keşfet**
+• Destinasyonların etkileşimli haritasına göz atın
+• Dünyanın dört bir yanından paylaşılan popüler gönderileri keşfedin
+• Gönderileri konuma, kategoriye veya popülerliğe göre filtreleyin
+• Seyahat topluluğundaki en son trendleri takip edin
+
+**👥 Bağlantı Kur ve Etkileşime Geç**
+• En beğendiğiniz gezginleri takip edin ve yeni rotalar öğrenin
+• Gönderileri beğenin, yorum yapın ve yer işaretlerine kaydedin
+• Etkileşimler için anlık bildirimler alın
+• Diğer kullanıcılarla ortak destinasyonlarınızı görüntüleyin
+
+**📔 Kişisel Seyahat Günlüğü**
+• Pasaport temalı şık ve kişiselleştirilmiş profil sayfası
+• Ziyaret ettiğiniz ülkeleri ve katettiğiniz kilometreyi otomatik takip edin
+• Gece konforlu bir okuma için karanlık mod desteği
+• 12 farklı dil seçeneği
+
+**🔒 Gizlilik ve Güvenlik**
+• Verileriniz şifrelenir ve güvenli bir şekilde saklanır
+• İstediğiniz zaman hesabınızı ve tüm verilerinizi tamamen silebilirsiniz
+• Reklam barındırmaz, izleme yapmaz, verilerinizi satmaz
+
+## Anahtar Kelimeler (Keywords)
+seyahat günlüğü, gezi günlüğü, seyahat uygulaması, gezi planlayıcı, seyahat fotoğrafları, seyahat hikayeleri, seyahat topluluğu, seyahat haritası, sırt çantalı seyahat, macera, keşfet, destinasyonlar, gezi blogu, seyahat rotaları
+

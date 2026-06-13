@@ -99,6 +99,11 @@ export default {
         startSharing: '¡Empieza a compartir tus recuerdos de viaje!',
         createFirstPost: 'Crea tu Primera Publicación',
         refreshing: 'Actualizando...',
+        publicFeed: 'Público',
+        followingFeed: 'Siguiendo',
+        noFollowingPosts: 'Sin publicaciones aún',
+        exploreTravelers: 'Explora a otros viajeros en la comunidad y síguelos para ver sus publicaciones aquí.',
+        exploreButton: 'Explorar viajeros',
     },
     explore: {
         title: 'Explorar',
@@ -169,6 +174,9 @@ export default {
         storyPlaceholder: 'Comienza a contar tu historia...',
         emailNotVerifiedTitle: 'Verificación de correo electrónico requerida',
         emailNotVerifiedDesc: 'Por favor, verifica tu dirección de correo electrónico para compartir nuevas entradas con la comunidad.',
+        searchPlaceholder: 'Buscar ciudad o lugar...',
+        useCurrentLocation: 'Usar ubicación actual (GPS)',
+        noResults: 'No se encontraron resultados. Por favor, inténtelo de nuevo.',
     },
     categories: {
         nature: 'Naturaleza',

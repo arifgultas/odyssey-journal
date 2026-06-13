@@ -190,7 +190,7 @@ You may not assign these Terms. We may assign them without notice.
 If you have questions about these Terms, contact us at:
 
 - **Email**: gultassoftware@gmail.com
-- **Website**: https://arifgultas.github.io/odyssey-journal/terms-of-service.html
+- **Website**: https://odysseyjournal.github.io/terms-of-service.html
 
 ## 16. Special Provisions
 

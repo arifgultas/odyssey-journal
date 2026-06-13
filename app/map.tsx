@@ -23,9 +23,26 @@ import {
     View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import Constants from 'expo-constants';
 
-const mapsAvailable = true; // Set to true when using Development Build with react-native-maps
+// Determine if we are running in Expo Go on iOS
+const isExpoGoOnIos = Platform.OS === 'ios' && Constants.appOwnership === 'expo';
+const mapsAvailable = Platform.OS !== 'web' && !isExpoGoOnIos;
+
+let MapView: any = View;
+let Marker: any = View;
+let PROVIDER_GOOGLE: any = 'google';
+
+if (mapsAvailable) {
+    try {
+        const MapsModule = require('react-native-maps');
+        MapView = MapsModule.default;
+        Marker = MapsModule.Marker;
+        PROVIDER_GOOGLE = MapsModule.PROVIDER_GOOGLE;
+    } catch (error) {
+        console.warn('Failed to load react-native-maps dynamically:', error);
+    }
+}
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

@@ -99,6 +99,11 @@ export default {
         startSharing: 'Beginnen Sie, Ihre Reiseerinnerungen zu teilen!',
         createFirstPost: 'Ersten Beitrag erstellen',
         refreshing: 'Aktualisieren...',
+        publicFeed: 'Öffentlicher Feed',
+        followingFeed: 'Gefolgt',
+        noFollowingPosts: 'Noch keine Beiträge',
+        exploreTravelers: 'Entdecken Sie andere Reisende in der Community und folgen Sie ihnen, um ihre Beiträge hier zu sehen.',
+        exploreButton: 'Reisende entdecken',
     },
     explore: {
         title: 'Entdecken',
@@ -169,6 +174,9 @@ export default {
         storyPlaceholder: 'Beginnen Sie Ihre Geschichte zu erzählen...',
         emailNotVerifiedTitle: 'E-Mail-Verifizierung erforderlich',
         emailNotVerifiedDesc: 'Bitte verifizieren Sie Ihre E-Mail-Adresse, um neue Tagebucheinträge mit der Community zu teilen.',
+        searchPlaceholder: 'Stadt oder Ort suchen...',
+        useCurrentLocation: 'Aktuellen Standort verwenden (GPS)',
+        noResults: 'Keine Ergebnisse gefunden. Bitte versuchen Sie es erneut.',
     },
     categories: {
         nature: 'Natur',

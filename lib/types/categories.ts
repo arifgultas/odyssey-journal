@@ -37,9 +37,16 @@ export const TRAVEL_CATEGORIES: Category[] = [
         color: '#F39C12',
     },
     {
+        id: 'history',
+        name: 'History',
+        nameTr: 'Tarih',
+        icon: 'hourglass',
+        color: '#8B7355',
+    },
+    {
         id: 'culture',
         name: 'Culture',
-        nameTr: 'Tarih',
+        nameTr: 'Kültür',
         icon: 'library',
         color: '#9B59B6',
     },

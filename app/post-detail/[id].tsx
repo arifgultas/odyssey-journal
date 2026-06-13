@@ -509,7 +509,7 @@ export default function PostDetailScreen() {
                                 <View style={[styles.mapPreview, { borderColor: isDark ? 'rgba(139, 94, 60, 0.3)' : 'rgba(139, 94, 60, 0.3)' }]}>
                                     <Image
                                         source={{
-                                            uri: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${post.location.longitude},${post.location.latitude},10,0/400x200?access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
+                                            uri: `https://maps.googleapis.com/maps/api/staticmap?center=${post.location.latitude},${post.location.longitude}&zoom=10&size=400x200&scale=2&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`
                                         }}
                                         style={styles.mapImage}
                                         contentFit="cover"

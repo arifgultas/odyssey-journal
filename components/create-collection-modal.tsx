@@ -240,7 +240,7 @@ export function CreateCollectionModal({
                             value={name}
                             onChangeText={setName}
                             maxLength={50}
-                            autoFocus={!isEditMode}
+                            autoFocus={false}
                         />
                         <Text style={[styles.charCount, { color: textSecondary }]}>
                             {name.length}/50

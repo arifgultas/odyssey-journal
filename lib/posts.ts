@@ -88,6 +88,20 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             throw new Error(getModerationMessage(textModeration.flaggedCategories));
         }
 
+        // Format location_name for legacy/search column compatibility
+        let locationName: string | null = null;
+        if (data.location) {
+            if (data.location.city && data.location.country) {
+                locationName = `${data.location.city}, ${data.location.country}`;
+            } else if (data.location.city) {
+                locationName = data.location.city;
+            } else if (data.location.country) {
+                locationName = data.location.country;
+            } else if (data.location.address) {
+                locationName = data.location.address;
+            }
+        }
+
         // Create post in database
         const { data: post, error: postError } = await supabase
             .from('posts')
@@ -96,6 +110,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 title: sanitizedTitle,
                 content: sanitizedContent,
                 location: data.location,
+                location_name: locationName,
                 images: imageUrls,
                 image_captions: sanitizedCaptions,
                 weather_data: data.weatherData || null,
@@ -192,6 +207,7 @@ export async function updatePost(
             title?: string;
             content?: string;
             location?: CreatePostData['location'];
+            location_name?: string | null;
             images?: string[];
             categories?: string[];
             image_captions?: string[];
@@ -202,7 +218,22 @@ export async function updatePost(
 
         if (data.title !== undefined) updateData.title = sanitizePostTitle(data.title);
         if (data.content !== undefined) updateData.content = sanitizePostContent(data.content);
-        if (data.location !== undefined) updateData.location = data.location;
+        if (data.location !== undefined) {
+            updateData.location = data.location;
+            if (data.location) {
+                if (data.location.city && data.location.country) {
+                    updateData.location_name = `${data.location.city}, ${data.location.country}`;
+                } else if (data.location.city) {
+                    updateData.location_name = data.location.city;
+                } else if (data.location.country) {
+                    updateData.location_name = data.location.country;
+                } else if (data.location.address) {
+                    updateData.location_name = data.location.address;
+                }
+            } else {
+                updateData.location_name = null;
+            }
+        }
         if (imageUrls !== undefined) updateData.images = imageUrls;
         if (data.categories !== undefined) updateData.categories = data.categories;
         if (data.imageCaptions !== undefined) {

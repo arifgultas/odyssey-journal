@@ -2,10 +2,11 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
-import { useLocationPicker } from '@/hooks/use-location-picker';
+import { useLocationPicker, LocationData } from '@/hooks/use-location-picker';
 import { createPost } from '@/lib/posts';
 import { fetchWeatherData, WeatherData } from '@/lib/weather';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -22,6 +23,7 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Modal,
 } from 'react-native';
 import Animated, {
     Easing,
@@ -70,6 +72,7 @@ const CATEGORIES = [
     { id: 'city', labelKey: 'categories.city', icon: 'city' },
     { id: 'food', labelKey: 'categories.food', icon: 'food' },
     { id: 'history', labelKey: 'categories.history', icon: 'history' },
+    { id: 'culture', labelKey: 'categories.culture', icon: 'culture' },
     { id: 'art', labelKey: 'categories.art', icon: 'art' },
 ];
 
@@ -81,6 +84,16 @@ const CategoryIcon = ({ icon, color, size = 20 }: { icon: string; color: string;
                 <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
                     <Path d="M12 3 L15.5 10 H13.5 L17 17 H7 L10.5 10 H8.5 L12 3 Z" strokeLinejoin="round" />
                     <Path d="M12 21 V17" strokeLinecap="round" />
+                </Svg>
+            );
+        case 'history':
+            return (
+                <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
+                    <Path d="M5 2h14" strokeLinecap="round" />
+                    <Path d="M5 22h14" strokeLinecap="round" />
+                    <Path d="M19 2l-7 8-7-8" strokeLinejoin="round" />
+                    <Path d="M19 22l-7-8-7 8" strokeLinejoin="round" />
+                    <Circle cx={12} cy={18} r={1.5} fill={color} />
                 </Svg>
             );
         case 'city':
@@ -102,17 +115,12 @@ const CategoryIcon = ({ icon, color, size = 20 }: { icon: string; color: string;
                     <Circle cx={12} cy={5} r={2} fill="none" />
                 </Svg>
             );
-        case 'history':
+        case 'culture':
             return (
                 <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.5}>
-                    <Rect x={6} y={20} width={12} height={2} strokeLinecap="round" />
-                    <Rect x={5} y={4} width={14} height={2} strokeLinecap="round" />
-                    <Path d="M7 6v14" strokeLinecap="round" />
-                    <Path d="M17 6v14" strokeLinecap="round" />
-                    <Line x1={10} y1={6} x2={10} y2={20} strokeDasharray="1 3" strokeLinecap="round" />
-                    <Line x1={14} y1={6} x2={14} y2={20} strokeDasharray="1 3" strokeLinecap="round" />
-                    <Circle cx={5.5} cy={5} r={1.5} fill="none" />
-                    <Circle cx={18.5} cy={5} r={1.5} fill="none" />
+                    <Path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z" strokeLinecap="round" strokeLinejoin="round" />
+                    <Path d="M6 6h10" strokeLinecap="round" strokeLinejoin="round" />
+                    <Path d="M6 10h10" strokeLinecap="round" strokeLinejoin="round" />
                 </Svg>
             );
         case 'art':
@@ -617,7 +625,7 @@ export default function CreatePostScreen() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(['nature']);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [locationConfirmed, setLocationConfirmed] = useState(false);
     const [imageCaptions, setImageCaptions] = useState<string[]>([]);
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -635,8 +643,81 @@ export default function CreatePostScreen() {
         location,
         isLoading: isGettingLocation,
         getCurrentLocation,
+        setCustomLocation,
         clearLocation,
     } = useLocationPicker();
+
+    const [showLocationModal, setShowLocationModal] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearchingLocation, setIsSearchingLocation] = useState(false);
+    const [searchResults, setSearchResults] = useState<LocationData[]>([]);
+
+    const handleSearchLocation = async (query: string) => {
+        if (!query.trim()) return;
+        setIsSearchingLocation(true);
+        try {
+            const results = await Location.geocodeAsync(query);
+            if (results.length > 0) {
+                const suggestions: LocationData[] = [];
+                for (const res of results.slice(0, 3)) {
+                    try {
+                        const addresses = await Location.reverseGeocodeAsync({
+                            latitude: res.latitude,
+                            longitude: res.longitude
+                        });
+                        if (addresses.length > 0) {
+                            const addr = addresses[0];
+                            const queryLower = query.toLowerCase().trim();
+                            const queryHasNumbers = /\d/.test(query);
+                            
+                            let displayName = addr.name || query;
+                            
+                            const isStreetNumber = addr.streetNumber && displayName.toLowerCase().includes(addr.streetNumber.toLowerCase());
+                            const hasNumbers = /\d/.test(displayName);
+                            const isStreetName = addr.street && (displayName.toLowerCase().includes(addr.street.toLowerCase()) || addr.street.toLowerCase().includes(displayName.toLowerCase()));
+                            
+                            if ((isStreetNumber || hasNumbers || isStreetName) && !queryHasNumbers) {
+                                displayName = addr.city || addr.subregion || addr.district || addr.region || query;
+                            }
+                            
+                            if (displayName.toLowerCase() === queryLower) {
+                                displayName = query.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                            }
+                            
+                            suggestions.push({
+                                latitude: res.latitude,
+                                longitude: res.longitude,
+                                address: `${addr.street || ''} ${addr.streetNumber || ''}`.trim(),
+                                city: addr.city || addr.subregion || addr.district || undefined,
+                                country: addr.country || undefined,
+                                name: displayName,
+                            });
+                        } else {
+                            suggestions.push({
+                                latitude: res.latitude,
+                                longitude: res.longitude,
+                                name: query,
+                            });
+                        }
+                    } catch (e) {
+                        suggestions.push({
+                            latitude: res.latitude,
+                            longitude: res.longitude,
+                            name: query,
+                        });
+                    }
+                }
+                setSearchResults(suggestions);
+            } else {
+                Alert.alert(t('common.error') || 'Hata', 'Konum bulunamadı. Lütfen başka bir arama yapın.');
+            }
+        } catch (error) {
+            console.error('Error searching location:', error);
+            Alert.alert(t('common.error') || 'Hata', 'Konum aranırken bir hata oluştu.');
+        } finally {
+            setIsSearchingLocation(false);
+        }
+    };
 
     // Auto-fetch weather when location is selected
     useEffect(() => {
@@ -669,7 +750,7 @@ export default function CreatePostScreen() {
     const resetForm = () => {
         setTitle('');
         setContent('');
-        setSelectedCategories(['nature']);
+        setSelectedCategories([]);
         setLocationConfirmed(false);
         clearLocation();
         if (clearImages) clearImages();
@@ -783,6 +864,141 @@ export default function CreatePostScreen() {
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             {/* Loading Overlay */}
             <LoadingOverlay isVisible={isSubmitting} isDark={isDark} />
+
+            {/* Location Picker Modal */}
+            <Modal
+                visible={showLocationModal}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setShowLocationModal(false)}
+            >
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={{ flex: 1 }}
+                >
+                    <TouchableOpacity
+                        style={styles.modalOverlay}
+                        activeOpacity={1}
+                        onPress={() => {
+                            setShowLocationModal(false);
+                            setSearchQuery('');
+                            setSearchResults([]);
+                        }}
+                    >
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={() => {}}
+                            style={[styles.modalContent, { backgroundColor: theme.paper }]}
+                        >
+                            {/* Modal Header */}
+                            <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
+                                <Text style={[styles.modalTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
+                                    {t('create.addLocation') || 'Konum Ekle'}
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setShowLocationModal(false);
+                                        setSearchQuery('');
+                                        setSearchResults([]);
+                                    }}
+                                    style={styles.modalCloseButton}
+                                >
+                                    <Ionicons name="close" size={24} color={theme.textSub} />
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Search Input Section */}
+                            <View style={styles.searchSection}>
+                                <View style={[styles.searchInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
+                                    <Ionicons name="search-outline" size={20} color={theme.textSub} style={{ marginRight: 8 }} />
+                                    <TextInput
+                                        style={[styles.searchInput, { color: theme.textMain }]}
+                                        placeholder={t('create.searchPlaceholder') || 'Şehir veya mekan ara...'}
+                                        placeholderTextColor={`${theme.accentBrown}50`}
+                                        value={searchQuery}
+                                        onChangeText={setSearchQuery}
+                                        onSubmitEditing={() => handleSearchLocation(searchQuery)}
+                                        returnKeyType="search"
+                                    />
+                                    {searchQuery.length > 0 && (
+                                        <TouchableOpacity onPress={() => setSearchQuery('')}>
+                                            <Ionicons name="close-circle" size={18} color={theme.textSub} />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                                <TouchableOpacity
+                                    style={[styles.searchBtn, { backgroundColor: theme.primary }]}
+                                    onPress={() => handleSearchLocation(searchQuery)}
+                                >
+                                    <Text style={styles.searchBtnText}>{t('common.search') || 'Ara'}</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Use Current Location Option */}
+                            <TouchableOpacity
+                                style={[styles.currentLocationOption, { borderBottomColor: theme.border }]}
+                                onPress={async () => {
+                                    setShowLocationModal(false);
+                                    await getCurrentLocation();
+                                }}
+                                activeOpacity={0.7}
+                            >
+                                <View style={[styles.currentLocationIconBg, { backgroundColor: `${theme.primary}20` }]}>
+                                    <Ionicons name="navigate-outline" size={20} color={theme.primary} />
+                                </View>
+                                <Text style={[styles.currentLocationText, { color: theme.textMain }]}>
+                                    {t('create.useCurrentLocation') || 'Anlık Konumu Kullan (GPS)'}
+                                </Text>
+                            </TouchableOpacity>
+
+                            {/* Results list */}
+                            {isSearchingLocation ? (
+                                <View style={styles.modalLoading}>
+                                    <ActivityIndicator size="large" color={theme.primary} />
+                                </View>
+                            ) : (
+                                <ScrollView style={styles.resultsScroll}>
+                                    {searchResults.map((result, idx) => (
+                                        <TouchableOpacity
+                                            key={idx}
+                                            style={[styles.resultItem, { borderBottomColor: theme.border }]}
+                                            onPress={() => {
+                                                setCustomLocation(result);
+                                                setLocationConfirmed(true);
+                                                setShowLocationModal(false);
+                                                setSearchQuery('');
+                                                setSearchResults([]);
+                                            }}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Ionicons name="location-outline" size={20} color={theme.accentBrown} style={{ marginRight: 12, marginTop: 2 }} />
+                                            <View style={{ flex: 1 }}>
+                                                <Text style={[styles.resultTitleText, { color: theme.textMain }]}>
+                                                    {result.name || result.address || 'Seçilen Konum'}
+                                                </Text>
+                                                {(result.city || result.country) && (
+                                                    <Text style={[styles.resultSubtitleText, { color: theme.textSub }]}>
+                                                        {[
+                                                            result.city && result.name?.toLowerCase() !== result.city.toLowerCase() ? result.city : null,
+                                                            result.country
+                                                        ].filter(Boolean).join(', ')}
+                                                    </Text>
+                                                )}
+                                            </View>
+                                        </TouchableOpacity>
+                                    ))}
+                                    {!isSearchingLocation && searchQuery && searchResults.length === 0 && (
+                                        <Text style={[styles.noResultsText, { color: theme.textSub }]}>
+                                            {t('create.noResults') || 'Sonuç bulunamadı. Lütfen tekrar deneyin.'}
+                                        </Text>
+                                    )}
+                                </ScrollView>
+                            )}
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </KeyboardAvoidingView>
+            </Modal>
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
@@ -920,7 +1136,7 @@ export default function CreatePostScreen() {
                                     borderColor: theme.border,
                                 }
                             ]}
-                            onPress={getCurrentLocation}
+                            onPress={() => setShowLocationModal(true)}
                             disabled={isGettingLocation || !!location}
                             activeOpacity={0.9}
                         >
@@ -930,7 +1146,7 @@ export default function CreatePostScreen() {
                                     <>
                                         <Image
                                             source={{
-                                                uri: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/${location.longitude},${location.latitude},12,0/400x200?access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
+                                                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${location.latitude},${location.longitude}&zoom=12&size=400x200&scale=2&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`
                                             }}
                                             style={styles.mapImage}
                                             contentFit="cover"
@@ -1707,5 +1923,115 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: -6,
         top: -10,
+    },
+    // Modal Styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+    },
+    modalContent: {
+        borderTopLeftRadius: BorderRadius.lg,
+        borderTopRightRadius: BorderRadius.lg,
+        paddingTop: Spacing.md,
+        paddingHorizontal: Spacing.lg,
+        paddingBottom: Spacing.xl + 20,
+        maxHeight: '80%',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingBottom: Spacing.md,
+        borderBottomWidth: 1,
+    },
+    modalTitle: {
+        fontFamily: Typography.fonts.heading,
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    modalCloseButton: {
+        padding: Spacing.xs,
+    },
+    searchSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.sm,
+        marginTop: Spacing.md,
+        marginBottom: Spacing.md,
+    },
+    searchInputWrapper: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: BorderRadius.md,
+        paddingHorizontal: Spacing.sm,
+        height: 44,
+    },
+    searchInput: {
+        flex: 1,
+        fontFamily: Typography.fonts.ui,
+        fontSize: 15,
+        paddingVertical: 0,
+    },
+    searchBtn: {
+        paddingHorizontal: Spacing.md,
+        height: 44,
+        borderRadius: BorderRadius.md,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    searchBtnText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 14,
+        color: '#2C1810',
+    },
+    currentLocationOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: Spacing.md,
+        borderBottomWidth: 1,
+        gap: Spacing.md,
+    },
+    currentLocationIconBg: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    currentLocationText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 15,
+    },
+    resultsScroll: {
+        marginTop: Spacing.sm,
+    },
+    resultItem: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingVertical: Spacing.md,
+        borderBottomWidth: 1,
+    },
+    resultTitleText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 15,
+    },
+    resultSubtitleText: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 13,
+        marginTop: 2,
+    },
+    modalLoading: {
+        paddingVertical: Spacing.xl,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    noResultsText: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 14,
+        textAlign: 'center',
+        paddingVertical: Spacing.xl,
     },
 });
