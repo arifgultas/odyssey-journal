@@ -61,24 +61,49 @@ export default function ChatRoomScreen() {
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
+    const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
 
     const flatListRef = useRef<FlatList>(null);
+    const typingTimeoutRef = useRef<any>(null);
+    const isTypingRef = useRef(false);
+    const typingChannelRef = useRef<any>(null);
     const { data: profile } = useProfile(chatUserId);
 
     useEffect(() => {
         loadCurrentUser();
-        loadChatHistory();
-    }, [chatUserId]);
+    }, []);
 
     useEffect(() => {
-        if (!chatUserId) return;
+        if (chatUserId && currentUserId) {
+            loadChatHistory();
+        }
+    }, [chatUserId, currentUserId]);
+
+    useEffect(() => {
+        if (!chatUserId || !currentUserId) return;
 
         // Subscribe to real-time message updates
         const unsubscribe = subscribeToMessages(chatUserId, (newMsg) => {
+            const incomingMsg = { ...newMsg };
+            
+            // Mark as read in local state if it's an incoming message for me
+            if (incomingMsg.receiver_id === currentUserId) {
+                incomingMsg.is_read = true;
+                
+                // Also mark as read in Supabase in the background
+                supabase
+                    .from('messages')
+                    .update({ is_read: true })
+                    .eq('id', incomingMsg.id)
+                    .then(({ error }) => {
+                        if (error) console.error('Error marking real-time message as read:', error);
+                    });
+            }
+
             setMessages((prev) => {
                 // Avoid duplicating messages that might have already been added optimistically
-                if (prev.some((m) => m.id === newMsg.id)) return prev;
-                return [...prev, newMsg];
+                if (prev.some((m) => m.id === incomingMsg.id)) return prev;
+                return [...prev, incomingMsg];
             });
             // Scroll to bottom
             setTimeout(() => {
@@ -89,7 +114,33 @@ export default function ChatRoomScreen() {
         return () => {
             unsubscribe();
         };
-    }, [chatUserId]);
+    }, [chatUserId, currentUserId]);
+
+    useEffect(() => {
+        if (!chatUserId || !currentUserId) return;
+
+        const channelId = `chat-typing-${[currentUserId, chatUserId].sort().join('-')}`;
+        const channel = supabase.channel(channelId);
+
+        channel
+            .on('broadcast', { event: 'typing' }, ({ payload }) => {
+                if (payload.userId === chatUserId) {
+                    setIsOtherUserTyping(payload.isTyping);
+                }
+            })
+            .subscribe();
+
+        typingChannelRef.current = channel;
+
+        return () => {
+            if (channel) {
+                supabase.removeChannel(channel);
+            }
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+        };
+    }, [chatUserId, currentUserId]);
 
     const loadCurrentUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -99,8 +150,17 @@ export default function ChatRoomScreen() {
     };
 
     const loadChatHistory = async () => {
+        if (!currentUserId) return;
         setIsLoading(true);
         try {
+            // Explicitly mark all messages from this sender to the current user as read in the DB!
+            await supabase
+                .from('messages')
+                .update({ is_read: true })
+                .eq('sender_id', chatUserId)
+                .eq('receiver_id', currentUserId)
+                .eq('is_read', false);
+
             const history = await getMessages(chatUserId);
             setMessages(history);
             // Scroll to bottom
@@ -114,8 +174,47 @@ export default function ChatRoomScreen() {
         }
     };
 
+    const broadcastTyping = (isTyping: boolean) => {
+        if (typingChannelRef.current) {
+            typingChannelRef.current.send({
+                type: 'broadcast',
+                event: 'typing',
+                payload: { userId: currentUserId, isTyping },
+            });
+        }
+    };
+
+    const handleInputChange = (text: string) => {
+        setInputText(text);
+
+        if (!currentUserId || !chatUserId) return;
+
+        // Send isTyping = true if not already typing
+        if (!isTypingRef.current) {
+            isTypingRef.current = true;
+            broadcastTyping(true);
+        }
+
+        // Reset timeout to stop typing indicator after 2.5 seconds of inactivity
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+
+        typingTimeoutRef.current = setTimeout(() => {
+            isTypingRef.current = false;
+            broadcastTyping(false);
+        }, 2500);
+    };
+
     const handleSend = async () => {
         if (!inputText.trim() || isSending) return;
+
+        // Stop typing indicator immediately on send
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
+        }
+        isTypingRef.current = false;
+        broadcastTyping(false);
 
         const content = inputText.trim();
         setInputText('');
@@ -140,10 +239,13 @@ export default function ChatRoomScreen() {
 
             const savedMsg = await sendMessage(chatUserId, content);
             
-            // Replace optimistic message with actual DB message
-            setMessages((prev) =>
-                prev.map((m) => (m.id === tempId ? savedMsg : m))
-            );
+            // Replace optimistic message with actual DB message, checking if it was already added by subscription
+            setMessages((prev) => {
+                if (prev.some((m) => m.id === savedMsg.id)) {
+                    return prev.filter((m) => m.id !== tempId);
+                }
+                return prev.map((m) => (m.id === tempId ? savedMsg : m));
+            });
         } catch (error) {
             console.error('Error sending message:', error);
             // Put text back in input on error
@@ -194,8 +296,8 @@ export default function ChatRoomScreen() {
     return (
         <KeyboardAvoidingView
             style={[styles.container, { backgroundColor: theme.background }]}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={0}
         >
             {/* Header */}
             <View style={[
@@ -253,6 +355,14 @@ export default function ChatRoomScreen() {
                 />
             )}
 
+            {isOtherUserTyping && (
+                <View style={styles.typingContainer}>
+                    <Text style={[styles.typingText, { color: theme.textMuted }]}>
+                        {profile?.full_name || profile?.username || 'Traveler'} {language === 'tr' ? 'yazıyor...' : 'is typing...'}
+                    </Text>
+                </View>
+            )}
+
             {/* Input Bar */}
             <View style={[
                 styles.inputBar,
@@ -272,13 +382,13 @@ export default function ChatRoomScreen() {
                     <TextInput
                         style={[styles.textInput, { color: theme.textMain }]}
                         value={inputText}
-                        onChangeText={setInputText}
+                        onChangeText={handleInputChange}
                         placeholder={t('chat.typeMessage')}
                         placeholderTextColor={theme.textMuted}
                         multiline
                         maxLength={1000}
                     />
-
+ 
                     <TouchableOpacity
                         style={[
                             styles.sendButton,
@@ -423,5 +533,13 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    typingContainer: {
+        paddingHorizontal: Spacing.lg,
+        paddingVertical: Spacing.xs,
+    },
+    typingText: {
+        fontFamily: Typography.fonts.bodyItalic,
+        fontSize: 13,
     },
 });

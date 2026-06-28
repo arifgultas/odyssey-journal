@@ -354,7 +354,7 @@ export async function fetchPosts(
             throw error;
         }
 
-        return data || [];
+        return populateInteractions(data || []);
     } catch (error) {
         console.error('Error fetching posts:', error);
         captureError(error as Error, { context: 'fetchPosts' });
@@ -385,7 +385,8 @@ export async function fetchPostById(postId: string): Promise<Post> {
             throw error;
         }
 
-        return data;
+        const populated = await populateInteractions([data]);
+        return populated[0];
     } catch (error) {
         console.error('Error fetching post:', error);
         captureError(error as Error, { context: 'fetchPostById' });
@@ -416,10 +417,63 @@ export async function fetchPostsByUser(
             throw error;
         }
 
-        return data || [];
+        return populateInteractions(data || []);
     } catch (error) {
         console.error('Error fetching user posts:', error);
         captureError(error as Error, { context: 'fetchPostsByUser' });
         throw error;
+    }
+}
+
+/**
+ * Helper to populate isLiked and isBookmarked fields on posts for the current authenticated user
+ */
+async function populateInteractions(postsData: any[]): Promise<Post[]> {
+    if (!postsData || postsData.length === 0) {
+        return [];
+    }
+
+    try {
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+            return postsData.map(post => ({
+                ...post,
+                isLiked: false,
+                isBookmarked: false,
+            }));
+        }
+
+        const postIds = postsData.map(post => post.id);
+        const [likesResult, bookmarksResult] = await Promise.all([
+            supabase
+                .from('likes')
+                .select('post_id')
+                .eq('user_id', user.id)
+                .in('post_id', postIds),
+            supabase
+                .from('bookmarks')
+                .select('post_id')
+                .eq('user_id', user.id)
+                .in('post_id', postIds),
+        ]);
+
+        const likedPostIds = new Set((likesResult.data || []).map(l => l.post_id));
+        const bookmarkedPostIds = new Set((bookmarksResult.data || []).map(b => b.post_id));
+
+        return postsData.map(post => ({
+            ...post,
+            isLiked: likedPostIds.has(post.id),
+            isBookmarked: bookmarkedPostIds.has(post.id),
+        }));
+    } catch (error) {
+        console.error('Error populating post interactions:', error);
+        return postsData.map(post => ({
+            ...post,
+            isLiked: false,
+            isBookmarked: false,
+        }));
     }
 }

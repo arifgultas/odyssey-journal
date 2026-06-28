@@ -169,20 +169,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
-        options={{
-          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
-          tabBarIcon: ({ color, focused }) => (
-            <CustomAnimatedTabIcon
-              focused={focused}
-              color={color}
-              size={40}
-              icon="bell"
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="profile"
         options={{
           tabBarIcon: ({ color, focused }) => (
@@ -193,6 +179,12 @@ export default function TabLayout() {
               icon="user"
             />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

@@ -82,19 +82,20 @@ export async function getMessages(chatUserId: string, limit: number = 50): Promi
             throw error;
         }
 
-        // Mark incoming messages as read in the background
+        // Mark incoming messages as read and await the database update
         const unreadIds = (data || [])
             .filter((msg) => msg.receiver_id === user.id && !msg.is_read)
             .map((msg) => msg.id);
 
         if (unreadIds.length > 0) {
-            supabase
+            const { error: updateErr } = await supabase
                 .from('messages')
                 .update({ is_read: true })
-                .in('id', unreadIds)
-                .then(({ error: updateErr }) => {
-                    if (updateErr) console.error('Error marking messages as read:', updateErr);
-                });
+                .in('id', unreadIds);
+
+            if (updateErr) {
+                console.error('Error marking messages as read:', updateErr);
+            }
         }
 
         return data || [];
@@ -222,4 +223,35 @@ export function subscribeToMessages(
     return () => {
         supabase.removeChannel(channel);
     };
+}
+
+/**
+ * Get total unread message count for the current user
+ */
+export async function getUnreadMessageCount(): Promise<number> {
+    try {
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            return 0;
+        }
+
+        const { count, error } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('receiver_id', user.id)
+            .eq('is_read', false);
+
+        if (error) {
+            throw error;
+        }
+
+        return count || 0;
+    } catch (error) {
+        console.error('Error getting unread message count:', error);
+        return 0;
+    }
 }

@@ -1108,6 +1108,11 @@ CREATE POLICY "Users can insert messages as themselves" ON public.messages
     FOR INSERT
     WITH CHECK (auth.uid() = sender_id);
 
+CREATE POLICY "Users can update messages they received" ON public.messages
+    FOR UPDATE
+    USING (auth.uid() = receiver_id)
+    WITH CHECK (auth.uid() = receiver_id);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_messages_chat_flow 
 ON public.messages (sender_id, receiver_id, created_at DESC);
@@ -1122,6 +1127,30 @@ BEGIN
     WHERE pubname = 'supabase_realtime' AND tablename = 'messages'
   ) THEN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+  END IF;
+END $$;
+
+-- Enable Realtime for notifications table
+ALTER TABLE public.notifications REPLICA IDENTITY FULL;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'notifications'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.notifications;
+  END IF;
+END $$;
+
+-- Enable Realtime for posts table
+ALTER TABLE public.posts REPLICA IDENTITY FULL;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'posts'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.posts;
   END IF;
 END $$;
 

@@ -13,6 +13,7 @@ import { usePushNotifications } from '@/hooks/use-push-notifications';
 import { getFollowingFeed } from '@/lib/follow';
 import { likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { getUnreadNotificationCount } from '@/lib/notifications';
+import { getUnreadMessageCount } from '@/lib/chat';
 import { deletePost, fetchPosts, Post } from '@/lib/posts';
 import { generatePostShareUrl, getPostShareMessage, sharePost } from '@/lib/share';
 import { supabase } from '@/lib/supabase';
@@ -20,6 +21,7 @@ import { supabase } from '@/lib/supabase';
 // Custom SVG icons
 import BellIcon from '@/assets/icons/bell-notification.svg';
 import GlobeIcon from '@/assets/icons/globe-earth-world.svg';
+import MessageIcon from '@/assets/icons/edit-pencil-icon--hand-drawn-sketch-style--monolin.svg';
 import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -53,6 +55,7 @@ export default function HomeScreen() {
   const [showCollectionPicker, setShowCollectionPicker] = useState(false);
   const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   const [feedType, setFeedType] = useState<'public' | 'following'>('public');
   const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'location'>('date');
@@ -88,7 +91,7 @@ export default function HomeScreen() {
     // Load initial count
     updateCount();
 
-    // Subscribe to all event changes (INSERT, UPDATE, DELETE) on user's notifications
+    // Subscribe to all event changes (INSERT, UPDATE, DELETE) on notifications table
     const channel = supabase
       .channel(`unread-count-${currentUserId}`)
       .on(
@@ -97,13 +100,22 @@ export default function HomeScreen() {
           event: '*',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${currentUserId}`,
         },
-        () => {
-          updateCount();
+        (payload) => {
+          console.log('[Realtime Notifications event received]:', payload);
+          const newNotif = payload.new as any;
+          const oldNotif = payload.old as any;
+          if (
+            (newNotif && newNotif.user_id === currentUserId) ||
+            (oldNotif && oldNotif.user_id === currentUserId)
+          ) {
+            updateCount();
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`[Realtime Notifications Status: unread-count-${currentUserId}]:`, status);
+      });
 
     return () => {
       isMounted = false;
@@ -111,7 +123,95 @@ export default function HomeScreen() {
     };
   }, [currentUserId]);
 
+  // Subscribe to real-time message changes to update badge count
+  useEffect(() => {
+    if (!currentUserId) return;
 
+    let isMounted = true;
+
+    const updateMsgCount = async () => {
+      try {
+        const count = await getUnreadMessageCount();
+        if (isMounted) {
+          setUnreadMessageCount(count);
+        }
+      } catch (error) {
+        console.error('Error fetching unread message count:', error);
+      }
+    };
+
+    // Load initial count
+    updateMsgCount();
+
+    // Subscribe to all event changes (INSERT, UPDATE, DELETE) on messages table
+    const channel = supabase
+      .channel(`unread-messages-${currentUserId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload) => {
+          console.log('[Realtime Messages event received]:', payload);
+          const newMsg = payload.new as any;
+          const oldMsg = payload.old as any;
+          if (
+            (newMsg && newMsg.receiver_id === currentUserId) ||
+            (oldMsg && oldMsg.receiver_id === currentUserId)
+          ) {
+            updateMsgCount();
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log(`[Realtime Messages Status: unread-messages-${currentUserId}]:`, status);
+      });
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, [currentUserId]);
+
+  // Subscribe to real-time posts changes to update feed likes_count and comments_count
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const channel = supabase
+      .channel(`public-posts-realtime-${currentUserId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'posts',
+        },
+        (payload) => {
+          console.log('[Realtime Posts UPDATE event received]:', payload);
+          const updatedPost = payload.new as any;
+          setPosts(prevPosts =>
+            prevPosts.map(post =>
+              post.id === updatedPost.id
+                ? {
+                  ...post,
+                  likes_count: updatedPost.likes_count,
+                  comments_count: updatedPost.comments_count,
+                }
+                : post
+            )
+          );
+        }
+      )
+      .subscribe((status) => {
+        console.log(`[Realtime Posts Status: public-posts-realtime-${currentUserId}]:`, status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUserId]);
 
   const loadCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -127,8 +227,11 @@ export default function HomeScreen() {
         try {
           const count = await getUnreadNotificationCount();
           setUnreadNotificationCount(count);
+
+          const msgCount = await getUnreadMessageCount();
+          setUnreadMessageCount(msgCount);
         } catch (error) {
-          console.error('Error loading unread count:', error);
+          console.error('Error loading unread counts:', error);
         }
       };
       refreshOnFocus();
@@ -420,8 +523,8 @@ export default function HomeScreen() {
             <BellIcon
               width={34}
               height={34}
-              fill={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
-              color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+              fill={colorScheme === 'dark' ? '#F5F1E8' : '#181511'}
+              color={colorScheme === 'dark' ? '#F5F1E8' : '#181511'}
             />
             {unreadNotificationCount > 0 && (
               <View style={[
@@ -439,23 +542,41 @@ export default function HomeScreen() {
             )}
           </View>
         </TouchableOpacity>
-
+ 
         <TouchableOpacity
           style={styles.headerButton}
           onPress={() => router.push('/chat' as any)}
           accessibilityRole="button"
           accessibilityLabel={language === 'tr' ? 'Mektupları ve sohbetleri aç' : 'Open letters and chats'}
         >
-          <Ionicons
-            name="paper-plane-outline"
-            size={26}
-            color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
-          />
+          <View>
+            <MessageIcon
+              width={34}
+              height={34}
+              fill={colorScheme === 'dark' ? '#F5F1E8' : '#181511'}
+              color={colorScheme === 'dark' ? '#F5F1E8' : '#181511'}
+              style={{ opacity: colorScheme === 'dark' ? 0.85 : 1 }}
+            />
+            {unreadMessageCount > 0 && (
+              <View style={[
+                styles.notificationBadge,
+                {
+                  borderColor: colorScheme === 'dark'
+                    ? 'rgba(26, 20, 16, 0.95)'
+                    : 'rgba(245, 241, 232, 0.95)',
+                }
+              ]}>
+                <Text style={styles.notificationBadgeText}>
+                  {unreadMessageCount <= 9 ? unreadMessageCount : '9+'}
+                </Text>
+              </View>
+            )}
+          </View>
         </TouchableOpacity>
       </View>
     </View>
   );
-
+ 
   const renderSortBar = () => (
     <View style={[
       styles.sortBarContainer,
@@ -478,12 +599,12 @@ export default function HomeScreen() {
       >
         <Text style={[
           styles.sortText,
-          sortBy === 'date' ? { color: theme.accent, fontFamily: Typography.fonts.uiBold } : { color: theme.textMuted }
+          sortBy === 'date' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          📅 {language === 'tr' ? 'En Yeni' : 'Latest'}
+          {language === 'tr' ? 'EN YENİ' : 'LATEST'}
         </Text>
       </TouchableOpacity>
-
+ 
       <TouchableOpacity
         style={[
           styles.sortButton,
@@ -496,12 +617,12 @@ export default function HomeScreen() {
       >
         <Text style={[
           styles.sortText,
-          sortBy === 'popularity' ? { color: theme.accent, fontFamily: Typography.fonts.uiBold } : { color: theme.textMuted }
+          sortBy === 'popularity' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          🔥 {language === 'tr' ? 'Popüler' : 'Popular'}
+          {language === 'tr' ? 'POPÜLER' : 'POPULAR'}
         </Text>
       </TouchableOpacity>
-
+ 
       <TouchableOpacity
         style={[
           styles.sortButton,
@@ -514,9 +635,9 @@ export default function HomeScreen() {
       >
         <Text style={[
           styles.sortText,
-          sortBy === 'location' ? { color: theme.accent, fontFamily: Typography.fonts.uiBold } : { color: theme.textMuted }
+          sortBy === 'location' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          📍 {language === 'tr' ? 'Konumlu' : 'Location'}
+          {language === 'tr' ? 'KONUMLU' : 'LOCATION'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -740,7 +861,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   sortText: {
-    fontFamily: Typography.fonts.ui,
-    fontSize: 12,
+    fontFamily: Typography.fonts.uiBold,
+    fontSize: 11,
+    letterSpacing: 1.5,
   },
 });

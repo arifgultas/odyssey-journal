@@ -4,7 +4,7 @@ import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { BookmarkRibbon } from './bookmark-ribbon';
 import { ImageCarousel } from './image-carousel';
@@ -45,6 +45,16 @@ export function PostCard({
     const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked || false);
     const [likesCount, setLikesCount] = useState(post.likes_count || 0);
     const [showMenu, setShowMenu] = useState(false);
+
+    // Sync local state with post props for real-time updates
+    useEffect(() => {
+        setIsLiked(post.isLiked || false);
+        setLikesCount(post.likes_count || 0);
+    }, [post.isLiked, post.likes_count]);
+
+    useEffect(() => {
+        setIsBookmarked(post.isBookmarked || false);
+    }, [post.isBookmarked]);
 
     // Animation values using React Native Animated (not Reanimated)
     const scaleAnim = useRef(new Animated.Value(1)).current;

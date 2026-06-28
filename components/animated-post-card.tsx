@@ -98,6 +98,16 @@ const _AnimatedPostCard = function AnimatedPostCard({
         ]).start();
     }, [index]);
 
+    // Sync local state with post props for real-time updates
+    useEffect(() => {
+        setIsLiked(post.isLiked || false);
+        setLikesCount(post.likes_count || 0);
+    }, [post.isLiked, post.likes_count]);
+
+    useEffect(() => {
+        setIsBookmarked(post.isBookmarked || false);
+    }, [post.isBookmarked]);
+
     // Image blur to sharp transition
     useEffect(() => {
         if (imageLoaded) {
