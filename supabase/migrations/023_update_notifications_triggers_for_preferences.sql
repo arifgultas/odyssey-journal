@@ -1,7 +1,6 @@
 -- Update notification trigger functions to respect user notification_preferences
 
 -- 1. Like notifications
-DROP FUNCTION IF EXISTS public.create_like_notification();
 CREATE OR REPLACE FUNCTION public.create_like_notification()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -26,7 +25,6 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- 2. Comment notifications
-DROP FUNCTION IF EXISTS public.create_comment_notification();
 CREATE OR REPLACE FUNCTION public.create_comment_notification()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -51,7 +49,6 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 
 -- 3. Follow notifications
-DROP FUNCTION IF EXISTS public.create_follow_notification();
 CREATE OR REPLACE FUNCTION public.create_follow_notification()
 RETURNS TRIGGER AS $$
 DECLARE
