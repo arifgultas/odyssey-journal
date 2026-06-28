@@ -13,11 +13,13 @@ CREATE TABLE IF NOT EXISTS public.messages (
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 
 -- Select policy: users can view messages they sent or received
+DROP POLICY IF EXISTS "Users can read their own sent and received messages" ON public.messages;
 CREATE POLICY "Users can read their own sent and received messages" ON public.messages
     FOR SELECT
     USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
 
 -- Insert policy: users can send messages as themselves
+DROP POLICY IF EXISTS "Users can insert messages as themselves" ON public.messages;
 CREATE POLICY "Users can insert messages as themselves" ON public.messages
     FOR INSERT
     WITH CHECK (auth.uid() = sender_id);
