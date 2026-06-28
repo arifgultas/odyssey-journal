@@ -9,6 +9,9 @@ global.__DEV__ = true;
 // Mock Platform for react-native in-place to avoid destructuring other getters
 jest.mock('react-native', () => {
     const actual = jest.requireActual('react-native');
+    if (!actual.Platform) {
+        actual.Platform = {};
+    }
     actual.Platform.OS = 'ios';
     actual.Platform.select = jest.fn((objs) => objs.ios || objs.default);
     return actual;
