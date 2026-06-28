@@ -65,6 +65,7 @@ CREATE TRIGGER enforce_ban_on_comments
 
 -- 7. Hide banned users' posts from public view
 DROP POLICY IF EXISTS "Posts are viewable by unblocked users" ON public.posts;
+DROP POLICY IF EXISTS "Posts are viewable by unblocked unbanned users" ON public.posts;
 CREATE POLICY "Posts are viewable by unblocked unbanned users"
     ON public.posts FOR SELECT
     USING (
