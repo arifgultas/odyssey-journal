@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS public.push_notification_queue (
 ALTER TABLE public.push_notification_queue ENABLE ROW LEVEL SECURITY;
 
 -- Only service role can access push queue
+DROP POLICY IF EXISTS "Service role can manage push queue" ON public.push_notification_queue;
 CREATE POLICY "Service role can manage push queue"
 ON public.push_notification_queue
 FOR ALL

@@ -10,6 +10,7 @@ ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS banned_at TIMESTAMP WITH TIME ZONE;
 
 -- 2. Admin RLS: Allow admins to view ALL reports
+DROP POLICY IF EXISTS "Admins can view all reports" ON public.reports;
 CREATE POLICY "Admins can view all reports"
     ON public.reports FOR SELECT
     USING (
@@ -20,6 +21,7 @@ CREATE POLICY "Admins can view all reports"
     );
 
 -- 3. Admin RLS: Allow admins to update report status
+DROP POLICY IF EXISTS "Admins can update reports" ON public.reports;
 CREATE POLICY "Admins can update reports"
     ON public.reports FOR UPDATE
     USING (

@@ -14,16 +14,19 @@ ALTER TABLE public.user_blocks ENABLE ROW LEVEL SECURITY;
 
 -- 3. Policies for user_blocks
 -- Users can see blocks where they are the blocker or the blocked
+DROP POLICY IF EXISTS "Users can view their own blocks" ON public.user_blocks;
 CREATE POLICY "Users can view their own blocks"
 ON public.user_blocks FOR SELECT
 USING (auth.uid() = blocker_id OR auth.uid() = blocked_id);
 
 -- Users can only insert blocks for themselves
+DROP POLICY IF EXISTS "Users can block others" ON public.user_blocks;
 CREATE POLICY "Users can block others"
 ON public.user_blocks FOR INSERT
 WITH CHECK (auth.uid() = blocker_id);
 
 -- Users can unblock (delete) their own blocks
+DROP POLICY IF EXISTS "Users can unblock others" ON public.user_blocks;
 CREATE POLICY "Users can unblock others"
 ON public.user_blocks FOR DELETE
 USING (auth.uid() = blocker_id);
@@ -91,6 +94,7 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS on_user_block ON public.user_blocks;
 CREATE TRIGGER on_user_block
   AFTER INSERT ON public.user_blocks
   FOR EACH ROW EXECUTE FUNCTION public.handle_user_block();
