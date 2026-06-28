@@ -32,6 +32,7 @@ END $$;
 --       bypass RLS. This only restricts direct client inserts.
 -- ============================================================
 DROP POLICY IF EXISTS "Users can create notifications." ON public.notifications;
+DROP POLICY IF EXISTS "Users can create notifications" ON public.notifications;
 
 CREATE POLICY "Users can create notifications"
     ON public.notifications FOR INSERT
