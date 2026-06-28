@@ -1,4 +1,6 @@
 -- 1. Popular Destinations
+DROP FUNCTION IF EXISTS public.get_popular_destinations(integer);
+DROP FUNCTION IF EXISTS public.get_popular_destinations();
 CREATE OR REPLACE FUNCTION public.get_popular_destinations(p_limit int DEFAULT 10)
 RETURNS TABLE (
     location_name text,
@@ -37,6 +39,8 @@ END;
 $$;
 
 -- 2. Trending Locations (Son 7 gün içinde trend skoruna göre)
+DROP FUNCTION IF EXISTS public.get_trending_locations(integer);
+DROP FUNCTION IF EXISTS public.get_trending_locations();
 CREATE OR REPLACE FUNCTION public.get_trending_locations(p_limit int DEFAULT 10)
 RETURNS TABLE (
     location_name text,

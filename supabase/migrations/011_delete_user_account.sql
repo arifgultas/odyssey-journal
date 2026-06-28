@@ -3,6 +3,7 @@
 -- It must be called by the authenticated user who wants to delete their account.
 -- Uses SECURITY DEFINER to bypass RLS and access auth.users.
 
+DROP FUNCTION IF EXISTS public.delete_user_account();
 CREATE OR REPLACE FUNCTION public.delete_user_account()
 RETURNS void
 LANGUAGE plpgsql

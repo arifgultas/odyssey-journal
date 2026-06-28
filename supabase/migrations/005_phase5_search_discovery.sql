@@ -50,6 +50,8 @@ CREATE INDEX IF NOT EXISTS idx_profiles_search ON profiles USING gin(
 );
 
 -- Function to get trending locations (last 7 days)
+DROP FUNCTION IF EXISTS public.get_trending_locations(integer);
+DROP FUNCTION IF EXISTS public.get_trending_locations();
 CREATE OR REPLACE FUNCTION get_trending_locations(limit_count INT DEFAULT 10)
 RETURNS TABLE (
   location_name TEXT,
@@ -75,6 +77,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function to get recommended places
+DROP FUNCTION IF EXISTS public.get_recommended_places(integer);
+DROP FUNCTION IF EXISTS public.get_recommended_places();
 CREATE OR REPLACE FUNCTION get_recommended_places(limit_count INT DEFAULT 10)
 RETURNS TABLE (
   location_name TEXT,
