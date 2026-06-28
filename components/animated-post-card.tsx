@@ -311,7 +311,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                         {/* More Menu Button */}
                         <TouchableWithoutFeedback
                             onPress={(e) => {
-                                e.stopPropagation();
+                                e?.stopPropagation?.();
                                 setShowMenu(!showMenu);
                             }}
                         >
