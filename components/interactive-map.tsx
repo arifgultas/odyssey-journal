@@ -55,25 +55,6 @@ export function InteractiveMap({
     const { isDark } = useTheme();
     const colors = isDark ? Colors.dark : Colors.light;
 
-    if (!mapsAvailable) {
-        return (
-            <View style={[styles.container, style, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border, padding: Spacing.md }]}>
-                <Ionicons name="map-outline" size={40} color={colors.compass} />
-                <Text style={{ fontFamily: Typography.fonts.bodyBold, color: colors.text, marginTop: 8, fontSize: 15 }}>
-                    {title || 'Seyahat Noktası'}
-                </Text>
-                {description && (
-                    <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, marginTop: 4, fontSize: 13, textAlign: 'center' }}>
-                        {description}
-                    </Text>
-                )}
-                <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, fontSize: 11, marginTop: 12, opacity: 0.7 }}>
-                    (Harita görünümü Expo Go iOS'ta desteklenmez)
-                </Text>
-            </View>
-        );
-    }
-
     const scaleAnim = useRef(new Animated.Value(0)).current;
     const translateYAnim = useRef(new Animated.Value(-40)).current;
 
@@ -93,6 +74,25 @@ export function InteractiveMap({
             }),
         ]).start();
     }, []);
+
+    if (!mapsAvailable) {
+        return (
+            <View style={[styles.container, style, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border, padding: Spacing.md }]}>
+                <Ionicons name="map-outline" size={40} color={colors.compass} />
+                <Text style={{ fontFamily: Typography.fonts.bodyBold, color: colors.text, marginTop: 8, fontSize: 15 }}>
+                    {title || 'Seyahat Noktası'}
+                </Text>
+                {description && (
+                    <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, marginTop: 4, fontSize: 13, textAlign: 'center' }}>
+                        {description}
+                    </Text>
+                )}
+                <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, fontSize: 11, marginTop: 12, opacity: 0.7 }}>
+                    {"(Harita görünümü Expo Go iOS'ta desteklenmez)"}
+                </Text>
+            </View>
+        );
+    }
 
     const region = {
         latitude,

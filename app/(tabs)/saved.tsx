@@ -380,7 +380,7 @@ export default function SavedPostsScreen() {
                                 ]}
                                 numberOfLines={4}
                             >
-                                "{post.content || t('saved.noNote')}"
+                                &quot;{post.content || t('saved.noNote')}&quot;
                             </Text>
 
                             {/* Footer */}
