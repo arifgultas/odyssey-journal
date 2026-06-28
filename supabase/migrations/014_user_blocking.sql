@@ -50,6 +50,7 @@ $$;
 -- 5. Update Policies for `profiles`
 -- Drop existing select policy
 DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.profiles;
+DROP POLICY IF EXISTS "Public profiles are viewable by unblocked users." ON public.profiles;
 -- Recreate with blocking check
 CREATE POLICY "Public profiles are viewable by unblocked users."
 ON public.profiles FOR SELECT
@@ -59,6 +60,7 @@ USING (
 
 -- 6. Update Policies for `posts`
 DROP POLICY IF EXISTS "Public posts are viewable by everyone." ON public.posts;
+DROP POLICY IF EXISTS "Posts are viewable by unblocked users" ON public.posts;
 CREATE POLICY "Posts are viewable by unblocked users"
 ON public.posts FOR SELECT
 USING (
@@ -67,6 +69,7 @@ USING (
 
 -- 7. Update Policies for `comments`
 DROP POLICY IF EXISTS "Comments are viewable by everyone." ON public.comments;
+DROP POLICY IF EXISTS "Comments are viewable by unblocked users" ON public.comments;
 CREATE POLICY "Comments are viewable by unblocked users"
 ON public.comments FOR SELECT
 USING (
