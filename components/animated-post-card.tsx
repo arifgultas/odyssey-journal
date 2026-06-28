@@ -333,7 +333,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                         {isOwnPost ? (
                             <TouchableWithoutFeedback
                                 onPress={(e) => {
-                                    e.stopPropagation();
+                                    e?.stopPropagation?.();
                                     setShowMenu(false);
                                     onDelete?.();
                                 }}
@@ -346,7 +346,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                         ) : (
                             <TouchableWithoutFeedback
                                 onPress={(e) => {
-                                    e.stopPropagation();
+                                    e?.stopPropagation?.();
                                     setShowMenu(false);
                                     onReport?.();
                                 }}
