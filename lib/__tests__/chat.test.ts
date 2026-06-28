@@ -132,8 +132,8 @@ describe('chat service', () => {
     describe('getConversations', () => {
         it('returns conversation list with profiles and unread states', async () => {
             const mockRawMessages = [
-                { id: '1', sender_id: 'user-111', receiver_id: 'user-222', content: 'Hi', is_read: true, created_at: '2026-06-28T12:00:00Z' },
                 { id: '2', sender_id: 'user-222', receiver_id: 'user-111', content: 'Hello', is_read: false, created_at: '2026-06-28T12:01:00Z' },
+                { id: '1', sender_id: 'user-111', receiver_id: 'user-222', content: 'Hi', is_read: true, created_at: '2026-06-28T12:00:00Z' },
             ];
 
             const mockProfiles = [

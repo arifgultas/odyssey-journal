@@ -98,11 +98,13 @@ describe('interactions service', () => {
         });
 
         it('throws database error if other error occurs', async () => {
+            const dbError = new Error('Db failure');
+            (dbError as any).code = 'some-error';
             (fromBuilder.insert as jest.Mock).mockResolvedValueOnce({
-                error: { code: 'some-error', message: 'Db failure' },
+                error: dbError,
             });
 
-            await expect(likePost('post-1')).rejects.toThrow();
+            await expect(likePost('post-1')).rejects.toThrow('Db failure');
         });
     });
 

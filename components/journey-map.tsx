@@ -130,7 +130,7 @@ export function JourneyMap({ locations, style }: JourneyMapProps) {
                     {locations.map(loc => loc.title).join(' → ')}
                 </Text>
                 <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, fontSize: 11, marginTop: 16, opacity: 0.7 }}>
-                    (Harita görünümü Expo Go iOS'ta desteklenmez)
+                    {"(Harita görünümü Expo Go iOS'ta desteklenmez)"}
                 </Text>
             </View>
         );

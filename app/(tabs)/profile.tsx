@@ -88,6 +88,7 @@ export default function ProfileScreen() {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     const { user, signOut } = useAuth();
+    const { contentContainerStyle } = useResponsive();
     const { t, language } = useLanguage();
 
     const [refreshing, setRefreshing] = useState(false);
@@ -162,8 +163,6 @@ export default function ProfileScreen() {
     const nameParts = (displayProfile.full_name || t('profile.defaultUser')).split(' ');
     const surname = nameParts.length > 1 ? nameParts[nameParts.length - 1].toUpperCase() : nameParts[0].toUpperCase();
     const givenNames = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ').toUpperCase() : '';
-
-    const { contentContainerStyle } = useResponsive();
 
     // Rotation values for polaroid effect
     const rotations = [-2, 1, 2, -1, 1.5, -1.5];

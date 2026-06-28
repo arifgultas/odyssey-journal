@@ -157,8 +157,8 @@ describe('posts service', () => {
 
     describe('updatePost', () => {
         it('updates text fields and handles new images', async () => {
-            const mockOldPost = { id: 'post-1', images: ['old-url'] };
-            const mockUpdatedPost = { id: 'post-1', title: 'New Title', images: ['old-url', 'new-url'] };
+            const mockOldPost = { id: 'post-1', images: ['https://example.com/old-url'] };
+            const mockUpdatedPost = { id: 'post-1', title: 'New Title', images: ['https://example.com/old-url', 'new-url'] };
 
             // Fetch old post images mock
             (fromBuilder.single as jest.Mock)
@@ -169,7 +169,7 @@ describe('posts service', () => {
 
             const result = await updatePost('post-1', {
                 title: 'New Title',
-                images: ['old-url', 'local-new-uri'],
+                images: ['https://example.com/old-url', 'local-new-uri'],
             });
 
             expect(result).toEqual(mockUpdatedPost);
@@ -178,15 +178,15 @@ describe('posts service', () => {
         });
 
         it('deletes removed images from storage', async () => {
-            const mockOldPost = { id: 'post-1', images: ['old-url-1', 'old-url-2'] };
-            const mockUpdatedPost = { id: 'post-1', images: ['old-url-1'] };
+            const mockOldPost = { id: 'post-1', images: ['https://example.com/old-url-1', 'https://example.com/old-url-2'] };
+            const mockUpdatedPost = { id: 'post-1', images: ['https://example.com/old-url-1'] };
 
             (fromBuilder.single as jest.Mock)
                 .mockResolvedValueOnce({ data: mockOldPost, error: null })
                 .mockResolvedValueOnce({ data: mockUpdatedPost, error: null });
 
-            await updatePost('post-1', { images: ['old-url-1'] });
-            expect(deleteImage).toHaveBeenCalledWith('old-url-2', 'posts');
+            await updatePost('post-1', { images: ['https://example.com/old-url-1'] });
+            expect(deleteImage).toHaveBeenCalledWith('https://example.com/old-url-2', 'posts');
         });
     });
 

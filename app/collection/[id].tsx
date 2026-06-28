@@ -333,7 +333,7 @@ export default function CollectionDetailScreen() {
                                 ]}
                                 numberOfLines={4}
                             >
-                                "{post.content || 'Bu gönderi için not eklenmemiş.'}"
+                                &quot;{post.content || 'Bu gönderi için not eklenmemiş.'}&quot;
                             </Text>
 
                             <View style={styles.backFooter}>

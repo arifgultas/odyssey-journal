@@ -83,7 +83,7 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
                     </Text>
                     {notification.post_title && (
                         <Text style={[styles.postTitle, { color: theme.textSecondary }]} numberOfLines={1}>
-                            "{notification.post_title}"
+                            &quot;{notification.post_title}&quot;
                         </Text>
                     )}
                 </View>

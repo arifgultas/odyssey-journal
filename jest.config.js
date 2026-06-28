@@ -13,6 +13,9 @@ module.exports = {
     testMatch: [
         '**/__tests__/**/*.(test|spec).(ts|tsx|js)',
     ],
+    setupFilesAfterEnv: [
+        '<rootDir>/jest.setup.js',
+    ],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
     testTimeout: 10000,
     verbose: true,

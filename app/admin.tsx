@@ -187,7 +187,7 @@ export default function AdminScreen() {
                         Access Denied
                     </Text>
                     <Text style={[styles.unauthorizedSubtext, { color: colors.textSecondary }]}>
-                        You don't have admin privileges.
+                        You don&apos;t have admin privileges.
                     </Text>
                     <TouchableOpacity onPress={() => router.back()}>
                         <Text style={[styles.goBackText, { color: colors.accent }]}>Go Back</Text>
@@ -288,7 +288,7 @@ export default function AdminScreen() {
             {item.description && (
                 <View style={styles.descriptionContainer}>
                     <Text style={[styles.descriptionLabel, { color: colors.textSecondary }]}>
-                        Reporter's note:
+                        Reporter&apos;s note:
                     </Text>
                     <Text style={[styles.descriptionText, { color: colors.textPrimary }]} numberOfLines={3}>
                         {item.description}
