@@ -1,6 +1,7 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { supabase } from '@/lib/supabase';
+import { useOAuth } from '@/hooks/use-oauth';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -54,6 +55,7 @@ export default function LoginScreen() {
     const isDark = colorScheme === 'dark';
     const theme = isDark ? StitchColors.dark : StitchColors.light;
     const { t, language } = useLanguage();
+    const { signInWithProvider } = useOAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -79,11 +81,21 @@ export default function LoginScreen() {
     }
 
     async function signInWithGoogle() {
-        Alert.alert(t('auth.comingSoon'), t('auth.googleLoginSoon'));
+        setLoading(true);
+        try {
+            await signInWithProvider('google');
+        } finally {
+            setLoading(false);
+        }
     }
 
     async function signInWithApple() {
-        Alert.alert(t('auth.comingSoon'), t('auth.appleLoginSoon'));
+        setLoading(true);
+        try {
+            await signInWithProvider('apple');
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (

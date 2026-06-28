@@ -239,6 +239,17 @@ export default {
         untitled: 'Başlıksız',
     },
 
+    // Chat & Messaging
+    chat: {
+        title: 'Mektuplar',
+        noConversations: 'Henüz mektup kutunuz boş',
+        startConversation: 'Gezginlerin profilinden "Mesaj Gönder" butonuna basarak ilk mektubunuzu yazabilirsiniz.',
+        loading: 'Mektuplar yükleniyor...',
+        typeMessage: 'Mektup yazın...',
+        emptyChat: 'İlk mesajınızı gönderin',
+        error: 'Hata',
+    },
+
     // Saved / Bookmarks
     saved: {
         title: 'Kaydedilenler',

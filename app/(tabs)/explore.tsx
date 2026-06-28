@@ -2,6 +2,10 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useResponsive } from '@/hooks/use-responsive';
+import { SuggestedUsers } from '@/components/explore/suggested-users';
+import { SearchHistory } from '@/components/explore/search-history';
+import { SearchResults } from '@/components/explore/search-results';
 import { useFollowUser } from '@/hooks/use-follow';
 import {
   useDeleteSearchHistoryItem,
@@ -86,6 +90,7 @@ export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t, language } = useLanguage();
+  const { contentContainerStyle } = useResponsive();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [sortBy, setSortBy] = useState<SortType>('recent');
@@ -373,6 +378,8 @@ export default function ExploreScreen() {
               key={category.id}
               style={styles.categoryItem}
               onPress={() => router.push(`/category-posts/${category.id}` as any)}
+              accessibilityRole="button"
+              accessibilityLabel={`${t('categories.' + category.id)} kategorisindeki gönderileri gör`}
             >
               <View style={[styles.categoryIcon, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}>
                 <Ionicons
@@ -631,113 +638,19 @@ export default function ExploreScreen() {
   };
 
   // Render suggested travelers section
-  const renderSuggestedUsers = () => {
-    // Always show this section - with loading, empty, or data state
-    return (
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: vintageTheme.text }]}>{t('explore.suggestedTravelers')}</Text>
-
-        {suggestedUsersLoading ? (
-          <View style={{ alignItems: 'center', paddingVertical: 40 }}>
-            <ActivityIndicator size="small" color={vintageTheme.primary} />
-            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>{t('explore.loading')}</Text>
-          </View>
-        ) : suggestedUsersError ? (
-          <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 40 }} onPress={() => refetchSuggestedUsers()}>
-            <Ionicons name="alert-circle-outline" size={40} color={vintageTheme.border} />
-            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>{t('explore.loadFailed')}</Text>
-          </TouchableOpacity>
-        ) : !suggestedUsers || suggestedUsers.length === 0 ? (
-          <TouchableOpacity style={{ alignItems: 'center', paddingVertical: 40 }} onPress={() => refetchSuggestedUsers()}>
-            <Ionicons name="people-outline" size={40} color={vintageTheme.border} />
-            <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted, marginTop: 8 }]}>{t('explore.noSuggestionsYet')}</Text>
-          </TouchableOpacity>
-        ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.usersScroll}
-          >
-            {suggestedUsers.slice(0, 5).map((user: any) => (
-              <View
-                key={user.id}
-                style={[styles.userCard, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-              >
-                <TouchableOpacity
-                  style={styles.userCardClickable}
-                  onPress={() => handleUserPress(user.id)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.userAvatarContainer, { borderColor: vintageTheme.border }]}>
-                    {user.avatar_url ? (
-                      <Image
-                        source={{ uri: user.avatar_url }}
-                        style={styles.userAvatar}
-                        contentFit="cover"
-                      />
-                    ) : (
-                      <View style={[styles.userAvatarPlaceholder, { backgroundColor: vintageTheme.parchment }]}>
-                        <Ionicons name="person" size={28} color={vintageTheme.textMuted} />
-                      </View>
-                    )}
-                  </View>
-                  <Text style={[styles.userName, { color: vintageTheme.text }]} numberOfLines={1}>
-                    {user.full_name?.split(' ')[0] || user.username || t('explore.user')}
-                  </Text>
-                  <Text style={[styles.userLabel, { color: vintageTheme.textSecondary }]} numberOfLines={1}>
-                    {getUserLabel(user)}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.bookmarkButton}>
-                  <Ionicons name="bookmark-outline" size={16} color={vintageTheme.border} />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.followButton,
-                    user.isFollowing
-                      ? {
-                          backgroundColor: vintageTheme.surface,
-                          borderWidth: 1,
-                          borderColor: vintageTheme.primary,
-                          elevation: 0,
-                          shadowOpacity: 0,
-                        }
-                      : {
-                          backgroundColor: vintageTheme.primary,
-                        }
-                  ]}
-                  onPress={() => handleFollowPress(user.id, !!user.isFollowing)}
-                  disabled={followMutation.isPending}
-                >
-                  {followMutation.isPending && followMutation.variables?.targetUserId === user.id ? (
-                    <ActivityIndicator size="small" color={user.isFollowing ? vintageTheme.primary : "white"} />
-                  ) : (
-                    <>
-                      <Ionicons
-                        name={user.isFollowing ? "checkmark" : "person-add"}
-                        size={12}
-                        color={user.isFollowing ? vintageTheme.primary : "white"}
-                      />
-                      <Text
-                        style={[
-                          styles.followButtonText,
-                          user.isFollowing ? { color: vintageTheme.primary } : { color: "white" }
-                        ]}
-                      >
-                        {user.isFollowing ? t('follow.following') : t('explore.follow')}
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ))}
-          </ScrollView>
-        )}
-      </View>
-    );
-  };
+  const renderSuggestedUsers = () => (
+    <SuggestedUsers
+      suggestedUsers={suggestedUsers}
+      suggestedUsersLoading={suggestedUsersLoading}
+      suggestedUsersError={!!suggestedUsersError}
+      vintageTheme={vintageTheme}
+      t={t}
+      followMutationPending={followMutation.isPending}
+      refetch={refetchSuggestedUsers}
+      onUserPress={handleUserPress}
+      onFollowPress={handleFollowPress}
+    />
+  );
 
   // Helper to generate user label
   const getUserLabel = (user: any): string => {
@@ -747,102 +660,28 @@ export default function ExploreScreen() {
   };
 
   // Render search results
-  const renderSearchResults = () => {
-    if (searchLoading) {
-      return (
-        <View style={[styles.loadingContainer, { backgroundColor: vintageTheme.background }]}>
-          <ActivityIndicator size="large" color={vintageTheme.primary} />
-        </View>
-      );
-    }
-
-    if (!searchResults) return null;
-
-    const hasResults = searchResults.locations.length > 0 || searchResults.users.length > 0;
-
-    if (!hasResults) {
-      return (
-        <View style={[styles.emptyState, { backgroundColor: vintageTheme.background }]}>
-          <Ionicons name="search-outline" size={64} color={vintageTheme.border} />
-          <Text style={[styles.emptyText, { color: vintageTheme.textSecondary }]}>{t('explore.noResults')}</Text>
-          <Text style={[styles.emptySubtext, { color: vintageTheme.textMuted }]}>{t('explore.tryDifferent')}</Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.searchResults}>
-        {searchResults.locations.length > 0 && (
-          <View style={styles.resultSection}>
-            <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>{t('explore.locations')}</Text>
-            {searchResults.locations.map((loc: any, index: number) => (
-              <TouchableOpacity
-                key={index}
-                style={[styles.resultItem, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-                onPress={() => handleLocationPress(loc.name)}
-              >
-                <View style={[styles.resultIcon, { backgroundColor: vintageTheme.parchment }]}>
-                  <Ionicons name="location" size={20} color={vintageTheme.compassBlue} />
-                </View>
-                <View style={styles.resultInfo}>
-                  <Text style={[styles.resultName, { color: vintageTheme.text }]}>{loc.name}</Text>
-                  <Text style={[styles.resultMeta, { color: vintageTheme.textMuted }]}>{loc.postCount} {t('explore.posts')}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        {searchResults.users.length > 0 && (
-          <View style={styles.resultSection}>
-            <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>{t('explore.users')}</Text>
-            {searchResults.users.map((user: any) => (
-              <TouchableOpacity
-                key={user.id}
-                style={[styles.resultItem, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-                onPress={() => handleUserPress(user.id)}
-              >
-                <View style={styles.resultAvatarContainer}>
-                  {user.avatar_url ? (
-                    <Image source={{ uri: user.avatar_url }} style={styles.resultAvatar} contentFit="cover" />
-                  ) : (
-                    <View style={[styles.resultAvatarPlaceholder, { backgroundColor: vintageTheme.parchment }]}>
-                      <Ionicons name="person" size={18} color={vintageTheme.textMuted} />
-                    </View>
-                  )}
-                </View>
-                <View style={styles.resultInfo}>
-                  <Text style={[styles.resultName, { color: vintageTheme.text }]}>{user.full_name || user.username}</Text>
-                  <Text style={[styles.resultMeta, { color: vintageTheme.textMuted }]}>@{user.username}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-      </View>
-    );
-  };
+  const renderSearchResults = () => (
+    <SearchResults
+      searchLoading={searchLoading}
+      searchResults={searchResults}
+      vintageTheme={vintageTheme}
+      t={t}
+      onLocationPress={handleLocationPress}
+      onUserPress={handleUserPress}
+    />
+  );
 
   // Render main discover content
   const renderDiscoverContent = () => {
     if (isSearchFocused && searchHistory && searchHistory.length > 0 && !searchQuery) {
       return (
-        <View style={[styles.historyContainer, { backgroundColor: vintageTheme.background }]}>
-          <Text style={[styles.historyTitle, { color: vintageTheme.text }]}>{t('explore.recentSearches')}</Text>
-          {searchHistory.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={[styles.historyItem, { borderBottomColor: vintageTheme.border }]}
-              onPress={() => handleHistoryItemPress(item.query)}
-            >
-              <Ionicons name="time-outline" size={18} color={vintageTheme.textMuted} />
-              <Text style={[styles.historyText, { color: vintageTheme.text }]}>{item.query}</Text>
-              <TouchableOpacity onPress={() => handleDeleteHistory(item.id)}>
-                <Ionicons name="close" size={18} color={vintageTheme.textMuted} />
-              </TouchableOpacity>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <SearchHistory
+          searchHistory={searchHistory}
+          vintageTheme={vintageTheme}
+          t={t}
+          onItemPress={handleHistoryItemPress}
+          onDeleteItem={handleDeleteHistory}
+        />
       );
     }
 
@@ -868,7 +707,8 @@ export default function ExploreScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Simple search header (unified and stabilized to prevent unmounting/keyboard focus loss) */}
+      <View style={[{ flex: 1 }, contentContainerStyle]}>
+        {/* Simple search header (unified and stabilized to prevent unmounting/keyboard focus loss) */}
       <View style={[styles.exploreHeader, { paddingTop: insets.top + 16, backgroundColor: vintageTheme.background }]}>
         <View style={[styles.searchBar, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border, borderWidth: 1 }]}>
           <Ionicons name="compass-outline" size={24} color={vintageTheme.textMuted} />
@@ -914,6 +754,7 @@ export default function ExploreScreen() {
         ) : (
           renderDiscoverContent()
         )}
+      </View>
       </View>
     </ThemedView>
   );
@@ -1334,181 +1175,5 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.ui,
     color: 'white',
     fontWeight: '500',
-  },
-
-  // Suggested Users
-  usersScroll: {
-    paddingBottom: 8,
-  },
-  userCard: {
-    width: 130,
-    padding: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-    alignItems: 'center',
-    marginRight: 12,
-    ...Shadows.sm,
-  },
-  userCardClickable: {
-    alignItems: 'center',
-    width: '100%',
-  },
-  bookmarkButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-  },
-  userAvatarContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 2,
-    overflow: 'hidden',
-    marginBottom: 10,
-  },
-  userAvatar: {
-    width: '100%',
-    height: '100%',
-  },
-  userAvatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  userName: {
-    fontSize: 13,
-    fontFamily: Typography.fonts.uiBold,
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-  userLabel: {
-    fontSize: 9,
-    fontFamily: Typography.fonts.ui,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 10,
-  },
-  followButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 4,
-    ...Shadows.sm,
-  },
-  followButtonText: {
-    fontSize: 11,
-    fontFamily: Typography.fonts.uiBold,
-    color: 'white',
-  },
-
-  // Search Results
-  searchResults: {
-    flex: 1,
-    padding: 16,
-  },
-  resultSection: {
-    marginBottom: 20,
-  },
-  resultTitle: {
-    fontSize: 16,
-    fontFamily: Typography.fonts.heading,
-    marginBottom: 12,
-  },
-  resultItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 8,
-  },
-  resultIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  resultAvatarContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginRight: 12,
-  },
-  resultAvatar: {
-    width: '100%',
-    height: '100%',
-  },
-  resultAvatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  resultInfo: {
-    flex: 1,
-  },
-  resultName: {
-    fontSize: 15,
-    fontFamily: Typography.fonts.bodyBold,
-  },
-  resultMeta: {
-    fontSize: 12,
-    fontFamily: Typography.fonts.body,
-    marginTop: 2,
-  },
-
-  // History
-  historyContainer: {
-    flex: 1,
-    padding: 16,
-  },
-  historyTitle: {
-    fontSize: 16,
-    fontFamily: Typography.fonts.heading,
-    marginBottom: 12,
-  },
-  historyItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    gap: 12,
-  },
-  historyText: {
-    flex: 1,
-    fontSize: 15,
-    fontFamily: Typography.fonts.body,
-  },
-
-  // Loading & Empty States
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: Spacing.xxl * 2,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xxl * 2,
-    paddingHorizontal: Spacing.xl,
-  },
-  emptyText: {
-    fontFamily: Typography.fonts.heading,
-    fontSize: 18,
-    marginTop: Spacing.md,
-  },
-  emptySubtext: {
-    fontFamily: Typography.fonts.body,
-    fontSize: 14,
-    marginTop: Spacing.sm,
   },
 });

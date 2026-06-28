@@ -228,6 +228,28 @@ export default function UserProfileScreen() {
                                 )}
                             </View>
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[
+                                styles.messageButton,
+                                { backgroundColor: isDark ? '#3E2723' : '#2C1810' }
+                            ]}
+                            onPress={() => router.push({
+                                pathname: '/chat/[id]' as any,
+                                params: { id }
+                            })}
+                        >
+                            <View style={[styles.messageButtonInner, { borderColor: theme.primary }]}>
+                                <Ionicons
+                                    name="chatbubble-ellipses-outline"
+                                    size={20}
+                                    color={theme.primary}
+                                />
+                                <Text style={[styles.messageButtonText, { color: theme.primary }]}>
+                                    {t('profile.message') || 'Mesaj'}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 )}
 
@@ -620,7 +642,8 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.md,
     },
     followButton: {
-        width: 200,
+        flex: 1,
+        maxWidth: 160,
         height: 48,
         borderRadius: BorderRadius.lg,
         ...Platform.select({
@@ -647,6 +670,40 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     followButtonText: {
+        fontFamily: Typography.fonts.heading,
+        fontSize: 12,
+        textTransform: 'uppercase',
+        letterSpacing: 2,
+    },
+    messageButton: {
+        flex: 1,
+        maxWidth: 160,
+        height: 48,
+        borderRadius: BorderRadius.lg,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 4,
+            },
+        }),
+    },
+    messageButtonInner: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: Spacing.xs,
+        margin: 3,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderRadius: 6,
+    },
+    messageButtonText: {
         fontFamily: Typography.fonts.heading,
         fontSize: 12,
         textTransform: 'uppercase',

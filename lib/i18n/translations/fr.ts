@@ -220,6 +220,18 @@ export default {
         unknownLocation: 'Lieu Inconnu',
         untitled: 'Sans Titre',
     },
+
+    // Chat & Messaging
+    chat: {
+        title: 'Lettres',
+        noConversations: 'Votre boîte de réception est vide',
+        startConversation: 'Écrivez votre première lettre en appuyant sur "Envoyer un message" sur le profil de n\'importe quel voyageur.',
+        loading: 'Chargement des messages...',
+        typeMessage: 'Écrivez un message...',
+        emptyChat: 'Envoyez votre premier message',
+        error: 'Erreur',
+    },
+
     saved: {
         title: 'Enregistrés',
         noSaved: 'Aucune publication enregistrée',

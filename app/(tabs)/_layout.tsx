@@ -1,17 +1,64 @@
 import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { CustomAnimatedTabIcon } from '@/components/custom-animated-tab-icon';
 import { HapticTab } from '@/components/haptic-tab';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { supabase } from '@/lib/supabase';
+import { getUnreadNotificationCount } from '@/lib/notifications';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
   const isDark = colorScheme === 'dark';
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    let channel: any;
+
+    const fetchCount = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const count = await getUnreadNotificationCount();
+        if (isMounted) setUnreadCount(count);
+
+        channel = supabase
+          .channel(`unread-tab-count-${user.id}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'notifications',
+              filter: `user_id=eq.${user.id}`,
+            },
+            async () => {
+              const newCount = await getUnreadNotificationCount();
+              if (isMounted) setUnreadCount(newCount);
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.error('Error fetching unread notifications count in tab bar:', err);
+      }
+    };
+
+    fetchCount();
+
+    return () => {
+      isMounted = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
 
   // Instagram-style embedded navigation bar colors (from Google Stitch design)
   const navBarBg = isDark
@@ -124,7 +171,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          href: null, // Hide from tab bar but keep screen accessible
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
+          tabBarIcon: ({ color, focused }) => (
+            <CustomAnimatedTabIcon
+              focused={focused}
+              color={color}
+              size={40}
+              icon="bell"
+            />
+          ),
         }}
       />
       <Tabs.Screen

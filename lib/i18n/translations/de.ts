@@ -220,6 +220,18 @@ export default {
         unknownLocation: 'Unbekannter Ort',
         untitled: 'Ohne Titel',
     },
+
+    // Chat & Messaging
+    chat: {
+        title: 'Briefe',
+        noConversations: 'Ihr Posteingang ist leer',
+        startConversation: 'Schreiben Sie Ihren ersten Brief, indem Sie im Profil eines Reisenden auf "Nachricht senden" klicken.',
+        loading: 'Nachrichten werden geladen...',
+        typeMessage: 'Schreiben Sie eine Nachricht...',
+        emptyChat: 'Senden Sie Ihre erste Nachricht',
+        error: 'Fehler',
+    },
+
     saved: {
         title: 'Gespeichert',
         noSaved: 'Keine gespeicherten Beiträge',

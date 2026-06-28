@@ -220,6 +220,18 @@ export default {
         unknownLocation: 'Ubicación Desconocida',
         untitled: 'Sin Título',
     },
+
+    // Chat & Messaging
+    chat: {
+        title: 'Cartas',
+        noConversations: 'Tu bandeja de entrada está vacía',
+        startConversation: 'Escribe tu primera carta presionando "Enviar mensaje" en el perfil de cualquier viajero.',
+        loading: 'Cargando mensajes...',
+        typeMessage: 'Escribe un mensaje...',
+        emptyChat: 'Envía tu primer mensaje',
+        error: 'Error',
+    },
+
     saved: {
         title: 'Guardados',
         noSaved: 'No hay publicaciones guardadas',

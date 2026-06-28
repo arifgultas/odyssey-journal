@@ -220,6 +220,18 @@ export default {
         unknownLocation: '알 수 없는 위치',
         untitled: '제목 없음',
     },
+
+    // Chat & Messaging
+    chat: {
+        title: '편지',
+        noConversations: '받은 편지함이 비어 있습니다',
+        startConversation: '다른 여행자의 프로필에서 "메시지 보내기"를 눌러 첫 편지를 작성해 보세요.',
+        loading: '메시지 불러오는 중...',
+        typeMessage: '메시지를 입력하세요...',
+        emptyChat: '첫 메시지를 보내보세요',
+        error: '오류',
+    },
+
     saved: {
         title: '저장됨',
         noSaved: '저장된 게시물 없음',

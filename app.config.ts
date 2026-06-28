@@ -13,6 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ios: {
         supportsTablet: true,
         bundleIdentifier: 'com.odysseyjournal.app',
+        buildNumber: '1',
         config: {
             googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
         },
@@ -25,6 +26,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     android: {
         package: 'com.odysseyjournal.app',
+        versionCode: 1,
         softwareKeyboardLayoutMode: 'resize',
         adaptiveIcon: {
             backgroundColor: '#F5F1E8',

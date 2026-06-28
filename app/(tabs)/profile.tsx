@@ -2,6 +2,7 @@
 import { BoardingPassCard } from '@/components/boarding-pass-card';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Shadows, Typography } from '@/constants/theme';
+import { useResponsive } from '@/hooks/use-responsive';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -162,6 +163,8 @@ export default function ProfileScreen() {
     const surname = nameParts.length > 1 ? nameParts[nameParts.length - 1].toUpperCase() : nameParts[0].toUpperCase();
     const givenNames = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ').toUpperCase() : '';
 
+    const { contentContainerStyle } = useResponsive();
+
     // Rotation values for polaroid effect
     const rotations = [-2, 1, 2, -1, 1.5, -1.5];
 
@@ -180,7 +183,8 @@ export default function ProfileScreen() {
 
     return (
         <ThemedView style={[styles.container, { backgroundColor: passportTheme.background }]}>
-            {/* Header */}
+            <View style={[{ flex: 1 }, contentContainerStyle]}>
+                {/* Header */}
             <View style={[styles.header, {
                 paddingTop: insets.top + 12,
                 backgroundColor: passportTheme.parchment,
@@ -443,6 +447,7 @@ export default function ProfileScreen() {
             </ScrollView>
 
 
+            </View>
         </ThemedView>
     );
 }

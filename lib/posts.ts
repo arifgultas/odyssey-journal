@@ -316,7 +316,8 @@ export async function deletePost(postId: string): Promise<void> {
  */
 export async function fetchPosts(
     page: number = 0,
-    pageSize: number = 10
+    pageSize: number = 10,
+    sortBy: 'date' | 'popularity' | 'location' = 'date'
 ): Promise<Post[]> {
     try {
         const blockedUsers = await getBlockedUsers();
@@ -339,9 +340,15 @@ export async function fetchPosts(
             query = query.not('user_id', 'in', `(${blockedUsers.join(',')})`);
         }
 
-        const { data, error } = await query
-            .order('created_at', { ascending: false })
-            .range(from, to);
+        if (sortBy === 'popularity') {
+            query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
+        } else if (sortBy === 'location') {
+            query = query.not('location_name', 'is', null).order('created_at', { ascending: false });
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
+
+        const { data, error } = await query.range(from, to);
 
         if (error) {
             throw error;

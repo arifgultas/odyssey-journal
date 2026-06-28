@@ -238,6 +238,17 @@ export default {
         untitled: 'Untitled',
     },
 
+    // Chat & Messaging
+    chat: {
+        title: 'Letters',
+        noConversations: 'Your inbox is empty',
+        startConversation: 'Write your first letter by pressing "Send Message" on any traveler\'s profile.',
+        loading: 'Loading messages...',
+        typeMessage: 'Write a message...',
+        emptyChat: 'Send your first message',
+        error: 'Error',
+    },
+
     // Saved / Bookmarks
     saved: {
         title: 'Saved',

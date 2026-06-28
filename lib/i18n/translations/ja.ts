@@ -220,6 +220,18 @@ export default {
         unknownLocation: '不明な場所',
         untitled: '無題',
     },
+
+    // Chat & Messaging
+    chat: {
+        title: '手紙',
+        noConversations: '受信トレイは空です',
+        startConversation: '旅行者のプロフィールで「メッセージを送信」を押して、最初の手紙を書いてみましょう。',
+        loading: 'メッセージを読み込み中...',
+        typeMessage: 'メッセージを入力...',
+        emptyChat: '最初のメッセージを送信',
+        error: 'エラー',
+    },
+
     saved: {
         title: '保存済み',
         noSaved: '保存した投稿はありません',

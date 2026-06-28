@@ -60,6 +60,8 @@ function RootLayoutNav() {
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="map" options={{ headerShown: false }} />
         <Stack.Screen name="create-post" options={{ headerShown: false }} />
+        <Stack.Screen name="chat/index" options={{ headerShown: false }} />
+        <Stack.Screen name="chat/[id]" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <OfflineIndicator position="top" />

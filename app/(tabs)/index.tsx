@@ -5,6 +5,7 @@ import { CollectionPickerSheet } from '@/components/collection-picker-sheet';
 import { ReportModal } from '@/components/report-modal';
 import { PostCardSkeleton } from '@/components/skeleton-loader';
 import { ThemedView } from '@/components/themed-view';
+import { useResponsive } from '@/hooks/use-responsive';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -20,6 +21,7 @@ import { supabase } from '@/lib/supabase';
 import BellIcon from '@/assets/icons/bell-notification.svg';
 import GlobeIcon from '@/assets/icons/globe-earth-world.svg';
 import { router, useFocusEffect } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -39,6 +41,7 @@ export default function HomeScreen() {
   const theme = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
   const { t, language } = useLanguage();
+  const { contentContainerStyle } = useResponsive();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -52,6 +55,7 @@ export default function HomeScreen() {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
   const [feedType, setFeedType] = useState<'public' | 'following'>('public');
+  const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'location'>('date');
 
   // Register for push notifications
   usePushNotifications(currentUserId ?? undefined);
@@ -130,7 +134,7 @@ export default function HomeScreen() {
       refreshOnFocus();
       // Refresh posts feed silently
       loadPosts(0, true);
-    }, [])
+    }, [sortBy, feedType])
   );
 
   const loadPosts = async (pageNum: number = 0, refresh: boolean = false) => {
@@ -142,8 +146,8 @@ export default function HomeScreen() {
       }
 
       const newPosts = feedType === 'public'
-        ? await fetchPosts(pageNum, 10)
-        : await getFollowingFeed(pageNum, 10);
+        ? await fetchPosts(pageNum, 10, sortBy)
+        : await getFollowingFeed(pageNum, 10, sortBy);
 
       if (refresh || pageNum === 0) {
         setPosts(newPosts);
@@ -407,32 +411,113 @@ export default function HomeScreen() {
           {t('home.title')}
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.headerButton}
-        onPress={() => router.push('/notifications')}
-      >
-        <View>
-          <BellIcon
-            width={40}
-            height={40}
-            fill={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => router.push('/notifications')}
+        >
+          <View>
+            <BellIcon
+              width={34}
+              height={34}
+              fill={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+              color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+            />
+            {unreadNotificationCount > 0 && (
+              <View style={[
+                styles.notificationBadge,
+                {
+                  borderColor: colorScheme === 'dark'
+                    ? 'rgba(26, 20, 16, 0.95)'
+                    : 'rgba(245, 241, 232, 0.95)',
+                }
+              ]}>
+                <Text style={styles.notificationBadgeText}>
+                  {unreadNotificationCount <= 9 ? unreadNotificationCount : '9+'}
+                </Text>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => router.push('/chat' as any)}
+          accessibilityRole="button"
+          accessibilityLabel={language === 'tr' ? 'Mektupları ve sohbetleri aç' : 'Open letters and chats'}
+        >
+          <Ionicons
+            name="paper-plane-outline"
+            size={26}
             color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
           />
-          {unreadNotificationCount > 0 && (
-            <View style={[
-              styles.notificationBadge,
-              {
-                borderColor: colorScheme === 'dark'
-                  ? 'rgba(26, 20, 16, 0.95)'
-                  : 'rgba(245, 241, 232, 0.95)',
-              }
-            ]}>
-              <Text style={styles.notificationBadgeText}>
-                {unreadNotificationCount <= 9 ? unreadNotificationCount : '9+'}
-              </Text>
-            </View>
-          )}
-        </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderSortBar = () => (
+    <View style={[
+      styles.sortBarContainer,
+      {
+        backgroundColor: colorScheme === 'dark'
+          ? 'rgba(26, 20, 16, 0.95)'
+          : 'rgba(245, 241, 232, 0.95)',
+        borderBottomColor: `${theme.accent}11`,
+      }
+    ]}>
+      <TouchableOpacity
+        style={[
+          styles.sortButton,
+          sortBy === 'date' && { backgroundColor: `${theme.accent}22` }
+        ]}
+        onPress={() => setSortBy('date')}
+        accessibilityRole="button"
+        accessibilityLabel={language === 'tr' ? 'En yeni gönderilere göre sırala' : 'Sort by latest posts'}
+        accessibilityState={{ selected: sortBy === 'date' }}
+      >
+        <Text style={[
+          styles.sortText,
+          sortBy === 'date' ? { color: theme.accent, fontFamily: Typography.fonts.uiBold } : { color: theme.textMuted }
+        ]}>
+          📅 {language === 'tr' ? 'En Yeni' : 'Latest'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.sortButton,
+          sortBy === 'popularity' && { backgroundColor: `${theme.accent}22` }
+        ]}
+        onPress={() => setSortBy('popularity')}
+        accessibilityRole="button"
+        accessibilityLabel={language === 'tr' ? 'En popüler gönderilere göre sırala' : 'Sort by popular posts'}
+        accessibilityState={{ selected: sortBy === 'popularity' }}
+      >
+        <Text style={[
+          styles.sortText,
+          sortBy === 'popularity' ? { color: theme.accent, fontFamily: Typography.fonts.uiBold } : { color: theme.textMuted }
+        ]}>
+          🔥 {language === 'tr' ? 'Popüler' : 'Popular'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.sortButton,
+          sortBy === 'location' && { backgroundColor: `${theme.accent}22` }
+        ]}
+        onPress={() => setSortBy('location')}
+        accessibilityRole="button"
+        accessibilityLabel={language === 'tr' ? 'Yalnızca konumu olan gönderileri göster' : 'Filter by posts with location'}
+        accessibilityState={{ selected: sortBy === 'location' }}
+      >
+        <Text style={[
+          styles.sortText,
+          sortBy === 'location' ? { color: theme.accent, fontFamily: Typography.fonts.uiBold } : { color: theme.textMuted }
+        ]}>
+          📍 {language === 'tr' ? 'Konumlu' : 'Location'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -443,13 +528,16 @@ export default function HomeScreen() {
         {/* Map Texture Background */}
         <View style={[styles.mapTexture, { opacity: colorScheme === 'dark' ? 0.04 : 0.08 }]} />
 
-        {renderHeader()}
-        {renderFeedTabs()}
+        <View style={[{ flex: 1 }, contentContainerStyle]}>
+          {renderHeader()}
+          {renderFeedTabs()}
+          {renderSortBar()}
 
-        <View style={styles.listContent}>
-          <PostCardSkeleton />
-          <PostCardSkeleton />
-          <PostCardSkeleton />
+          <View style={styles.listContent}>
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+            <PostCardSkeleton />
+          </View>
         </View>
       </ThemedView>
     );
@@ -460,8 +548,10 @@ export default function HomeScreen() {
       {/* Map Texture Background - pseudo vintage map effect */}
       <View style={[styles.mapTexture, { opacity: colorScheme === 'dark' ? 0.04 : 0.08 }]} />
 
-      {renderHeader()}
-      {renderFeedTabs()}
+      <View style={[{ flex: 1 }, contentContainerStyle]}>
+        {renderHeader()}
+        {renderFeedTabs()}
+        {renderSortBar()}
 
       <FlatList
         data={posts}
@@ -522,6 +612,7 @@ export default function HomeScreen() {
           onSuccess={handleCollectionPickerSuccess}
         />
       )}
+      </View>
     </ThemedView>
   );
 }
@@ -635,5 +726,21 @@ const styles = StyleSheet.create({
     fontFamily: Typography.fonts.uiBold,
     textTransform: 'uppercase',
     letterSpacing: 2,
+  },
+  sortBarContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    borderBottomWidth: 1,
+  },
+  sortButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  sortText: {
+    fontFamily: Typography.fonts.ui,
+    fontSize: 12,
   },
 });

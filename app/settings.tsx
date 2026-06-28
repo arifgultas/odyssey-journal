@@ -2,6 +2,9 @@ import { EditProfileModal } from '@/components/edit-profile-modal';
 import { LanguageSelectorModal } from '@/components/language-selector-modal';
 import { ChangePasswordModal } from '@/components/change-password-modal';
 import { ThemedView } from '@/components/themed-view';
+import { useResponsive } from '@/hooks/use-responsive';
+import { ProfileCard } from '@/components/settings/profile-card';
+import { SettingsRow } from '@/components/settings/settings-row';
 import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/language-context';
@@ -66,6 +69,7 @@ export default function SettingsScreen() {
     const router = useRouter();
     const { user, signOut } = useAuth();
     const { t, language } = useLanguage();
+    const { contentContainerStyle } = useResponsive();
 
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -211,7 +215,8 @@ export default function SettingsScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            {/* Header */}
+            <View style={[{ flex: 1 }, contentContainerStyle]}>
+                {/* Header */}
             <Animated.View
                 entering={FadeIn.duration(300)}
                 style={[
@@ -243,65 +248,13 @@ export default function SettingsScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 {/* Profile Card */}
-                <Animated.View
-                    entering={FadeInDown.delay(100).duration(400)}
-                    style={[styles.profileCard, { backgroundColor: colors.cardBg, borderColor: colors.accent }]}
-                >
-                    {/* Corner Decorations */}
-                    <View style={[styles.cornerDecoration, styles.cornerTopLeft, { borderColor: colors.accent }]} />
-                    <View style={[styles.cornerDecoration, styles.cornerTopRight, { borderColor: colors.accent }]} />
-                    <View style={[styles.cornerDecoration, styles.cornerBottomLeft, { borderColor: colors.accent }]} />
-                    <View style={[styles.cornerDecoration, styles.cornerBottomRight, { borderColor: colors.accent }]} />
-
-                    <View style={styles.profileContent}>
-                        <Text style={[styles.profileSectionLabel, { color: colors.accent, borderBottomColor: colors.border }]}>
-                            {t('settings.passportHolder')}
-                        </Text>
-
-                        {/* Avatar */}
-                        <TouchableOpacity
-                            style={styles.avatarContainer}
-                            onPress={() => setEditModalVisible(true)}
-                        >
-                            <View style={[styles.avatarFrame, { borderColor: colors.accent }]}>
-                                {displayProfile.avatar_url ? (
-                                    <Image
-                                        source={{ uri: displayProfile.avatar_url }}
-                                        style={styles.avatarImage}
-                                        contentFit="cover"
-                                    />
-                                ) : (
-                                    <View style={[styles.avatarPlaceholder, { backgroundColor: colors.sectionBg }]}>
-                                        <Ionicons name="person" size={40} color={colors.textSecondary} />
-                                    </View>
-                                )}
-                            </View>
-                            <View style={[styles.editAvatarButton, { backgroundColor: colors.textPrimary, borderColor: colors.background }]}>
-                                <Ionicons name="create" size={12} color={colors.accent} />
-                            </View>
-                        </TouchableOpacity>
-
-                        {/* Name & Email */}
-                        <View style={styles.profileInfo}>
-                            <Text style={[styles.profileName, { color: colors.textPrimary }]}>
-                                {displayProfile.full_name}
-                            </Text>
-                            <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
-                                {user?.email}
-                            </Text>
-                        </View>
-
-                        {/* Edit Profile Button */}
-                        <TouchableOpacity
-                            style={[styles.editProfileButton, { borderBottomColor: colors.accent }]}
-                            onPress={() => setEditModalVisible(true)}
-                        >
-                            <Text style={[styles.editProfileButtonText, { color: colors.accent }]}>
-                                {t('profile.editProfile')}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </Animated.View>
+                <ProfileCard
+                    colors={colors}
+                    displayProfile={displayProfile}
+                    user={user}
+                    t={t}
+                    onEditPress={() => setEditModalVisible(true)}
+                />
 
                 {/* Appearance Section */}
                 <Animated.View
@@ -446,17 +399,12 @@ export default function SettingsScreen() {
                             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.adminTitle') || 'ADMIN'}</Text>
                         </View>
                         <View style={styles.sectionContent}>
-                            <TouchableOpacity
-                                style={styles.settingRow}
+                            <SettingsRow
+                                label={t('settings.moderationPanel') || 'Moderation Panel'}
+                                description={t('settings.moderationPanelDesc') || 'Review reports, manage users'}
                                 onPress={() => router.push('/admin' as any)}
-                                activeOpacity={0.7}
-                            >
-                                <View style={styles.settingInfo}>
-                                    <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.moderationPanel') || 'Moderation Panel'}</Text>
-                                    <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.moderationPanelDesc') || 'Review reports, manage users'}</Text>
-                                </View>
-                                <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-                            </TouchableOpacity>
+                                colors={colors}
+                            />
                         </View>
                     </Animated.View>
                 )}
@@ -471,17 +419,12 @@ export default function SettingsScreen() {
                         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.legal').toUpperCase() || 'LEGAL & COMMUNITY'}</Text>
                     </View>
                     <View style={styles.sectionContent}>
-                        <TouchableOpacity
-                            style={styles.settingRow}
+                        <SettingsRow
+                            label={t('settings.communityGuidelines') || 'Community Guidelines'}
+                            description={t('settings.communityGuidelinesDesc') || 'Rules to keep our community safe'}
                             onPress={() => router.push('/community-guidelines' as any)}
-                            activeOpacity={0.7}
-                        >
-                            <View style={styles.settingInfo}>
-                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.communityGuidelines') || 'Community Guidelines'}</Text>
-                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.communityGuidelinesDesc') || 'Rules to keep our community safe'}</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
-                        </TouchableOpacity>
+                            colors={colors}
+                        />
                     </View>
                 </Animated.View>
 
@@ -495,41 +438,29 @@ export default function SettingsScreen() {
                         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.account').toUpperCase()}</Text>
                     </View>
                     <View style={styles.sectionContent}>
-                        <TouchableOpacity
-                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm }]}
+                        <SettingsRow
+                            label={t('settings.changePassword') || 'Şifre Değiştir'}
+                            description={t('settings.changePasswordDesc') || 'Hesap şifrenizi güncelleyin'}
                             onPress={() => setChangePasswordModalVisible(true)}
-                            activeOpacity={0.7}
-                        >
-                            <View style={styles.settingInfo}>
-                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.changePassword') || 'Şifre Değiştir'}</Text>
-                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.changePasswordDesc') || 'Hesap şifrenizi güncelleyin'}</Text>
-                            </View>
-                            <Ionicons name="key-outline" size={22} color={colors.accent} />
-                        </TouchableOpacity>
+                            colors={colors}
+                            rightElement={<Ionicons name="key-outline" size={22} color={colors.accent} />}
+                        />
 
-                        <TouchableOpacity
-                            style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm }]}
+                        <SettingsRow
+                            label={t('settings.exportDataTitle') || 'Download My Data'}
+                            description={t('settings.exportDataSubdesc') || 'Request a copy of your personal data'}
                             onPress={handleDownloadData}
-                            activeOpacity={0.7}
-                        >
-                            <View style={styles.settingInfo}>
-                                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.exportDataTitle') || 'Download My Data'}</Text>
-                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.exportDataSubdesc') || 'Request a copy of your personal data'}</Text>
-                            </View>
-                            <Ionicons name="download-outline" size={22} color={colors.accent} />
-                        </TouchableOpacity>
+                            colors={colors}
+                            rightElement={<Ionicons name="download-outline" size={22} color={colors.accent} />}
+                        />
 
-                        <TouchableOpacity
-                            style={[styles.deleteAccountRow, { paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm }]}
+                        <SettingsRow
+                            label={t('settings.deleteAccount')}
+                            description={t('settings.deleteAccountWarning')}
                             onPress={handleDeleteAccount}
-                            activeOpacity={0.7}
-                        >
-                            <View style={styles.settingInfo}>
-                                <Text style={[styles.settingLabel, { color: colors.stampRed }]}>{t('settings.deleteAccount')}</Text>
-                                <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.deleteAccountWarning')}</Text>
-                            </View>
-                            <Ionicons name="trash-outline" size={22} color={colors.stampRed} />
-                        </TouchableOpacity>
+                            colors={{ ...colors, textPrimary: colors.stampRed }}
+                            rightElement={<Ionicons name="trash-outline" size={22} color={colors.stampRed} />}
+                        />
                     </View>
                 </Animated.View>
 
@@ -579,6 +510,7 @@ export default function SettingsScreen() {
                 visible={changePasswordModalVisible}
                 onClose={() => setChangePasswordModalVisible(false)}
             />
+            </View>
         </View>
     );
 }
@@ -626,126 +558,7 @@ const styles = StyleSheet.create({
         gap: Spacing.lg,
     },
 
-    // Profile Card
-    profileCard: {
-        width: '100%',
-        alignSelf: 'stretch',
-        borderRadius: 24,
-        borderWidth: 1,
-        padding: 4,
-        position: 'relative',
-        overflow: 'hidden',
-        ...Shadows.lg,
-        elevation: 0,
-    },
-    cornerDecoration: {
-        position: 'absolute',
-        width: 32,
-        height: 32,
-        borderWidth: 2,
-    },
-    cornerTopLeft: {
-        top: 8,
-        left: 8,
-        borderRightWidth: 0,
-        borderBottomWidth: 0,
-        borderTopLeftRadius: 12,
-    },
-    cornerTopRight: {
-        top: 8,
-        right: 8,
-        borderLeftWidth: 0,
-        borderBottomWidth: 0,
-        borderTopRightRadius: 12,
-    },
-    cornerBottomLeft: {
-        bottom: 8,
-        left: 8,
-        borderRightWidth: 0,
-        borderTopWidth: 0,
-        borderBottomLeftRadius: 12,
-    },
-    cornerBottomRight: {
-        bottom: 8,
-        right: 8,
-        borderLeftWidth: 0,
-        borderTopWidth: 0,
-        borderBottomRightRadius: 12,
-    },
-    profileContent: {
-        padding: Spacing.lg,
-        alignItems: 'center',
-        gap: Spacing.md,
-    },
-    profileSectionLabel: {
-        fontSize: 12,
-        fontWeight: '700',
-        letterSpacing: 2,
-        textTransform: 'uppercase',
-        borderBottomWidth: 1,
-        paddingBottom: 4,
-        width: '100%',
-        textAlign: 'center',
-    },
-    avatarContainer: {
-        position: 'relative',
-    },
-    avatarFrame: {
-        width: 96,
-        height: 96,
-        borderRadius: 48,
-        borderWidth: 2,
-        overflow: 'hidden',
-        ...Shadows.md,
-        elevation: 0,
-    },
-    avatarImage: {
-        width: '100%',
-        height: '100%',
-    },
-    avatarPlaceholder: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    editAvatarButton: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        borderWidth: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...Shadows.sm,
-        elevation: 0,
-    },
-    profileInfo: {
-        alignItems: 'center',
-        gap: 4,
-    },
-    profileName: {
-        fontSize: 24,
-        fontFamily: Typography.fonts.heading,
-    },
-    profileEmail: {
-        fontSize: 14,
-        fontStyle: 'italic',
-    },
-    editProfileButton: {
-        borderBottomWidth: 1,
-        borderStyle: 'dashed',
-        paddingBottom: 2,
-        marginTop: Spacing.sm,
-    },
-    editProfileButtonText: {
-        fontSize: 11,
-        fontWeight: '700',
-        letterSpacing: 2,
-        textTransform: 'uppercase',
-    },
+
 
     // Section Card
     sectionCard: {

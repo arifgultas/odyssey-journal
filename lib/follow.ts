@@ -330,7 +330,8 @@ export async function updateUserProfile(updates: Partial<UserProfile>): Promise<
  */
 export async function getFollowingFeed(
     page: number = 0,
-    pageSize: number = 10
+    pageSize: number = 10,
+    sortBy: 'date' | 'popularity' | 'location' = 'date'
 ): Promise<Post[]> {
     try {
         const {
@@ -358,12 +359,28 @@ export async function getFollowingFeed(
         }
 
         // Get posts from followed users
-        const { data, error } = await supabase
+        let query = supabase
             .from('posts')
-            .select('*')
-            .in('user_id', followingIds)
-            .order('created_at', { ascending: false })
-            .range(from, to);
+            .select(`
+                *,
+                profiles:user_id (
+                    id,
+                    username,
+                    full_name,
+                    avatar_url
+                )
+            `)
+            .in('user_id', followingIds);
+
+        if (sortBy === 'popularity') {
+            query = query.order('likes_count', { ascending: false }).order('created_at', { ascending: false });
+        } else if (sortBy === 'location') {
+            query = query.not('location_name', 'is', null).order('created_at', { ascending: false });
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
+
+        const { data, error } = await query.range(from, to);
 
         if (error) {
             throw error;

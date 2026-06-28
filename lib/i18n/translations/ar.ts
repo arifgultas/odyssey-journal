@@ -221,6 +221,18 @@ export default {
         unknownLocation: 'موقع غير معروف',
         untitled: 'بدون عنوان',
     },
+
+    // Chat & Messaging
+    chat: {
+        title: 'الرسائل',
+        noConversations: 'صندوق الوارد الخاص بك فارغ',
+        startConversation: 'اكتب رسالتك الأولى بالضغط على "إرسال رسالة" في ملف تعريف أي مسافر.',
+        loading: 'جاري تحميل الرسائل...',
+        typeMessage: 'اكتب رسالة...',
+        emptyChat: 'أرسل رسالتك الأولى',
+        error: 'خطأ',
+    },
+
     saved: {
         title: 'المحفوظات',
         noSaved: 'لا توجد منشورات محفوظة',

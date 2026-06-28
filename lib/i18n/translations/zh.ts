@@ -226,6 +226,18 @@ export default {
                 unknownLocation: '未知位置',
                 untitled: '无标题',
             },
+
+            // Chat & Messaging
+            chat: {
+                title: '信件',
+                noConversations: '您的收件箱是空的',
+                startConversation: '在任何旅行者的个人资料上点击“发送消息”来写您的第一封信。',
+                loading: '正在加载消息...',
+                typeMessage: '写信...',
+                emptyChat: '发送您的第一条消息',
+                error: '错误',
+            },
+
             saved: {
                 title: '已保存',
                 noSaved: '暂无保存的帖子',

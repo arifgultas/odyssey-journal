@@ -1080,8 +1080,50 @@ BEGIN
     LIMIT p_limit;
 END;
 $$;
-
 GRANT EXECUTE ON FUNCTION public.get_trending_locations(int) TO authenticated;
+
+
+-- ================================================================
+-- BÖLÜM 13: DIRECT MESSAGING SYSTEM
+-- ================================================================
+
+CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    sender_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    receiver_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    content TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Users can read their own sent and received messages" ON public.messages
+    FOR SELECT
+    USING (auth.uid() = sender_id OR auth.uid() = receiver_id);
+
+CREATE POLICY "Users can insert messages as themselves" ON public.messages
+    FOR INSERT
+    WITH CHECK (auth.uid() = sender_id);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_messages_chat_flow 
+ON public.messages (sender_id, receiver_id, created_at DESC);
+
+-- Enable Realtime
+ALTER TABLE public.messages REPLICA IDENTITY FULL;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'messages'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+  END IF;
+END $$;
 
 
 -- ================================================================

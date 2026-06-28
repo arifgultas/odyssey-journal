@@ -1,7 +1,4 @@
-/**
- * Book-inspired Design System
- * Warm, elegant colors and typography for a travel journal aesthetic
- */
+import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
@@ -137,25 +134,55 @@ export const BorderRadius = {
 
 export const Shadows = {
   sm: {
-    shadowColor: '#2C1810',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#2C1810',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 0,
+      },
+      web: {
+        boxShadow: '0 1px 2px rgba(44, 24, 16, 0.05)',
+      },
+      default: {},
+    }),
   },
   md: {
-    shadowColor: '#2C1810',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#2C1810',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 0,
+      },
+      web: {
+        boxShadow: '0 4px 6px rgba(44, 24, 16, 0.08)',
+      },
+      default: {},
+    }),
   },
   lg: {
-    shadowColor: '#2C1810',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#2C1810',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 0,
+      },
+      web: {
+        boxShadow: '0 10px 15px rgba(44, 24, 16, 0.12)',
+      },
+      default: {},
+    }),
   },
 };
 

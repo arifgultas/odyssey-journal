@@ -45,7 +45,7 @@ interface AnimatedPostCardProps {
     isOwnPost?: boolean;
 }
 
-export function AnimatedPostCard({
+const _AnimatedPostCard = function AnimatedPostCard({
     post,
     index = 0,
     onPress,
@@ -399,7 +399,9 @@ export function AnimatedPostCard({
             </Animated.View>
         </Animated.View>
     );
-}
+};
+
+export const AnimatedPostCard = React.memo(_AnimatedPostCard);
 
 const styles = StyleSheet.create({
     cardWrapper: {

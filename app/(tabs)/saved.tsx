@@ -1,6 +1,7 @@
 import { CreateCollectionModal } from '@/components/create-collection-modal';
 import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useResponsive } from '@/hooks/use-responsive';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
@@ -63,6 +64,7 @@ export default function SavedPostsScreen() {
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
     const { t, language } = useLanguage();
+    const { contentContainerStyle } = useResponsive();
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(false); // İlk yükleme durumu kaldırıldı
@@ -495,9 +497,15 @@ export default function SavedPostsScreen() {
             {/* Deri doku overlay */}
             <View style={styles.leatherTexture} />
 
-            {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top, backgroundColor: colors.headerBg }]}>
-                <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+            <View style={[{ flex: 1 }, contentContainerStyle]}>
+                {/* Header */}
+                <View style={[styles.header, { paddingTop: insets.top, backgroundColor: colors.headerBg }]}>
+                    <TouchableOpacity
+                        style={styles.headerButton}
+                        onPress={() => router.back()}
+                        accessibilityRole="button"
+                        accessibilityLabel={language === 'tr' ? 'Geri dön' : 'Go back'}
+                    >
                     <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>{t('saved.title')}</Text>
@@ -524,8 +532,8 @@ export default function SavedPostsScreen() {
                 }
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
-                showsVerticalScrollIndicator={false}
             />
+        </View>
 
             {/* Create Collection Modal */}
             <CreateCollectionModal
