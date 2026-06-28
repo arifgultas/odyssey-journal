@@ -1,8 +1,11 @@
 /** @type {import('jest').Config} */
 module.exports = {
-    preset: 'jest-expo',
+    testEnvironment: 'node',
+    transform: {
+        '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
+    },
     transformIgnorePatterns: [
-        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@supabase/.*|@tanstack/.*|i18n-js|make-plural)',
+        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@supabase/.*|@tanstack/.*|i18n-js|make-plural|@sentry/react-native)',
     ],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',

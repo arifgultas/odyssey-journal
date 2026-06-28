@@ -6,6 +6,19 @@
 // Define __DEV__ for React Native
 global.__DEV__ = true;
 
+// Mock Platform for react-native
+jest.mock('react-native', () => {
+    const actual = jest.requireActual('react-native');
+    return {
+        ...actual,
+        Platform: {
+            ...actual.Platform,
+            OS: 'ios',
+            select: jest.fn((objs) => objs.ios || objs.default),
+        },
+    };
+});
+
 // Suppress console warnings/errors during tests
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
