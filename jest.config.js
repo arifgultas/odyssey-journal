@@ -1,9 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-    testEnvironment: 'node',
-    transform: {
-        '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
-    },
+    preset: 'jest-expo',
     transformIgnorePatterns: [
         'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@supabase/.*|@tanstack/.*|i18n-js|make-plural|@sentry/react-native)',
     ],
@@ -12,6 +9,9 @@ module.exports = {
     },
     testMatch: [
         '**/__tests__/**/*.(test|spec).(ts|tsx|js)',
+    ],
+    setupFiles: [
+        '<rootDir>/scripts/lock-globals.js',
     ],
     setupFilesAfterEnv: [
         '<rootDir>/jest.setup.js',

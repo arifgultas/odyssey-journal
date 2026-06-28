@@ -6,46 +6,6 @@
 // Define __DEV__ for React Native
 global.__DEV__ = true;
 
-// Prevent Expo's winter runtime from overriding standard globals with lazy getters (which causes async require errors in Jest)
-const globalsToLock = [
-    '__ExpoImportMetaRegistry',
-    'URL',
-    'URLSearchParams',
-    'TextDecoder',
-    'TextDecoderStream',
-    'TextEncoderStream',
-    'structuredClone',
-];
-
-for (const name of globalsToLock) {
-    const existing = global[name];
-    try {
-        Object.defineProperty(global, name, {
-            value: existing || (name === '__ExpoImportMetaRegistry' ? { url: 'file:///mock.bundle.js' } : undefined),
-            configurable: false,
-            writable: true,
-            enumerable: true,
-        });
-    } catch (e) {
-        // Ignore if already non-configurable
-    }
-}
-
-// Mock Platform for react-native in-place to avoid destructuring other getters
-jest.mock('react-native', () => {
-    const actual = jest.requireActual('react-native');
-    Object.defineProperty(actual, 'Platform', {
-        value: {
-            OS: 'ios',
-            select: jest.fn((objs) => objs.ios || objs.default),
-        },
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    });
-    return actual;
-});
-
 // Suppress console warnings/errors during tests
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
