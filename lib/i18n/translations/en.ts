@@ -247,6 +247,13 @@ export default {
         typeMessage: 'Write a message...',
         emptyChat: 'Send your first message',
         error: 'Error',
+        requests: 'Requests',
+        primaryInbox: 'Letters',
+        accept: 'Accept',
+        decline: 'Delete',
+        requestBanner: 'Do you want to chat with this user? You cannot reply until you accept.',
+        declineConfirm: 'Are you sure you want to decline this request? The chat history will be deleted.',
+        noRequests: 'No message requests found.',
     },
 
     // Saved / Bookmarks
@@ -316,6 +323,8 @@ export default {
         block: 'Block',
         blockSuccess: 'User blocked successfully.',
         blockError: 'Failed to block user.',
+        notFoundTitle: 'Traveler Not Found',
+        notFoundDesc: 'This profile is not available or you do not have permission to view it.',
     },
 
     // Edit Profile
@@ -452,6 +461,12 @@ export default {
         deleteAccount: 'Delete Account',
         deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.',
         deleteAccountWarning: 'All your posts, comments, and data will be permanently deleted.',
+        blockedUsers: 'Blocked Users',
+        blockedUsersDesc: 'Manage and unblock users you have blocked',
+        noBlockedUsers: 'No blocked users.',
+        unblockConfirmTitle: 'Unblock User',
+        unblockConfirmDesc: 'Are you sure you want to unblock this user?',
+        unblockSuccess: 'User has been unblocked.',
         deleteAccountButton: 'Delete My Account',
         accountDeleted: 'Your account has been deleted.',
         logoutConfirm: 'Are you sure you want to log out?',

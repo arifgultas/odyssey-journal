@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     FlatList,
     KeyboardAvoidingView,
     Platform,
@@ -17,7 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
-import { getMessages, sendMessage, subscribeToMessages, Message } from '@/lib/chat';
+import { getMessages, sendMessage, subscribeToMessages, Message, checkChatApproval, approveConversation, declineConversation } from '@/lib/chat';
 import { useProfile } from '@/hooks/use-profile';
 import { supabase } from '@/lib/supabase';
 
@@ -62,6 +63,7 @@ export default function ChatRoomScreen() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
     const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
+    const [isApproved, setIsApproved] = useState(true);
 
     const flatListRef = useRef<FlatList>(null);
     const typingTimeoutRef = useRef<any>(null);
@@ -150,9 +152,13 @@ export default function ChatRoomScreen() {
     };
 
     const loadChatHistory = async () => {
-        if (!currentUserId) return;
+        if (!currentUserId || !chatUserId) return;
         setIsLoading(true);
         try {
+            // Check message request approval status first
+            const approved = await checkChatApproval(chatUserId);
+            setIsApproved(approved);
+
             // Explicitly mark all messages from this sender to the current user as read in the DB!
             await supabase
                 .from('messages')
@@ -172,6 +178,41 @@ export default function ChatRoomScreen() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleAccept = async () => {
+        if (!chatUserId) return;
+        try {
+            const success = await approveConversation(chatUserId);
+            if (success) {
+                setIsApproved(true);
+            }
+        } catch (error) {
+            console.error('Error accepting message request:', error);
+        }
+    };
+
+    const handleDecline = () => {
+        if (!chatUserId) return;
+        Alert.alert(
+            t('chat.decline') || 'Delete',
+            t('chat.declineConfirm') || 'Are you sure you want to decline this request? The chat history will be deleted.',
+            [
+                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                {
+                    text: t('chat.decline') || 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await declineConversation(chatUserId);
+                            router.back();
+                        } catch (error) {
+                            console.error('Error declining request:', error);
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const broadcastTyping = (isTyping: boolean) => {
@@ -332,9 +373,16 @@ export default function ChatRoomScreen() {
                     </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={handleProfilePress} style={styles.headerButton}>
-                    <Ionicons name="card-outline" size={26} color={theme.primary} />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {messages.length > 0 && (
+                        <TouchableOpacity onPress={handleDecline} style={styles.headerButton}>
+                            <Ionicons name="trash-outline" size={24} color={theme.primary} />
+                        </TouchableOpacity>
+                    )}
+                    <TouchableOpacity onPress={handleProfilePress} style={styles.headerButton}>
+                        <Ionicons name="card-outline" size={26} color={theme.primary} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Chat Messages */}
@@ -363,50 +411,84 @@ export default function ChatRoomScreen() {
                 </View>
             )}
 
-            {/* Input Bar */}
-            <View style={[
-                styles.inputBar,
-                {
-                    paddingBottom: Math.max(insets.bottom, Spacing.md),
-                    borderTopColor: `${theme.primary}20`,
-                    backgroundColor: isDark ? '#2C1810' : '#F5F1E8',
-                }
-            ]}>
+            {/* Input Bar or Request Banner */}
+            {!isApproved && messages.length > 0 ? (
                 <View style={[
-                    styles.textInputWrapper,
+                    styles.requestBannerContainer,
                     {
-                        backgroundColor: isDark ? '#3d261a' : '#FFFFFF',
-                        borderColor: theme.border,
+                        paddingBottom: Math.max(insets.bottom, Spacing.md),
+                        backgroundColor: isDark ? '#3E2723' : '#EBDCB9',
+                        borderTopColor: theme.border,
+                        borderTopWidth: 1,
                     }
                 ]}>
-                    <TextInput
-                        style={[styles.textInput, { color: theme.textMain }]}
-                        value={inputText}
-                        onChangeText={handleInputChange}
-                        placeholder={t('chat.typeMessage')}
-                        placeholderTextColor={theme.textMuted}
-                        multiline
-                        maxLength={1000}
-                    />
- 
-                    <TouchableOpacity
-                        style={[
-                            styles.sendButton,
-                            {
-                                backgroundColor: inputText.trim() ? theme.primary : 'transparent',
-                            }
-                        ]}
-                        onPress={handleSend}
-                        disabled={!inputText.trim() || isSending}
-                    >
-                        <Ionicons
-                            name="paper-plane"
-                            size={18}
-                            color={inputText.trim() ? '#2C1810' : theme.textMuted}
-                        />
-                    </TouchableOpacity>
+                    <Text style={[styles.requestBannerText, { color: theme.textMain }]}>
+                        {t('chat.requestBanner')}
+                    </Text>
+                    <View style={styles.requestBannerButtons}>
+                        <TouchableOpacity
+                            style={[styles.requestButton, styles.declineButton]}
+                            onPress={handleDecline}
+                        >
+                            <Text style={styles.declineButtonText}>
+                                {t('chat.decline')}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.requestButton, styles.acceptButton, { backgroundColor: theme.primary }]}
+                            onPress={handleAccept}
+                        >
+                            <Text style={styles.acceptButtonText}>
+                                {t('chat.accept')}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            ) : (
+                <View style={[
+                    styles.inputBar,
+                    {
+                        paddingBottom: Math.max(insets.bottom, Spacing.md),
+                        borderTopColor: `${theme.primary}20`,
+                        backgroundColor: isDark ? '#2C1810' : '#F5F1E8',
+                    }
+                ]}>
+                    <View style={[
+                        styles.textInputWrapper,
+                        {
+                            backgroundColor: isDark ? '#3d261a' : '#FFFFFF',
+                            borderColor: theme.border,
+                        }
+                    ]}>
+                        <TextInput
+                            style={[styles.textInput, { color: theme.textMain }]}
+                            value={inputText}
+                            onChangeText={handleInputChange}
+                            placeholder={t('chat.typeMessage')}
+                            placeholderTextColor={theme.textMuted}
+                            multiline
+                            maxLength={1000}
+                        />
+     
+                        <TouchableOpacity
+                            style={[
+                                styles.sendButton,
+                                {
+                                    backgroundColor: inputText.trim() ? theme.primary : 'transparent',
+                                }
+                            ]}
+                            onPress={handleSend}
+                            disabled={!inputText.trim() || isSending}
+                        >
+                            <Ionicons
+                                name="paper-plane"
+                                size={18}
+                                color={inputText.trim() ? '#2C1810' : theme.textMuted}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
         </KeyboardAvoidingView>
     );
 }
@@ -541,5 +623,48 @@ const styles = StyleSheet.create({
     typingText: {
         fontFamily: Typography.fonts.bodyItalic,
         fontSize: 13,
+    },
+    requestBannerContainer: {
+        paddingHorizontal: Spacing.lg,
+        paddingTop: Spacing.md,
+        borderTopWidth: 1,
+        alignItems: 'center',
+    },
+    requestBannerText: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 13,
+        textAlign: 'center',
+        marginBottom: Spacing.md,
+        lineHeight: 18,
+    },
+    requestBannerButtons: {
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-between',
+        gap: Spacing.md,
+    },
+    requestButton: {
+        flex: 1,
+        height: 44,
+        borderRadius: 22,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    declineButton: {
+        borderWidth: 1,
+        borderColor: '#b91c1c',
+    },
+    declineButtonText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 14,
+        color: '#b91c1c',
+    },
+    acceptButton: {
+        // backgroundColor set dynamically
+    },
+    acceptButtonText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 14,
+        color: '#2C1810',
     },
 });

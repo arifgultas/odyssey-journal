@@ -248,6 +248,13 @@ export default {
         typeMessage: 'Mektup yazın...',
         emptyChat: 'İlk mesajınızı gönderin',
         error: 'Hata',
+        requests: 'İstekler',
+        primaryInbox: 'Mektuplar',
+        accept: 'Onayla',
+        decline: 'Sil',
+        requestBanner: 'Bu kullanıcıyla mesajlaşmak istiyor musunuz? Onaylayana kadar mesaj gönderemezsiniz.',
+        declineConfirm: 'Bu mesaj isteğini silmek istediğinizden emin misiniz? Tüm konuşma geçmişi silinecektir.',
+        noRequests: 'Herhangi bir mesaj isteği bulunmuyor.',
     },
 
     // Saved / Bookmarks
@@ -316,6 +323,8 @@ export default {
         block: 'Engelle',
         blockSuccess: 'Kullanıcı başarıyla engellendi.',
         blockError: 'Kullanıcı engellenemedi.',
+        notFoundTitle: 'Gezgin Bulunamadı',
+        notFoundDesc: 'Bu profil şu anda mevcut değil veya erişim yetkiniz bulunmuyor.',
     },
 
     // Edit Profile
@@ -452,6 +461,12 @@ export default {
         deleteAccount: 'Hesabı Sil',
         deleteAccountConfirm: 'Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
         deleteAccountWarning: 'Tüm gönderileriniz, yorumlarınız ve verileriniz kalıcı olarak silinecektir.',
+        blockedUsers: 'Engellenen Kullanıcılar',
+        blockedUsersDesc: 'Engellediğiniz kullanıcıları yönetin ve engellerini kaldırın',
+        noBlockedUsers: 'Engellenen kullanıcı bulunmamaktadır.',
+        unblockConfirmTitle: 'Engeli Kaldır',
+        unblockConfirmDesc: 'Bu kullanıcının engelini kaldırmak istediğinizden emin misiniz?',
+        unblockSuccess: 'Kullanıcının engeli kaldırıldı.',
         deleteAccountButton: 'Hesabımı Sil',
         accountDeleted: 'Hesabınız silindi.',
         logoutConfirm: 'Çıkış yapmak istediğinize emin misiniz?',

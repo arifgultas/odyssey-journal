@@ -121,3 +121,28 @@ export async function checkIfBlocked(userId: string): Promise<boolean> {
         return false;
     }
 }
+
+export interface BlockedUserProfile {
+    id: string;
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+}
+
+/**
+ * Get profile details of blocked users using the RPC function.
+ */
+export async function getBlockedUsersProfiles(): Promise<BlockedUserProfile[]> {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
+
+        const { data, error } = await supabase.rpc('get_blocked_users_profiles');
+        if (error) throw error;
+
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching blocked users profiles:', error);
+        return [];
+    }
+}

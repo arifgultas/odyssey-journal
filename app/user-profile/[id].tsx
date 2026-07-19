@@ -133,10 +133,58 @@ export default function UserProfileScreen() {
         return num.toString();
     };
 
-    if (profileLoading || !profileData) {
+    if (profileLoading) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
                 <ActivityIndicator size="large" color={theme.primary} />
+            </View>
+        );
+    }
+
+    if (!profileData) {
+        return (
+            <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl }]}>
+                {/* Header for back navigation */}
+                <View style={[
+                    styles.header,
+                    {
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        paddingTop: insets.top + Spacing.xs,
+                        backgroundColor: 'transparent',
+                        borderBottomWidth: 0,
+                    }
+                ]}>
+                    <TouchableOpacity onPress={handleBack} style={styles.headerButton}>
+                        <Ionicons name="arrow-back" size={28} color={theme.primary} />
+                    </TouchableOpacity>
+                </View>
+
+                <Ionicons name="alert-circle-outline" size={64} color={theme.primary} style={{ marginBottom: Spacing.md }} />
+                <Text style={{ fontFamily: Typography.fonts.heading, fontSize: 18, color: theme.textMain, marginBottom: Spacing.xs, textAlign: 'center' }}>
+                    {t('profile.notFoundTitle')}
+                </Text>
+                <Text style={{ fontFamily: Typography.fonts.ui, fontSize: 14, color: theme.textMuted, textAlign: 'center', paddingHorizontal: Spacing.lg }}>
+                    {t('profile.notFoundDesc')}
+                </Text>
+                <TouchableOpacity 
+                    onPress={handleBack}
+                    style={{ 
+                        marginTop: Spacing.xl,
+                        paddingVertical: Spacing.sm,
+                        paddingHorizontal: Spacing.lg,
+                        borderRadius: BorderRadius.md,
+                        borderWidth: 1,
+                        borderColor: theme.primary,
+                        backgroundColor: theme.surface,
+                    }}
+                >
+                    <Text style={{ color: theme.primary, fontWeight: '600' }}>
+                        {t('common.back') || 'Back'}
+                    </Text>
+                </TouchableOpacity>
             </View>
         );
     }

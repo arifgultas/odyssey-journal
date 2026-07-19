@@ -49,6 +49,7 @@ export default function ChatListScreen() {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [activeTab, setActiveTab] = useState<'primary' | 'requests'>('primary');
 
     const loadConversations = async (silent = false) => {
         if (!silent) setIsLoading(true);
@@ -67,6 +68,18 @@ export default function ChatListScreen() {
         React.useCallback(() => {
             loadConversations(true);
         }, [])
+    );
+
+    const requestsCount = conversations.filter(c => !c.isApproved).length;
+
+    useEffect(() => {
+        if (requestsCount === 0 && activeTab === 'requests') {
+            setActiveTab('primary');
+        }
+    }, [requestsCount, activeTab]);
+
+    const filteredConversations = conversations.filter(c => 
+        activeTab === 'primary' ? c.isApproved : !c.isApproved
     );
 
     const handleRefresh = () => {
@@ -149,13 +162,17 @@ export default function ChatListScreen() {
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
             <View style={[styles.emptyIconCircle, { borderColor: `${theme.primary}50` }]}>
-                <Ionicons name="chatbubbles-outline" size={48} color={theme.primary} />
+                <Ionicons 
+                    name={activeTab === 'primary' ? "chatbubbles-outline" : "mail-open-outline"} 
+                    size={48} 
+                    color={theme.primary} 
+                />
             </View>
             <Text style={[styles.emptyTitle, { color: theme.textMain }]}>
-                {t('chat.noConversations')}
+                {activeTab === 'primary' ? t('chat.noConversations') : t('chat.noRequests')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: theme.textMuted }]}>
-                {t('chat.startConversation')}
+                {activeTab === 'primary' ? t('chat.startConversation') : ''}
             </Text>
         </View>
     );
@@ -182,13 +199,54 @@ export default function ChatListScreen() {
                 <View style={styles.headerButton} />
             </View>
 
+            {/* Tabs */}
+            {requestsCount > 0 && (
+                <View style={[styles.tabContainer, { borderBottomColor: theme.border }]}>
+                    <TouchableOpacity 
+                        style={[
+                            styles.tabButton, 
+                            activeTab === 'primary' && [styles.tabButtonActive, { borderBottomColor: theme.primary }]
+                        ]}
+                        onPress={() => setActiveTab('primary')}
+                    >
+                        <Text style={[
+                            styles.tabText, 
+                            { color: theme.textMuted },
+                            activeTab === 'primary' && [styles.tabTextActive, { color: theme.textMain }]
+                        ]}>
+                            {t('chat.primaryInbox')}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[
+                            styles.tabButton, 
+                            activeTab === 'requests' && [styles.tabButtonActive, { borderBottomColor: theme.primary }]
+                        ]}
+                        onPress={() => setActiveTab('requests')}
+                    >
+                        <View style={styles.tabWithBadge}>
+                            <Text style={[
+                                styles.tabText, 
+                                { color: theme.textMuted },
+                                activeTab === 'requests' && [styles.tabTextActive, { color: theme.textMain }]
+                            ]}>
+                                {t('chat.requests')}
+                            </Text>
+                            <View style={[styles.tabBadge, { backgroundColor: theme.primary }]}>
+                                <Text style={styles.tabBadgeText}>{requestsCount}</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )}
+
             {isLoading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={theme.primary} />
                 </View>
             ) : (
                 <FlatList
-                    data={conversations}
+                    data={filteredConversations}
                     keyExtractor={(item) => item.otherUserId}
                     renderItem={renderItem}
                     ListEmptyComponent={renderEmpty}
@@ -332,5 +390,45 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         lineHeight: 22,
+    },
+    tabContainer: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+    },
+    tabButton: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: Spacing.sm + 2,
+        borderBottomWidth: 2,
+        borderBottomColor: 'transparent',
+    },
+    tabButtonActive: {
+        // borderBottomColor is set dynamically in component
+    },
+    tabText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 14,
+    },
+    tabTextActive: {
+        // color is set dynamically
+    },
+    tabWithBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    tabBadge: {
+        marginLeft: 6,
+        paddingHorizontal: 6,
+        height: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 16,
+    },
+    tabBadgeText: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 9,
+        color: '#2C1810',
     },
 });

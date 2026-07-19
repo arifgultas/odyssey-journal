@@ -447,6 +447,14 @@ export default function SettingsScreen() {
                         />
 
                         <SettingsRow
+                            label={t('settings.blockedUsers') || 'Blocked Users'}
+                            description={t('settings.blockedUsersDesc') || 'Manage and unblock users you have blocked'}
+                            onPress={() => router.push('/blocked-users' as any)}
+                            colors={colors}
+                            rightElement={<Ionicons name="ban-outline" size={22} color={colors.accent} />}
+                        />
+
+                        <SettingsRow
                             label={t('settings.exportDataTitle') || 'Download My Data'}
                             description={t('settings.exportDataSubdesc') || 'Request a copy of your personal data'}
                             onPress={handleDownloadData}

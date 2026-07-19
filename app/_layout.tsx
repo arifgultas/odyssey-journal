@@ -58,6 +58,7 @@ function RootLayoutNav() {
         <Stack.Screen name="category-posts/[categoryId]" options={{ headerShown: false }} />
         <Stack.Screen name="popular-posts" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="blocked-users" options={{ headerShown: false }} />
         <Stack.Screen name="map" options={{ headerShown: false }} />
         <Stack.Screen name="create-post" options={{ headerShown: false }} />
         <Stack.Screen name="chat/index" options={{ headerShown: false }} />

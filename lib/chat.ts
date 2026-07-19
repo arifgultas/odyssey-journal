@@ -8,6 +8,7 @@ export interface Message {
     content: string;
     is_read: boolean;
     created_at: string;
+    deleted_by?: string[];
 }
 
 export interface Conversation {
@@ -18,6 +19,7 @@ export interface Conversation {
     lastMessage: string;
     lastMessageAt: string;
     unreadCount: number;
+    isApproved: boolean;
 }
 
 /**
@@ -47,6 +49,9 @@ export async function sendMessage(receiverId: string, content: string): Promise<
         if (messageError) {
             throw messageError;
         }
+
+        // Auto approve this user since we sent them a message
+        await approveConversation(receiverId);
 
         return message;
     } catch (error) {
@@ -82,8 +87,11 @@ export async function getMessages(chatUserId: string, limit: number = 50): Promi
             throw error;
         }
 
+        // Filter out messages deleted by the current user
+        const messages = (data || []).filter((msg: any) => !msg.deleted_by?.includes(user.id));
+
         // Mark incoming messages as read and await the database update
-        const unreadIds = (data || [])
+        const unreadIds = messages
             .filter((msg) => msg.receiver_id === user.id && !msg.is_read)
             .map((msg) => msg.id);
 
@@ -98,7 +106,7 @@ export async function getMessages(chatUserId: string, limit: number = 50): Promi
             }
         }
 
-        return data || [];
+        return messages;
     } catch (error) {
         console.error('Error fetching messages:', error);
         captureError(error as Error, { context: 'getMessages', chatUserId });
@@ -136,14 +144,23 @@ export async function getConversations(): Promise<Conversation[]> {
             return [];
         }
 
+        // Filter out messages deleted by the current user
+        const activeMessages = rawMessages.filter(
+            (msg: any) => !msg.deleted_by?.includes(user.id)
+        );
+
+        if (activeMessages.length === 0) {
+            return [];
+        }
+
         // 2. Group by other user ID
         const latestMessagesMap = new Map<string, Message>();
         const unreadCountsMap = new Map<string, number>();
 
-        rawMessages.forEach((msg) => {
+        activeMessages.forEach((msg) => {
             const otherId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
             
-            // Map the latest message (since rawMessages is sorted desc)
+            // Map the latest message (since activeMessages is sorted desc)
             if (!latestMessagesMap.has(otherId)) {
                 latestMessagesMap.set(otherId, msg);
             }
@@ -166,9 +183,40 @@ export async function getConversations(): Promise<Conversation[]> {
             throw profileError;
         }
 
-        // 4. Map profiles and messages to Conversation objects
+        // 4. Batch fetch follow status (Who does current user follow?)
+        const { data: followData } = await supabase
+            .from('follows')
+            .select('following_id')
+            .eq('follower_id', user.id)
+            .in('following_id', otherUserIds);
+        
+        const followedUserIds = new Set((followData || []).map(f => f.following_id));
+
+        // 5. Batch fetch message approvals
+        const { data: approvalData } = await supabase
+            .from('message_approvals')
+            .select('approved_user_id')
+            .eq('user_id', user.id)
+            .in('approved_user_id', otherUserIds);
+
+        const approvedUserIds = new Set((approvalData || []).map(a => a.approved_user_id));
+
+        // 6. Map profiles and messages to Conversation objects
         const conversations: Conversation[] = (profiles || []).map((profile) => {
             const lastMsgObj = latestMessagesMap.get(profile.id)!;
+            
+            // A conversation is approved if:
+            // - The current user follows the other user
+            // - OR the current user initiated/replied (sent at least one message to them)
+            // - OR the current user explicitly approved them
+            const isFollowing = followedUserIds.has(profile.id);
+            const hasSentMessage = rawMessages.some(
+                (msg) => msg.sender_id === user.id && msg.receiver_id === profile.id
+            );
+            const isExplicitlyApproved = approvedUserIds.has(profile.id);
+
+            const isApproved = isFollowing || hasSentMessage || isExplicitlyApproved;
+
             return {
                 otherUserId: profile.id,
                 username: profile.username,
@@ -177,6 +225,7 @@ export async function getConversations(): Promise<Conversation[]> {
                 lastMessage: lastMsgObj.content,
                 lastMessageAt: lastMsgObj.created_at,
                 unreadCount: unreadCountsMap.get(profile.id) || 0,
+                isApproved,
             };
         });
 
@@ -255,3 +304,87 @@ export async function getUnreadMessageCount(): Promise<number> {
         return 0;
     }
 }
+
+/**
+ * Check if the current user has approved a conversation with another user
+ */
+export async function checkChatApproval(otherUserId: string): Promise<boolean> {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+
+        // 1. Check if following the user
+        const { data: follow } = await supabase
+            .from('follows')
+            .select('follower_id')
+            .eq('follower_id', user.id)
+            .eq('following_id', otherUserId)
+            .maybeSingle();
+        
+        if (follow) return true;
+
+        // 2. Check if explicitly approved
+        const { data: approval } = await supabase
+            .from('message_approvals')
+            .select('user_id')
+            .eq('user_id', user.id)
+            .eq('approved_user_id', otherUserId)
+            .maybeSingle();
+
+        if (approval) return true;
+
+        // 3. Check if current user has sent any message to this user
+        const { count } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('sender_id', user.id)
+            .eq('receiver_id', otherUserId);
+
+        return (count ?? 0) > 0;
+    } catch (error) {
+        console.error('Error checking chat approval:', error);
+        return false;
+    }
+}
+
+/**
+ * Approve a message request
+ */
+export async function approveConversation(otherUserId: string): Promise<boolean> {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+
+        const { error } = await supabase
+            .from('message_approvals')
+            .upsert({ user_id: user.id, approved_user_id: otherUserId });
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error approving conversation:', error);
+        return false;
+    }
+}
+
+/**
+ * Decline/Delete a conversation for the current user only (delete for me)
+ */
+export async function declineConversation(otherUserId: string): Promise<boolean> {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+
+        // Call the RPC function to handle "delete for me" safely
+        const { error } = await supabase.rpc('delete_conversation_for_user', {
+            other_user_id: otherUserId,
+        });
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error declining conversation:', error);
+        return false;
+    }
+}
+
