@@ -354,21 +354,17 @@ interface ClusterMarkerProps {
  * Her marker sahneye gelirken sırasıyla (index * 60ms gecikme) büyüyerek belirlenebilir.
  */
 function AnimatedClusterMarker({ cluster, onPress, theme, index }: ClusterMarkerProps) {
-    const entryAnim = useRef(new Animated.Value(0)).current;
     const scaleAnim = useRef(new Animated.Value(1)).current;
+    const [tracksViewChanges, setTracksViewChanges] = useState(true);
 
     useEffect(() => {
-        // Staggered entry animation — marker'lar sırayla ortaya çıkar
-        const delay = index * 60;
-        Animated.sequence([
-            Animated.delay(delay),
-            Animated.spring(entryAnim, {
-                toValue: 1,
-                useNativeDriver: true,
-                tension: 80,
-                friction: 8,
-            }),
-        ]).start();
+        // Turn off tracksViewChanges after 2.5 seconds to optimize map performance,
+        // giving images ample time to load.
+        const timer = setTimeout(() => {
+            setTracksViewChanges(false);
+        }, 2500);
+
+        return () => clearTimeout(timer);
     }, []);
 
     const handlePressIn = () => {
@@ -389,23 +385,13 @@ function AnimatedClusterMarker({ cluster, onPress, theme, index }: ClusterMarker
         }).start();
     };
 
-    // Entry: scale 0→1  +  slight bounce
-    const entryScale = entryAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-    });
-    const entryOpacity = entryAnim.interpolate({
-        inputRange: [0, 0.5, 1],
-        outputRange: [0, 0.8, 1],
-    });
-
     const isMultiPost = cluster.postCount > 1;
 
     return (
         <Marker
             coordinate={{ latitude: cluster.latitude, longitude: cluster.longitude }}
             onPress={onPress}
-            tracksViewChanges={false}
+            tracksViewChanges={tracksViewChanges}
         >
             <TouchableOpacity
                 onPressIn={handlePressIn}
@@ -416,9 +402,8 @@ function AnimatedClusterMarker({ cluster, onPress, theme, index }: ClusterMarker
                     style={[
                         styles.markerContainer,
                         {
-                            opacity: entryOpacity,
                             transform: [
-                                { scale: Animated.multiply(entryScale, scaleAnim) },
+                                { scale: scaleAnim },
                             ],
                         },
                     ]}
@@ -499,6 +484,14 @@ export default function MapScreen() {
                 // Run clustering for the target zoom level
                 const finalZoom = Math.round(Math.log2(360 / newRegion.longitudeDelta));
                 setClusters(clusterLocations(posts, finalZoom));
+
+                // Wait for the map to mount, then animate to focus on all posts
+                setTimeout(() => {
+                    if (mapRef.current) {
+                        console.log('[MapScreen] Animating to bounding region containing posts:', newRegion);
+                        mapRef.current.animateToRegion(newRegion, 1000);
+                    }
+                }, 800);
             }
         } catch (error) {
             console.error('Error loading map data:', error);
@@ -816,6 +809,8 @@ const styles = StyleSheet.create({
     // ── Animated Marker ─────────────────────────────────────────────────
     markerContainer: {
         alignItems: 'center',
+        paddingTop: 6,
+        paddingHorizontal: 8,
     },
     markerCircle: {
         width: 46,
@@ -834,14 +829,15 @@ const styles = StyleSheet.create({
     },
     markerCountBadge: {
         position: 'absolute',
-        top: -6,
-        right: -6,
+        top: 0,
+        right: 2,
         minWidth: 22,
         height: 22,
         borderRadius: 11,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 6,
+        zIndex: 10,
         ...Shadows.sm,
     },
     markerCountText: {

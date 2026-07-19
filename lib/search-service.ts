@@ -1,6 +1,7 @@
 import { getBlockedUsers } from './block';
 import { supabase } from './supabase';
 import { captureError } from './sentry';
+import * as Location from 'expo-location';
 import type {
     RecommendedPlace,
     SearchFilters,
@@ -634,8 +635,7 @@ export class SearchService {
         try {
             const { data: posts, error } = await supabase
                 .from('posts')
-                .select('id, title, location, location_name, latitude, longitude')
-                .not('location', 'is', null);
+                .select('id, title, location, location_name, latitude, longitude');
 
             if (error) throw error;
             if (!posts || posts.length === 0) return;
@@ -647,7 +647,7 @@ export class SearchService {
                 let needsUpdate = false;
                 const updateData: any = {};
 
-                if (post.location_name === null) {
+                if (post.location_name === null && loc) {
                     let locationName = null;
                     if (loc.city && loc.country) {
                         locationName = `${loc.city}, ${loc.country}`;
@@ -666,13 +666,54 @@ export class SearchService {
                     }
                 }
 
-                if (post.latitude === null && loc.latitude) {
-                    updateData.latitude = loc.latitude;
+                let lat = post.latitude;
+                let lon = post.longitude;
+
+                if (lat === null && loc?.latitude) {
+                    lat = loc.latitude;
+                    updateData.latitude = lat;
                     needsUpdate = true;
                 }
-                if (post.longitude === null && loc.longitude) {
-                    updateData.longitude = loc.longitude;
+                if (lon === null && loc?.longitude) {
+                    lon = loc.longitude;
+                    updateData.longitude = lon;
                     needsUpdate = true;
+                }
+
+                // Geocode fallback: If coordinates are STILL null but location_name is present
+                if ((lat === null || lon === null) && (post.location_name || updateData.location_name)) {
+                    const query = post.location_name || updateData.location_name;
+                    try {
+                        console.log(`[migrateLegacyLocations] Geocoding location name for post "${post.title}": "${query}"`);
+                        const results = await Location.geocodeAsync(query);
+                        if (results.length > 0) {
+                            const res = results[0];
+                            lat = res.latitude;
+                            lon = res.longitude;
+                            updateData.latitude = lat;
+                            updateData.longitude = lon;
+
+                            if (!loc) {
+                                updateData.location = {
+                                    latitude: lat,
+                                    longitude: lon,
+                                    city: query.split(',')[0].trim(),
+                                    country: query.split(',')[1]?.trim() || '',
+                                    name: query
+                                };
+                            } else {
+                                updateData.location = {
+                                    ...loc,
+                                    latitude: lat,
+                                    longitude: lon
+                                };
+                            }
+                            needsUpdate = true;
+                            console.log(`[migrateLegacyLocations] Successfully geocoded "${query}" -> lat: ${lat}, lon: ${lon}`);
+                        }
+                    } catch (geocodeErr) {
+                        console.warn(`[migrateLegacyLocations] Failed to geocode "${query}":`, geocodeErr);
+                    }
                 }
 
                 if (needsUpdate) {

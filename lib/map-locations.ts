@@ -54,7 +54,7 @@ export function clusterLocations(posts: Post[], zoom: number): LocationCluster[]
     // Clustering threshold in degrees depending on zoom level
     // Lower threshold means points must be closer together to cluster (zoomed in)
     // Higher threshold means points further apart will cluster (zoomed out)
-    const threshold = 40 / Math.pow(2, zoom);
+    const threshold = 1.5 / Math.pow(2, zoom);
     const clusters: LocationCluster[] = [];
 
     posts.forEach((post) => {
