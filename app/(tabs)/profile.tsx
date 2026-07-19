@@ -216,6 +216,14 @@ export default function ProfileScreen() {
     const surname = nameParts.length > 1 ? nameParts[nameParts.length - 1].toUpperCase() : nameParts[0].toUpperCase();
     const givenNames = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ').toUpperCase() : '';
 
+    // Format large numbers
+    const formatNumber = (num: number): string => {
+        if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
+    };
+
     // Rotation values for polaroid effect
     const rotations = [-2, 1, 2, -1, 1.5, -1.5];
 
@@ -292,6 +300,37 @@ export default function ProfileScreen() {
                         travelDays={stats?.travelDays || 0}
                         t={t}
                     />
+                </View>
+
+                {/* Followers / Following Cards */}
+                <View style={styles.followSection}>
+                    <TouchableOpacity 
+                        style={[styles.followCard, { backgroundColor: passportTheme.paper, borderColor: passportTheme.gold }]}
+                        onPress={() => router.push(`/followers/${displayProfile.id}`)}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="people-outline" size={16} color={passportTheme.gold} />
+                        <Text style={[styles.followCount, { color: passportTheme.text }]}>
+                            {formatNumber(stats?.followersCount || 0)}
+                        </Text>
+                        <Text style={[styles.followLabel, { color: passportTheme.textMuted }]}>
+                            {t('profile.followers')}
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        style={[styles.followCard, { backgroundColor: passportTheme.paper, borderColor: passportTheme.gold }]}
+                        onPress={() => router.push(`/following/${displayProfile.id}`)}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="person-add-outline" size={16} color={passportTheme.gold} />
+                        <Text style={[styles.followCount, { color: passportTheme.text }]}>
+                            {formatNumber(stats?.followingCount || 0)}
+                        </Text>
+                        <Text style={[styles.followLabel, { color: passportTheme.textMuted }]}>
+                            {t('profile.following')}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Travel Map Section */}
@@ -946,5 +985,35 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: 'white',
+    },
+    followSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        gap: 12,
+        marginBottom: 16,
+        marginTop: 4,
+    },
+    followCard: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        gap: 6,
+    },
+    followCount: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 16,
+    },
+    followLabel: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 10,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
 });

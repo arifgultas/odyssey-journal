@@ -7,11 +7,18 @@ import { followUser, getFollowers, unfollowUser, UserProfile } from '@/lib/follo
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { supabase } from '@/lib/supabase';
 
 export default function FollowersScreen() {
     const { userId } = useLocalSearchParams<{ userId: string }>();
     const { t } = useLanguage();
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
+    const insets = useSafeAreaInsets();
+
     const [followers, setFollowers] = useState<UserProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -32,11 +39,33 @@ export default function FollowersScreen() {
 
             const data = await getFollowers(userId, pageNum, 20);
 
+            // Query follow status for the retrieved users to check if current user follows them
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            const newStates: Record<string, boolean> = {};
+            const allFetchedIds = (refresh || pageNum === 0) 
+                ? data.map(u => u.id) 
+                : [...followers.map(u => u.id), ...data.map(u => u.id)];
+
+            if (currentUser && allFetchedIds.length > 0) {
+                const { data: followRecords } = await supabase
+                    .from('follows')
+                    .select('following_id')
+                    .eq('follower_id', currentUser.id)
+                    .in('following_id', allFetchedIds);
+                
+                if (followRecords) {
+                    followRecords.forEach(rec => {
+                        newStates[rec.following_id] = true;
+                    });
+                }
+            }
+
             if (refresh || pageNum === 0) {
                 setFollowers(data);
             } else {
                 setFollowers([...followers, ...data]);
             }
+            setFollowingStates(newStates);
 
             setHasMore(data.length === 20);
             setPage(pageNum);
@@ -94,13 +123,13 @@ export default function FollowersScreen() {
 
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="people-outline" size={80} color={Colors.light.textMuted} />
-                <ThemedText type="subtitle" style={styles.emptyTitle}>
+                <Ionicons name="people-outline" size={80} color={theme.textMuted} />
+                <Text style={[styles.emptyTitle, { color: theme.text, fontSize: 18 }]}>
                     {t('followers.noFollowers')}
-                </ThemedText>
-                <ThemedText style={styles.emptyText}>
+                </Text>
+                <Text style={[styles.emptyText, { color: theme.textMuted }]}>
                     {t('followers.noFollowersDesc')}
-                </ThemedText>
+                </Text>
             </View>
         );
     };
@@ -110,39 +139,39 @@ export default function FollowersScreen() {
 
         return (
             <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color={Colors.light.accent} />
+                <ActivityIndicator size="small" color={theme.accent} />
             </View>
         );
     };
 
     if (isLoading && followers.length === 0) {
         return (
-            <ThemedView style={styles.container}>
-                <View style={styles.header}>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <View style={[styles.header, { paddingTop: insets.top + Spacing.xs, backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+                        <Ionicons name="arrow-back" size={24} color={theme.text} />
                     </TouchableOpacity>
-                    <ThemedText type="title" style={styles.headerTitle}>
+                    <Text style={[styles.headerTitle, { color: theme.text }]}>
                         {t('followers.title')}
-                    </ThemedText>
+                    </Text>
                     <View style={{ width: 40 }} />
                 </View>
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={Colors.light.accent} />
+                    <ActivityIndicator size="large" color={theme.accent} />
                 </View>
-            </ThemedView>
+            </View>
         );
     }
 
     return (
-        <ThemedView style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.xs, backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+                    <Ionicons name="arrow-back" size={24} color={theme.text} />
                 </TouchableOpacity>
-                <ThemedText type="title" style={styles.headerTitle}>
-                    Followers
-                </ThemedText>
+                <Text style={[styles.headerTitle, { color: theme.text }]}>
+                    {t('followers.title')}
+                </Text>
                 <View style={{ width: 40 }} />
             </View>
 
@@ -156,6 +185,7 @@ export default function FollowersScreen() {
                         onFollowPress={handleFollowPress}
                         isFollowing={followingStates[item.id] || false}
                         followLoading={loadingStates[item.id] || false}
+                        showFollowButton={!followingStates[item.id]}
                     />
                 )}
                 contentContainerStyle={styles.listContent}
@@ -163,7 +193,7 @@ export default function FollowersScreen() {
                     <RefreshControl
                         refreshing={isRefreshing}
                         onRefresh={handleRefresh}
-                        tintColor={Colors.light.accent}
+                        tintColor={theme.accent}
                     />
                 }
                 onEndReached={handleLoadMore}
@@ -172,7 +202,7 @@ export default function FollowersScreen() {
                 ListFooterComponent={renderFooter}
                 showsVerticalScrollIndicator={false}
             />
-        </ThemedView>
+        </View>
     );
 }
 
@@ -194,6 +224,8 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontFamily: Typography.fonts.heading,
+        fontSize: 20,
+        letterSpacing: 1,
     },
     listContent: {
         padding: Spacing.md,

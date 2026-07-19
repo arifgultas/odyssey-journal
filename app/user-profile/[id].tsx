@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
     ActivityIndicator,
     Alert,
@@ -54,6 +55,7 @@ export default function UserProfileScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
+    const queryClient = useQueryClient();
 
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user: currentUser } = useAuth();
@@ -114,6 +116,12 @@ export default function UserProfileScreen() {
                         if (!id) return;
                         try {
                             await blockUser(id);
+                            
+                            // Invalidate search and profile query caches to immediately reflect changes
+                            queryClient.invalidateQueries({ queryKey: ['search'] });
+                            queryClient.invalidateQueries({ queryKey: ['profile'] });
+                            queryClient.invalidateQueries({ queryKey: ['suggested-users'] });
+                            
                             Alert.alert('Success', t('profile.blockSuccess') || 'User blocked successfully.');
                             router.back();
                         } catch (error) {
@@ -300,6 +308,37 @@ export default function UserProfileScreen() {
                         </TouchableOpacity>
                     </View>
                 )}
+
+                {/* Followers / Following Cards */}
+                <View style={styles.followSection}>
+                    <TouchableOpacity 
+                        style={[styles.followCard, { backgroundColor: theme.surface, borderColor: theme.primary }]}
+                        onPress={handleFollowersPress}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="people-outline" size={16} color={theme.primary} />
+                        <Text style={[styles.followCount, { color: theme.textMain }]}>
+                            {formatNumber(profileData.stats?.followersCount || 0)}
+                        </Text>
+                        <Text style={[styles.followLabel, { color: theme.textMuted }]}>
+                            {t('profile.followers')}
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        style={[styles.followCard, { backgroundColor: theme.surface, borderColor: theme.primary }]}
+                        onPress={handleFollowingPress}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="person-add-outline" size={16} color={theme.primary} />
+                        <Text style={[styles.followCount, { color: theme.textMain }]}>
+                            {formatNumber(profileData.stats?.followingCount || 0)}
+                        </Text>
+                        <Text style={[styles.followLabel, { color: theme.textMuted }]}>
+                            {t('profile.following')}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
                 {/* Common Destinations Section */}
                 {!isCurrentUser && (
@@ -968,5 +1007,35 @@ const styles = StyleSheet.create({
     bottomDecoration: {
         alignItems: 'center',
         paddingVertical: Spacing.xl,
+    },
+    followSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: Spacing.md,
+        gap: Spacing.md,
+        marginBottom: Spacing.md,
+        marginTop: Spacing.xs,
+    },
+    followCard: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        gap: 6,
+    },
+    followCount: {
+        fontFamily: Typography.fonts.uiBold,
+        fontSize: 16,
+    },
+    followLabel: {
+        fontFamily: Typography.fonts.ui,
+        fontSize: 10,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
 });

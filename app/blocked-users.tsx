@@ -16,6 +16,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getBlockedUsersProfiles, unblockUser, BlockedUserProfile } from '@/lib/block';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Styling colors matching theme
 const DesignColors = {
@@ -46,6 +47,7 @@ export default function BlockedUsersScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
+    const queryClient = useQueryClient();
 
     const [blockedUsers, setBlockedUsers] = useState<BlockedUserProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -86,6 +88,11 @@ export default function BlockedUsersScreen() {
                         try {
                             const success = await unblockUser(user.id);
                             if (success) {
+                                // Invalidate query caches to refresh search and profiles immediately
+                                queryClient.invalidateQueries({ queryKey: ['search'] });
+                                queryClient.invalidateQueries({ queryKey: ['profile'] });
+                                queryClient.invalidateQueries({ queryKey: ['suggested-users'] });
+
                                 Alert.alert('', t('settings.unblockSuccess') || 'User has been unblocked.');
                                 setBlockedUsers((prev) => prev.filter((u) => u.id !== user.id));
                             }

@@ -1,6 +1,7 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useLanguage } from '@/context/language-context';
 
 interface FollowButtonProps {
     isFollowing: boolean;
@@ -10,6 +11,7 @@ interface FollowButtonProps {
 }
 
 export function FollowButton({ isFollowing, onPress, loading = false, size = 'medium' }: FollowButtonProps) {
+    const { t } = useLanguage();
     const sizeStyles = {
         small: {
             paddingHorizontal: Spacing.sm,
@@ -57,7 +59,7 @@ export function FollowButton({ isFollowing, onPress, loading = false, size = 'me
                         isFollowing ? styles.followingText : styles.followText,
                     ]}
                 >
-                    {isFollowing ? 'Following' : 'Follow'}
+                    {isFollowing ? t('follow.following') : t('follow.follow')}
                 </Text>
             )}
         </TouchableOpacity>

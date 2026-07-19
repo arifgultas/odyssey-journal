@@ -6,6 +6,7 @@ import { Image } from 'expo-image';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FollowButton } from './follow-button';
+import { useLanguage } from '@/context/language-context';
 
 interface UserCardProps {
     user: UserProfile;
@@ -24,6 +25,7 @@ export function UserCard({
     isFollowing = false,
     followLoading = false
 }: UserCardProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -69,11 +71,11 @@ export function UserCard({
                     )}
                     <View style={styles.stats}>
                         <Text style={[styles.statText, { color: theme.textMuted }]}>
-                            <Text style={[styles.statNumber, { color: theme.text }]}>{user.followers_count || 0}</Text> followers
+                            <Text style={[styles.statNumber, { color: theme.text }]}>{user.followers_count || 0}</Text> {t('profile.followers').toLowerCase()}
                         </Text>
                         <Text style={[styles.statDivider, { color: theme.textMuted }]}>•</Text>
                         <Text style={[styles.statText, { color: theme.textMuted }]}>
-                            <Text style={[styles.statNumber, { color: theme.text }]}>{user.following_count || 0}</Text> following
+                            <Text style={[styles.statNumber, { color: theme.text }]}>{user.following_count || 0}</Text> {t('profile.following').toLowerCase()}
                         </Text>
                     </View>
                 </View>
