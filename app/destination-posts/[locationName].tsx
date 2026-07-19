@@ -18,14 +18,24 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function DestinationPostsScreen() {
-    const { locationName } = useLocalSearchParams<{ locationName: string }>();
+    const { locationName, lat, lon } = useLocalSearchParams<{ locationName: string; lat?: string; lon?: string }>();
     const decodedLocationName = locationName ? decodeURIComponent(locationName) : '';
+    const numLat = lat ? parseFloat(lat) : undefined;
+    const numLon = lon ? parseFloat(lon) : undefined;
+    console.log(`[DestinationPostsScreen] Raw params: locationName="${locationName}", lat="${lat}", lon="${lon}" -> Decoded: "${decodedLocationName}", lat: ${numLat}, lon: ${numLon}`);
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
     const { t } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
 
-    const { data: posts, isLoading, error } = usePostsByLocation(decodedLocationName);
+    const { data: posts, isLoading, isFetching, error } = usePostsByLocation(
+        decodedLocationName,
+        0,
+        20,
+        numLat,
+        numLon
+    );
+    console.log(`[DestinationPostsScreen] Query state: isLoading=${isLoading}, isFetching=${isFetching}, error=${error ? JSON.stringify(error) : 'none'}, postsCount=${posts?.length || 0}`);
 
     const handlePostPress = (postId: string) => {
         router.push(`/post-detail/${postId}`);
@@ -102,6 +112,8 @@ export default function DestinationPostsScreen() {
         </View>
     );
 
+    const isMainLoading = isLoading || (isFetching && (!posts || posts.length === 0));
+
     return (
         <ThemedView style={styles.container}>
             {/* Header */}
@@ -122,7 +134,7 @@ export default function DestinationPostsScreen() {
             </View>
 
             {/* Content */}
-            {isLoading ? (
+            {isMainLoading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={theme.primary} />
                 </View>

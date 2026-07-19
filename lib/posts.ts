@@ -111,6 +111,8 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 content: sanitizedContent,
                 location: data.location,
                 location_name: locationName,
+                latitude: data.location?.latitude || null,
+                longitude: data.location?.longitude || null,
                 images: imageUrls,
                 image_captions: sanitizedCaptions,
                 weather_data: data.weatherData || null,
@@ -208,6 +210,8 @@ export async function updatePost(
             content?: string;
             location?: CreatePostData['location'];
             location_name?: string | null;
+            latitude?: number | null;
+            longitude?: number | null;
             images?: string[];
             categories?: string[];
             image_captions?: string[];
@@ -221,6 +225,8 @@ export async function updatePost(
         if (data.location !== undefined) {
             updateData.location = data.location;
             if (data.location) {
+                updateData.latitude = data.location.latitude || null;
+                updateData.longitude = data.location.longitude || null;
                 if (data.location.city && data.location.country) {
                     updateData.location_name = `${data.location.city}, ${data.location.country}`;
                 } else if (data.location.city) {
@@ -232,6 +238,8 @@ export async function updatePost(
                 }
             } else {
                 updateData.location_name = null;
+                updateData.latitude = null;
+                updateData.longitude = null;
             }
         }
         if (imageUrls !== undefined) updateData.images = imageUrls;

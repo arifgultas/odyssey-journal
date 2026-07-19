@@ -94,31 +94,13 @@ const AnimatedCategoryButton = ({
 }) => {
     const { t } = useLanguage();
     const scale = useSharedValue(1);
-    const backgroundColor = useSharedValue(isSelected ? 1 : 0);
-
-    useEffect(() => {
-        backgroundColor.value = withSpring(isSelected ? 1 : 0, {
-            damping: 15,
-            stiffness: 150,
-        });
-    }, [isSelected]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
-        backgroundColor: interpolate(
-            backgroundColor.value,
-            [0, 1],
-            [0, 1]
-        ) === 1 ? theme.primary : 'transparent',
-        borderColor: interpolate(
-            backgroundColor.value,
-            [0, 1],
-            [0, 1]
-        ) === 1 ? theme.primary : (isDark ? theme.accentBrown : theme.textMain),
     }));
 
     const handlePressIn = () => {
-        scale.value = withSpring(1.05, { damping: 10, stiffness: 400 });
+        scale.value = withSpring(0.95, { damping: 10, stiffness: 400 });
     };
 
     const handlePressOut = () => {
@@ -132,20 +114,27 @@ const AnimatedCategoryButton = ({
             onPressOut={handlePressOut}
             activeOpacity={0.9}
         >
-            <Animated.View style={[styles.categoryButton, animatedStyle]}>
+            <Animated.View style={[
+                styles.categoryButton,
+                {
+                    backgroundColor: isSelected ? theme.primary : 'transparent',
+                    borderColor: isSelected ? theme.primary : (isDark ? theme.accentBrown : theme.textMain),
+                },
+                animatedStyle
+            ]}>
                 <CategoryIcon
                     icon={category.icon}
                     color={isSelected ? '#2C1810' : (isDark ? theme.primary : theme.textMain)}
                     size={20}
                 />
-                <Animated.Text
+                <Text
                     style={[
                         styles.categoryLabel,
                         { color: isSelected ? '#2C1810' : (isDark ? theme.primary : theme.textMain) },
                     ]}
                 >
                     {t('categories.' + category.id) || category.label}
-                </Animated.Text>
+                </Text>
             </Animated.View>
         </TouchableOpacity>
     );
@@ -563,6 +552,22 @@ export default function CreatePostScreen() {
         fetchWeather();
     }, [location]);
 
+    const resetForm = () => {
+        setTitle('');
+        setContent('');
+        setSelectedCategories([]);
+        setLocationConfirmed(false);
+        setImageCaptions([]);
+        setWeatherData(null);
+        setIsFetchingWeather(false);
+        setSearchQuery('');
+        setSearchResults([]);
+        setIsSearchingLocation(false);
+        setShowLocationModal(false);
+        clearLocation();
+        if (setImages) setImages([]);
+    };
+
     const handleSubmit = async () => {
         if (!title.trim()) {
             Alert.alert(t('createPost.errorTitle'), t('createPost.enterTitle'));
@@ -602,7 +607,10 @@ export default function CreatePostScreen() {
                 Alert.alert(t('common.success') || 'Başarılı', 'Günlük girişi güncellendi.', [
                     {
                         text: t('createPost.ok'),
-                        onPress: () => router.back(),
+                        onPress: () => {
+                            resetForm();
+                            router.back();
+                        },
                     },
                 ]);
             } else {
@@ -610,7 +618,10 @@ export default function CreatePostScreen() {
                 Alert.alert(t('createPost.success'), t('createPost.entryCreated'), [
                     {
                         text: t('createPost.ok'),
-                        onPress: () => router.back(),
+                        onPress: () => {
+                            resetForm();
+                            router.back();
+                        },
                     },
                 ]);
             }

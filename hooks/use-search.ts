@@ -170,10 +170,10 @@ export function usePostsByCategory(categoryId: string, page = 0, pageSize = 20) 
 /**
  * Hook to get posts by location
  */
-export function usePostsByLocation(locationName: string, page = 0, pageSize = 20) {
+export function usePostsByLocation(locationName: string, page = 0, pageSize = 20, latitude?: number, longitude?: number) {
     return useQuery({
-        queryKey: ['posts', 'location', locationName, page, pageSize],
-        queryFn: () => SearchService.getPostsByLocation(locationName, page, pageSize),
+        queryKey: ['posts', 'location', locationName, page, pageSize, latitude, longitude],
+        queryFn: () => SearchService.getPostsByLocation(locationName, page, pageSize, latitude, longitude),
         enabled: !!locationName,
         staleTime: 1000 * 60 * 5, // 5 minutes
     });

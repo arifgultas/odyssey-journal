@@ -33,6 +33,11 @@ export class SearchService {
                 this.searchLocations(query),
             ]);
 
+            console.log(`[SearchService.search] Query: "${query}" -> Found: posts=${posts.length}, users=${users.length}, locations=${locations.length}`);
+            if (locations.length > 0) {
+                console.log(`[SearchService.search] Locations detail:`, JSON.stringify(locations));
+            }
+
             return {
                 posts,
                 users,
@@ -72,7 +77,7 @@ export class SearchService {
             if (filters?.location || query) {
                 const searchTerm = escapeIlike(filters?.location || query);
                 queryBuilder = queryBuilder.or(
-                    `location_name.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%,"location->>city".ilike.%${searchTerm}%,"location->>country".ilike.%${searchTerm}%,"location->>address".ilike.%${searchTerm}%`
+                    `location_name.ilike."%${searchTerm}%",content.ilike."%${searchTerm}%",title.ilike."%${searchTerm}%"`
                 );
             }
 
@@ -134,7 +139,7 @@ export class SearchService {
             let queryBuilder = supabase
                 .from('profiles')
                 .select('*')
-                .or(`username.ilike.%${escapeIlike(query)}%,full_name.ilike.%${escapeIlike(query)}%`);
+                .or(`username.ilike."%${escapeIlike(query)}%",full_name.ilike."%${escapeIlike(query)}%"`);
 
             if (blockedUsers.length > 0) {
                 queryBuilder = queryBuilder.not('id', 'in', `(${blockedUsers.join(',')})`);
@@ -160,7 +165,7 @@ export class SearchService {
             const { data, error } = await supabase
                 .from('posts')
                 .select('location_name, latitude, longitude, location')
-                .or(`location_name.ilike.%${escapedQuery}%,"location->>city".ilike.%${escapedQuery}%,"location->>country".ilike.%${escapedQuery}%,"location->>address".ilike.%${escapedQuery}%`);
+                .ilike('location_name', `%${escapedQuery}%`);
 
             if (error) throw error;
 
@@ -543,14 +548,14 @@ export class SearchService {
      * @param page - Page number (0-indexed)
      * @param pageSize - Number of posts per page
      */
-    static async getPostsByLocation(locationName: string, page = 0, pageSize = 20) {
+    static async getPostsByLocation(locationName: string, page = 0, pageSize = 20, lat?: number, lon?: number) {
         try {
             const from = page * pageSize;
             const to = from + pageSize - 1;
 
-            const escapedLocationName = escapeIlike(locationName);
-            // Use ilike for partial matching (city or full location name)
-            const { data, error } = await supabase
+            console.log(`[getPostsByLocation] Input locationName: "${locationName}", lat: ${lat}, lon: ${lon}`);
+
+            let queryBuilder = supabase
                 .from('posts')
                 .select(`
                     *,
@@ -560,12 +565,30 @@ export class SearchService {
                         full_name,
                         avatar_url
                     )
-                `)
-                .or(`location->>city.ilike.%${escapedLocationName}%,location->>country.ilike.%${escapedLocationName}%`)
+                `);
+
+            if (lat !== undefined && lon !== undefined && lat !== null && lon !== null) {
+                // Bounding box filter (approx. 20km city radius)
+                const delta = 0.15;
+                queryBuilder = queryBuilder
+                    .gte('latitude', lat - delta)
+                    .lte('latitude', lat + delta)
+                    .gte('longitude', lon - delta)
+                    .lte('longitude', lon + delta);
+            } else {
+                const escapedLocationName = escapeIlike(locationName);
+                queryBuilder = queryBuilder.ilike('location_name', `%${escapedLocationName}%`);
+            }
+
+            const { data, error } = await queryBuilder
                 .order('created_at', { ascending: false })
                 .range(from, to);
 
-            if (error) throw error;
+            if (error) {
+                console.error(`[getPostsByLocation] Supabase error:`, JSON.stringify(error));
+                throw error;
+            }
+            console.log(`[getPostsByLocation] Success, returned ${data?.length || 0} posts`);
             return data || [];
         } catch (error) {
             console.error('Error fetching posts by location:', error);
@@ -604,6 +627,66 @@ export class SearchService {
             console.error('Error fetching all trending posts:', error);
             captureError(error as Error, { context: 'getAllTrendingPosts' });
             return [];
+        }
+    }
+
+    static async migrateLegacyLocations() {
+        try {
+            const { data: posts, error } = await supabase
+                .from('posts')
+                .select('id, title, location, location_name, latitude, longitude')
+                .not('location', 'is', null);
+
+            if (error) throw error;
+            if (!posts || posts.length === 0) return;
+
+            let migrationCount = 0;
+
+            for (const post of posts) {
+                const loc = post.location;
+                let needsUpdate = false;
+                const updateData: any = {};
+
+                if (post.location_name === null) {
+                    let locationName = null;
+                    if (loc.city && loc.country) {
+                        locationName = `${loc.city}, ${loc.country}`;
+                    } else if (loc.city) {
+                        locationName = loc.city;
+                    } else if (loc.country) {
+                        locationName = loc.country;
+                    } else if (loc.address) {
+                        locationName = loc.address;
+                    } else if (loc.name) {
+                        locationName = loc.name;
+                    }
+                    if (locationName) {
+                        updateData.location_name = locationName;
+                        needsUpdate = true;
+                    }
+                }
+
+                if (post.latitude === null && loc.latitude) {
+                    updateData.latitude = loc.latitude;
+                    needsUpdate = true;
+                }
+                if (post.longitude === null && loc.longitude) {
+                    updateData.longitude = loc.longitude;
+                    needsUpdate = true;
+                }
+
+                if (needsUpdate) {
+                    migrationCount++;
+                    console.log(`[migrateLegacyLocations] Migrating post "${post.title}" (ID: ${post.id}) ->`, JSON.stringify(updateData));
+                    await supabase
+                        .from('posts')
+                        .update(updateData)
+                        .eq('id', post.id);
+                }
+            }
+            console.log(`[migrateLegacyLocations] Migration complete. Updated ${migrationCount} posts.`);
+        } catch (error) {
+            console.error('[migrateLegacyLocations] Error running migration:', error);
         }
     }
 }

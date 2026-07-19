@@ -8,7 +8,7 @@ interface SearchResultsProps {
     searchResults: any;
     vintageTheme: any;
     t: (key: string) => string;
-    onLocationPress: (locationName: string) => void;
+    onLocationPress: (locationName: string, latitude?: number, longitude?: number) => void;
     onUserPress: (userId: string) => void;
 }
 
@@ -51,7 +51,7 @@ export function SearchResults({
                         <TouchableOpacity
                             key={index}
                             style={[styles.resultItem, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
-                            onPress={() => onLocationPress(loc.name)}
+                            onPress={() => onLocationPress(loc.name, loc.coordinates?.latitude, loc.coordinates?.longitude)}
                             accessibilityRole="button"
                             accessibilityLabel={`${loc.name}, ${loc.postCount} gönderi, lokasyon gönderilerini gör`}
                         >
