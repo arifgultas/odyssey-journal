@@ -104,12 +104,25 @@ export function calculateMapCenter(clusters: LocationCluster[]): { latitude: num
         return { latitude: 39.0, longitude: 35.0 };
     }
 
-    const totalLat = clusters.reduce((sum, c) => sum + c.latitude, 0);
-    const totalLng = clusters.reduce((sum, c) => sum + c.longitude, 0);
+    // Filter out extreme outliers (e.g. isolated test pins) for framing
+    const filtered = clusters.filter((c, idx) => {
+        if (clusters.length <= 1) return true;
+        return clusters.some((other, otherIdx) => {
+            if (idx === otherIdx) return false;
+            const latDiff = Math.abs(c.latitude - other.latitude);
+            const lngDiff = Math.abs(c.longitude - other.longitude);
+            return latDiff < 45 && lngDiff < 45;
+        });
+    });
+
+    const finalClusters = filtered.length > 0 ? filtered : clusters;
+
+    const totalLat = finalClusters.reduce((sum, c) => sum + c.latitude, 0);
+    const totalLng = finalClusters.reduce((sum, c) => sum + c.longitude, 0);
 
     return {
-        latitude: totalLat / clusters.length,
-        longitude: totalLng / clusters.length,
+        latitude: totalLat / finalClusters.length,
+        longitude: totalLng / finalClusters.length,
     };
 }
 
@@ -121,8 +134,24 @@ export function calculateZoomDelta(clusters: LocationCluster[]): { latDelta: num
         return { latDelta: 5.0, lngDelta: 5.0 };
     }
 
-    const lats = clusters.map(c => c.latitude);
-    const lngs = clusters.map(c => c.longitude);
+    // Filter out extreme outliers (e.g. isolated test pins) for framing
+    const filtered = clusters.filter((c, idx) => {
+        return clusters.some((other, otherIdx) => {
+            if (idx === otherIdx) return false;
+            const latDiff = Math.abs(c.latitude - other.latitude);
+            const lngDiff = Math.abs(c.longitude - other.longitude);
+            return latDiff < 45 && lngDiff < 45;
+        });
+    });
+
+    const finalClusters = filtered.length > 0 ? filtered : clusters;
+
+    if (finalClusters.length <= 1) {
+        return { latDelta: 5.0, lngDelta: 5.0 };
+    }
+
+    const lats = finalClusters.map(c => c.latitude);
+    const lngs = finalClusters.map(c => c.longitude);
 
     const latSpread = Math.max(...lats) - Math.min(...lats);
     const lngSpread = Math.max(...lngs) - Math.min(...lngs);

@@ -12,7 +12,7 @@ import type { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -107,6 +107,58 @@ export default function ProfileScreen() {
 
     // Calculate badges based on user stats
     const badges = useMemo(() => calculateBadges(stats), [stats]);
+
+    const mapRef = useRef<any>(null);
+
+    const calculatedRegion = useMemo(() => {
+        if (!stats?.visitedLocations || stats.visitedLocations.length === 0) return null;
+        console.log('[ProfileScreen] stats.visitedLocations array:', JSON.stringify(stats.visitedLocations));
+        const locations = stats.visitedLocations.slice(0, 10);
+        
+        // Filter out extreme outliers (e.g. single test pins like Kiribati) to keep the map focused on the main travel area
+        const filteredLocations = locations.filter((loc, idx) => {
+            if (locations.length <= 1) return true;
+            // Check if this location has at least one neighbor within 45 degrees
+            return locations.some((other, otherIdx) => {
+                if (idx === otherIdx) return false;
+                const latDiff = Math.abs(loc.latitude - other.latitude);
+                const lngDiff = Math.abs(loc.longitude - other.longitude);
+                return latDiff < 45 && lngDiff < 45;
+            });
+        });
+
+        // Fallback to all locations if filtering removed everything
+        const finalLocs = filteredLocations.length > 0 ? filteredLocations : locations;
+
+        const latitudes = finalLocs.map(l => l.latitude);
+        const longitudes = finalLocs.map(l => l.longitude);
+
+        const minLat = Math.min(...latitudes);
+        const maxLat = Math.max(...latitudes);
+        const minLng = Math.min(...longitudes);
+        const maxLng = Math.max(...longitudes);
+
+        const latDelta = maxLat === minLat ? 4.0 : (maxLat - minLat) * 1.5;
+        const lngDelta = maxLng === minLng ? 4.0 : (maxLng - minLng) * 1.5;
+
+        const calculated = {
+            latitude: (maxLat + minLat) / 2,
+            longitude: (maxLng + minLng) / 2,
+            latitudeDelta: Math.max(latDelta, 0.5),
+            longitudeDelta: Math.max(lngDelta, 0.5),
+        };
+        console.log('[ProfileScreen] Calculated region after outlier filtering:', JSON.stringify(calculated));
+        return calculated;
+    }, [stats?.visitedLocations]);
+
+    useEffect(() => {
+        if (calculatedRegion && mapRef.current) {
+            const timer = setTimeout(() => {
+                mapRef.current?.animateToRegion(calculatedRegion, 1000);
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [calculatedRegion]);
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -264,6 +316,7 @@ export default function ProfileScreen() {
                                         };
                                         return (
                                             <MapView
+                                                ref={mapRef}
                                                 provider={PROVIDER_GOOGLE}
                                                 style={StyleSheet.absoluteFill}
                                                 initialRegion={region}
@@ -272,6 +325,12 @@ export default function ProfileScreen() {
                                                 showsMyLocationButton={false}
                                                 zoomEnabled={true}
                                                 scrollEnabled={true}
+                                                onMapReady={() => {
+                                                    if (calculatedRegion) {
+                                                        console.log('[ProfileScreen] Map ready, animating to region:', calculatedRegion);
+                                                        mapRef.current?.animateToRegion(calculatedRegion, 1000);
+                                                    }
+                                                }}
                                             >
                                                 {locations.map((loc, index) => (
                                                     <Marker
