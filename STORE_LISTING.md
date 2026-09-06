@@ -129,11 +129,11 @@ Odyssey'inize bugün başlayın!
 
 **Support Email:** gultassoftware@gmail.com
 
-**Website:** https://odysseyjournal.github.io
+**Website:** https://odysseyjournal.app
 
-**Privacy Policy:** https://odysseyjournal.github.io/privacy-policy.html
+**Privacy Policy:** https://odysseyjournal.app/privacy-policy
 
-**Terms of Service:** https://odysseyjournal.github.io/terms-of-service.html
+**Terms of Service:** https://odysseyjournal.app/terms
 
 ---
 

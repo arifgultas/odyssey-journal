@@ -640,5 +640,15 @@ export default {
             violence: 'violencia',
             'violence/graphic': 'violencia gráfica'
         }
+    },
+    homeLocation: {
+        title: 'Establece tu ubicación de origen',
+        description: 'Define tu ciudad de origen para que podamos calcular con precisión tu distancia total de viaje y las estadísticas de tu pasaporte.',
+        useCurrentLocation: 'Usar mi ubicación actual',
+        locating: 'Localizando...',
+        later: 'Más tarde',
+        success: 'Ubicación de origen configurada con éxito.',
+        permissionDenied: 'Permiso de ubicación denegado. Puedes configurarlo más tarde en tu perfil.',
+        error: 'Error al obtener la ubicación.',
     }
 };

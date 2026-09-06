@@ -69,9 +69,9 @@ Turkish, English, Spanish, French, German, Portuguese, Italian, Japanese, Korean
 ## Developer Info
 - **Developer**: Gultas Software
 - **Email**: gultassoftware@gmail.com
-- **Website**: https://odysseyjournal.github.io
-- **Privacy Policy**: https://odysseyjournal.github.io/privacy-policy.html
-- **Terms of Service**: https://odysseyjournal.github.io/terms-of-service.html
+- **Website**: https://odysseyjournal.app
+- **Privacy Policy**: https://odysseyjournal.app/privacy-policy
+- **Terms of Service**: https://odysseyjournal.app/terms
 
 ---
 

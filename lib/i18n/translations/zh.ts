@@ -625,5 +625,15 @@ export default {
                     violence: '暴力',
                     'violence/graphic': '血腥暴力画面'
                 }
+            },
+            homeLocation: {
+                title: '设置常居地',
+                description: '设置您的常居地，以便我们准确计算您的总旅行里程和护照统计数据。',
+                useCurrentLocation: '使用当前位置',
+                locating: '正在获取位置...',
+                later: '稍后',
+                success: '常居地设置成功。',
+                permissionDenied: '未授予位置权限。您可以稍后在个人资料中进行设置。',
+                error: '获取位置失败。',
             }
         };

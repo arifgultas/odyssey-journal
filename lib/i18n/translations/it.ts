@@ -631,5 +631,15 @@ export default {
             violence: 'violenza',
             'violence/graphic': 'violenza grafica'
         }
+    },
+    homeLocation: {
+        title: 'Imposta la tua città di partenza',
+        description: 'Imposta la tua città di partenza per consentirci di calcolare con precisione la distanza totale percorsa e le statistiche del tuo passaporto.',
+        useCurrentLocation: 'Usa la mia posizione attuale',
+        locating: 'Rilevamento posizione...',
+        later: 'Più tardi',
+        success: 'Città di partenza impostata con successo.',
+        permissionDenied: 'Autorizzazione alla posizione negata. Puoi impostarla in seguito dal tuo profilo.',
+        error: 'Impossibile rilevare la posizione.',
     }
 };

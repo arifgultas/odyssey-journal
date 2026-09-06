@@ -104,8 +104,9 @@ export function InteractiveMap({
     return (
         <View style={[styles.container, style]}>
             <MapView
-                provider={PROVIDER_GOOGLE}
-                style={styles.map}
+                ref={mapRef}
+                style={StyleSheet.absoluteFillObject}
+                provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                 initialRegion={region}
                 customMapStyle={isDark ? mapStyleDark : mapStyleLight}
                 showsUserLocation={false}

@@ -14,9 +14,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         supportsTablet: true,
         bundleIdentifier: 'com.odysseyjournal.app',
         buildNumber: '1',
-        config: {
-            googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
-        },
         infoPlist: {
             NSCameraUsageDescription: 'Odyssey Journal needs access to your camera to take photos for your travel posts.',
             NSPhotoLibraryUsageDescription: 'Odyssey Journal needs access to your photo library to select images for your travel posts.',

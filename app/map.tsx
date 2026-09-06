@@ -685,7 +685,7 @@ export default function MapScreen() {
                         <MapView
                             ref={mapRef}
                             style={styles.map}
-                            provider={PROVIDER_GOOGLE}
+                            provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                             initialRegion={region}
                             onRegionChangeComplete={handleRegionChangeComplete}
                             customMapStyle={colorScheme === 'dark' ? mapStyleDark : mapStyleLight}

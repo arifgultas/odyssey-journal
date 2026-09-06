@@ -686,5 +686,15 @@ export default {
             violence: 'violence',
             'violence/graphic': 'violence/graphic'
         }
+    },
+    homeLocation: {
+        title: 'Set Your Home Location',
+        description: 'Set your home base so we can accurately calculate your total travel distance and passport stats.',
+        useCurrentLocation: 'Use Current Location',
+        locating: 'Locating...',
+        later: 'Later',
+        success: 'Home location set successfully.',
+        permissionDenied: 'Location permission denied. You can set it later from your profile.',
+        error: 'Failed to determine location.',
     }
 };

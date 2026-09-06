@@ -2,11 +2,14 @@ import { AnimatedEmptyState } from '@/components/animated-empty-state';
 
 import { AnimatedPostCard } from '@/components/animated-post-card';
 import { CollectionPickerSheet } from '@/components/collection-picker-sheet';
+import { HomeLocationModal } from '@/components/home-location-modal';
 import { ReportModal } from '@/components/report-modal';
 import { PostCardSkeleton } from '@/components/skeleton-loader';
 import { ThemedView } from '@/components/themed-view';
 import { useResponsive } from '@/hooks/use-responsive';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ProfileService } from '@/lib/profile-service';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
@@ -56,6 +59,7 @@ export default function HomeScreen() {
   const [bookmarkingPostId, setBookmarkingPostId] = useState<string | null>(null);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [showHomeLocationModal, setShowHomeLocationModal] = useState(false);
 
   const [feedType, setFeedType] = useState<'public' | 'following'>('public');
   const [sortBy, setSortBy] = useState<'date' | 'popularity' | 'location'>('date');
@@ -217,6 +221,23 @@ export default function HomeScreen() {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setCurrentUserId(user.id);
+      checkHomeLocationPrompt(user.id);
+    }
+  };
+
+  const checkHomeLocationPrompt = async (userId: string) => {
+    try {
+      const prompted = await AsyncStorage.getItem(`home_location_prompted_${userId}`);
+      if (prompted) return;
+
+      const profile = await ProfileService.getCurrentProfile();
+      if (!profile || !profile.home_location) {
+        setTimeout(() => {
+          setShowHomeLocationModal(true);
+        }, 800);
+      }
+    } catch (storageErr) {
+      console.warn('Could not check home location prompt status:', storageErr);
     }
   };
 
@@ -731,6 +752,15 @@ export default function HomeScreen() {
             setBookmarkingPostId(null);
           }}
           onSuccess={handleCollectionPickerSuccess}
+        />
+      )}
+
+      {/* Home Location Setup Modal */}
+      {currentUserId && (
+        <HomeLocationModal
+          visible={showHomeLocationModal}
+          userId={currentUserId}
+          onClose={() => setShowHomeLocationModal(false)}
         />
       )}
       </View>

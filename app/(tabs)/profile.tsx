@@ -112,7 +112,6 @@ export default function ProfileScreen() {
 
     const calculatedRegion = useMemo(() => {
         if (!stats?.visitedLocations || stats.visitedLocations.length === 0) return null;
-        console.log('[ProfileScreen] stats.visitedLocations array:', JSON.stringify(stats.visitedLocations));
         const locations = stats.visitedLocations.slice(0, 10);
         
         // Filter out extreme outliers (e.g. single test pins like Kiribati) to keep the map focused on the main travel area
@@ -147,7 +146,6 @@ export default function ProfileScreen() {
             latitudeDelta: Math.max(latDelta, 0.5),
             longitudeDelta: Math.max(lngDelta, 0.5),
         };
-        console.log('[ProfileScreen] Calculated region after outlier filtering:', JSON.stringify(calculated));
         return calculated;
     }, [stats?.visitedLocations]);
 
@@ -356,7 +354,7 @@ export default function ProfileScreen() {
                                         return (
                                             <MapView
                                                 ref={mapRef}
-                                                provider={PROVIDER_GOOGLE}
+                                                provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                                                 style={StyleSheet.absoluteFill}
                                                 initialRegion={region}
                                                 customMapStyle={colorScheme === 'dark' ? mapStyleDark : mapStyleLight}
@@ -366,7 +364,6 @@ export default function ProfileScreen() {
                                                 scrollEnabled={true}
                                                 onMapReady={() => {
                                                     if (calculatedRegion) {
-                                                        console.log('[ProfileScreen] Map ready, animating to region:', calculatedRegion);
                                                         mapRef.current?.animateToRegion(calculatedRegion, 1000);
                                                     }
                                                 }}

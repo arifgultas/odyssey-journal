@@ -4,6 +4,13 @@ export interface NotificationPreferences {
     follows: boolean;
 }
 
+export interface HomeLocation {
+    latitude: number;
+    longitude: number;
+    city?: string;
+    country?: string;
+}
+
 export interface Profile {
     id: string;
     username: string | null;
@@ -13,6 +20,7 @@ export interface Profile {
     website: string | null;
     updated_at: string | null;
     notification_preferences?: NotificationPreferences;
+    home_location?: HomeLocation | null;
 }
 
 export interface VisitedLocation {
@@ -44,6 +52,7 @@ export interface UpdateProfileData {
     bio?: string;
     website?: string;
     avatar_url?: string;
+    home_location?: HomeLocation;
 }
 
 export interface CommonDestination {

@@ -5,7 +5,7 @@ Aşağıdaki metinleri kopyalayıp web sitenizdeki ilgili sayfalara yapıştıra
 ---
 
 ## 1. Privacy Policy (Gizlilik Politikası)
-**Link:** `odysseyjournal.github.io/privacy-policy.html`
+**Link:** `odysseyjournal.app/privacy-policy`
 
 ```markdown
 # Privacy Policy for Odyssey Journal
@@ -95,7 +95,7 @@ We may update this privacy policy from time to time. We will notify you of signi
 If you have questions about this privacy policy, please contact us at:
 
 - **Email**: gultassoftware@gmail.com
-- **Website**: https://odysseyjournal.github.io/privacy-policy.html
+- **Website**: https://odysseyjournal.app/privacy-policy
 
 ## Data Protection Rights (GDPR)
 
@@ -129,7 +129,7 @@ If you are a California resident, you have the right to:
 ---
 
 ## 2. Terms of Service (Kullanım Koşulları)
-**Link:** `odysseyjournal.github.io/terms-of-service.html`
+**Link:** `odysseyjournal.app/terms`
 
 ```markdown
 # Terms of Service for Odyssey Journal
@@ -324,7 +324,7 @@ You may not assign these Terms. We may assign them without notice.
 If you have questions about these Terms, contact us at:
 
 - **Email**: gultassoftware@gmail.com
-- **Website**: https://odysseyjournal.github.io/terms-of-service.html
+- **Website**: https://odysseyjournal.app/terms
 
 ## 16. Special Provisions
 

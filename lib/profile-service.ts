@@ -310,6 +310,14 @@ export class ProfileService {
             if (sanitizedUpdates.website) {
                 sanitizedUpdates.website = sanitizeText(sanitizedUpdates.website, 200);
             }
+            if (sanitizedUpdates.home_location) {
+                sanitizedUpdates.home_location = {
+                    latitude: Number(sanitizedUpdates.home_location.latitude),
+                    longitude: Number(sanitizedUpdates.home_location.longitude),
+                    city: sanitizedUpdates.home_location.city ? sanitizeText(sanitizedUpdates.home_location.city, 100) : undefined,
+                    country: sanitizedUpdates.home_location.country ? sanitizeText(sanitizedUpdates.home_location.country, 100) : undefined,
+                };
+            }
 
             const { data, error } = await supabase
                 .from('profiles')

@@ -619,5 +619,15 @@ export default {
             violence: '폭력',
             'violence/graphic': '사실적 폭력 묘사'
         }
+    },
+    homeLocation: {
+        title: '홈 위치 설정',
+        description: '총 여행 거리와 여권 통계를 정확하게 계산하기 위해 홈 위치를 설정하세요.',
+        useCurrentLocation: '현재 위치 사용',
+        locating: '위치 확인 중...',
+        later: '나중에',
+        success: '홈 위치가 성공적으로 설정되었습니다.',
+        permissionDenied: '위치 권한이 거부되었습니다. 나중에 프로필에서 설정할 수 있습니다.',
+        error: '위치를 가져오지 못했습니다.',
     }
 };

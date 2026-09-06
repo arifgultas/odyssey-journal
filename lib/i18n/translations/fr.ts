@@ -624,5 +624,15 @@ export default {
             violence: 'violence',
             'violence/graphic': 'violence graphique'
         }
+    },
+    homeLocation: {
+        title: 'Définissez votre ville de résidence',
+        description: 'Définissez votre point de départ pour que nous puissions calculer avec précision votre distance de voyage totale et vos statistiques de passeport.',
+        useCurrentLocation: 'Utiliser ma position actuelle',
+        locating: 'Localisation en cours...',
+        later: 'Plus tard',
+        success: 'Ville de résidence définie avec succès.',
+        permissionDenied: 'Autorisation de localisation refusée. Vous pourrez la définir plus tard depuis votre profil.',
+        error: 'Impossible d\'obtenir la localisation.',
     }
 };

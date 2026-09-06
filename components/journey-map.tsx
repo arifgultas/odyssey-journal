@@ -155,7 +155,7 @@ export function JourneyMap({ locations, style }: JourneyMapProps) {
     return (
         <View style={[styles.container, style]}>
             <MapView
-                provider={PROVIDER_GOOGLE}
+                provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                 style={styles.map}
                 initialRegion={region}
                 customMapStyle={isDark ? mapStyleDark : mapStyleLight}

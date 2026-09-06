@@ -620,5 +620,15 @@ export default {
             violence: 'violence',
             'violence/graphic': 'violence/graphic'
         }
+    },
+    homeLocation: {
+        title: 'تحديد موقع إقامتك',
+        description: 'حدد موقع إقامتك لنتمكن من حساب إجمالي مسافة سفرك وإحصائيات جواز سفرك بدقة.',
+        useCurrentLocation: 'استخدام موقعي الحالي',
+        locating: 'جارٍ تحديد الموقع...',
+        later: 'لاحقاً',
+        success: 'تم تحديد موقع إقامتك بنجاح.',
+        permissionDenied: 'تم رفض إذن الوصول للموقع. يمكنك تحديده لاحقاً من ملفك الشخصي.',
+        error: 'فشل في تحديد الموقع.',
     }
 };

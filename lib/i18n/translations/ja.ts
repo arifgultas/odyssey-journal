@@ -619,5 +619,15 @@ export default {
             violence: 'violence',
             'violence/graphic': 'violence/graphic'
         }
+    },
+    homeLocation: {
+        title: 'ホーム拠点を設定',
+        description: '総移動距離やパスポートの統計情報を正確に算出するために、あなたのホーム拠点を設定しましょう。',
+        useCurrentLocation: '現在の位置情報を使用',
+        locating: '位置情報を取得中...',
+        later: 'あとで',
+        success: 'ホーム拠点が正常に設定されました。',
+        permissionDenied: '位置情報の権限が許可されていません。プロフィールからいつでも設定できます。',
+        error: '位置情報の取得に失敗しました。',
     }
 };

@@ -5,7 +5,6 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "check-stats": "node C:\\Users\\arifg\\.gemini\\antigravity-ide\\brain\\89d43aad-2dad-4b07-936a-ef948b856dd5\\scratch\\check-visited-locations.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",

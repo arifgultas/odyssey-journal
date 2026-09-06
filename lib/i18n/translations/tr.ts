@@ -686,5 +686,15 @@ export default {
             violence: 'şiddet',
             'violence/graphic': 'vahşi şiddet'
         }
+    },
+    homeLocation: {
+        title: 'Ev Konumunuzu Belirleyin',
+        description: 'Seyahatlerinizde kat ettiğiniz toplam mesafeyi ve pasaport istatistiklerinizi doğru hesaplayabilmemiz için ev konumunuzu ayarlayın.',
+        useCurrentLocation: 'Mevcut Konumumu Kullan',
+        locating: 'Konum alınıyor...',
+        later: 'Daha Sonra',
+        success: 'Ev konumunuz başarıyla ayarlandı.',
+        permissionDenied: 'Konum izni verilmedi. Ev konumunuzu daha sonra profilinizden ayarlayabilirsiniz.',
+        error: 'Konum belirlenirken bir hata oluştu.',
     }
 };

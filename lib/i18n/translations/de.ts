@@ -624,5 +624,15 @@ export default {
             violence: 'Gewalt',
             'violence/graphic': 'anschauliche Gewalt'
         }
+    },
+    homeLocation: {
+        title: 'Heimatort festlegen',
+        description: 'Legen Sie Ihren Heimatort fest, damit wir Ihre gesamte Reisedistanz und Passstatistiken genau berechnen können.',
+        useCurrentLocation: 'Aktuellen Standort verwenden',
+        locating: 'Standort wird ermittelt...',
+        later: 'Später',
+        success: 'Heimatort erfolgreich festgelegt.',
+        permissionDenied: 'Standortberechtigung verweigert. Sie können dies später in Ihrem Profil festlegen.',
+        error: 'Fehler beim Ermitteln des Standorts.',
     }
 };

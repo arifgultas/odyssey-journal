@@ -232,22 +232,22 @@ travel, journal, diary, adventure, photos, memories, explore, discover, wanderlu
 
 #### Privacy Policy URL
 ```
-https://odysseyjournal.github.io/privacy-policy.html
+https://odysseyjournal.app/privacy-policy
 ```
 
 #### Terms of Service URL
 ```
-https://odysseyjournal.github.io/terms-of-service.html
+https://odysseyjournal.app/terms
 ```
 
 #### Support URL
 ```
-https://odysseyjournal.github.io
+https://odysseyjournal.app/support
 ```
 
 #### Marketing URL (Optional)
 ```
-https://odysseyjournal.github.io
+https://odysseyjournal.app
 ```
 
 ---
