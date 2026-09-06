@@ -696,5 +696,31 @@ export default {
         success: 'Ev konumunuz başarıyla ayarlandı.',
         permissionDenied: 'Konum izni verilmedi. Ev konumunuzu daha sonra profilinizden ayarlayabilirsiniz.',
         error: 'Konum belirlenirken bir hata oluştu.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "İlk Macera",
+            description: "İlk postunu paylaş"
+        },
+        worldTraveler: {
+            name: "Dünya Gezgini",
+            description: "5 farklı ülkeyi ziyaret et"
+        },
+        photographer: {
+            name: "Fotoğraf Ustası",
+            description: "10 fotoğraflı post paylaş"
+        },
+        gourmet: {
+            name: "Gurme",
+            description: "Yemek kategorisiyle 3 post paylaş"
+        },
+        marathonTraveler: {
+            name: "Maraton Gezgin",
+            description: "10.000 km seyahat et"
+        },
+        explorer: {
+            name: "Kaşif",
+            description: "30 gün seyahat et"
+        }
     }
 };

@@ -629,5 +629,31 @@ export default {
         success: '홈 위치가 성공적으로 설정되었습니다.',
         permissionDenied: '위치 권한이 거부되었습니다. 나중에 프로필에서 설정할 수 있습니다.',
         error: '위치를 가져오지 못했습니다.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "첫 번째 모험",
+            description: "첫 번째 게시물을 공유하세요"
+        },
+        worldTraveler: {
+            name: "세계 여행가",
+            description: "5개국 방문하기"
+        },
+        photographer: {
+            name: "사진의 달인",
+            description: "사진이 포함된 게시물 10개 공유"
+        },
+        gourmet: {
+            name: "미식가",
+            description: "음식 카테고리에 게시물 3개 공유"
+        },
+        marathonTraveler: {
+            name: "마라톤 여행자",
+            description: "10,000km 여행하기"
+        },
+        explorer: {
+            name: "탐험가",
+            description: "30일 동안 여행하기"
+        }
     }
 };

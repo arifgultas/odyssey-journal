@@ -629,5 +629,31 @@ export default {
         success: 'ホーム拠点が正常に設定されました。',
         permissionDenied: '位置情報の権限が許可されていません。プロフィールからいつでも設定できます。',
         error: '位置情報の取得に失敗しました。',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "最初の冒険",
+            description: "最初の投稿をシェアしよう"
+        },
+        worldTraveler: {
+            name: "世界旅行者",
+            description: "5つの異なる国を訪れる"
+        },
+        photographer: {
+            name: "写真の達人",
+            description: "写真付きの投稿を10件シェア"
+        },
+        gourmet: {
+            name: "グルメ",
+            description: "グルメカテゴリーで3件投稿"
+        },
+        marathonTraveler: {
+            name: "マラソントラベラー",
+            description: "10,000 kmを旅する"
+        },
+        explorer: {
+            name: "探検家",
+            description: "30日間旅をする"
+        }
     }
 };

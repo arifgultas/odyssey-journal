@@ -104,7 +104,6 @@ export function InteractiveMap({
     return (
         <View style={[styles.container, style]}>
             <MapView
-                ref={mapRef}
                 style={StyleSheet.absoluteFillObject}
                 provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                 initialRegion={region}

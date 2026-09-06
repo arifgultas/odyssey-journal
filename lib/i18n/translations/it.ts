@@ -641,5 +641,31 @@ export default {
         success: 'Città di partenza impostata con successo.',
         permissionDenied: 'Autorizzazione alla posizione negata. Puoi impostarla in seguito dal tuo profilo.',
         error: 'Impossibile rilevare la posizione.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "Prima Avventura",
+            description: "Condividi il tuo primo post"
+        },
+        worldTraveler: {
+            name: "Viaggiatore del Mondo",
+            description: "Visita 5 paesi diversi"
+        },
+        photographer: {
+            name: "Maestro Fotografo",
+            description: "Condividi 10 post con foto"
+        },
+        gourmet: {
+            name: "Buongustaio",
+            description: "Condividi 3 post nella categoria cibo"
+        },
+        marathonTraveler: {
+            name: "Viaggiatore Maratona",
+            description: "Percorri 10.000 km"
+        },
+        explorer: {
+            name: "Esploratore",
+            description: "Viaggia per 30 giorni"
+        }
     }
 };

@@ -105,8 +105,8 @@ export default function ProfileScreen() {
         return km.toString();
     };
 
-    // Calculate badges based on user stats
-    const badges = useMemo(() => calculateBadges(stats), [stats]);
+    // Calculate badges based on user stats (translated to active language)
+    const badges = useMemo(() => calculateBadges(stats, t), [stats, t, language]);
 
     const mapRef = useRef<any>(null);
 
@@ -430,7 +430,17 @@ export default function ProfileScreen() {
                         contentContainerStyle={styles.badgesScroll}
                     >
                         {badges.map((badge: Badge) => (
-                            <View key={badge.id} style={styles.badgeItem}>
+                            <TouchableOpacity
+                                key={badge.id}
+                                style={styles.badgeItem}
+                                activeOpacity={0.7}
+                                onPress={() => {
+                                    Alert.alert(
+                                        badge.name,
+                                        `${badge.requirement}\n\n${badge.unlocked ? t('common.completed', { defaultValue: 'Completed' }) : `${t('common.progress', { defaultValue: 'Progress' })}: %${badge.progress}`}`
+                                    );
+                                }}
+                            >
                                 <View style={[
                                     styles.badgeCircle,
                                     badge.unlocked
@@ -460,7 +470,7 @@ export default function ProfileScreen() {
                                 ]}>
                                     {badge.name}
                                 </Text>
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                 </View>

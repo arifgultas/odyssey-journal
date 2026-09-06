@@ -635,5 +635,31 @@ export default {
                 success: '常居地设置成功。',
                 permissionDenied: '未授予位置权限。您可以稍后在个人资料中进行设置。',
                 error: '获取位置失败。',
-            }
-        };
+            },
+    badgeList: {
+        firstAdventure: {
+            name: "初次冒险",
+            description: "分享你的第一条动态"
+        },
+        worldTraveler: {
+            name: "环球旅行家",
+            description: "探访5个不同的国家"
+        },
+        photographer: {
+            name: "摄影大师",
+            description: "分享10条带有照片的动态"
+        },
+        gourmet: {
+            name: "美食家",
+            description: "在美食分类分享3条动态"
+        },
+        marathonTraveler: {
+            name: "马拉松行者",
+            description: "旅行里程达10,000公里"
+        },
+        explorer: {
+            name: "探险家",
+            description: "旅行达30天"
+        }
+    }
+};

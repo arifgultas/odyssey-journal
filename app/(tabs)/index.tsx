@@ -71,10 +71,6 @@ export default function HomeScreen() {
     loadCurrentUser();
   }, []);
 
-  useEffect(() => {
-    loadPosts(0, true);
-  }, [feedType]);
-
   // Subscribe to real-time notification changes to update badge count
   useEffect(() => {
     if (!currentUserId) return;
@@ -274,9 +270,19 @@ export default function HomeScreen() {
         : await getFollowingFeed(pageNum, 10, sortBy);
 
       if (refresh || pageNum === 0) {
-        setPosts(newPosts);
+        const seen = new Set<string>();
+        const unique = newPosts.filter(p => {
+          if (!p.id || seen.has(p.id)) return false;
+          seen.add(p.id);
+          return true;
+        });
+        setPosts(unique);
       } else {
-        setPosts(prev => [...prev, ...newPosts]);
+        setPosts(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNew = newPosts.filter(p => p.id && !existingIds.has(p.id));
+          return [...prev, ...uniqueNew];
+        });
       }
 
       setHasMore(newPosts.length === 10);
@@ -697,7 +703,7 @@ export default function HomeScreen() {
 
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item.id ? String(item.id) : `post-${index}`}
         renderItem={({ item, index }) => (
           <AnimatedPostCard
             post={item}

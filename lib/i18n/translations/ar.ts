@@ -630,5 +630,31 @@ export default {
         success: 'تم تحديد موقع إقامتك بنجاح.',
         permissionDenied: 'تم رفض إذن الوصول للموقع. يمكنك تحديده لاحقاً من ملفك الشخصي.',
         error: 'فشل في تحديد الموقع.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "المغامرة الأولى",
+            description: "شارك منشورك الأول"
+        },
+        worldTraveler: {
+            name: "رحالة العالم",
+            description: "قم بزيارة 5 دول مختلفة"
+        },
+        photographer: {
+            name: "سيد التصوير",
+            description: "شارك 10 منشورات تحتوي على صور"
+        },
+        gourmet: {
+            name: "ذواقة",
+            description: "شارك 3 منشورات في فئة الطعام"
+        },
+        marathonTraveler: {
+            name: "مسافر الماراثون",
+            description: "سافر لمسافة 10,000 كم"
+        },
+        explorer: {
+            name: "المستكشف",
+            description: "سافر لمدة 30 يومًا"
+        }
     }
 };

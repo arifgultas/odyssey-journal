@@ -650,5 +650,31 @@ export default {
         success: 'Ubicación de origen configurada con éxito.',
         permissionDenied: 'Permiso de ubicación denegado. Puedes configurarlo más tarde en tu perfil.',
         error: 'Error al obtener la ubicación.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "Primera Aventura",
+            description: "Comparte tu primera publicación"
+        },
+        worldTraveler: {
+            name: "Trotamundos",
+            description: "Visita 5 países diferentes"
+        },
+        photographer: {
+            name: "Maestro Fotógrafo",
+            description: "Comparte 10 publicaciones con fotos"
+        },
+        gourmet: {
+            name: "Gourmet",
+            description: "Comparte 3 publicaciones en la categoría comida"
+        },
+        marathonTraveler: {
+            name: "Viajero Maratón",
+            description: "Viaja 10.000 km"
+        },
+        explorer: {
+            name: "Explorador",
+            description: "Viaja durante 30 días"
+        }
     }
 };

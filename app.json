@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.odysseyjournal.app"
+      "bundleIdentifier": "app.odysseyjournal"
     },
     "android": {
       "package": "com.odysseyjournal.app",

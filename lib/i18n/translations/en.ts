@@ -696,5 +696,31 @@ export default {
         success: 'Home location set successfully.',
         permissionDenied: 'Location permission denied. You can set it later from your profile.',
         error: 'Failed to determine location.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "First Adventure",
+            description: "Share your first post"
+        },
+        worldTraveler: {
+            name: "World Traveler",
+            description: "Visit 5 different countries"
+        },
+        photographer: {
+            name: "Master Photographer",
+            description: "Share 10 posts with photos"
+        },
+        gourmet: {
+            name: "Gourmet",
+            description: "Share 3 posts in the food category"
+        },
+        marathonTraveler: {
+            name: "Marathon Traveler",
+            description: "Travel 10,000 km"
+        },
+        explorer: {
+            name: "Explorer",
+            description: "Travel for 30 days"
+        }
     }
 };

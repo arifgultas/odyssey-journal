@@ -634,5 +634,31 @@ export default {
         success: 'Ville de résidence définie avec succès.',
         permissionDenied: 'Autorisation de localisation refusée. Vous pourrez la définir plus tard depuis votre profil.',
         error: 'Impossible d\'obtenir la localisation.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "Première Aventure",
+            description: "Partagez votre première publication"
+        },
+        worldTraveler: {
+            name: "Globe-trotteur",
+            description: "Visitez 5 pays différents"
+        },
+        photographer: {
+            name: "Maître Photographe",
+            description: "Partagez 10 publications avec photos"
+        },
+        gourmet: {
+            name: "Gourmet",
+            description: "Partagez 3 publications dans la catégorie cuisine"
+        },
+        marathonTraveler: {
+            name: "Voyageur Marathon",
+            description: "Parcourez 10 000 km"
+        },
+        explorer: {
+            name: "Explorateur",
+            description: "Voyagez pendant 30 jours"
+        }
     }
 };

@@ -115,6 +115,6 @@ export function SentryErrorBoundary<P extends object>(
         return Component;
     }
     return Sentry.withErrorBoundary(Component, {
-        fallback: (errorData) => React.createElement(ErrorBoundaryFallback, errorData),
+        fallback: (errorData: any) => React.createElement(ErrorBoundaryFallback, errorData),
     });
 }

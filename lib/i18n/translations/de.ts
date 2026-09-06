@@ -634,5 +634,31 @@ export default {
         success: 'Heimatort erfolgreich festgelegt.',
         permissionDenied: 'Standortberechtigung verweigert. Sie können dies später in Ihrem Profil festlegen.',
         error: 'Fehler beim Ermitteln des Standorts.',
+    },
+    badgeList: {
+        firstAdventure: {
+            name: "Erstes Abenteuer",
+            description: "Teile deinen ersten Beitrag"
+        },
+        worldTraveler: {
+            name: "Weltenbummler",
+            description: "Besuche 5 verschiedene Länder"
+        },
+        photographer: {
+            name: "Meisterfotograf",
+            description: "Teile 10 Beiträge mit Fotos"
+        },
+        gourmet: {
+            name: "Gourmet",
+            description: "Teile 3 Beiträge in der Kategorie Essen"
+        },
+        marathonTraveler: {
+            name: "Marathon-Reisender",
+            description: "Reise 10.000 km"
+        },
+        explorer: {
+            name: "Entdecker",
+            description: "Reise 30 Tage lang"
+        }
     }
 };

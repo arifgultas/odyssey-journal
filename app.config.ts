@@ -12,9 +12,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     newArchEnabled: true,
     ios: {
         supportsTablet: true,
-        bundleIdentifier: 'com.odysseyjournal.app',
+        bundleIdentifier: 'app.odysseyjournal',
         buildNumber: '1',
         infoPlist: {
+            ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription: 'Odyssey Journal needs access to your camera to take photos for your travel posts.',
             NSPhotoLibraryUsageDescription: 'Odyssey Journal needs access to your photo library to select images for your travel posts.',
             NSLocationWhenInUseUsageDescription: 'Odyssey Journal needs your location to tag your travel posts and show nearby destinations.',

@@ -80,32 +80,59 @@ const BADGE_DEFINITIONS: BadgeDefinition[] = [
     },
 ];
 
+export const BADGE_I18N_MAP: Record<string, string> = {
+    'first-adventure': 'firstAdventure',
+    'world-traveler': 'worldTraveler',
+    'photographer': 'photographer',
+    'gourmet': 'gourmet',
+    'marathon-traveler': 'marathonTraveler',
+    'explorer': 'explorer',
+};
+
 /**
- * Calculate badges based on user's profile statistics
+ * Calculate badges based on user's profile statistics, with optional i18n translation function
  */
-export function calculateBadges(stats: ProfileStats | null | undefined): Badge[] {
+export function calculateBadges(
+    stats: ProfileStats | null | undefined,
+    t?: (key: string, options?: any) => string
+): Badge[] {
+    const getName = (def: BadgeDefinition) => {
+        if (t) {
+            const key = BADGE_I18N_MAP[def.id];
+            if (key) return t(`badgeList.${key}.name`, { defaultValue: def.name });
+        }
+        return def.name;
+    };
+    const getReq = (def: BadgeDefinition) => {
+        if (t) {
+            const key = BADGE_I18N_MAP[def.id];
+            if (key) return t(`badgeList.${key}.description`, { defaultValue: def.requirement });
+        }
+        return def.requirement;
+    };
+
     if (!stats) {
         // Return all badges as locked if no stats available
         return BADGE_DEFINITIONS.map((def) => ({
             id: def.id,
-            name: def.name,
+            name: getName(def),
             icon: def.icon,
             unlocked: false,
             progress: 0,
             featured: def.featured || false,
-            requirement: def.requirement,
+            requirement: getReq(def),
         }));
     }
 
     return BADGE_DEFINITIONS.map((def) => ({
         id: def.id,
-        name: def.name,
+        name: getName(def),
         icon: def.icon,
         unlocked: def.checkUnlocked(stats),
         progress: Math.round(def.getProgress(stats)),
         featured: def.featured || false,
         count: def.getCount?.(stats),
-        requirement: def.requirement,
+        requirement: getReq(def),
     }));
 }
 
