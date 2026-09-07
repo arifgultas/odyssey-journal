@@ -159,6 +159,7 @@ describe('chat service', () => {
                 lastMessage: 'Hello',
                 lastMessageAt: '2026-06-28T12:01:00Z',
                 unreadCount: 1,
+                isApproved: true,
             });
         });
     });

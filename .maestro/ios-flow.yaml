@@ -1,0 +1,48 @@
+appId: app.odysseyjournal
+---
+- clearState
+- launchApp
+
+# --- 1. LOGIN FLOW ---
+- tapOn: "Email or Username"
+- inputText: "explorer@odyssey.com"
+
+- tapOn: "Password"
+- inputText: "OdysseyPassword123!"
+
+- tapOn: "Login"
+
+# --- 2. FEED & INTERACTIONS ---
+- assertVisible: "Feed"
+
+- tapOn:
+    text: "Like"
+    index: 0
+
+- tapOn:
+    text: "Bookmark"
+    index: 0
+
+# --- 3. COMMENT FLOW ---
+- tapOn:
+    text: "Read More"
+    index: 0
+
+- tapOn: "Add a comment..."
+- inputText: "Stunning view! Thanks for sharing this itinerary."
+- tapOn: "Send"
+
+- tapOn: "Back"
+
+# --- 4. CREATE NEW POST ---
+- tapOn: "Create"
+
+- tapOn: "Title"
+- inputText: "Charming Weekend in Cappadocia"
+
+- tapOn: "Write about your journey..."
+- inputText: "Waking up to see hundreds of hot air balloons flying over volcanic rock valleys was a lifetime experience."
+
+- tapOn: "Publish"
+
+- assertVisible: "Charming Weekend in Cappadocia"

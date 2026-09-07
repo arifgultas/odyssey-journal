@@ -213,7 +213,7 @@ describe('posts service', () => {
             (fromBuilder.range as jest.Mock).mockResolvedValueOnce({ data: mockPosts, error: null });
 
             const result = await fetchPosts(0, 10);
-            expect(result).toEqual(mockPosts);
+            expect(result).toEqual([{ id: 'post-1', user_id: 'user-2', isLiked: false, isBookmarked: false }]);
             expect(fromBuilder.not).toHaveBeenCalledWith('user_id', 'in', '(blocked-user-1)');
             expect(fromBuilder.range).toHaveBeenCalledWith(0, 9);
         });
@@ -225,7 +225,7 @@ describe('posts service', () => {
             (fromBuilder.single as jest.Mock).mockResolvedValueOnce({ data: mockPost, error: null });
 
             const result = await fetchPostById('post-1');
-            expect(result).toEqual(mockPost);
+            expect(result).toEqual({ id: 'post-1', isLiked: false, isBookmarked: false });
             expect(fromBuilder.eq).toHaveBeenCalledWith('id', 'post-1');
         });
     });
@@ -236,7 +236,7 @@ describe('posts service', () => {
             (fromBuilder.range as jest.Mock).mockResolvedValueOnce({ data: mockPosts, error: null });
 
             const result = await fetchPostsByUser('user-123', 0, 10);
-            expect(result).toEqual(mockPosts);
+            expect(result).toEqual([{ id: 'post-1', user_id: 'user-123', isLiked: false, isBookmarked: false }]);
             expect(fromBuilder.eq).toHaveBeenCalledWith('user_id', 'user-123');
         });
     });

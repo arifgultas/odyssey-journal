@@ -19,10 +19,17 @@
         "production": {
             "android": {
                 "buildType": "app-bundle"
+            },
+            "ios": {
+                "resourceClass": "m-medium"
             }
         }
     },
     "submit": {
-        "production": {}
+        "production": {
+            "ios": {
+                "ascAppId": "6809580456"
+            }
+        }
     }
 }
