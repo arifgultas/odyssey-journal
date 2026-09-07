@@ -5,14 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy — Odyssey Journal</title>
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
     <style>
         :root {
             --bg: #F5F1E8;
             --text: #2C1810;
             --accent: #D4A574;
+            --accent-dark: #8B5E34;
             --muted: #8B7355;
-            --card: rgba(255, 255, 255, 0.8);
+            --card: rgba(255, 255, 255, 0.92);
             --border: #E8DCC8;
+            --code-bg: #EFE7DA;
         }
 
         * {
@@ -25,22 +28,31 @@
             font-family: 'Georgia', 'Times New Roman', serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.7;
-            padding: 20px;
+            line-height: 1.75;
+            padding: 24px 16px;
         }
 
         .container {
-            max-width: 720px;
+            max-width: 780px;
             margin: 0 auto;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(44, 24, 16, 0.08);
+            padding: 44px;
+            box-shadow: 0 6px 24px rgba(44, 24, 16, 0.08);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--text);
+            letter-spacing: 0.5px;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 30px;
             color: var(--text);
             border-bottom: 2px solid var(--accent);
             padding-bottom: 12px;
@@ -50,43 +62,80 @@
         .updated {
             font-size: 14px;
             color: var(--muted);
-            margin-bottom: 32px;
+            margin-bottom: 28px;
+            font-style: italic;
         }
 
         h2 {
-            font-size: 20px;
-            color: var(--muted);
+            font-size: 21px;
+            color: var(--accent-dark);
             margin-top: 32px;
             margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
         }
 
         h3 {
-            font-size: 16px;
-            margin-top: 16px;
+            font-size: 17px;
+            color: var(--text);
+            margin-top: 20px;
             margin-bottom: 8px;
         }
 
         p {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
-        ul {
-            margin-left: 20px;
-            margin-bottom: 12px;
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 14px;
         }
 
         li {
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         a {
-            color: var(--accent);
+            color: var(--accent-dark);
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: var(--text);
+        }
+
+        .alert-box {
+            background: rgba(212, 165, 116, 0.15);
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            font-size: 14.5px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--code-bg);
+            color: var(--text);
+            font-weight: bold;
         }
 
         hr {
             border: none;
             border-top: 1px solid var(--border);
-            margin: 32px 0;
+            margin: 36px 0;
         }
 
         .footer {
@@ -96,128 +145,148 @@
             margin-top: 24px;
         }
 
-        .logo {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 24px;
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 18px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 19px;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="logo">🗺️ Odyssey Journal</div>
+        <div class="logo">🧭 Odyssey Journal</div>
         <h1>Privacy Policy</h1>
-        <p class="updated">Last Updated: February 22, 2026</p>
+        <p class="updated">Last Updated: September 2026</p>
 
-        <h2>Introduction</h2>
-        <p>Welcome to Odyssey Journal ("we," "our," or "us"). We respect your privacy and are committed to protecting
-            your personal data. This privacy policy explains how we collect, use, and safeguard your information when
-            you use our mobile application.</p>
-
-        <h2>Information We Collect</h2>
-        <h3>Information You Provide</h3>
+        <h2>1. Introduction & Data Controller</h2>
+        <p>Welcome to Odyssey Journal ("we," "our," "us," or the "App"). We respect your privacy and are committed to protecting your personal data in full compliance with the <strong>Turkish Law on the Protection of Personal Data (KVKK - Law No. 6698)</strong>, the <strong>General Data Protection Regulation (GDPR - EU 2016/679)</strong>, and the <strong>California Consumer Privacy Act (CCPA)</strong>.</p>
+        <p>This Privacy Policy explains how we collect, use, store, process, and protect your information when you use our mobile application and related web services at <a href="https://odysseyjournal.app">https://odysseyjournal.app</a>.</p>
         <ul>
-            <li><strong>Account Information</strong>: Email address, username, full name, profile picture</li>
-            <li><strong>Content</strong>: Posts, photos, comments, and location data you choose to share</li>
-            <li><strong>Profile Information</strong>: Bio, avatar, and other profile details</li>
+            <li><strong>Data Controller (Veri Sorumlusu):</strong> Odyssey Journal / Arif Gültaş</li>
+            <li><strong>Data Protection & Privacy Contact:</strong> <a href="mailto:privacy@odysseyjournal.app">privacy@odysseyjournal.app</a></li>
+            <li><strong>Customer Support:</strong> <a href="mailto:support@odysseyjournal.app">support@odysseyjournal.app</a></li>
+            <li><strong>Official Website:</strong> <a href="https://odysseyjournal.app">https://odysseyjournal.app</a></li>
         </ul>
 
-        <h3>Automatically Collected Information</h3>
+        <h2>2. Information We Collect</h2>
+        <h3>A. Information You Voluntarily Provide</h3>
         <ul>
-            <li><strong>Usage Data</strong>: How you interact with the app, features you use</li>
-            <li><strong>Device Information</strong>: Device type, operating system, unique device identifiers</li>
-            <li><strong>Location Data</strong>: GPS coordinates when you tag posts (only with your permission)</li>
+            <li><strong>Account Credentials:</strong> Email address, hashed & salted password, username, full name, profile bio, avatar image.</li>
+            <li><strong>User-Generated Content (UGC):</strong> Travel posts, stories, photographs, comments, bookmarks, collections, reactions (likes), travel dates, and optional destination locations.</li>
+            <li><strong>Direct Communications:</strong> In-app direct messages and correspondence sent to our support channels.</li>
         </ul>
 
-        <h2>How We Use Your Information</h2>
-        <p>We use your information to:</p>
+        <h3>B. Automatically Collected Technical Data</h3>
         <ul>
-            <li>Provide and maintain our service</li>
-            <li>Create and manage your account</li>
-            <li>Display your posts and profile to other users</li>
-            <li>Send notifications about likes, comments, and follows</li>
-            <li>Improve and optimize our app</li>
-            <li>Ensure security and prevent fraud</li>
-            <li>Comply with legal obligations</li>
+            <li><strong>Device & OS Data:</strong> Device model, operating system version, unique device identifiers, preferred language, and time zone.</li>
+            <li><strong>Diagnostic & Crash Logs:</strong> Crash logs and diagnostic metrics captured through Sentry (strictly scrubbed of Personally Identifiable Information - PII).</li>
+            <li><strong>Network & App Telemetry:</strong> Anonymized IP address, connectivity status, and app launch timestamps.</li>
         </ul>
 
-        <h2>Data Sharing</h2>
-        <p>We do <strong>NOT</strong> sell your personal information. We may share data with:</p>
+        <h3>C. Location Information</h3>
+        <p><strong>Precise Location (GPS):</strong> Location coordinates are captured only when you explicitly choose to tag a travel post with your current location. We never collect continuous or background location data. Location permissions may be revoked at any time in device settings.</p>
+
+        <h2>3. Cloud Infrastructure & Supabase Architecture</h2>
+        <p>Odyssey Journal utilizes <strong>Supabase</strong> (<a href="https://supabase.com" target="_blank" rel="noopener">https://supabase.com</a>) as its core cloud backend, database, authentication provider, and object storage engine.</p>
         <ul>
-            <li><strong>Other Users</strong>: Your public profile and posts are visible to other users</li>
-            <li><strong>Service Providers</strong>: Supabase (database), Google Maps (location services), Expo (push
-                notifications)</li>
-            <li><strong>Legal Requirements</strong>: When required by law or to protect our rights</li>
+            <li><strong>Server Region:</strong> Our primary production database and media storage are hosted on Supabase enterprise infrastructure located in AWS EU (Frankfurt, Germany).</li>
+            <li><strong>Encryption in Transit:</strong> All data transmissions between the App and Supabase are encrypted using <strong>TLS 1.3 / HTTPS</strong>.</li>
+            <li><strong>Encryption at Rest:</strong> Database records and uploaded media are stored with <strong>AES-256</strong> hardware-level encryption.</li>
+            <li><strong>Row Level Security (RLS):</strong> Granular PostgreSQL security policies isolate data access cryptographically, guaranteeing that only authenticated users can access their permitted datasets.</li>
+            <li><strong>Token Security:</strong> JWT session tokens are stored securely on the device using native iOS Keychain and Android Keystore / EncryptedSharedPreferences.</li>
+            <li><strong>Automated Backups:</strong> Supabase Pro tier daily backups and point-in-time recovery ensure business continuity.</li>
         </ul>
 
-        <h2>Data Storage and Security</h2>
+        <h2>4. How We Use Your Information & Legal Basis</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Purpose</th>
+                    <th>Data Category</th>
+                    <th>Legal Basis (KVKK & GDPR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Account creation & authentication</td>
+                    <td>Email, username, password</td>
+                    <td>Performance of Contract (Sözleşmenin İfası)</td>
+                </tr>
+                <tr>
+                    <td>Publishing travel posts, stories, photos</td>
+                    <td>User content, photos, tags</td>
+                    <td>Performance of Contract & Explicit Consent (Açık Rıza)</td>
+                </tr>
+                <tr>
+                    <td>Interactive map & destination tagging</td>
+                    <td>GPS coordinates (per-post)</td>
+                    <td>Explicit Consent (Açık Rıza)</td>
+                </tr>
+                <tr>
+                    <td>Sending notifications (likes, follows, chat)</td>
+                    <td>Push notification token</td>
+                    <td>Explicit Consent & Legitimate Interest</td>
+                </tr>
+                <tr>
+                    <td>Application stability & bug fixing</td>
+                    <td>Anonymized crash logs (Sentry)</td>
+                    <td>Legitimate Interests (Meşru Menfaat)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>5. Third-Party Sub-Processors (Alt İşleyenler)</h2>
+        <p>We work exclusively with certified third-party service providers bound by strict confidentiality and security agreements:</p>
         <ul>
-            <li>Your data is stored securely using Supabase</li>
-            <li>We use encryption for data transmission</li>
-            <li>We implement industry-standard security measures</li>
-            <li>We retain your data as long as your account is active</li>
+            <li><strong>Supabase, Inc.:</strong> Cloud database, authentication, and photo storage (Frankfurt, Germany - EU).</li>
+            <li><strong>Sentry (Functional Software, Inc.):</strong> Real-time error and crash diagnostics with PII scrubbing.</li>
+            <li><strong>Google LLC (Google Maps Platform):</strong> Map rendering and location geocoding.</li>
+            <li><strong>Google LLC (Google Workspace):</strong> Secure customer support and privacy email infrastructure.</li>
+            <li><strong>Expo / 650 Industries, Inc.:</strong> Application framework and push notification gateway.</li>
         </ul>
+        <p>We do <strong>NOT</strong> sell, rent, or trade your personal data to any advertisers or third-party brokers.</p>
 
-        <h2>Your Rights</h2>
-        <p>You have the right to:</p>
+        <div class="alert-box">
+            <strong>⚠️ User-Generated Content & Third-Party Privacy Notice:</strong><br>
+            When sharing photos and stories, you are solely responsible for respecting the privacy and intellectual property of third parties. You must NOT post photographs of individuals without their explicit permission. You agree to defend, indemnify, and hold harmless Odyssey Journal and its developer against any third-party claims, damages, or administrative fines (including KVKK fines) resulting from your uploaded content.
+        </div>
+
+        <h2>6. International Data Transfers (Yurt Dışına Veri Aktarımı)</h2>
+        <p>To provide high-availability global services, your data is processed on secure cloud servers located in the European Union (Frankfurt, Germany) and the United States. Under <strong>KVKK Article 9</strong>, by registering an account and using Odyssey Journal, you provide explicit consent to the cross-border transfer of account data and media for the performance of the service contract.</p>
+
+        <h2>7. Data Retention & Account Deletion</h2>
+        <p>Your account data is retained while your account remains active. You can permanently delete your account and all associated posts, photos, comments, and messages directly in the App via <code>Settings &gt; Danger Zone &gt; Delete Account</code>. Upon deletion, your data is removed immediately from public view and permanently wiped from our database within 30 days.</p>
+
+        <h2>8. Rights Under Turkish Law (KVKK Madde 11)</h2>
+        <p>Türkiye Cumhuriyeti 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") m. 11 uyarınca, veri sahibi olarak aşağıdaki haklara sahipsiniz:</p>
         <ul>
-            <li>Access your personal data</li>
-            <li>Correct inaccurate data</li>
-            <li>Delete your account and data</li>
-            <li>Export your data</li>
-            <li>Opt-out of certain data collection</li>
-            <li>Withdraw consent at any time</li>
+            <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme ve bilgi talep etme,</li>
+            <li>İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
+            <li>Yurt içinde veya yurt dışında verilerin aktarıldığı üçüncü kişileri bilme,</li>
+            <li>Eksik veya yanlış işlenen verilerin düzeltilmesini isteme,</li>
+            <li>KVKK m. 7 uyarınca verilerinizin silinmesini veya yok edilmesini talep etme,</li>
+            <li>Otomatik sistemlerle analiz neticesinde aleyhinize bir sonuca itiraz etme,</li>
+            <li>Kanuna aykırı işleme nedeniyle zarara uğramanız hâlinde zararın giderilmesini talep etme.</li>
         </ul>
+        <p>KVKK kapsamındaki başvurularınızı kimliğinizi teyit eden bilgilerle <strong><a href="mailto:privacy@odysseyjournal.app">privacy@odysseyjournal.app</a></strong> adresine iletebilirsiniz. Başvurular en geç 30 gün içinde sonuçlandırılır.</p>
 
-        <h2>Children's Privacy</h2>
-        <p>Our service is not intended for users under 13 years of age. We do not knowingly collect data from children
-            under 13.</p>
+        <h2>9. Rights Under GDPR & CCPA</h2>
+        <p>EEA/UK residents possess rights of access, rectification, erasure, restriction, portability, and objection under the GDPR. California residents enjoy rights to disclosure, deletion, and non-discrimination under the CCPA. For any inquiries, email <strong><a href="mailto:privacy@odysseyjournal.app">privacy@odysseyjournal.app</a></strong>.</p>
 
-        <h2>Third-Party Services</h2>
-        <p>We use the following third-party services:</p>
+        <h2>10. Contact Us</h2>
+        <p>If you have any questions or requests regarding this Privacy Policy:</p>
         <ul>
-            <li><strong>Supabase</strong>: Database and authentication</li>
-            <li><strong>Google Maps</strong>: Location services</li>
-            <li><strong>Expo</strong>: App development platform and push notifications</li>
-        </ul>
-        <p>Each service has its own privacy policy.</p>
-
-        <h2>Cookies and Tracking</h2>
-        <p>We use local storage and caching to improve app performance. We do not use cookies for tracking or
-            advertising.</p>
-
-        <h2>Data Protection Rights (GDPR)</h2>
-        <p>If you are in the European Economic Area (EEA), you have additional rights under GDPR:</p>
-        <ul>
-            <li>Right to access</li>
-            <li>Right to rectification</li>
-            <li>Right to erasure</li>
-            <li>Right to restrict processing</li>
-            <li>Right to data portability</li>
-            <li>Right to object</li>
-            <li>Rights related to automated decision-making</li>
-        </ul>
-
-        <h2>California Privacy Rights (CCPA)</h2>
-        <p>If you are a California resident, you have the right to:</p>
-        <ul>
-            <li>Know what personal information is collected</li>
-            <li>Know whether personal information is sold or disclosed</li>
-            <li>Say no to the sale of personal information</li>
-            <li>Access your personal information</li>
-            <li>Request deletion of personal information</li>
-            <li>Not be discriminated against for exercising your rights</li>
-        </ul>
-
-        <h2>Changes to This Policy</h2>
-        <p>We may update this privacy policy from time to time. We will notify you of significant changes through the
-            app or via email.</p>
-
-        <h2>Contact Us</h2>
-        <p>If you have questions about this privacy policy, please contact us at:</p>
-        <ul>
-            <li><strong>Email</strong>: <a href="mailto:gultassoftware@gmail.com">gultassoftware@gmail.com</a></li>
+            <li><strong>Privacy &amp; KVKK Requests:</strong> <a href="mailto:privacy@odysseyjournal.app">privacy@odysseyjournal.app</a></li>
+            <li><strong>Customer Support:</strong> <a href="mailto:support@odysseyjournal.app">support@odysseyjournal.app</a></li>
+            <li><strong>General Inquiries:</strong> <a href="mailto:hello@odysseyjournal.app">hello@odysseyjournal.app</a></li>
+            <li><strong>Developer:</strong> Gultas Software / Arif Gültaş, Istanbul, Türkiye</li>
         </ul>
 
         <hr>

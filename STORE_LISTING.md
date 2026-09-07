@@ -127,7 +127,11 @@ Odyssey'inize bugün başlayın!
 
 ## Support Information
 
-**Support Email:** gultassoftware@gmail.com
+**Support Email:** support@odysseyjournal.app
+
+**Privacy Email:** privacy@odysseyjournal.app
+
+**Developer / Contact:** hello@odysseyjournal.app
 
 **Website:** https://odysseyjournal.app
 

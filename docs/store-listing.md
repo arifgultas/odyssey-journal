@@ -67,8 +67,10 @@ travel journal, travel diary, travel app, trip planner, travel photos, travel st
 Turkish, English, Spanish, French, German, Portuguese, Italian, Japanese, Korean, Chinese (Simplified), Arabic, Russian
 
 ## Developer Info
-- **Developer**: Gultas Software
-- **Email**: gultassoftware@gmail.com
+- **Developer**: Gultas Software / Arif Gültaş
+- **Support Email**: support@odysseyjournal.app
+- **Privacy Email**: privacy@odysseyjournal.app
+- **General Contact**: hello@odysseyjournal.app
 - **Website**: https://odysseyjournal.app
 - **Privacy Policy**: https://odysseyjournal.app/privacy-policy
 - **Terms of Service**: https://odysseyjournal.app/terms

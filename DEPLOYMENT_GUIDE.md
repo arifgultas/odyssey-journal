@@ -17,7 +17,7 @@
     "platforms": ["ios", "android"],
     
     "ios": {
-      "bundleIdentifier": "com.odysseyjournal.app",
+      "bundleIdentifier": "app.odysseyjournal",
       "buildNumber": "1",
       "supportsTablet": true,
       "infoPlist": {
@@ -452,7 +452,7 @@ API anahtarlarınızın çalınması durumunda bütçenizin zarar görmesini eng
 3. iOS için kullandığınız API anahtarına tıklayın.
 4. **Application restrictions** altından **iOS apps** seçeneğini seçin.
 5. **Add bundle identifier** butonuna tıklayarak uygulamanızın paket kimliğini girin:
-   - `com.odysseyjournal.app`
+   - `app.odysseyjournal`
 6. **API restrictions** kısmından sadece **Maps SDK for iOS** iznini işaretleyin ve kaydedin.
 
 #### Android API Anahtarı Kısıtlamaları (Android App Restrictions)
