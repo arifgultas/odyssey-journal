@@ -13,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ios: {
         supportsTablet: true,
         bundleIdentifier: 'app.odysseyjournal',
-        buildNumber: '1',
+        buildNumber: '2',
         infoPlist: {
             ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription: 'Odyssey Journal needs access to your camera to take photos for your travel posts.',

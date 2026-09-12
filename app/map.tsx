@@ -8,6 +8,7 @@ import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -320,7 +321,7 @@ function BottomSheetPreview({ visible, cluster, onClose, onPostPress, theme }: B
                                 activeOpacity={0.8}
                             >
                                 <Text style={[styles.detailsButtonText, { color: theme.background }]}>
-                                    {t('explore.readPost') || 'Gönderiyi Oku'}
+                                    {t('explore.readPost')}
                                 </Text>
                                 <Ionicons name="arrow-forward" size={16} color={theme.background} />
                             </TouchableOpacity>
@@ -560,7 +561,7 @@ export default function MapScreen() {
     };
 
     const handleGoBack = () => {
-        router.back();
+        safeGoBack('/(tabs)');
     };
 
     const handleCenterMap = () => {

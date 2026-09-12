@@ -28,14 +28,14 @@ export function SearchHistory({
                     style={[styles.historyItem, { borderBottomColor: vintageTheme.border }]}
                     onPress={() => onItemPress(item.query)}
                     accessibilityRole="button"
-                    accessibilityLabel={`${item.query}, son aramayı tekrar arat`}
+                    accessibilityLabel={item.query}
                 >
                     <Ionicons name="time-outline" size={18} color={vintageTheme.textMuted} />
                     <Text style={[styles.historyText, { color: vintageTheme.text }]}>{item.query}</Text>
                     <TouchableOpacity
                         onPress={() => onDeleteItem(item.id)}
                         accessibilityRole="button"
-                        accessibilityLabel="Arama geçmişinden sil"
+                        accessibilityLabel={t('common.delete')}
                     >
                         <Ionicons name="close" size={18} color={vintageTheme.textMuted} />
                     </TouchableOpacity>

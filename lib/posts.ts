@@ -15,11 +15,13 @@ export interface CreatePostData {
         address?: string;
         city?: string;
         country?: string;
+        name?: string;
     };
     images?: string[]; // URIs of local images
     imageCaptions?: string[]; // Captions for each image
     weatherData?: WeatherData; // Weather at time of post creation
     categories?: string[]; // Category IDs (e.g., ['nature', 'city'])
+    createdAt?: string; // Travel/backdated creation date
 }
 
 export interface Post {
@@ -33,7 +35,11 @@ export interface Post {
         address?: string;
         city?: string;
         country?: string;
+        name?: string;
     };
+    location_name?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     images?: string[];
     image_captions?: string[]; // Captions for each image
     weather_data?: WeatherData; // Weather at time of post creation
@@ -117,6 +123,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 image_captions: sanitizedCaptions,
                 weather_data: data.weatherData || null,
                 categories: data.categories || [],
+                ...(data.createdAt ? { created_at: data.createdAt } : {}),
             })
             .select()
             .single();
@@ -216,6 +223,7 @@ export async function updatePost(
             categories?: string[];
             image_captions?: string[];
             weather_data?: CreatePostData['weatherData'];
+            created_at?: string;
         } = {
             updated_at: new Date().toISOString(),
         };
@@ -250,6 +258,7 @@ export async function updatePost(
             );
         }
         if (data.weatherData !== undefined) updateData.weather_data = data.weatherData;
+        if (data.createdAt !== undefined) updateData.created_at = data.createdAt;
 
         const { data: post, error: postError } = await supabase
             .from('posts')

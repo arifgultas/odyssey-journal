@@ -4,8 +4,11 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker, LocationData } from '@/hooks/use-location-picker';
 import { CategoryIcon } from '@/components/create/category-icon';
+import { TravelDatePicker } from '@/components/create/travel-date-picker';
+import { LocationMapPreview } from '@/components/location-map-preview';
 import { createPost } from '@/lib/posts';
 import { fetchWeatherData, WeatherData } from '@/lib/weather';
+import { formatPolaroidDate } from '@/lib/date-formatter';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { Image } from 'expo-image';
@@ -463,7 +466,7 @@ const AnimatedLocationCard = ({
                                 styles.locationConfirmTitle,
                                 { color: isDark ? theme.textMain : '#2C1810' }
                             ]}>
-                                {location.name || 'Kapadokya, Türkiye'}
+                                {location.name || t('create.addLocation')}
                             </Text>
                             <Text style={[
                                 styles.locationConfirmSubtitle,
@@ -576,6 +579,8 @@ export default function CreatePostScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchingLocation, setIsSearchingLocation] = useState(false);
     const [searchResults, setSearchResults] = useState<LocationData[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [showDatePickerModal, setShowDatePickerModal] = useState(false);
 
     const handleSearchLocation = async (query: string) => {
         if (!query.trim()) return;
@@ -634,11 +639,11 @@ export default function CreatePostScreen() {
                 }
                 setSearchResults(suggestions);
             } else {
-                Alert.alert(t('common.error') || 'Hata', 'Konum bulunamadı. Lütfen başka bir arama yapın.');
+                Alert.alert(t('common.error'), t('create.locationNotFound'));
             }
         } catch (error) {
             console.error('Error searching location:', error);
-            Alert.alert(t('common.error') || 'Hata', 'Konum aranırken bir hata oluştu.');
+            Alert.alert(t('common.error'), t('create.locationSearchError'));
         } finally {
             setIsSearchingLocation(false);
         }
@@ -684,6 +689,8 @@ export default function CreatePostScreen() {
         setSearchResults([]);
         setIsSearchingLocation(false);
         setShowLocationModal(false);
+        setSelectedDate(new Date());
+        setShowDatePickerModal(false);
         clearLocation();
         if (clearImages) clearImages();
     };
@@ -712,6 +719,7 @@ export default function CreatePostScreen() {
                 imageCaptions: imageCaptions,
                 weatherData: weatherData || undefined,
                 categories: selectedCategories,
+                createdAt: selectedDate.toISOString(),
             });
 
             // Let the sealing animation play for a moment, then navigate
@@ -744,29 +752,8 @@ export default function CreatePostScreen() {
         ]);
     };
 
-    const formatDate = () => {
-        const date = new Date();
-        // Map language codes to correct locale codes
-        const localeMap: Record<string, string> = {
-            en: 'en-US',
-            tr: 'tr-TR',
-            es: 'es-ES',
-            pt: 'pt-BR',
-            fr: 'fr-FR',
-            de: 'de-DE',
-            it: 'it-IT',
-            ja: 'ja-JP',
-            ko: 'ko-KR',
-            zh: 'zh-CN',
-            ru: 'ru-RU',
-            ar: 'ar-SA',
-        };
-        const locale = localeMap[language] || 'en-US';
-        return date.toLocaleDateString(locale, {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).toUpperCase();
+    const formatDate = (date: Date = selectedDate) => {
+        return formatPolaroidDate(date, language);
     };
 
     const getPolaroidRotation = (index: number) => {
@@ -825,7 +812,7 @@ export default function CreatePostScreen() {
                             {/* Modal Header */}
                             <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
                                 <Text style={[styles.modalTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
-                                    {t('create.addLocation') || 'Konum Ekle'}
+                                    {t('create.addLocation')}
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => {
@@ -845,7 +832,7 @@ export default function CreatePostScreen() {
                                     <Ionicons name="search-outline" size={20} color={theme.textSub} style={{ marginRight: 8 }} />
                                     <TextInput
                                         style={[styles.searchInput, { color: theme.textMain }]}
-                                        placeholder={t('create.searchPlaceholder') || 'Şehir veya mekan ara...'}
+                                        placeholder={t('create.searchPlaceholder')}
                                         placeholderTextColor={`${theme.accentBrown}50`}
                                         value={searchQuery}
                                         onChangeText={setSearchQuery}
@@ -862,7 +849,7 @@ export default function CreatePostScreen() {
                                     style={[styles.searchBtn, { backgroundColor: theme.primary }]}
                                     onPress={() => handleSearchLocation(searchQuery)}
                                 >
-                                    <Text style={styles.searchBtnText}>{t('common.search') || 'Ara'}</Text>
+                                    <Text style={styles.searchBtnText}>{t('common.search')}</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -879,7 +866,7 @@ export default function CreatePostScreen() {
                                     <Ionicons name="navigate-outline" size={20} color={theme.primary} />
                                 </View>
                                 <Text style={[styles.currentLocationText, { color: theme.textMain }]}>
-                                    {t('create.useCurrentLocation') || 'Anlık Konumu Kullan (GPS)'}
+                                    {t('create.useCurrentLocation')}
                                 </Text>
                             </TouchableOpacity>
 
@@ -906,7 +893,7 @@ export default function CreatePostScreen() {
                                             <Ionicons name="location-outline" size={20} color={theme.accentBrown} style={{ marginRight: 12, marginTop: 2 }} />
                                             <View style={{ flex: 1 }}>
                                                 <Text style={[styles.resultTitleText, { color: theme.textMain }]}>
-                                                    {result.name || result.address || 'Seçilen Konum'}
+                                                    {result.name || result.address || t('create.addLocation')}
                                                 </Text>
                                                 {(result.city || result.country) && (
                                                     <Text style={[styles.resultSubtitleText, { color: theme.textSub }]}>
@@ -921,7 +908,7 @@ export default function CreatePostScreen() {
                                     ))}
                                     {!isSearchingLocation && searchQuery && searchResults.length === 0 && (
                                         <Text style={[styles.noResultsText, { color: theme.textSub }]}>
-                                            {t('create.noResults') || 'Sonuç bulunamadı. Lütfen tekrar deneyin.'}
+                                            {t('create.noResults')}
                                         </Text>
                                     )}
                                 </ScrollView>
@@ -982,11 +969,12 @@ export default function CreatePostScreen() {
                                 styles.dateStamp,
                                 { borderColor: theme.accentBrown }
                             ]}
+                            onPress={() => setShowDatePickerModal(true)}
                             activeOpacity={0.8}
                         >
                             <Ionicons name="calendar-outline" size={14} color={theme.accentBrown} style={{ marginRight: 6 }} />
                             <Text style={[styles.dateStampText, { color: theme.textSub }]}>
-                                {formatDate()}
+                                {formatDate(selectedDate)}
                             </Text>
                         </TouchableOpacity>
                     </Animated.View>
@@ -1051,6 +1039,19 @@ export default function CreatePostScreen() {
                         </ScrollView>
                     </Animated.View>
 
+                    {/* Travel Date Picker Section */}
+                    <Animated.View entering={FadeIn.delay(250).duration(400)}>
+                        <TravelDatePicker
+                            selectedDate={selectedDate}
+                            onDateChange={(newDate) => setSelectedDate(newDate)}
+                            theme={theme}
+                            isDark={isDark}
+                            isModalOpen={showDatePickerModal}
+                            onOpenModal={() => setShowDatePickerModal(true)}
+                            onCloseModal={() => setShowDatePickerModal(false)}
+                        />
+                    </Animated.View>
+
                     {/* Location Section */}
                     <Animated.View
                         entering={FadeIn.delay(300).duration(400)}
@@ -1075,16 +1076,14 @@ export default function CreatePostScreen() {
                             {/* Map Background */}
                             <View style={[styles.mapPreview, { backgroundColor: isDark ? '#2a1f18' : '#e8dcc8' }]}>
                                 {location ? (
-                                    <>
-                                        <Image
-                                            source={{
-                                                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${location.latitude},${location.longitude}&zoom=12&size=400x200&scale=2&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`
-                                            }}
-                                            style={styles.mapImage}
-                                            contentFit="cover"
-                                        />
-                                        <View style={styles.mapSepiaOverlay} />
-                                    </>
+                                    <LocationMapPreview
+                                        latitude={location.latitude}
+                                        longitude={location.longitude}
+                                        title={location.name || location.address || t('create.addLocation')}
+                                        height={200}
+                                        showPin={false}
+                                        showOpenButton={false}
+                                    />
                                 ) : (
                                     <View style={styles.mapPlaceholder}>
                                         <Ionicons name="map-outline" size={40} color={theme.textSub} style={{ opacity: 0.5 }} />

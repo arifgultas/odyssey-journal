@@ -12,6 +12,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -502,9 +503,9 @@ export default function SavedPostsScreen() {
                 <View style={[styles.header, { paddingTop: insets.top, backgroundColor: colors.headerBg }]}>
                     <TouchableOpacity
                         style={styles.headerButton}
-                        onPress={() => router.back()}
+                        onPress={() => safeGoBack('/(tabs)')}
                         accessibilityRole="button"
-                        accessibilityLabel={language === 'tr' ? 'Geri dön' : 'Go back'}
+                        accessibilityLabel={t('common.back')}
                     >
                     <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>

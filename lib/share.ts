@@ -30,6 +30,7 @@ export async function sharePost(data: SharePostData): Promise<boolean> {
         const result = await Share.share({
             title: data.title,
             message: shareMessage,
+            ...(Platform.OS === 'ios' && data.url ? { url: data.url } : {}),
         });
 
         if (result.action === Share.sharedAction) {
@@ -50,8 +51,8 @@ export async function sharePost(data: SharePostData): Promise<boolean> {
  * Generate shareable post URL
  */
 export function generatePostShareUrl(postId: string): string {
-    // Uses the app's deep link scheme defined in app.config.ts
-    return `odysseyjournal://post/${postId}`;
+    // Web URL for shareable links — supports link previews and universal links
+    return `https://odysseyjournal.app/post/${postId}`;
 }
 
 /**

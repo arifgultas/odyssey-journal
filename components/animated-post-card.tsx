@@ -9,7 +9,10 @@
  */
 
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { formatPolaroidDate } from '@/lib/date-formatter';
+import { formatPostLocation } from '@/lib/location-formatter';
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -58,6 +61,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
     isOwnPost = false,
 }: AnimatedPostCardProps) {
     const router = useRouter();
+    const { language, t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -120,26 +124,19 @@ const _AnimatedPostCard = function AnimatedPostCard({
         }
     }, [imageLoaded]);
 
-    // Format date for polaroid caption (e.g., "October 14, 2023")
+    // Format date for polaroid caption using active language
     const formatDateForPolaroid = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-        });
+        return formatPolaroidDate(dateString, language);
     };
 
     // Get location display text
     const getLocationText = () => {
-        if (post.location) {
-            if (post.location.city && post.location.country) {
-                const countryCode = post.location.country.substring(0, 2).toUpperCase();
-                return `${post.location.city}, ${countryCode}`;
-            }
-            return post.location.city || post.location.country || post.title;
-        }
-        return post.title;
+        const loc = post.location || (post.location_name ? {
+            city: post.location_name.includes(',') ? post.location_name.split(',')[0].trim() : post.location_name.trim(),
+            country: post.location_name.includes(',') ? post.location_name.split(',')[1].trim() : undefined,
+            name: post.location_name,
+        } : undefined);
+        return formatPostLocation(loc, language, post.title);
     };
 
     const handleLike = () => {
@@ -273,9 +270,14 @@ const _AnimatedPostCard = function AnimatedPostCard({
                         </View>
 
                         {/* Polaroid Caption - Tappable to open post */}
-                        <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+                        <Pressable
+                            onPress={onPress}
+                            onPressIn={handlePressIn}
+                            onPressOut={handlePressOut}
+                            style={styles.polaroidPressable}
+                        >
                             <View style={styles.polaroidCaption}>
-                                <Text style={[styles.locationTitle, { color: theme.text }]} numberOfLines={1}>
+                                <Text style={[styles.locationTitle, { color: theme.text }]}>
                                     {getLocationText()}
                                 </Text>
                                 <Text style={[styles.dateText, { color: theme.textMuted }]}>
@@ -309,7 +311,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                                 </View>
                                 <View style={styles.userTextContainer}>
                                     <Text style={[styles.username, { color: theme.text }]}>
-                                        {post.profiles?.full_name || post.profiles?.username || 'Traveler'}
+                                        {post.profiles?.full_name || post.profiles?.username || t('profile.traveler')}
                                     </Text>
                                     <Text style={[styles.postContent, { color: theme.textSecondary }]} numberOfLines={2}>
                                         {post.content}
@@ -350,7 +352,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                             >
                                 <View style={styles.menuItem}>
                                     <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
-                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>Delete Post</Text>
+                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>{t('post.deleteTitle')}</Text>
                                 </View>
                             </TouchableWithoutFeedback>
                         ) : (
@@ -363,7 +365,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                             >
                                 <View style={styles.menuItem}>
                                     <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
-                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>Report Post</Text>
+                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>{t('post.reportPost')}</Text>
                                 </View>
                             </TouchableWithoutFeedback>
                         )}
@@ -462,21 +464,40 @@ const styles = StyleSheet.create({
         color: Colors.light.surface,
     },
 
+    polaroidPressable: {
+        width: '100%',
+        alignSelf: 'stretch',
+    },
     polaroidCaption: {
         alignItems: 'center',
-        paddingTop: Spacing.md,
-        paddingHorizontal: Spacing.xs,
+        justifyContent: 'center',
+        paddingTop: 10,
+        paddingBottom: 8,
+        paddingHorizontal: 4,
+        width: '100%',
+        overflow: 'visible',
     },
     locationTitle: {
         fontFamily: Typography.fonts.handwriting,
-        fontSize: 28,
-        lineHeight: 32,
+        fontSize: 22,
+        lineHeight: 30,
         textAlign: 'center',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        overflow: 'visible',
+        width: '100%',
+        flexWrap: 'wrap',
     },
     dateText: {
         fontFamily: Typography.fonts.handwriting,
-        fontSize: 20,
+        fontSize: 18,
+        lineHeight: 24,
         marginTop: 2,
+        textAlign: 'center',
+        paddingHorizontal: 8,
+        paddingBottom: 4,
+        overflow: 'visible',
+        width: '100%',
     },
     userSection: {
         flexDirection: 'row',

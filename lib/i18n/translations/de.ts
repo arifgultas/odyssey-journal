@@ -22,6 +22,12 @@ export default {
         yes: 'Ja',
         no: 'Nein',
         and: 'und',
+        change: 'Ändern',
+        untitled: 'Ohne Titel',
+        yesterday: 'Gestern',
+            info: 'Information',
+            completed: 'Abgeschlossen',
+            progress: 'Fortschritt',
     },
     auth: {
         login: 'Anmelden',
@@ -81,6 +87,12 @@ export default {
         sendResetLink: 'Zurücksetzungslink senden',
         rememberPassword: 'Passwort doch eingefallen?',
         resetLinkValidity: 'Aus Sicherheitsgründen ist der Link 1 Stunde gültig.',
+            newPassword: 'Neues Passwort',
+            enterNewPassword: 'Geben Sie Ihr neues Passwort ein',
+            confirmNewPassword: 'Neues Passwort bestätigen',
+            confirmNewPasswordPlaceholder: 'Geben Sie Ihr neues Passwort erneut ein',
+            passwordLengthError: 'Das Passwort muss mindestens 6 Zeichen lang sein.',
+            passwordMatchError: 'Passwörter stimmen nicht überein.',
     },
     onboarding: {
         step1Title: 'Entdecken Starten',
@@ -104,6 +116,12 @@ export default {
         noFollowingPosts: 'Noch keine Beiträge',
         exploreTravelers: 'Entdecken Sie andere Reisende in der Community und folgen Sie ihnen, um ihre Beiträge hier zu sehen.',
         exploreButton: 'Reisende entdecken',
+        sortLatest: 'Neueste',
+        sortPopular: 'Beliebt',
+        sortLocation: 'Mit Standort',
+        sortLatestAccessibility: 'Nach neuesten Beiträgen sortieren',
+        sortPopularAccessibility: 'Nach beliebtesten Beiträgen sortieren',
+        sortLocationAccessibility: 'Nach Beiträgen mit Standort filtern',
     },
     explore: {
         title: 'Entdecken',
@@ -137,6 +155,12 @@ export default {
         user: 'Benutzer',
         category: 'Kategorie',
         noCategoryPosts: 'Keine Beiträge in dieser Kategorie',
+        readPost: 'Beitrag lesen',
+        newRoutesToExplore: 'Neue Routen zum Entdecken',
+        featuredContentDefault: 'Entdecken Sie die schönsten Routen der Welt und brechen Sie auf ins Abenteuer.',
+        viewCategoryPosts: 'Beiträge in der Kategorie {{category}} ansehen',
+            featuredDefaultTitle: 'Neue Routen zum Erkunden',
+            featuredDefaultDescription: 'Entdecken Sie die schönsten Routen und erleben Sie Abenteuer.',
     },
     create: {
         title: 'Neuer Beitrag',
@@ -177,6 +201,8 @@ export default {
         searchPlaceholder: 'Stadt oder Ort suchen...',
         useCurrentLocation: 'Aktuellen Standort verwenden (GPS)',
         noResults: 'Keine Ergebnisse gefunden. Bitte versuchen Sie es erneut.',
+            locationNotFound: 'Standort nicht gefunden. Bitte versuchen Sie eine andere Suche.',
+            locationSearchError: 'Fehler bei der Standortsuche aufgetreten.',
     },
     categories: {
         nature: 'Natur',
@@ -191,6 +217,10 @@ export default {
         wildlife: 'Tierwelt',
     },
     collection: {
+        saveToCollection: 'In Sammlung speichern',
+        myCollections: 'Meine Sammlungen',
+        nameInputPlaceholder: 'Name der Sammlung...',
+
         createTitle: 'Sammlung erstellen',
         editTitle: 'Sammlung bearbeiten',
         save: 'Speichern',
@@ -219,6 +249,9 @@ export default {
         noNote: 'Keine Notiz für diesen Beitrag hinzugefügt.',
         unknownLocation: 'Unbekannter Ort',
         untitled: 'Ohne Titel',
+        noNotes: 'Keine Notiz für diesen Beitrag hinzugefügt.',
+        saveWithoutCollection: 'Ohne Sammlung speichern',
+        saveError: 'Fehler beim Speichern',
     },
 
     // Chat & Messaging
@@ -237,6 +270,9 @@ export default {
         requestBanner: 'Möchten Sie mit diesem Benutzer chatten? Sie können erst antworten, wenn Sie akzeptieren.',
         declineConfirm: 'Möchten Sie diese Anfrage wirklich ablehnen? Der Chatverlauf wird gelöscht.',
         noRequests: 'Keine Nachrichtenanfragen gefunden.',
+        openLettersAndChats: 'Briefe und Chats öffnen',
+        typing: 'schreibt...',
+        yesterday: 'Gestern',
     },
 
     saved: {
@@ -304,6 +340,11 @@ export default {
         blockError: 'Fehler beim Blockieren des Benutzers.',
         notFoundTitle: 'Reisender nicht gefunden',
         notFoundDesc: 'Dieses Profil ist nicht verfügbar oder Sie haben keine Berechtigung, es anzuzeigen.',
+        natureLover: 'Naturliebhaber',
+        cityExplorer: 'Stadtentdecker',
+        historian: 'Historiker',
+        photographer: 'Fotograf',
+        traveler: 'Reisender',
     },
     editProfile: {
         title: 'Profil bearbeiten',
@@ -369,6 +410,15 @@ export default {
         deleteConfirm: 'Möchten Sie diesen Beitrag wirklich löschen?',
         deleteSuccess: 'Beitrag gelöscht',
         reportSuccess: 'Meldung gesendet',
+        editTitle: 'Beitrag bearbeiten',
+        deleteTitle: 'Beitrag löschen',
+            address: 'Adresse',
+            memoriesTitle: 'Erinnerungen & Notizen',
+            memory: 'Erinnerung',
+            notesCount: '{{count}} Notizen',
+            reportPost: 'Beitrag melden',
+            viewNotes: '{{count}} Notizen anzeigen',
+            writeNote: 'Eine Notiz für dein Reisetagebuch schreiben...',
     },
     report: {
         title: 'Beitrag melden',
@@ -439,6 +489,18 @@ export default {
         adminTitle: 'ADMIN',
         moderationPanel: 'Moderationspanel',
         moderationPanelDesc: 'Berichte prüfen, Benutzer verwalten',
+        likeNotifications: 'Gefällt mir',
+        likeNotificationsDesc: 'Benachrichtigung erhalten, wenn jemandem Ihr Beitrag gefällt',
+        commentNotifications: 'Kommentare',
+        commentNotificationsDesc: 'Benachrichtigung erhalten, wenn jemand Ihren Beitrag kommentiert',
+        followNotifications: 'Follower',
+        followNotificationsDesc: 'Benachrichtigung erhalten, wenn Ihnen jemand folgt',
+        changePassword: 'Passwort ändern',
+        changePasswordDesc: 'Aktualisieren Sie Ihr Kontopasswort',
+        preferencesUpdateError: 'Beim Aktualisieren der Einstellungen ist ein Fehler aufgetreten.',
+            notificationPreferences: 'Benachrichtigungseinstellungen',
+            passwordChangeSuccess: 'Ihr Passwort wurde erfolgreich aktualisiert.',
+            unblockError: 'Benutzer konnte nicht freigegeben werden.',
     },
     errors: {
         generic: 'Etwas ist schief gelaufen',
@@ -491,6 +553,11 @@ export default {
         postCount: '{{count}} Beiträge',
         noPosts: 'Keine Beiträge mit Standort',
         addLocationTip: 'Fügen Sie Ihren Beiträgen einen Standort hinzu',
+        openInMap: 'In Karte öffnen',
+        travelPoint: 'Reisepunkt',
+            journeyRoute: 'Reiseroute ({{count}} Punkte)',
+            noJourneyYet: 'Noch keine Reise',
+            startExploring: 'Fangen Sie an, die Welt zu erkunden!',
     },
 
     destinationPosts: {
@@ -660,5 +727,22 @@ export default {
             name: "Entdecker",
             description: "Reise 30 Tage lang"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'DATUM / REISEZEIT',
+        tapToChange: 'Tippen, um Datum zu ändern',
+        change: 'Bearbeiten',
+        today: 'Heute',
+        yesterday: 'Gestern',
+        tomorrow: 'Morgen',
+        threeDaysAgo: 'Vor 3 Tagen',
+        calendar: 'Kalender',
+        selectDate: 'Reisedatum auswählen',
+        selected: 'Ausgewählt:',
+        apply: 'Datum anwenden',
+        cancel: 'Abbrechen',
+        daysAgo: 'Vor {{count}} Tagen',
+        daysLater: 'In {{count}} Tagen',
+    },
 };

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Spacing } from '@/constants/theme';
 
 interface SettingsRowProps {
+    icon?: any;
     label: string;
     description?: string;
     onPress?: () => void;
@@ -12,6 +13,7 @@ interface SettingsRowProps {
 }
 
 export function SettingsRow({
+    icon,
     label,
     description,
     onPress,
@@ -30,11 +32,21 @@ export function SettingsRow({
             })}
             accessibilityLabel={`${label}, ${description || ''}`}
         >
-            <View style={styles.settingInfo}>
-                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{label}</Text>
-                {description && (
-                    <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{description}</Text>
+            <View style={styles.settingMain}>
+                {icon && (
+                    <Ionicons
+                        name={icon}
+                        size={22}
+                        color={colors.accent || colors.textSecondary}
+                        style={styles.settingIcon}
+                    />
                 )}
+                <View style={styles.settingInfo}>
+                    <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{label}</Text>
+                    {description && (
+                        <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{description}</Text>
+                    )}
+                </View>
             </View>
             {rightElement !== undefined ? rightElement : (
                 onPress && <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
@@ -50,9 +62,17 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: Spacing.sm + 2,
     },
-    settingInfo: {
+    settingMain: {
+        flexDirection: 'row',
+        alignItems: 'center',
         flex: 1,
         marginRight: Spacing.md,
+    },
+    settingIcon: {
+        marginRight: Spacing.sm + 4,
+    },
+    settingInfo: {
+        flex: 1,
     },
     settingLabel: {
         fontSize: 15,

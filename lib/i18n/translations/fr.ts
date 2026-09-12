@@ -22,6 +22,12 @@ export default {
         yes: 'Oui',
         no: 'Non',
         and: 'et',
+        change: 'Modifier',
+        untitled: 'Sans titre',
+        yesterday: 'Hier',
+            info: 'Information',
+            completed: 'Terminé',
+            progress: 'Progression',
     },
     auth: {
         login: 'Connexion',
@@ -81,6 +87,12 @@ export default {
         sendResetLink: 'Envoyer le lien',
         rememberPassword: 'Vous vous souvenez ?',
         resetLinkValidity: 'Pour votre sécurité, le lien est valide 1 heure.',
+            newPassword: 'Nouveau mot de passe',
+            enterNewPassword: 'Entrez votre nouveau mot de passe',
+            confirmNewPassword: 'Confirmer le nouveau mot de passe',
+            confirmNewPasswordPlaceholder: 'Entrez à nouveau votre nouveau mot de passe',
+            passwordLengthError: 'Le mot de passe doit comporter au moins 6 caractères.',
+            passwordMatchError: 'Les mots de passe ne correspondent pas.',
     },
     onboarding: {
         step1Title: 'Commencez à Explorer',
@@ -104,6 +116,12 @@ export default {
         noFollowingPosts: 'Pas encore de publications',
         exploreTravelers: 'Découvrez d\'autres voyageurs dans la communauté et abonnez-vous pour voir leurs publications ici.',
         exploreButton: 'Découvrir des voyageurs',
+        sortLatest: 'Récents',
+        sortPopular: 'Populaires',
+        sortLocation: 'Avec Lieu',
+        sortLatestAccessibility: 'Trier par publications les plus récentes',
+        sortPopularAccessibility: 'Trier par publications les plus populaires',
+        sortLocationAccessibility: 'Filtrer par publications avec localisation',
     },
     explore: {
         title: 'Explorer',
@@ -137,6 +155,12 @@ export default {
         user: 'Utilisateur',
         category: 'Catégorie',
         noCategoryPosts: 'Aucune publication dans cette catégorie',
+        readPost: 'Lire la publication',
+        newRoutesToExplore: 'Nouvelles routes à explorer',
+        featuredContentDefault: 'Découvrez les plus beaux itinéraires et partez à l\'aventure.',
+        viewCategoryPosts: 'Voir les publications dans la catégorie {{category}}',
+            featuredDefaultTitle: 'Nouveaux Itinéraires à Explorer',
+            featuredDefaultDescription: 'Découvrez les plus beaux itinéraires et partez à l\'aventure.',
     },
     create: {
         title: 'Nouvelle Publication',
@@ -177,6 +201,8 @@ export default {
         searchPlaceholder: 'Rechercher une ville ou un lieu...',
         useCurrentLocation: 'Utiliser la position actuelle (GPS)',
         noResults: 'Aucun résultat trouvé. Veuillez réessayer.',
+            locationNotFound: 'Lieu introuvable. Veuillez essayer une autre recherche.',
+            locationSearchError: 'Une erreur est survenue lors de la recherche du lieu.',
     },
     categories: {
         nature: 'Nature',
@@ -191,6 +217,10 @@ export default {
         wildlife: 'Faune',
     },
     collection: {
+        saveToCollection: 'Enregistrer dans la collection',
+        myCollections: 'Mes collections',
+        nameInputPlaceholder: 'Nom de la collection...',
+
         createTitle: 'Créer une Collection',
         editTitle: 'Modifier la Collection',
         save: 'Enregistrer',
@@ -219,6 +249,9 @@ export default {
         noNote: 'Aucune note ajoutée pour cette publication.',
         unknownLocation: 'Lieu Inconnu',
         untitled: 'Sans Titre',
+        noNotes: 'Aucune note ajoutée pour cette publication.',
+        saveWithoutCollection: 'Enregistrer sans collection',
+        saveError: 'Erreur lors de l\'enregistrement',
     },
 
     // Chat & Messaging
@@ -237,6 +270,9 @@ export default {
         requestBanner: 'Voulez-vous discuter avec cet utilisateur ? Vous ne pouvez pas répondre tant que vous n\'avez pas accepté.',
         declineConfirm: 'Êtes-vous sûr de vouloir refuser cette demande ? L\'historique des messages sera supprimé.',
         noRequests: 'Aucune demande de message trouvée.',
+        openLettersAndChats: 'Ouvrir les lettres et discussions',
+        typing: 'est en train d\'écrire...',
+        yesterday: 'Hier',
     },
 
     saved: {
@@ -304,6 +340,11 @@ export default {
         blockError: 'Erreur lors du blocage de l\'utilisateur.',
         notFoundTitle: 'Voyageur non trouvé',
         notFoundDesc: 'Ce profil n\'est pas disponible ou vous n\'avez pas l\'autorisation de le consulter.',
+        natureLover: 'Amoureux de la nature',
+        cityExplorer: 'Explorateur urbain',
+        historian: 'Historien',
+        photographer: 'Photographe',
+        traveler: 'Voyageur',
     },
     editProfile: {
         title: 'Modifier le Profil',
@@ -369,6 +410,15 @@ export default {
         deleteConfirm: 'Êtes-vous sûr de vouloir supprimer cette publication ?',
         deleteSuccess: 'Publication supprimée',
         reportSuccess: 'Signalement envoyé',
+        editTitle: 'Modifier la Publication',
+        deleteTitle: 'Supprimer la publication',
+            address: 'Adresse',
+            memoriesTitle: 'Souvenirs et Notes',
+            memory: 'Souvenir',
+            notesCount: '{{count}} Notes',
+            reportPost: 'Signaler la publication',
+            viewNotes: 'Voir {{count}} notes',
+            writeNote: 'Écrire une note pour votre journal...',
     },
     report: {
         title: 'Signaler la publication',
@@ -439,6 +489,18 @@ export default {
         adminTitle: 'ADMIN',
         moderationPanel: 'Panneau de Modération',
         moderationPanelDesc: 'Examiner les rapports, gérer les utilisateurs',
+        likeNotifications: 'J\'aime',
+        likeNotificationsDesc: 'Recevez une notification lorsque quelqu\'un aime votre publication',
+        commentNotifications: 'Commentaires',
+        commentNotificationsDesc: 'Recevez une notification lorsque quelqu\'un commente votre publication',
+        followNotifications: 'Abonnés',
+        followNotificationsDesc: 'Recevez une notification lorsque quelqu\'un commence à vous suivre',
+        changePassword: 'Changer le mot de passe',
+        changePasswordDesc: 'Mettre à jour le mot de passe de votre compte',
+        preferencesUpdateError: 'Une erreur est survenue lors de la mise à jour des préférences.',
+            notificationPreferences: 'Préférences de Notification',
+            passwordChangeSuccess: 'Votre mot de passe a été mis à jour avec succès.',
+            unblockError: 'Impossible de débloquer l\'utilisateur.',
     },
     errors: {
         generic: 'Une erreur s\'est produite',
@@ -491,6 +553,11 @@ export default {
         postCount: '{{count}} publications',
         noPosts: 'Aucune publication avec localisation',
         addLocationTip: 'Ajoutez une localisation à vos publications',
+        openInMap: 'Ouvrir dans la carte',
+        travelPoint: 'Point de voyage',
+            journeyRoute: 'Itinéraire de Voyage ({{count}} Étapes)',
+            noJourneyYet: 'Pas encore de voyage',
+            startExploring: 'Commencez à explorer le monde !',
     },
 
     destinationPosts: {
@@ -660,5 +727,22 @@ export default {
             name: "Explorateur",
             description: "Voyagez pendant 30 jours"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'DATE / HEURE DU VOYAGE',
+        tapToChange: 'Appuyez pour changer la date',
+        change: 'Modifier',
+        today: 'Aujourd\'hui',
+        yesterday: 'Hier',
+        tomorrow: 'Demain',
+        threeDaysAgo: 'Il y a 3 jours',
+        calendar: 'Calendrier',
+        selectDate: 'Sélectionner la date du voyage',
+        selected: 'Sélectionné :',
+        apply: 'Appliquer la date',
+        cancel: 'Annuler',
+        daysAgo: 'Il y a {{count}} jours',
+        daysLater: 'Dans {{count}} jours',
+    },
 };

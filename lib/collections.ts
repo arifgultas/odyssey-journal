@@ -1,3 +1,6 @@
+import { decode } from 'base64-arraybuffer';
+import { File } from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from './supabase';
 import { Post } from './posts';
 import { captureError } from './sentry';
@@ -380,9 +383,14 @@ export async function uploadCollectionCover(
             throw new Error('User not authenticated');
         }
 
-        // Fetch the image
-        const response = await fetch(imageUri);
-        const blob = await response.blob();
+        // Compress and convert to base64 (consistent with image-upload.ts)
+        const manipulated = await ImageManipulator.manipulateAsync(
+            imageUri,
+            [{ resize: { width: 1080 } }],
+            { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+        );
+        const file = new File(manipulated.uri);
+        const base64 = await file.base64();
 
         // Generate filename
         const fileExt = 'jpg';
@@ -391,7 +399,7 @@ export async function uploadCollectionCover(
         // Upload to Supabase Storage
         const { data, error } = await supabase.storage
             .from('collection-covers')
-            .upload(fileName, blob, {
+            .upload(fileName, decode(base64), {
                 contentType: 'image/jpeg',
                 upsert: true,
             });

@@ -6,6 +6,7 @@ import { useAllTrendingPosts } from '@/hooks/use-search';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React from 'react';
 import {
     ActivityIndicator,
@@ -129,7 +130,7 @@ export default function PopularPostsScreen() {
             <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: theme.background }]}>
                 <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => router.back()}
+                    onPress={() => safeGoBack('/(tabs)/explore')}
                 >
                     <Ionicons name="chevron-back" size={24} color={theme.text} />
                 </TouchableOpacity>

@@ -4,12 +4,16 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
 import { useLocationPicker, LocationData } from '@/hooks/use-location-picker';
 import { CategoryIcon } from '@/components/create/category-icon';
+import { TravelDatePicker } from '@/components/create/travel-date-picker';
+import { LocationMapPreview } from '@/components/location-map-preview';
 import { createPost, updatePost, fetchPostById } from '@/lib/posts';
 import { supabase } from '@/lib/supabase';
 import { fetchWeatherData, getWeatherTranslationKey, WeatherData } from '@/lib/weather';
+import { formatPolaroidDate } from '@/lib/date-formatter';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -69,12 +73,12 @@ const DesignColors = {
 
 // Category options with custom SVG icons
 const CATEGORIES = [
-    { id: 'nature', label: 'Doğa', icon: 'tree' },
-    { id: 'city', label: 'Şehir', icon: 'city' },
-    { id: 'food', label: 'Yemek', icon: 'food' },
-    { id: 'history', label: 'Tarih', icon: 'history' },
-    { id: 'culture', label: 'Kültür', icon: 'culture' },
-    { id: 'art', label: 'Sanat', icon: 'art' },
+    { id: 'nature', icon: 'tree' },
+    { id: 'city', icon: 'city' },
+    { id: 'food', icon: 'food' },
+    { id: 'history', icon: 'history' },
+    { id: 'culture', icon: 'culture' },
+    { id: 'art', icon: 'art' },
 ];
 
 // Custom SVG Icons Component
@@ -133,7 +137,7 @@ const AnimatedCategoryButton = ({
                         { color: isSelected ? '#2C1810' : (isDark ? theme.primary : theme.textMain) },
                     ]}
                 >
-                    {t('categories.' + category.id) || category.label}
+                    {t('categories.' + category.id)}
                 </Text>
             </Animated.View>
         </TouchableOpacity>
@@ -156,6 +160,7 @@ const AnimatedPolaroidCard = ({
     caption: string;
     onCaptionChange: (text: string) => void;
 }) => {
+    const { t } = useLanguage();
     const scale = useSharedValue(0.8);
     const opacity = useSharedValue(0);
     const imageScale = useSharedValue(1.1);
@@ -200,7 +205,7 @@ const AnimatedPolaroidCard = ({
                     style={styles.polaroidCaptionInput}
                     value={caption}
                     onChangeText={onCaptionChange}
-                    placeholder="Not ekle..."
+                    placeholder={t('create.addNote')}
                     placeholderTextColor="#999"
                     maxLength={100}
                     multiline={false}
@@ -375,7 +380,7 @@ const AnimatedLocationCard = ({
                                 styles.locationConfirmTitle,
                                 { color: isDark ? theme.textMain : '#2C1810' }
                             ]}>
-                                {location.name || 'Kapadokya, Türkiye'}
+                                {location.name || t('create.unknownLocation')}
                             </Text>
                             <Text style={[
                                 styles.locationConfirmSubtitle,
@@ -399,7 +404,7 @@ const AnimatedLocationCard = ({
                             onPress={onConfirm}
                             activeOpacity={0.8}
                         >
-                            <Text style={styles.locationConfirmButtonText}>Konumu onayla</Text>
+                            <Text style={styles.locationConfirmButtonText}>{t('create.confirmLocation')}</Text>
                             <Ionicons name="checkmark" size={16} color="#2C1810" />
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -408,7 +413,7 @@ const AnimatedLocationCard = ({
                             activeOpacity={0.8}
                         >
                             <Text style={[styles.locationChangeButtonText, { color: theme.accentBrown }]}>
-                                Değiştir
+                                {t('create.changeLocation')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -422,6 +427,7 @@ const AnimatedLocationCard = ({
 
 // Add Photo Button Component
 const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof DesignColors.light }) => {
+    const { t } = useLanguage();
     const scale = useSharedValue(1);
 
     const handlePressIn = () => {
@@ -452,7 +458,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
                     <Ionicons name="add-outline" size={24} color={theme.accentBrown} />
                 </View>
                 <Text style={[styles.addPhotoText, { color: theme.accentBrown }]}>
-                    Fotoğraf Ekle
+                    {t('create.addPhoto')}
                 </Text>
             </Animated.View>
         </TouchableOpacity>
@@ -462,7 +468,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
 export default function CreatePostScreen() {
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
 
@@ -481,6 +487,8 @@ export default function CreatePostScreen() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchingLocation, setIsSearchingLocation] = useState(false);
     const [searchResults, setSearchResults] = useState<LocationData[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [showDatePickerModal, setShowDatePickerModal] = useState(false);
 
     const {
         images,
@@ -508,6 +516,7 @@ export default function CreatePostScreen() {
                 setTitle(post.title || '');
                 setContent(post.content || '');
                 if (post.categories) setSelectedCategories(post.categories);
+                if (post.created_at) setSelectedDate(new Date(post.created_at));
                 if (post.location) {
                     setCustomLocation(post.location);
                     setLocationConfirmed(true);
@@ -525,8 +534,8 @@ export default function CreatePostScreen() {
                 if (post.weather_data) setWeatherData(post.weather_data);
             } catch (error) {
                 console.error('Error loading post for editing:', error);
-                Alert.alert(t('common.error') || 'Hata', 'Günlük verileri yüklenirken bir hata oluştu.');
-                router.back();
+                Alert.alert(t('common.error'), t('errors.generic'));
+                safeGoBack('/(tabs)');
             }
         };
         loadPostData();
@@ -564,6 +573,8 @@ export default function CreatePostScreen() {
         setSearchResults([]);
         setIsSearchingLocation(false);
         setShowLocationModal(false);
+        setSelectedDate(new Date());
+        setShowDatePickerModal(false);
         clearLocation();
         if (setImages) setImages([]);
     };
@@ -586,8 +597,8 @@ export default function CreatePostScreen() {
             if (user && user.email_confirmed_at === null) {
                 setIsSubmitting(false);
                 Alert.alert(
-                    t('createPost.emailNotVerifiedTitle') || 'Email Verification Required',
-                    t('createPost.emailNotVerifiedDesc') || 'Please verify your email address to share new journal entries.'
+                    t('createPost.emailNotVerifiedTitle'),
+                    t('createPost.emailNotVerifiedDesc')
                 );
                 return;
             }
@@ -600,16 +611,17 @@ export default function CreatePostScreen() {
                 imageCaptions: imageCaptions,
                 weatherData: weatherData || undefined,
                 categories: selectedCategories,
+                createdAt: selectedDate.toISOString(),
             };
 
             if (isEditMode && editPostId) {
                 await updatePost(editPostId, postPayload);
-                Alert.alert(t('common.success') || 'Başarılı', 'Günlük girişi güncellendi.', [
+                Alert.alert(t('common.success'), t('create.postSuccess'), [
                     {
                         text: t('createPost.ok'),
                         onPress: () => {
                             resetForm();
-                            router.back();
+                            safeGoBack('/(tabs)');
                         },
                     },
                 ]);
@@ -620,14 +632,14 @@ export default function CreatePostScreen() {
                         text: t('createPost.ok'),
                         onPress: () => {
                             resetForm();
-                            router.back();
+                            safeGoBack('/(tabs)');
                         },
                     },
                 ]);
             }
         } catch (error) {
             console.error('Error saving post:', error);
-            Alert.alert(t('createPost.errorTitle'), isEditMode ? 'Günlük güncellenirken bir hata oluştu.' : t('createPost.createError'));
+            Alert.alert(t('createPost.errorTitle'), isEditMode ? t('errors.generic') : t('createPost.createError'));
         } finally {
             setIsSubmitting(false);
         }
@@ -650,13 +662,8 @@ export default function CreatePostScreen() {
         ]);
     };
 
-    const formatDate = () => {
-        const date = new Date();
-        return date.toLocaleDateString('tr-TR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).toUpperCase();
+    const formatDate = (date: Date = selectedDate) => {
+        return formatPolaroidDate(date, language).toUpperCase();
     };
 
     const getPolaroidRotation = (index: number) => {
@@ -755,11 +762,11 @@ export default function CreatePostScreen() {
                 }
                 setSearchResults(suggestions);
             } else {
-                Alert.alert(t('common.error') || 'Hata', 'Konum bulunamadı. Lütfen başka bir arama yapın.');
+                Alert.alert(t('common.error'), t('create.noResults'));
             }
         } catch (error) {
             console.error('Error searching location:', error);
-            Alert.alert(t('common.error') || 'Hata', 'Konum aranırken bir hata oluştu.');
+            Alert.alert(t('common.error'), t('errors.generic'));
         } finally {
             setIsSearchingLocation(false);
         }
@@ -803,7 +810,7 @@ export default function CreatePostScreen() {
                             {/* Modal Header */}
                             <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
                                 <Text style={[styles.modalTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
-                                    {t('create.addLocation') || 'Konum Ekle'}
+                                    {t('create.addLocation')}
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => {
@@ -823,7 +830,7 @@ export default function CreatePostScreen() {
                                     <Ionicons name="search-outline" size={20} color={theme.textSub} style={{ marginRight: 8 }} />
                                     <TextInput
                                         style={[styles.searchInput, { color: theme.textMain }]}
-                                        placeholder={t('create.searchPlaceholder') || 'Şehir veya mekan ara...'}
+                                        placeholder={t('create.searchPlaceholder')}
                                         placeholderTextColor={`${theme.accentBrown}50`}
                                         value={searchQuery}
                                         onChangeText={setSearchQuery}
@@ -840,7 +847,7 @@ export default function CreatePostScreen() {
                                     style={[styles.searchBtn, { backgroundColor: theme.primary }]}
                                     onPress={() => handleSearchLocation(searchQuery)}
                                 >
-                                    <Text style={styles.searchBtnText}>{t('common.search') || 'Ara'}</Text>
+                                    <Text style={styles.searchBtnText}>{t('common.search')}</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -857,7 +864,7 @@ export default function CreatePostScreen() {
                                     <Ionicons name="navigate-outline" size={20} color={theme.primary} />
                                 </View>
                                 <Text style={[styles.currentLocationText, { color: theme.textMain }]}>
-                                    {t('create.useCurrentLocation') || 'Anlık Konumu Kullan (GPS)'}
+                                    {t('create.useCurrentLocation')}
                                 </Text>
                             </TouchableOpacity>
 
@@ -899,7 +906,7 @@ export default function CreatePostScreen() {
                                             <Ionicons name="location-outline" size={20} color={theme.accentBrown} style={{ marginRight: 12, marginTop: 2 }} />
                                             <View style={{ flex: 1 }}>
                                                 <Text style={[styles.resultTitleText, { color: theme.textMain }]}>
-                                                    {result.name || result.address || 'Seçilen Konum'}
+                                                    {result.name || result.address || t('create.locationSelected')}
                                                 </Text>
                                                 {(result.city || result.country) && (
                                                     <Text style={[styles.resultSubtitleText, { color: theme.textSub }]}>
@@ -914,7 +921,7 @@ export default function CreatePostScreen() {
                                     ))}
                                     {!isSearchingLocation && searchQuery && searchResults.length === 0 && (
                                         <Text style={[styles.noResultsText, { color: theme.textSub }]}>
-                                            {t('create.noResults') || 'Sonuç bulunamadı. Lütfen tekrar deneyin.'}
+                                            {t('create.noResults')}
                                         </Text>
                                     )}
                                 </ScrollView>
@@ -941,16 +948,16 @@ export default function CreatePostScreen() {
                     ]}
                 >
                     <TouchableOpacity
-                        onPress={() => router.back()}
+                        onPress={() => safeGoBack('/(tabs)')}
                         style={styles.cancelButton}
                     >
                         <Text style={[styles.cancelText, { color: theme.textSub }]}>
-                            İptal
+                            {t('common.cancel')}
                         </Text>
                     </TouchableOpacity>
 
                     <Text style={[styles.headerTitle, { color: isDark ? theme.primary : '#2C1810' }]}>
-                        {isEditMode ? 'Günlüğü Düzenle' : 'Yeni Günlük Girişi'}
+                        {isEditMode ? t('post.editTitle') : t('create.newEntry')}
                     </Text>
 
                     <TouchableOpacity
@@ -962,7 +969,7 @@ export default function CreatePostScreen() {
                         {isSubmitting ? (
                             <ActivityIndicator size="small" color="#2C1810" />
                         ) : (
-                            <Text style={styles.publishText}>{isEditMode ? 'Kaydet' : 'Paylaş'}</Text>
+                            <Text style={styles.publishText}>{isEditMode ? t('common.save') : t('create.post')}</Text>
                         )}
                     </TouchableOpacity>
                 </Animated.View>
@@ -982,11 +989,12 @@ export default function CreatePostScreen() {
                                 styles.dateStamp,
                                 { borderColor: theme.accentBrown }
                             ]}
+                            onPress={() => setShowDatePickerModal(true)}
                             activeOpacity={0.8}
                         >
                             <Ionicons name="calendar-outline" size={14} color={theme.accentBrown} style={{ marginRight: 6 }} />
                             <Text style={[styles.dateStampText, { color: theme.textSub }]}>
-                                {formatDate()}
+                                {formatDate(selectedDate)}
                             </Text>
                         </TouchableOpacity>
                     </Animated.View>
@@ -1006,7 +1014,7 @@ export default function CreatePostScreen() {
 
                         <View style={styles.imagesSectionHeader}>
                             <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                                GÖRSELLER
+                                {t('create.images')}
                             </Text>
                         </View>
 
@@ -1051,13 +1059,26 @@ export default function CreatePostScreen() {
                         </ScrollView>
                     </Animated.View>
 
+                    {/* Travel Date Picker Section */}
+                    <Animated.View entering={FadeIn.delay(250).duration(400)}>
+                        <TravelDatePicker
+                            selectedDate={selectedDate}
+                            onDateChange={(newDate) => setSelectedDate(newDate)}
+                            theme={theme}
+                            isDark={isDark}
+                            isModalOpen={showDatePickerModal}
+                            onOpenModal={() => setShowDatePickerModal(true)}
+                            onCloseModal={() => setShowDatePickerModal(false)}
+                        />
+                    </Animated.View>
+
                     {/* Location Section */}
                     <Animated.View
                         entering={FadeIn.delay(300).duration(400)}
                         style={styles.section}
                     >
                         <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            LOKASYON
+                            {t('create.location')}
                         </Text>
 
                         <TouchableOpacity
@@ -1075,16 +1096,14 @@ export default function CreatePostScreen() {
                             {/* Map Background */}
                             <View style={[styles.mapPreview, { backgroundColor: isDark ? '#2a1f18' : '#e8dcc8' }]}>
                                 {location ? (
-                                    <>
-                                        <Image
-                                            source={{
-                                                uri: `https://maps.googleapis.com/maps/api/staticmap?center=${location.latitude},${location.longitude}&zoom=12&size=400x200&scale=2&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`
-                                            }}
-                                            style={styles.mapImage}
-                                            contentFit="cover"
-                                        />
-                                        <View style={styles.mapSepiaOverlay} />
-                                    </>
+                                    <LocationMapPreview
+                                        latitude={location.latitude}
+                                        longitude={location.longitude}
+                                        title={location.name || location.address || t('create.locationSelected')}
+                                        height={200}
+                                        showPin={false}
+                                        showOpenButton={false}
+                                    />
                                 ) : (
                                     <View style={styles.mapPlaceholder}>
                                         <Ionicons name="map-outline" size={40} color={theme.textSub} style={{ opacity: 0.5 }} />
@@ -1125,7 +1144,7 @@ export default function CreatePostScreen() {
                                     >
                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: weatherData ? 4 : 0 }}>
                                             <Ionicons name="checkmark-circle" size={16} color="#2C1810" style={{ marginRight: 6 }} />
-                                            <Text style={styles.locationConfirmedText}>Konum seçildi</Text>
+                                            <Text style={styles.locationConfirmedText}>{t('create.locationSelected')}</Text>
                                         </View>
 
                                         {isFetchingWeather ? (
@@ -1145,7 +1164,7 @@ export default function CreatePostScreen() {
                                 {!location && !isGettingLocation && (
                                     <View style={[styles.pinInstruction, { backgroundColor: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)' }]}>
                                         <Text style={[styles.pinInstructionText, { color: theme.textSub }]}>
-                                            Konum eklemek için dokun
+                                            {t('create.tapToAddLocation')}
                                         </Text>
                                     </View>
                                 )}
@@ -1159,7 +1178,7 @@ export default function CreatePostScreen() {
                         style={styles.section}
                     >
                         <Text style={[styles.sectionLabel, { color: theme.textSub }]}>
-                            KATEGORİLER
+                            {t('create.categories')}
                         </Text>
 
                         <View style={styles.categoriesContainer}>
@@ -1198,7 +1217,7 @@ export default function CreatePostScreen() {
                                     borderBottomColor: `${theme.accentBrown}20`,
                                 }
                             ]}
-                            placeholder="Başlık"
+                            placeholder={t('create.titlePlaceholder')}
                             placeholderTextColor={`${theme.accentBrown}40`}
                             value={title}
                             onChangeText={setTitle}
@@ -1212,7 +1231,7 @@ export default function CreatePostScreen() {
                                     styles.contentInput,
                                     { color: theme.textMain }
                                 ]}
-                                placeholder="Hikayeni anlatmaya başla..."
+                                placeholder={t('create.storyPlaceholder')}
                                 placeholderTextColor={`${theme.accentBrown}40`}
                                 value={content}
                                 onChangeText={setContent}

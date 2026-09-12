@@ -41,7 +41,7 @@ export function ProfileCard({
                     style={styles.avatarContainer}
                     onPress={onEditPress}
                     accessibilityRole="button"
-                    accessibilityLabel={t('profile.editProfile') || 'Profil düzenle'}
+                    accessibilityLabel={t('profile.editProfile')}
                 >
                     <View style={[styles.avatarFrame, { borderColor: colors.accent }]}>
                         {displayProfile.avatar_url ? (
@@ -76,7 +76,7 @@ export function ProfileCard({
                     style={[styles.editProfileButton, { borderBottomColor: colors.accent }]}
                     onPress={onEditPress}
                     accessibilityRole="button"
-                    accessibilityLabel={t('profile.editProfile') || 'Profil düzenle'}
+                    accessibilityLabel={t('profile.editProfile')}
                 >
                     <Text style={[styles.editProfileButtonText, { color: colors.accent }]}>
                         {t('profile.editProfile')}

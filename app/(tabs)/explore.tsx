@@ -242,7 +242,7 @@ export default function ExploreScreen() {
       });
     } catch (error: any) {
       console.error('Error toggling follow:', error);
-      Alert.alert(t('common.error') || 'Hata', error?.message || 'Takip işlemi başarısız oldu.');
+      Alert.alert(t('common.error'), error?.message || t('errors.generic'));
     }
   };
 
@@ -396,7 +396,7 @@ export default function ExploreScreen() {
               style={styles.categoryItem}
               onPress={() => router.push(`/category-posts/${category.id}` as any)}
               accessibilityRole="button"
-              accessibilityLabel={`${t('categories.' + category.id)} kategorisindeki gönderileri gör`}
+              accessibilityLabel={t('categories.' + category.id)}
             >
               <View style={[styles.categoryIcon, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}>
                 <Ionicons
@@ -643,10 +643,10 @@ export default function ExploreScreen() {
           </View>
           <View style={styles.weeklyContent}>
             <Text style={styles.weeklyTitle}>
-              {featuredPost.title || featuredPost.location_name || 'Keşfedilecek Yeni Rotalar'}
+              {featuredPost.title || featuredPost.location_name || t('explore.featuredDefaultTitle')}
             </Text>
             <Text style={styles.weeklyDescription} numberOfLines={2}>
-              {featuredPost.content || 'Türkiye\'nin en güzel rotalarını keşfedin ve maceraya atılın.'}
+              {featuredPost.content || t('explore.featuredDefaultDescription')}
             </Text>
           </View>
         </TouchableOpacity>
@@ -671,7 +671,13 @@ export default function ExploreScreen() {
 
   // Helper to generate user label
   const getUserLabel = (user: any): string => {
-    const labels = ['Doğa Sever', 'Şehir Kaşifi', 'Tarihçi', 'Fotoğrafçı', 'Gezgin'];
+    const labels = [
+      t('profile.natureLover'),
+      t('profile.cityExplorer'),
+      t('profile.historian'),
+      t('profile.photographer'),
+      t('profile.traveler')
+    ];
     const index = user.id.charCodeAt(0) % labels.length;
     return labels[index];
   };

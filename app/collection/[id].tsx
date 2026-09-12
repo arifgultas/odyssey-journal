@@ -6,10 +6,12 @@ import type { Collection } from '@/lib/collections';
 import { deleteCollection, getCollectionById, getCollectionPosts } from '@/lib/collections';
 import { bookmarkPost, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
 import { Post } from '@/lib/posts';
+import { formatPolaroidDate } from '@/lib/date-formatter';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -57,7 +59,7 @@ const DesignColors = {
 export default function CollectionDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const colorScheme = useColorScheme();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
@@ -103,7 +105,7 @@ export default function CollectionDetailScreen() {
             setHasMore(postsData.length === 20);
         } catch (error) {
             console.error('Error loading collection:', error);
-            Alert.alert('Hata', 'Koleksiyon yüklenemedi');
+            Alert.alert(t('common.error'), t('errors.generic'));
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
@@ -147,7 +149,7 @@ export default function CollectionDetailScreen() {
                     onPress: async () => {
                         try {
                             await deleteCollection(collection.id);
-                            router.back();
+                            safeGoBack('/(tabs)/saved');
                         } catch (error) {
                             console.error('Error deleting collection:', error);
                             Alert.alert(t('collection.errorTitle'), t('collection.deleteError'));
@@ -259,7 +261,7 @@ export default function CollectionDetailScreen() {
         };
 
         const imageUrl = post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400';
-        const locationText = post.location?.city || post.location?.country || 'Bilinmeyen Konum';
+        const locationText = post.location?.city || post.location?.country || t('common.unknownLocation');
 
         return (
             <Pressable
@@ -292,7 +294,7 @@ export default function CollectionDetailScreen() {
                         </View>
                         <View style={styles.polaroidCaption}>
                             <Text style={styles.polaroidTitle} numberOfLines={1}>
-                                {post.title || 'Başlıksız'}
+                                {post.title || t('common.untitled')}
                             </Text>
                             <View style={styles.polaroidLocation}>
                                 <MaterialIcons name="location-on" size={10} color="#8B7355" />
@@ -313,7 +315,7 @@ export default function CollectionDetailScreen() {
                         <View style={styles.paperTexture} />
                         <View style={styles.backContent}>
                             <View style={styles.backHeader}>
-                                <Text style={[styles.backLabel, { color: '#D4A574' }]}>Detaylar</Text>
+                                <Text style={[styles.backLabel, { color: '#D4A574' }]}>{t('collection.details')}</Text>
                                 <TouchableOpacity
                                     onPress={() => handleLike(post.id, !post.isLiked)}
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -333,16 +335,12 @@ export default function CollectionDetailScreen() {
                                 ]}
                                 numberOfLines={4}
                             >
-                                &quot;{post.content || 'Bu gönderi için not eklenmemiş.'}&quot;
+                                &quot;{post.content || t('collection.noNotes')}&quot;
                             </Text>
 
                             <View style={styles.backFooter}>
                                 <Text style={[styles.backDate, { color: isDark ? '#b8ad9d' : '#888' }]}>
-                                    {new Date(post.created_at).toLocaleDateString('tr-TR', {
-                                        day: 'numeric',
-                                        month: 'short',
-                                        year: 'numeric',
-                                    })}
+                                    {formatPolaroidDate(post.created_at, language)}
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => handlePostPress(post)}
@@ -384,7 +382,7 @@ export default function CollectionDetailScreen() {
                         <Text style={styles.collectionName}>{collection.name}</Text>
                         <View style={styles.collectionMeta}>
                             <MaterialIcons name="photo-library" size={14} color="#D4A574" />
-                            <Text style={styles.collectionCount}>{collection.post_count} Gönderi</Text>
+                            <Text style={styles.collectionCount}>{collection.post_count} {t('explore.posts')}</Text>
                         </View>
                     </View>
                 </View>
@@ -444,7 +442,7 @@ export default function CollectionDetailScreen() {
 
             {/* Navigation Header */}
             <View style={[styles.header, { paddingTop: insets.top, backgroundColor: colors.headerBg }]}>
-                <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => safeGoBack('/(tabs)/saved')}>
                     <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: colors.textPrimary }]} numberOfLines={1}>

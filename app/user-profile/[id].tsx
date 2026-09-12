@@ -9,6 +9,7 @@ import { blockUser } from '@/lib/block';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -96,7 +97,7 @@ export default function UserProfileScreen() {
     };
 
     const handleBack = () => {
-        router.back();
+        safeGoBack('/(tabs)');
     };
 
     const handlePostPress = (postId: string) => {
@@ -105,12 +106,12 @@ export default function UserProfileScreen() {
 
     const handleBlockOptions = () => {
         Alert.alert(
-            t('profile.blockUserTitle') || 'Block User',
-            t('profile.blockUserDesc') || 'Are you sure you want to block this user? They will not be able to interact with you, and their posts will be hidden from your feed.',
+            t('profile.blockUserTitle'),
+            t('profile.blockUserDesc'),
             [
-                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: t('profile.block') || 'Block',
+                    text: t('profile.block'),
                     style: 'destructive',
                     onPress: async () => {
                         if (!id) return;
@@ -122,10 +123,10 @@ export default function UserProfileScreen() {
                             queryClient.invalidateQueries({ queryKey: ['profile'] });
                             queryClient.invalidateQueries({ queryKey: ['suggested-users'] });
                             
-                            Alert.alert('Success', t('profile.blockSuccess') || 'User blocked successfully.');
-                            router.back();
+                            Alert.alert(t('common.success'), t('profile.blockSuccess'));
+                            safeGoBack('/(tabs)');
                         } catch (error) {
-                            Alert.alert('Error', t('profile.blockError') || 'Failed to block user.');
+                            Alert.alert(t('common.error'), t('profile.blockError'));
                         }
                     }
                 }
@@ -190,7 +191,7 @@ export default function UserProfileScreen() {
                     }}
                 >
                     <Text style={{ color: theme.primary, fontWeight: '600' }}>
-                        {t('common.back') || 'Back'}
+                        {t('common.back')}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -302,7 +303,7 @@ export default function UserProfileScreen() {
                                     color={theme.primary}
                                 />
                                 <Text style={[styles.messageButtonText, { color: theme.primary }]}>
-                                    {t('profile.message') || 'Mesaj'}
+                                    {t('profile.message')}
                                 </Text>
                             </View>
                         </TouchableOpacity>

@@ -22,6 +22,12 @@ export default {
         yes: '예',
         no: '아니오',
         and: '그리고',
+        change: '변경',
+        untitled: '제목 없음',
+        yesterday: '어제',
+            info: '안내',
+            completed: '완료됨',
+            progress: '진행도',
     },
     auth: {
         login: '로그인',
@@ -81,6 +87,12 @@ export default {
         sendResetLink: '링크 보내기',
         rememberPassword: '기억나셨나요?',
         resetLinkValidity: '보안을 위해 링크는 1시간 동안 유효합니다.',
+            newPassword: '새 비밀번호',
+            enterNewPassword: '새 비밀번호를 입력하세요',
+            confirmNewPassword: '새 비밀번호 확인',
+            confirmNewPasswordPlaceholder: '새 비밀번호를 다시 입력하세요',
+            passwordLengthError: '비밀번호는 6자 이상이어야 합니다.',
+            passwordMatchError: '비밀번호가 일치하지 않습니다.',
     },
     onboarding: {
         step1Title: '탐험을 시작하세요',
@@ -104,6 +116,12 @@ export default {
         noFollowingPosts: '아직 게시물이 없습니다',
         exploreTravelers: '커뮤니티의 다른 여행자를 탐색하고 팔로우하여 게시물을 여기서 확인하세요.',
         exploreButton: '여행자 탐색',
+        sortLatest: '최신',
+        sortPopular: '인기',
+        sortLocation: '위치 포함',
+        sortLatestAccessibility: '최신 게시물순 정렬',
+        sortPopularAccessibility: '인기 게시물순 정렬',
+        sortLocationAccessibility: '위치가 있는 게시물만 필터링',
     },
     explore: {
         title: '탐색',
@@ -137,6 +155,12 @@ export default {
         user: '사용자',
         category: '카테고리',
         noCategoryPosts: '이 카테고리에 게시물이 없습니다',
+        readPost: '게시물 읽기',
+        newRoutesToExplore: '탐험할 새로운 코스',
+        featuredContentDefault: '세계에서 가장 아름다운 경로를 탐험하고 모험을 떠나보세요.',
+        viewCategoryPosts: '{{category}} 카테고리의 게시물 보기',
+            featuredDefaultTitle: '탐험할 새로운 여행 경로',
+            featuredDefaultDescription: '가장 아름다운 경로를 발견하고 모험을 떠나보세요.',
     },
     create: {
         title: '새 게시물',
@@ -177,6 +201,8 @@ export default {
         searchPlaceholder: '도시 또는 장소 검색...',
         useCurrentLocation: '현재 위치 사용 (GPS)',
         noResults: '검색 결과가 없습니다. 다시 시도해 주세요.',
+            locationNotFound: '위치를 찾을 수 없습니다. 다른 검색을 시도해보세요.',
+            locationSearchError: '위치 검색 중 오류가 발생했습니다.',
     },
     categories: {
         nature: '자연',
@@ -191,6 +217,10 @@ export default {
         wildlife: '야생동물',
     },
     collection: {
+        saveToCollection: '컬렉션에 저장',
+        myCollections: '내 컬렉션',
+        nameInputPlaceholder: '컬렉션 이름...',
+
         createTitle: '컬렉션 생성',
         editTitle: '컬렉션 편집',
         save: '저장',
@@ -219,6 +249,9 @@ export default {
         noNote: '이 게시물에 메모가 없습니다.',
         unknownLocation: '알 수 없는 위치',
         untitled: '제목 없음',
+        noNotes: '이 게시물에 추가된 메모가 없습니다.',
+        saveWithoutCollection: '컬렉션 없이 저장',
+        saveError: '저장 중 오류가 발생했습니다',
     },
 
     // Chat & Messaging
@@ -237,6 +270,9 @@ export default {
         requestBanner: '이 사용자와 대화하시겠습니까? 수락할 때까지 회신할 수 없습니다.',
         declineConfirm: '이 메시지 요청을 거절하시겠습니까? 전체 대화 내역이 삭제됩니다.',
         noRequests: '메시지 요청이 없습니다.',
+        openLettersAndChats: '편지 및 채팅 열기',
+        typing: '입력 중...',
+        yesterday: '어제',
     },
 
     saved: {
@@ -304,6 +340,11 @@ export default {
         blockError: '사용자 차단에 실패했습니다.',
         notFoundTitle: '여행자를 찾을 수 없음',
         notFoundDesc: '이 프로필은 사용할 수 없거나 볼 수 있는 권한이 없습니다.',
+        natureLover: '자연 애호가',
+        cityExplorer: '도시 탐험가',
+        historian: '역사 탐방가',
+        photographer: '사진작가',
+        traveler: '여행자',
     },
     editProfile: {
         title: '프로필 편집',
@@ -369,6 +410,15 @@ export default {
         deleteConfirm: '이 게시물을 삭제하시겠습니까?',
         deleteSuccess: '게시물이 삭제되었습니다',
         reportSuccess: '신고가 접수되었습니다',
+        editTitle: '게시물 편집',
+        deleteTitle: '게시물 삭제',
+            address: '주소',
+            memoriesTitle: '추억 및 메모',
+            memory: '추억',
+            notesCount: '{{count}}개의 메모',
+            reportPost: '게시물 신고',
+            viewNotes: '{{count}}개의 메모 보기',
+            writeNote: '여행 일지에 메모 작성...',
     },
     report: {
         title: '게시물 신고',
@@ -439,6 +489,18 @@ export default {
         adminTitle: '관리자',
         moderationPanel: '중재 패널',
         moderationPanelDesc: '신고 검토 및 사용자 관리',
+        likeNotifications: '좋아요',
+        likeNotificationsDesc: '게시물에 좋아요가 달렸을 때 알림 받기',
+        commentNotifications: '댓글',
+        commentNotificationsDesc: '게시물에 댓글이 달렸을 때 알림 받기',
+        followNotifications: '팔로워',
+        followNotificationsDesc: '누군가 나를 팔로우할 때 알림 받기',
+        changePassword: '비밀번호 변경',
+        changePasswordDesc: '계정 비밀번호 업데이트',
+        preferencesUpdateError: '설정을 업데이트하는 동안 오류가 발생했습니다.',
+            notificationPreferences: '알림 설정',
+            passwordChangeSuccess: '비밀번호가 성공적으로 업데이트되었습니다.',
+            unblockError: '사용자 차단을 해제하지 못했습니다.',
     },
     errors: {
         generic: '문제가 발생했습니다',
@@ -491,6 +553,11 @@ export default {
         postCount: '{{count}} 게시물',
         noPosts: '위치 정보가 있는 게시물 없음',
         addLocationTip: '게시물에 위치를 추가하세요',
+        openInMap: '지도에서 열기',
+        travelPoint: '여행 장소',
+            journeyRoute: '여행 경로 ({{count}}개 지점)',
+            noJourneyYet: '아직 여행이 없습니다',
+            startExploring: '세계를 탐험해보세요!',
     },
 
     destinationPosts: {
@@ -655,5 +722,22 @@ export default {
             name: "탐험가",
             description: "30일 동안 여행하기"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: '날짜 / 여행 시간',
+        tapToChange: '날짜를 변경하려면 탭하세요',
+        change: '수정',
+        today: '오늘',
+        yesterday: '어제',
+        tomorrow: '내일',
+        threeDaysAgo: '3일 전',
+        calendar: '달력',
+        selectDate: '여행 날짜 선택',
+        selected: '선택됨:',
+        apply: '날짜 적용',
+        cancel: '취소',
+        daysAgo: '{{count}}일 전',
+        daysLater: '{{count}}일 후',
+    },
 };

@@ -1,4 +1,5 @@
 import { ReportModal } from '@/components/report-modal';
+import { LocationMapPreview, openLocationInExternalMaps } from '@/components/location-map-preview';
 import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { bookmarkPost, checkIfBookmarked, checkIfLiked, likePost, unbookmarkPost, unlikePost } from '@/lib/interactions';
@@ -9,6 +10,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -58,6 +60,8 @@ const DesignColors = {
 };
 
 import { useLanguage } from '@/context/language-context';
+import { formatPostDetailDate, formatPostDetailDay } from '@/lib/date-formatter';
+import { getLocalizedCityName, getLocalizedCountryName } from '@/lib/location-formatter';
 import { getWeatherTranslationKey } from '@/lib/weather';
 
 export default function PostDetailScreen() {
@@ -110,7 +114,7 @@ export default function PostDetailScreen() {
         } catch (error) {
             console.error('Error loading post:', error);
             Alert.alert(t('common.error'), t('errors.generic'));
-            router.back();
+            safeGoBack('/(tabs)');
         } finally {
             setIsLoading(false);
         }
@@ -194,7 +198,7 @@ export default function PostDetailScreen() {
                         try {
                             await deletePost(post.id);
                             Alert.alert(t('common.success'), t('post.deleteSuccess'));
-                            router.back();
+                            safeGoBack('/(tabs)');
                         } catch (error) {
                             console.error('Error deleting post:', error);
                             Alert.alert(t('common.error'), t('post.deleteError'));
@@ -207,21 +211,11 @@ export default function PostDetailScreen() {
     };
 
     const formatFullDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString(language, {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        });
+        return formatPostDetailDate(dateString, language);
     };
 
     const formatDayOfWeek = (dateString: string) => {
-        const date = new Date(dateString);
-        const dayName = date.toLocaleDateString(language, { weekday: 'long' });
-        const hour = date.getHours();
-        // Simple time of day localization - could be improved with t()
-        const timeOfDay = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
-        return `${dayName}`;
+        return formatPostDetailDay(dateString, language);
     };
 
     // Parallax effect for hero image
@@ -255,7 +249,7 @@ export default function PostDetailScreen() {
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <View style={[styles.floatingHeader, { paddingTop: insets.top + Spacing.sm }]}>
                     <TouchableOpacity
-                        onPress={() => router.back()}
+                        onPress={() => safeGoBack('/(tabs)')}
                         style={styles.floatingButton}
                     >
                         <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
@@ -315,7 +309,7 @@ export default function PostDetailScreen() {
                 }
             ]}>
                 <TouchableOpacity
-                    onPress={() => router.back()}
+                    onPress={() => safeGoBack('/(tabs)')}
                     style={styles.floatingButton}
                 >
                     <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
@@ -482,50 +476,74 @@ export default function PostDetailScreen() {
                     </View>
 
                     {/* Location Map Card */}
-                    {post.location && (
-                        <View style={[styles.mapCard, { backgroundColor: isDark ? theme.paper : '#fdfbf7' }]}>
-                            <View style={[styles.mapHeader, { backgroundColor: isDark ? theme.background : theme.parchment }]}>
-                                {/* Vintage paper texture overlay */}
-                                <View style={styles.mapTextureOverlay} />
+                    {(() => {
+                        const postLocation = post.location || (post.latitude && post.longitude ? {
+                            latitude: post.latitude,
+                            longitude: post.longitude,
+                            city: post.location_name?.split(',')[0]?.trim(),
+                            country: post.location_name?.split(',')[1]?.trim(),
+                            address: post.location_name || undefined,
+                            name: post.location_name || undefined,
+                        } : null);
 
-                                <View style={styles.mapHeaderRow}>
-                                    <View style={styles.mapLocationInfo}>
-                                        <Ionicons name="compass" size={32} color={theme.textMuted} />
-                                        <View style={styles.mapLocationText}>
-                                            <Text style={[styles.mapLocationName, { color: theme.textMuted }]}>
-                                                {post.location.city || t('post.location')}
-                                            </Text>
-                                            <Text style={[styles.mapLocationCountry, { color: theme.textSubtle }]}>
-                                                {post.location.country || post.location.address || t('post.address')}
-                                            </Text>
+                        if (!postLocation || !postLocation.latitude || !postLocation.longitude) return null;
+
+                        const locCity = postLocation.city ? getLocalizedCityName(postLocation.city, language) : '';
+                        const locCountry = postLocation.country ? getLocalizedCountryName(postLocation.country, language) : '';
+                        const locationTitle = locCity && locCountry ? `${locCity}, ${locCountry}` : (locCity || locCountry || postLocation.name || postLocation.address || post.title);
+
+                        return (
+                            <View style={[styles.mapCard, { backgroundColor: isDark ? theme.paper : '#fdfbf7' }]}>
+                                <View style={[styles.mapHeader, { backgroundColor: isDark ? theme.background : theme.parchment }]}>
+                                    {/* Vintage paper texture overlay */}
+                                    <View style={styles.mapTextureOverlay} />
+
+                                    <View style={styles.mapHeaderRow}>
+                                        <View style={styles.mapLocationInfo}>
+                                            <Ionicons name="compass" size={32} color={theme.textMuted} />
+                                            <View style={styles.mapLocationText}>
+                                                <Text style={[styles.mapLocationName, { color: theme.textMuted }]}>
+                                                    {locCity || postLocation.city || t('post.location')}
+                                                </Text>
+                                                <Text style={[styles.mapLocationCountry, { color: theme.textSubtle }]}>
+                                                    {locCountry || postLocation.country || postLocation.address || t('post.address')}
+                                                </Text>
+                                            </View>
                                         </View>
+                                        <TouchableOpacity
+                                            style={styles.mapOpenButton}
+                                            onPress={() => openLocationInExternalMaps(
+                                                postLocation.latitude,
+                                                postLocation.longitude,
+                                                locationTitle
+                                            )}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Ionicons name="open-outline" size={24} color={theme.textMuted} />
+                                        </TouchableOpacity>
                                     </View>
-                                    <TouchableOpacity style={styles.mapOpenButton}>
-                                        <Ionicons name="open-outline" size={24} color={theme.textMuted} />
-                                    </TouchableOpacity>
-                                </View>
 
-                                {/* Map Preview */}
-                                <View style={[styles.mapPreview, { borderColor: isDark ? 'rgba(139, 94, 60, 0.3)' : 'rgba(139, 94, 60, 0.3)' }]}>
-                                    <Image
-                                        source={{
-                                            uri: `https://maps.googleapis.com/maps/api/staticmap?center=${post.location.latitude},${post.location.longitude}&zoom=10&size=400x200&scale=2&maptype=roadmap&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`
-                                        }}
-                                        style={styles.mapImage}
-                                        contentFit="cover"
-                                    />
-                                    {/* Grid overlay */}
-                                    <View style={styles.mapGridOverlay} />
-                                    {/* Location marker */}
-                                    <View style={styles.mapMarker}>
-                                        <Ionicons name="location" size={40} color="#8B0000" />
+                                    {/* Map Preview */}
+                                    <View style={[styles.mapPreview, { borderColor: isDark ? 'rgba(139, 94, 60, 0.3)' : 'rgba(139, 94, 60, 0.3)', overflow: 'hidden' }]}>
+                                        <LocationMapPreview
+                                            latitude={postLocation.latitude}
+                                            longitude={postLocation.longitude}
+                                            title={locationTitle}
+                                            height={220}
+                                            interactive={false}
+                                            showPin={true}
+                                            showOpenButton={true}
+                                            onPress={() => openLocationInExternalMaps(
+                                                postLocation.latitude,
+                                                postLocation.longitude,
+                                                locationTitle
+                                            )}
+                                        />
                                     </View>
-                                    {/* Sepia filter */}
-                                    <View style={styles.mapSepiaOverlay} />
                                 </View>
                             </View>
-                        </View>
-                    )}
+                        );
+                    })()}
 
                     {/* Memories & Notes Section */}
                     <View style={styles.notesSection}>
@@ -651,7 +669,7 @@ export default function PostDetailScreen() {
                                     >
                                         <Ionicons name="create-outline" size={20} color={theme.textMain} />
                                         <Text style={[styles.menuText, { color: theme.textMain }]}>
-                                            {t('post.editTitle') || 'Düzenle'}
+                                            {t('post.editTitle')}
                                         </Text>
                                     </TouchableOpacity>
                                     <View style={[styles.menuDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />

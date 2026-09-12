@@ -1,6 +1,6 @@
 import { OfflineIndicator } from '@/components/offline-indicator';
 import { AuthProvider } from '@/context/AuthContext';
-import { LanguageProvider, useLanguage } from '@/context/language-context';
+import { LanguageProvider } from '@/context/language-context';
 import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-context';
 import { useBookFonts } from '@/hooks/use-book-fonts';
 import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
@@ -37,12 +37,11 @@ export const unstable_settings = {
 // Inner layout that uses theme context
 function RootLayoutNav() {
   const { colorScheme, isDark } = useTheme();
-  const { language } = useLanguage();
   useDeepLinkHandler();
 
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      <Stack key={language}>
+      <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

@@ -1,5 +1,6 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useLanguage } from '@/context/language-context';
 import type { Collection } from '@/lib/collections';
 import { createCollection, getCollections } from '@/lib/collections';
 import { Ionicons } from '@expo/vector-icons';
@@ -39,6 +40,7 @@ export function CollectionPickerSheet({
     onSuccess,
 }: CollectionPickerSheetProps) {
     const colorScheme = useColorScheme();
+    const { t } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
     const isDark = colorScheme === 'dark';
     const insets = useSafeAreaInsets();
@@ -117,7 +119,7 @@ export function CollectionPickerSheet({
             handleClose();
         } catch (error) {
             console.error('Error saving to collection:', error);
-            Alert.alert('Hata', 'Kaydetme sırasında bir hata oluştu');
+            Alert.alert(t('common.error'), t('collection.saveError'));
         } finally {
             setIsSaving(false);
         }
@@ -141,7 +143,7 @@ export function CollectionPickerSheet({
             setNewCollectionName('');
         } catch (error) {
             console.error('Error creating collection:', error);
-            Alert.alert('Hata', 'Koleksiyon oluşturulamadı');
+            Alert.alert(t('common.error'), t('collection.createError'));
         } finally {
             setIsCreating(false);
         }
@@ -179,7 +181,7 @@ export function CollectionPickerSheet({
                         {item.name}
                     </Text>
                     <Text style={[styles.collectionItemCount, { color: textSecondary }]}>
-                        {item.post_count} gönderi
+                        {item.post_count} {t('explore.posts')}
                     </Text>
                 </View>
 
@@ -209,7 +211,7 @@ export function CollectionPickerSheet({
                     <Ionicons name="add" size={20} color="#2C1810" />
                 </View>
                 <Text style={[styles.createButtonText, { color: textColor }]}>
-                    Yeni Koleksiyon Oluştur
+                    {t('collection.createTitle')}
                 </Text>
             </TouchableOpacity>
 
@@ -224,14 +226,14 @@ export function CollectionPickerSheet({
             >
                 <Ionicons name="bookmark-outline" size={20} color={textSecondary} />
                 <Text style={[styles.skipButtonText, { color: textSecondary }]}>
-                    Koleksiyonsuz Kaydet
+                    {t('collection.saveWithoutCollection')}
                 </Text>
             </TouchableOpacity>
 
             {/* Collections label */}
             {collections.length > 0 && (
                 <Text style={[styles.sectionLabel, { color: textSecondary }]}>
-                    Koleksiyonlarım
+                    {t('collection.myCollections')}
                 </Text>
             )}
         </View>
@@ -241,10 +243,10 @@ export function CollectionPickerSheet({
         <View style={styles.emptyContainer}>
             <Ionicons name="folder-outline" size={48} color={textSecondary} />
             <Text style={[styles.emptyText, { color: textSecondary }]}>
-                Henüz koleksiyon yok
+                {t('saved.noCollectionsYet')}
             </Text>
             <Text style={[styles.emptySubtext, { color: textSecondary }]}>
-                İlk koleksiyonunuzu oluşturun
+                {t('saved.createCollectionHint')}
             </Text>
         </View>
     );
@@ -280,7 +282,7 @@ export function CollectionPickerSheet({
                 {/* Header */}
                 <View style={[styles.header, { borderBottomColor: borderColor }]}>
                     <Text style={[styles.headerTitle, { color: textColor }]}>
-                        Koleksiyona Kaydet
+                        {t('collection.saveToCollection')}
                     </Text>
                     <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                         <Ionicons name="close" size={24} color={textSecondary} />
@@ -295,7 +297,7 @@ export function CollectionPickerSheet({
                         <View style={[styles.quickCreateForm, { backgroundColor: cardBgColor, borderColor: borderColor }]}>
                             <TextInput
                                 style={[styles.quickCreateInput, { color: textColor }]}
-                                placeholder="Koleksiyon adı..."
+                                placeholder={t('collection.nameInputPlaceholder')}
                                 placeholderTextColor={textSecondary}
                                 value={newCollectionName}
                                 onChangeText={setNewCollectionName}
@@ -311,7 +313,7 @@ export function CollectionPickerSheet({
                                     style={styles.quickCreateCancel}
                                 >
                                     <Text style={[styles.quickCreateCancelText, { color: textSecondary }]}>
-                                        İptal
+                                        {t('common.cancel')}
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
@@ -325,7 +327,7 @@ export function CollectionPickerSheet({
                                     {isCreating ? (
                                         <ActivityIndicator size="small" color="#2C1810" />
                                     ) : (
-                                        <Text style={styles.quickCreateSubmitText}>Oluştur</Text>
+                                        <Text style={styles.quickCreateSubmitText}>{t('collection.create')}</Text>
                                     )}
                                 </TouchableOpacity>
                             </View>
@@ -364,7 +366,7 @@ export function CollectionPickerSheet({
                             ) : (
                                 <>
                                     <Ionicons name="bookmark" size={20} color="#2C1810" />
-                                    <Text style={styles.saveButtonText}>Kaydet</Text>
+                                    <Text style={styles.saveButtonText}>{t('collection.save')}</Text>
                                 </>
                             )}
                         </TouchableOpacity>

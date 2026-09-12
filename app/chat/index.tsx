@@ -10,6 +10,7 @@ import {
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
@@ -103,7 +104,7 @@ export default function ChatListScreen() {
         if (diffDays === 0) {
             return date.toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit' });
         } else if (diffDays === 1) {
-            return language === 'tr' ? 'Dün' : 'Yesterday';
+            return t('chat.yesterday');
         } else if (diffDays < 7) {
             return date.toLocaleDateString(language, { weekday: 'short' });
         } else {
@@ -188,7 +189,7 @@ export default function ChatListScreen() {
                     borderBottomColor: `${theme.primary}20`,
                 }
             ]}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => safeGoBack('/(tabs)')} style={styles.headerButton}>
                     <Ionicons name="arrow-back" size={28} color={theme.primary} />
                 </TouchableOpacity>
                 

@@ -23,6 +23,12 @@ export default {
         yes: 'Yes',
         no: 'No',
         and: 'and',
+        change: 'Change',
+        untitled: 'Untitled',
+        yesterday: 'Yesterday',
+            info: 'Information',
+            completed: 'Completed',
+            progress: 'Progress',
     },
 
     // Auth
@@ -86,6 +92,12 @@ export default {
         sendResetLink: 'Send Reset Link',
         rememberPassword: 'Remember your password?',
         resetLinkValidity: 'For your security, the password reset link is valid for 1 hour.',
+            newPassword: 'New Password',
+            enterNewPassword: 'Enter your new password',
+            confirmNewPassword: 'Confirm New Password',
+            confirmNewPasswordPlaceholder: 'Enter your new password again',
+            passwordLengthError: 'Password must be at least 6 characters.',
+            passwordMatchError: 'Passwords do not match.',
     },
 
     // Onboarding
@@ -113,6 +125,12 @@ export default {
         noFollowingPosts: 'No Posts Yet',
         exploreTravelers: 'Explore other travelers in the community and follow them to see their posts here.',
         exploreButton: 'Explore Travelers',
+        sortLatest: 'Latest',
+        sortPopular: 'Popular',
+        sortLocation: 'Location',
+        sortLatestAccessibility: 'Sort by latest posts',
+        sortPopularAccessibility: 'Sort by popular posts',
+        sortLocationAccessibility: 'Filter by posts with location',
     },
 
     // Explore
@@ -148,6 +166,12 @@ export default {
         unknown: 'Unknown',
         untitledPost: 'Untitled Post',
         user: 'User',
+        readPost: 'Read Post',
+        newRoutesToExplore: 'New Routes to Explore',
+        featuredContentDefault: 'Discover the world\'s most beautiful routes and embark on an adventure.',
+        viewCategoryPosts: 'View posts in {{category}} category',
+            featuredDefaultTitle: 'New Routes to Explore',
+            featuredDefaultDescription: 'Discover the most beautiful routes and embark on adventures.',
     },
 
     // Create Post
@@ -190,6 +214,8 @@ export default {
         searchPlaceholder: 'Search city or place...',
         useCurrentLocation: 'Use Current Location (GPS)',
         noResults: 'No results found. Please try again.',
+            locationNotFound: 'Location not found. Please try another search.',
+            locationSearchError: 'An error occurred while searching for location.',
     },
 
     // Categories
@@ -208,6 +234,10 @@ export default {
 
     // Collections (New)
     collection: {
+        saveToCollection: 'Save to Collection',
+        myCollections: 'My Collections',
+        nameInputPlaceholder: 'Collection name...',
+
         createTitle: 'Create Collection',
         editTitle: 'Edit Collection',
         save: 'Save',
@@ -236,6 +266,9 @@ export default {
         noNote: 'No note added for this post.',
         unknownLocation: 'Unknown Location',
         untitled: 'Untitled',
+        noNotes: 'No note added for this post.',
+        saveWithoutCollection: 'Save Without Collection',
+        saveError: 'An error occurred while saving',
     },
 
     // Chat & Messaging
@@ -254,6 +287,9 @@ export default {
         requestBanner: 'Do you want to chat with this user? You cannot reply until you accept.',
         declineConfirm: 'Are you sure you want to decline this request? The chat history will be deleted.',
         noRequests: 'No message requests found.',
+        openLettersAndChats: 'Open letters and chats',
+        typing: 'is typing...',
+        yesterday: 'Yesterday',
     },
 
     // Saved / Bookmarks
@@ -325,6 +361,11 @@ export default {
         blockError: 'Failed to block user.',
         notFoundTitle: 'Traveler Not Found',
         notFoundDesc: 'This profile is not available or you do not have permission to view it.',
+        natureLover: 'Nature Lover',
+        cityExplorer: 'City Explorer',
+        historian: 'Historian',
+        photographer: 'Photographer',
+        traveler: 'Traveler',
     },
 
     // Edit Profile
@@ -410,6 +451,7 @@ export default {
         reportPost: 'Report Post',
         location: 'Location',
         address: 'Address',
+        editTitle: 'Edit Post',
     },
 
     // Report
@@ -486,6 +528,18 @@ export default {
         adminTitle: 'ADMIN',
         moderationPanel: 'Moderation Panel',
         moderationPanelDesc: 'Review reports, manage users',
+        likeNotifications: 'Likes',
+        likeNotificationsDesc: 'Get notified when someone likes your post',
+        commentNotifications: 'Comments',
+        commentNotificationsDesc: 'Get notified when someone comments on your post',
+        followNotifications: 'Followers',
+        followNotificationsDesc: 'Get notified when someone follows you',
+        changePassword: 'Change Password',
+        changePasswordDesc: 'Update your account password',
+        preferencesUpdateError: 'An error occurred while updating preferences.',
+            notificationPreferences: 'Notification Preferences',
+            passwordChangeSuccess: 'Your password has been updated successfully.',
+            unblockError: 'Failed to unblock user.',
     },
 
     // Errors
@@ -547,6 +601,11 @@ export default {
         addLocationTip: 'Add location to your posts to see them on the map',
         postCount: '{{count}} posts',
         unknownLocation: 'Unknown Location',
+        openInMap: 'Open in Map',
+        travelPoint: 'Travel Point',
+            journeyRoute: 'Journey Route ({{count}} Points)',
+            noJourneyYet: 'No journey yet',
+            startExploring: 'Start exploring the world!',
     },
 
     // Destination Posts
@@ -722,5 +781,22 @@ export default {
             name: "Explorer",
             description: "Travel for 30 days"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'DATE / TRAVEL TIME',
+        tapToChange: 'Tap to change date',
+        change: 'Edit',
+        today: 'Today',
+        yesterday: 'Yesterday',
+        tomorrow: 'Tomorrow',
+        threeDaysAgo: '3 Days Ago',
+        calendar: 'Calendar',
+        selectDate: 'Select Travel Date',
+        selected: 'Selected:',
+        apply: 'Apply Date',
+        cancel: 'Cancel',
+        daysAgo: '{{count}} days ago',
+        daysLater: 'in {{count}} days',
+    },
 };

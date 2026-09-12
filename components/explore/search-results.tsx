@@ -53,7 +53,7 @@ export function SearchResults({
                             style={[styles.resultItem, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
                             onPress={() => onLocationPress(loc.name, loc.coordinates?.latitude, loc.coordinates?.longitude)}
                             accessibilityRole="button"
-                            accessibilityLabel={`${loc.name}, ${loc.postCount} gönderi, lokasyon gönderilerini gör`}
+                            accessibilityLabel={`${loc.name}, ${loc.postCount} ${t('explore.posts')}`}
                         >
                             <View style={[styles.resultIcon, { backgroundColor: vintageTheme.parchment }]}>
                                 <Ionicons name="location" size={20} color={vintageTheme.compassBlue} />
@@ -76,7 +76,7 @@ export function SearchResults({
                             style={[styles.resultItem, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
                             onPress={() => onUserPress(user.id)}
                             accessibilityRole="button"
-                            accessibilityLabel={`${user.full_name || user.username}, profile git`}
+                            accessibilityLabel={user.full_name || user.username}
                         >
                             <View style={styles.resultAvatarContainer}>
                                 {user.avatar_url ? (

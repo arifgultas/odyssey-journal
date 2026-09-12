@@ -2,8 +2,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,38 +13,40 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function CommunityGuidelinesScreen() {
     const { t } = useLanguage();
     const insets = useSafeAreaInsets();
+    const colorScheme = useColorScheme();
+    const theme = Colors[colorScheme ?? 'light'];
 
     const sections = [
         {
-            title: t('guidelines.respectTitle') || 'Respect the Community',
-            content: t('guidelines.respectDesc') || 'Odyssey Journal is a place for travelers to share their real experiences. Treat others with respect. Hate speech, harassment, bullying, and discrimination of any kind are strictly prohibited.'
+            title: t('guidelines.respectTitle'),
+            content: t('guidelines.respectDesc')
         },
         {
-            title: t('guidelines.authenticTitle') || 'Share Authentic Travel',
-            content: t('guidelines.authenticDesc') || 'Focus on travel, places, culture, and your personal journey. Do not post spam, advertisements, political propaganda, or unrelated content. Accounts created solely for promotional purposes may be removed.'
+            title: t('guidelines.authenticTitle'),
+            content: t('guidelines.authenticDesc')
         },
         {
-            title: t('guidelines.safeTitle') || 'Keep it Safe & SFW',
-            content: t('guidelines.safeDesc') || 'Do not post nudity, sexually explicit content, or graphic violence. Ensure your photos and text are appropriate for a general audience.'
+            title: t('guidelines.safeTitle'),
+            content: t('guidelines.safeDesc')
         },
         {
-            title: t('guidelines.privacyTitle') || 'Respect Privacy',
-            content: t('guidelines.privacyDesc') || 'Do not share personal information of others without their explicit consent. Be mindful of who and what you capture in your photos.'
+            title: t('guidelines.privacyTitle'),
+            content: t('guidelines.privacyDesc')
         },
         {
-            title: t('guidelines.enforcementTitle') || 'Enforcement',
-            content: t('guidelines.enforcementDesc') || 'We review reported content and accounts. Violating these guidelines may result in content removal, restricted access, or permanent account deletion without warning.'
+            title: t('guidelines.enforcementTitle'),
+            content: t('guidelines.enforcementDesc')
         }
     ];
 
     return (
         <ThemedView style={styles.container}>
-            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, borderBottomColor: theme.border }]}>
+                <TouchableOpacity onPress={() => safeGoBack('/settings')} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={theme.text} />
                 </TouchableOpacity>
                 <ThemedText type="title" style={styles.headerTitle}>
-                    {t('settings.communityGuidelines') || 'Community Guidelines'}
+                    {t('settings.communityGuidelines')}
                 </ThemedText>
                 <View style={{ width: 40 }} />
             </View>
@@ -53,31 +57,31 @@ export default function CommunityGuidelinesScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.iconContainer}>
-                    <View style={styles.iconCircle}>
-                        <Ionicons name="earth" size={48} color={Colors.light.primary} />
+                    <View style={[styles.iconCircle, { backgroundColor: `${theme.primary}20` }]}>
+                        <Ionicons name="earth" size={48} color={theme.primary} />
                     </View>
-                    <ThemedText style={styles.introText}>
-                        {t('guidelines.intro') || 'Welcome to Odyssey Journal! We want to keep this space safe, inspiring, and focused on genuine travel experiences. Please follow these guidelines.'}
+                    <ThemedText style={[styles.introText, { color: theme.textMuted }]}>
+                        {t('guidelines.intro')}
                     </ThemedText>
                 </View>
 
                 {sections.map((section, index) => (
                     <View key={index} style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <View style={styles.bullet} />
+                            <View style={[styles.bullet, { backgroundColor: theme.accent }]} />
                             <ThemedText type="subtitle" style={styles.sectionTitle}>
                                 {section.title}
                             </ThemedText>
                         </View>
-                        <ThemedText style={styles.sectionContent}>
+                        <ThemedText style={[styles.sectionContent, { color: theme.text }]}>
                             {section.content}
                         </ThemedText>
                     </View>
                 ))}
 
-                <View style={styles.footer}>
-                    <ThemedText style={styles.footerText}>
-                        {t('guidelines.thankYou') || 'Thank you for helping us make Odyssey Journal a great place for travelers!'}
+                <View style={[styles.footer, { borderTopColor: theme.border }]}>
+                    <ThemedText style={[styles.footerText, { color: theme.accent }]}>
+                        {t('guidelines.thankYou')}
                     </ThemedText>
                 </View>
             </ScrollView>
@@ -96,7 +100,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.md,
         paddingBottom: Spacing.md,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
     },
     backButton: {
         padding: Spacing.xs,
@@ -120,7 +123,6 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: `${Colors.light.primary}20`,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: Spacing.md,
@@ -128,7 +130,6 @@ const styles = StyleSheet.create({
     introText: {
         fontFamily: Typography.fonts.bodyItalic,
         textAlign: 'center',
-        color: Colors.light.textMuted,
         lineHeight: 24,
     },
     section: {
@@ -144,7 +145,6 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: Colors.light.primary,
     },
     sectionTitle: {
         fontFamily: Typography.fonts.heading,
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
     },
     sectionContent: {
         fontFamily: Typography.fonts.ui,
-        color: Colors.light.text,
         lineHeight: 22,
         paddingLeft: Spacing.sm + 6,
         opacity: 0.8,
@@ -161,12 +160,10 @@ const styles = StyleSheet.create({
         marginTop: Spacing.xl,
         paddingTop: Spacing.xl,
         borderTopWidth: 1,
-        borderTopColor: Colors.light.border,
         alignItems: 'center',
     },
     footerText: {
         fontFamily: Typography.fonts.bodyItalic,
         textAlign: 'center',
-        color: Colors.light.primary,
     }
 });

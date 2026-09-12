@@ -13,6 +13,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -54,62 +55,6 @@ const LetterColors = {
     }
 };
 
-// Static demo notifications for when API is empty
-const STATIC_NOTIFICATIONS = {
-    today: [
-        {
-            id: 'demo1',
-            type: 'like' as const,
-            actor_full_name: 'Ahmet',
-            post_title: 'Kapadokya',
-            read: false,
-            created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        },
-        {
-            id: 'demo2',
-            type: 'comment' as const,
-            actor_full_name: 'Elif',
-            post_title: 'fotoğrafına',
-            read: false,
-            created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-            comment_preview: '"Harika manzara! Kesinlikle gitmeliyim."',
-        },
-    ],
-    thisWeek: [
-        {
-            id: 'demo3',
-            type: 'follow' as const,
-            actor_full_name: 'Canan',
-            read: true,
-            created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Yesterday
-        },
-        {
-            id: 'demo4',
-            type: 'location' as const,
-            location_name: 'Galata Kulesi',
-            read: true,
-            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-        },
-    ],
-    older: [
-        {
-            id: 'demo5',
-            type: 'like' as const,
-            actor_full_name: 'Mehmet',
-            post_title: 'Paris Rehberi',
-            read: true,
-            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // Last week
-        },
-        {
-            id: 'demo6',
-            type: 'comment' as const,
-            actor_full_name: 'Zeynep',
-            post_title: 'yorumuna',
-            read: true,
-            created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), // Last week
-        },
-    ],
-};
 
 export default function NotificationsScreen() {
     const colorScheme = useColorScheme();
@@ -197,7 +142,7 @@ export default function NotificationsScreen() {
     };
 
     const handleNotificationPress = async (notification: any) => {
-        if (!notification.read && notification.id && !notification.id.startsWith('demo')) {
+        if (!notification.read && notification.id) {
             try {
                 await markNotificationAsRead(notification.id);
                 setNotifications(prev =>
@@ -251,8 +196,7 @@ export default function NotificationsScreen() {
         };
 
         if (notifs.length === 0) {
-            // Use static demo data
-            return STATIC_NOTIFICATIONS;
+            return grouped;
         }
 
         notifs.forEach(n => {
@@ -299,9 +243,9 @@ export default function NotificationsScreen() {
 
         switch (notification.type) {
             case 'like':
-                return `${actorName} ${t('notifications.likedPost', { postTitle: notification.post_title || 'your post' })}`;
+                return `${actorName} ${t('notifications.likedPost', { postTitle: notification.post_title || t('explore.posts') })}`;
             case 'comment':
-                return `${actorName} ${t('notifications.commented', { postTitle: notification.post_title || 'your post' })}`;
+                return `${actorName} ${t('notifications.commented', { postTitle: notification.post_title || t('explore.posts') })}`;
             case 'follow':
                 return `${actorName} ${t('notifications.followed')}`;
             case 'location':
@@ -407,7 +351,7 @@ export default function NotificationsScreen() {
         return (
             <ThemedView style={[styles.container, { backgroundColor: letterTheme.background }]}>
                 <View style={[styles.header, { paddingTop: insets.top + 12, borderBottomColor: letterTheme.border }]}>
-                    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                    <TouchableOpacity style={styles.backButton} onPress={() => safeGoBack('/(tabs)')}>
                         <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
                     </TouchableOpacity>
                     <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>{t('notifications.title').toUpperCase()}</Text>
@@ -430,7 +374,7 @@ export default function NotificationsScreen() {
             }]}>
                 <TouchableOpacity
                     style={[styles.backButton, { borderColor: colorScheme === 'dark' ? `${letterTheme.gold}33` : `${letterTheme.ink}20` }]}
-                    onPress={() => router.back()}
+                    onPress={() => safeGoBack('/(tabs)')}
                 >
                     <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
                 </TouchableOpacity>
@@ -450,51 +394,68 @@ export default function NotificationsScreen() {
                     />
                 }
             >
-                {/* Today Section */}
-                {groupedNotifications.today.length > 0 && (
-                    <View style={styles.section}>
-                        {renderSectionDivider(t('notifications.today'))}
-                        <View style={styles.cardsContainer}>
-                            {groupedNotifications.today.map((n, i) =>
-                                renderNotificationCard(n, false, i % 2 === 0 ? 0.5 : -0.5)
-                            )}
+                {/* Empty State when no notifications */}
+                {groupedNotifications.today.length === 0 && groupedNotifications.thisWeek.length === 0 && groupedNotifications.older.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <View style={[styles.emptyIconContainer, { borderColor: letterTheme.inkMuted, width: 80, height: 80, borderRadius: 40 }]}>
+                            <Ionicons name="mail-open-outline" size={40} color={letterTheme.inkMuted} />
                         </View>
+                        <Text style={[styles.emptyTitle, { color: letterTheme.ink }]}>
+                            {t('notifications.noNotifications')}
+                        </Text>
+                        <Text style={[styles.emptySubtitle, { color: letterTheme.inkMuted }]}>
+                            {t('notifications.checkBack')}
+                        </Text>
                     </View>
-                )}
+                ) : (
+                    <>
+                        {/* Today Section */}
+                        {groupedNotifications.today.length > 0 && (
+                            <View style={styles.section}>
+                                {renderSectionDivider(t('notifications.today'))}
+                                <View style={styles.cardsContainer}>
+                                    {groupedNotifications.today.map((n, i) =>
+                                        renderNotificationCard(n, false, i % 2 === 0 ? 0.5 : -0.5)
+                                    )}
+                                </View>
+                            </View>
+                        )}
 
-                {/* This Week Section */}
-                {groupedNotifications.thisWeek.length > 0 && (
-                    <View style={styles.section}>
-                        {renderSectionDivider(t('notifications.thisWeek'))}
-                        <View style={styles.cardsContainer}>
-                            {groupedNotifications.thisWeek.map((n, i) =>
-                                renderNotificationCard(n, false, i % 2 === 0 ? -0.5 : 1)
-                            )}
+                        {/* This Week Section */}
+                        {groupedNotifications.thisWeek.length > 0 && (
+                            <View style={styles.section}>
+                                {renderSectionDivider(t('notifications.thisWeek'))}
+                                <View style={styles.cardsContainer}>
+                                    {groupedNotifications.thisWeek.map((n, i) =>
+                                        renderNotificationCard(n, false, i % 2 === 0 ? -0.5 : 1)
+                                    )}
+                                </View>
+                            </View>
+                        )}
+
+                        {/* Older Section */}
+                        {groupedNotifications.older.length > 0 && (
+                            <View style={styles.section}>
+                                {renderSectionDivider(t('notifications.older'), false)}
+                                <View style={[styles.cardsContainer, { opacity: 0.8 }]}>
+                                    {groupedNotifications.older.map((n, i) =>
+                                        renderNotificationCard(n, true, i % 2 === 0 ? 1 : -0.5)
+                                    )}
+                                </View>
+                            </View>
+                        )}
+
+                        {/* Empty state footer */}
+                        <View style={styles.emptyFooter}>
+                            <View style={[styles.emptyIconContainer, { borderColor: letterTheme.inkMuted }]}>
+                                <Ionicons name="mail-open-outline" size={36} color={letterTheme.inkMuted} />
+                            </View>
+                            <Text style={[styles.emptyText, { color: letterTheme.inkMuted }]}>
+                                {t('notifications.inboxUpToDate')}
+                            </Text>
                         </View>
-                    </View>
+                    </>
                 )}
-
-                {/* Older Section */}
-                {groupedNotifications.older.length > 0 && (
-                    <View style={styles.section}>
-                        {renderSectionDivider(t('notifications.older'), false)}
-                        <View style={[styles.cardsContainer, { opacity: 0.8 }]}>
-                            {groupedNotifications.older.map((n, i) =>
-                                renderNotificationCard(n, true, i % 2 === 0 ? 1 : -0.5)
-                            )}
-                        </View>
-                    </View>
-                )}
-
-                {/* Empty state footer */}
-                <View style={styles.emptyFooter}>
-                    <View style={[styles.emptyIconContainer, { borderColor: letterTheme.inkMuted }]}>
-                        <Ionicons name="mail-open-outline" size={36} color={letterTheme.inkMuted} />
-                    </View>
-                    <Text style={[styles.emptyText, { color: letterTheme.inkMuted }]}>
-                        {t('notifications.inboxUpToDate')}
-                    </Text>
-                </View>
 
                 <View style={{ height: 100 }} />
             </ScrollView>
@@ -699,5 +660,23 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontStyle: 'italic',
         fontFamily: Typography.fonts.body,
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 80,
+        paddingHorizontal: 32,
+    },
+    emptyTitle: {
+        fontSize: 18,
+        fontFamily: Typography.fonts.heading,
+        marginTop: 16,
+        textAlign: 'center',
+    },
+    emptySubtitle: {
+        fontSize: 14,
+        fontFamily: Typography.fonts.body,
+        marginTop: 8,
+        textAlign: 'center',
     },
 });

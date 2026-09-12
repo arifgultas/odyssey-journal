@@ -6,6 +6,7 @@ import { useLanguage } from '@/context/language-context';
 import { followUser, getFollowers, unfollowUser, UserProfile } from '@/lib/follow';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -148,7 +149,7 @@ export default function FollowersScreen() {
         return (
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <View style={[styles.header, { paddingTop: insets.top + Spacing.xs, backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-                    <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <TouchableOpacity onPress={() => safeGoBack('/(tabs)/profile')} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={24} color={theme.text} />
                     </TouchableOpacity>
                     <Text style={[styles.headerTitle, { color: theme.text }]}>
@@ -166,7 +167,7 @@ export default function FollowersScreen() {
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <View style={[styles.header, { paddingTop: insets.top + Spacing.xs, backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                <TouchableOpacity onPress={() => safeGoBack('/(tabs)/profile')} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={theme.text} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: theme.text }]}>

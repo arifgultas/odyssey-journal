@@ -1,6 +1,7 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { mapStyleDark, mapStyleLight } from '@/constants/map-styles';
 import { useTheme } from '@/context/theme-context';
+import { useLanguage } from '@/context/language-context';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View, Platform } from 'react-native';
@@ -53,6 +54,7 @@ export function InteractiveMap({
     style,
 }: InteractiveMapProps) {
     const { isDark } = useTheme();
+    const { t } = useLanguage();
     const colors = isDark ? Colors.dark : Colors.light;
 
     const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -80,7 +82,7 @@ export function InteractiveMap({
             <View style={[styles.container, style, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border, padding: Spacing.md }]}>
                 <Ionicons name="map-outline" size={40} color={colors.compass} />
                 <Text style={{ fontFamily: Typography.fonts.bodyBold, color: colors.text, marginTop: 8, fontSize: 15 }}>
-                    {title || 'Seyahat Noktası'}
+                    {title || t('map.travelPoint')}
                 </Text>
                 {description && (
                     <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, marginTop: 4, fontSize: 13, textAlign: 'center' }}>
@@ -88,7 +90,7 @@ export function InteractiveMap({
                     </Text>
                 )}
                 <Text style={{ fontFamily: Typography.fonts.body, color: colors.textSecondary, fontSize: 11, marginTop: 12, opacity: 0.7 }}>
-                    {"(Harita görünümü Expo Go iOS'ta desteklenmez)"}
+                    {`(${t('map.notSupportedExpo')})`}
                 </Text>
             </View>
         );

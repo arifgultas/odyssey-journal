@@ -27,7 +27,13 @@ export function SuggestedUsers({
     onFollowPress,
 }: SuggestedUsersProps) {
     const getUserLabel = (user: any): string => {
-        const labels = ['Doğa Sever', 'Şehir Kaşifi', 'Tarihçi', 'Fotoğrafçı', 'Gezgin'];
+        const labels = [
+            t('profile.natureLover'),
+            t('profile.cityExplorer'),
+            t('profile.historian'),
+            t('profile.photographer'),
+            t('profile.traveler')
+        ];
         const index = user.id.charCodeAt(0) % labels.length;
         return labels[index];
     };
@@ -67,7 +73,7 @@ export function SuggestedUsers({
                                 onPress={() => onUserPress(user.id)}
                                 activeOpacity={0.7}
                                 accessibilityRole="button"
-                                accessibilityLabel={`${user.full_name || user.username}, profile git`}
+                                accessibilityLabel={user.full_name || user.username}
                             >
                                 <View style={[styles.userAvatarContainer, { borderColor: vintageTheme.border }]}>
                                     {user.avatar_url ? (

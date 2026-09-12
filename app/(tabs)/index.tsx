@@ -441,9 +441,9 @@ export default function HomeScreen() {
       return (
         <AnimatedEmptyState
           icon="explore"
-          title={t('home.noFollowingPosts') || (language === 'tr' ? 'Henüz Paylaşım Yok' : 'No Posts Yet')}
-          description={t('home.exploreTravelers') || (language === 'tr' ? 'Topluluktaki diğer gezginleri keşfedip takip ederek gönderilerini burada görebilirsiniz.' : 'Explore other travelers in the community and follow them to see their posts here.')}
-          buttonText={t('home.exploreButton') || (language === 'tr' ? 'Gezginleri Keşfet' : 'Explore Travelers')}
+          title={t('home.noFollowingPosts')}
+          description={t('home.exploreTravelers')}
+          buttonText={t('home.exploreButton')}
           onButtonPress={() => router.push('/explore')}
           showTypewriter={false}
         />
@@ -493,7 +493,7 @@ export default function HomeScreen() {
           styles.tabText,
           feedType === 'public' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          {t('home.publicFeed') || 'Herkese Açık'}
+          {t('home.publicFeed')}
         </Text>
       </TouchableOpacity>
       
@@ -508,7 +508,7 @@ export default function HomeScreen() {
           styles.tabText,
           feedType === 'following' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          {t('home.followingFeed') || 'Takip Ettiklerim'}
+          {t('home.followingFeed')}
         </Text>
       </TouchableOpacity>
     </View>
@@ -574,7 +574,7 @@ export default function HomeScreen() {
           style={styles.headerButton}
           onPress={() => router.push('/chat' as any)}
           accessibilityRole="button"
-          accessibilityLabel={language === 'tr' ? 'Mektupları ve sohbetleri aç' : 'Open letters and chats'}
+          accessibilityLabel={t('chat.openLettersAndChats')}
         >
           <View>
             <MessageIcon
@@ -603,15 +603,15 @@ export default function HomeScreen() {
       </View>
     </View>
   );
- 
+
   const renderSortBar = () => (
     <View style={[
       styles.sortBarContainer,
       {
         backgroundColor: colorScheme === 'dark'
-          ? 'rgba(26, 20, 16, 0.95)'
-          : 'rgba(245, 241, 232, 0.95)',
-        borderBottomColor: `${theme.accent}11`,
+          ? 'rgba(26, 20, 16, 0.92)'
+          : 'rgba(245, 241, 232, 0.92)',
+        borderBottomColor: `${theme.accent}22`,
       }
     ]}>
       <TouchableOpacity
@@ -621,17 +621,17 @@ export default function HomeScreen() {
         ]}
         onPress={() => setSortBy('date')}
         accessibilityRole="button"
-        accessibilityLabel={language === 'tr' ? 'En yeni gönderilere göre sırala' : 'Sort by latest posts'}
+        accessibilityLabel={t('home.sortLatestAccessibility')}
         accessibilityState={{ selected: sortBy === 'date' }}
       >
         <Text style={[
           styles.sortText,
           sortBy === 'date' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          {language === 'tr' ? 'EN YENİ' : 'LATEST'}
+          {t('home.sortLatest').toUpperCase()}
         </Text>
       </TouchableOpacity>
- 
+
       <TouchableOpacity
         style={[
           styles.sortButton,
@@ -639,17 +639,17 @@ export default function HomeScreen() {
         ]}
         onPress={() => setSortBy('popularity')}
         accessibilityRole="button"
-        accessibilityLabel={language === 'tr' ? 'En popüler gönderilere göre sırala' : 'Sort by popular posts'}
+        accessibilityLabel={t('home.sortPopularAccessibility')}
         accessibilityState={{ selected: sortBy === 'popularity' }}
       >
         <Text style={[
           styles.sortText,
           sortBy === 'popularity' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          {language === 'tr' ? 'POPÜLER' : 'POPULAR'}
+          {t('home.sortPopular').toUpperCase()}
         </Text>
       </TouchableOpacity>
- 
+
       <TouchableOpacity
         style={[
           styles.sortButton,
@@ -657,14 +657,14 @@ export default function HomeScreen() {
         ]}
         onPress={() => setSortBy('location')}
         accessibilityRole="button"
-        accessibilityLabel={language === 'tr' ? 'Yalnızca konumu olan gönderileri göster' : 'Filter by posts with location'}
+        accessibilityLabel={t('home.sortLocationAccessibility')}
         accessibilityState={{ selected: sortBy === 'location' }}
       >
         <Text style={[
           styles.sortText,
           sortBy === 'location' ? { color: theme.accent } : { color: theme.textMuted }
         ]}>
-          {language === 'tr' ? 'KONUMLU' : 'LOCATION'}
+          {t('home.sortLocation').toUpperCase()}
         </Text>
       </TouchableOpacity>
     </View>
@@ -703,6 +703,7 @@ export default function HomeScreen() {
 
       <FlatList
         data={posts}
+        extraData={language}
         keyExtractor={(item, index) => item.id ? String(item.id) : `post-${index}`}
         renderItem={({ item, index }) => (
           <AnimatedPostCard

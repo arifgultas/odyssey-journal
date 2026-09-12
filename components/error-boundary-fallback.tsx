@@ -43,11 +43,11 @@ export function ErrorBoundaryFallback({ error, resetError }: ErrorBoundaryFallba
                 </View>
 
                 <Text style={[styles.title, { color: activeColors.primary }]}>
-                    {t('errors.boundaryTitle') || 'Pusulamız Şaşırdı!'}
+                    {t('errors.boundaryTitle')}
                 </Text>
 
                 <Text style={[styles.subtitle, { color: activeColors.textSecondary }]}>
-                    {t('errors.boundarySubtitle') || 'Beklenmedik bir hata oluştu. Seyahat rotamızı düzeltmek için çalışıyoruz.'}
+                    {t('errors.boundarySubtitle')}
                 </Text>
 
                 <TouchableOpacity
@@ -57,7 +57,7 @@ export function ErrorBoundaryFallback({ error, resetError }: ErrorBoundaryFallba
                 >
                     <Ionicons name="refresh-outline" size={20} color={isDark ? '#1A1410' : '#F5F1E8'} />
                     <Text style={[styles.buttonText, { color: isDark ? '#1A1410' : '#F5F1E8' }]}>
-                        {t('errors.boundaryRetry') || 'Yeniden Başlat'}
+                        {t('errors.boundaryRetry')}
                     </Text>
                 </TouchableOpacity>
 
@@ -68,8 +68,8 @@ export function ErrorBoundaryFallback({ error, resetError }: ErrorBoundaryFallba
                 >
                     <Text style={[styles.detailsToggleText, { color: activeColors.compass }]}>
                         {showDetails
-                            ? t('errors.boundaryHideDetails') || 'Hata Detayını Gizle'
-                            : t('errors.boundaryShowDetails') || 'Hata Detayını Göster'}
+                            ? t('errors.boundaryHideDetails')
+                            : t('errors.boundaryShowDetails')}
                     </Text>
                     <Ionicons
                         name={showDetails ? 'chevron-up' : 'chevron-down'}
@@ -81,7 +81,7 @@ export function ErrorBoundaryFallback({ error, resetError }: ErrorBoundaryFallba
                 {showDetails && (
                     <View style={[styles.detailsBox, { backgroundColor: isDark ? '#2C1810' : '#FFFFFF', borderColor: activeColors.border }]}>
                         <Text style={[styles.detailsTitle, { color: activeColors.primary }]}>
-                            {t('errors.boundaryErrorDetails') || 'Hata Detayları'}:
+                            {t('errors.boundaryErrorDetails')}:
                         </Text>
                         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                             <Text style={[styles.detailsText, { color: activeColors.error }]}>

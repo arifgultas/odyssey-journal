@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -189,7 +190,7 @@ export default function AdminScreen() {
                     <Text style={[styles.unauthorizedSubtext, { color: colors.textSecondary }]}>
                         You don&apos;t have admin privileges.
                     </Text>
-                    <TouchableOpacity onPress={() => router.back()}>
+                    <TouchableOpacity onPress={() => safeGoBack('/settings')}>
                         <Text style={[styles.goBackText, { color: colors.accent }]}>Go Back</Text>
                     </TouchableOpacity>
                 </View>
@@ -351,7 +352,7 @@ export default function AdminScreen() {
                     },
                 ]}
             >
-                <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+                <TouchableOpacity style={styles.headerButton} onPress={() => safeGoBack('/settings')}>
                     <Ionicons name="arrow-back" size={28} color={isDark ? colors.accent : colors.textPrimary} />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>

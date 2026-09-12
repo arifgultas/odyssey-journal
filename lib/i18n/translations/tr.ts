@@ -24,6 +24,12 @@ export default {
         yes: 'Evet',
         no: 'Hayır',
         and: 've',
+        change: 'Değiştir',
+        untitled: 'Başlıksız',
+        yesterday: 'Dün',
+            info: 'Bilgi',
+            completed: 'Tamamlandı',
+            progress: 'İlerleme',
     },
 
     // Auth
@@ -87,6 +93,12 @@ export default {
         sendResetLink: 'Sıfırlama Bağlantısı Gönder',
         rememberPassword: 'Şifreni hatırladın mı?',
         resetLinkValidity: 'Güvenliğiniz için şifre sıfırlama bağlantısı 1 saat geçerlidir.',
+            newPassword: 'Yeni Şifre',
+            enterNewPassword: 'Yeni şifrenizi girin',
+            confirmNewPassword: 'Yeni Şifre (Tekrar)',
+            confirmNewPasswordPlaceholder: 'Yeni şifrenizi tekrar girin',
+            passwordLengthError: 'Şifre en az 6 karakter olmalıdır.',
+            passwordMatchError: 'Şifreler eşleşmiyor.',
     },
 
     // Onboarding
@@ -114,6 +126,12 @@ export default {
         noFollowingPosts: 'Henüz Paylaşım Yok',
         exploreTravelers: 'Topluluktaki diğer gezginleri keşfedip takip ederek gönderilerini burada görebilirsiniz.',
         exploreButton: 'Gezginleri Keşfet',
+        sortLatest: 'En Yeni',
+        sortPopular: 'Popüler',
+        sortLocation: 'Konumlu',
+        sortLatestAccessibility: 'En yeni gönderilere göre sırala',
+        sortPopularAccessibility: 'En popüler gönderilere göre sırala',
+        sortLocationAccessibility: 'Yalnızca konumu olan gönderileri göster',
     },
 
     // Explore
@@ -149,6 +167,12 @@ export default {
         unknown: 'Bilinmeyen',
         untitledPost: 'Adsız Gönderi',
         user: 'Kullanıcı',
+        readPost: 'Gönderiyi Oku',
+        newRoutesToExplore: 'Keşfedilecek Yeni Rotalar',
+        featuredContentDefault: 'Türkiye\'nin en güzel rotalarını keşfedin ve maceraya atılın.',
+        viewCategoryPosts: '{{category}} kategorisindeki gönderileri gör',
+            featuredDefaultTitle: 'Keşfedilecek Yeni Rotalar',
+            featuredDefaultDescription: 'En güzel rotaları keşfedin ve yeni maceralara atılın.',
     },
 
     // Create Post
@@ -191,6 +215,8 @@ export default {
         searchPlaceholder: 'Şehir veya mekan ara...',
         useCurrentLocation: 'Anlık Konumu Kullan (GPS)',
         noResults: 'Sonuç bulunamadı. Lütfen tekrar deneyin.',
+            locationNotFound: 'Konum bulunamadı. Lütfen başka bir arama yapın.',
+            locationSearchError: 'Konum aranırken bir hata oluştu.',
     },
 
     // Categories
@@ -209,6 +235,10 @@ export default {
 
     // Collections (New)
     collection: {
+        saveToCollection: 'Koleksiyona Kaydet',
+        myCollections: 'Koleksiyonlarım',
+        nameInputPlaceholder: 'Koleksiyon adı...',
+
         createTitle: 'Koleksiyon Oluştur',
         editTitle: 'Koleksiyonu Düzenle',
         save: 'Kaydet',
@@ -237,6 +267,9 @@ export default {
         noNote: 'Bu gönderi için not eklenmemiş.',
         unknownLocation: 'Bilinmeyen Konum',
         untitled: 'Başlıksız',
+        noNotes: 'Bu gönderi için not eklenmemiş.',
+        saveWithoutCollection: 'Koleksiyonsuz Kaydet',
+        saveError: 'Kaydetme sırasında bir hata oluştu',
     },
 
     // Chat & Messaging
@@ -255,6 +288,9 @@ export default {
         requestBanner: 'Bu kullanıcıyla mesajlaşmak istiyor musunuz? Onaylayana kadar mesaj gönderemezsiniz.',
         declineConfirm: 'Bu mesaj isteğini silmek istediğinizden emin misiniz? Tüm konuşma geçmişi silinecektir.',
         noRequests: 'Herhangi bir mesaj isteği bulunmuyor.',
+        openLettersAndChats: 'Mektupları ve sohbetleri aç',
+        typing: 'yazıyor...',
+        yesterday: 'Dün',
     },
 
     // Saved / Bookmarks
@@ -325,6 +361,11 @@ export default {
         blockError: 'Kullanıcı engellenemedi.',
         notFoundTitle: 'Gezgin Bulunamadı',
         notFoundDesc: 'Bu profil şu anda mevcut değil veya erişim yetkiniz bulunmuyor.',
+        natureLover: 'Doğa Sever',
+        cityExplorer: 'Şehir Kaşifi',
+        historian: 'Tarihçi',
+        photographer: 'Fotoğrafçı',
+        traveler: 'Gezgin',
     },
 
     // Edit Profile
@@ -410,6 +451,7 @@ export default {
         reportPost: 'Gönderiyi Şikayet Et',
         location: 'Konum',
         address: 'Adres',
+        editTitle: 'Gönderiyi Düzenle',
     },
 
     // Report
@@ -486,6 +528,18 @@ export default {
         adminTitle: 'ADMİN',
         moderationPanel: 'Moderasyon Paneli',
         moderationPanelDesc: 'Şikayetleri inceleyin, kullanıcıları yönetin',
+        likeNotifications: 'Beğeniler',
+        likeNotificationsDesc: 'Gönderileriniz beğenildiğinde bildirim alın',
+        commentNotifications: 'Yorumlar',
+        commentNotificationsDesc: 'Gönderilerinize yorum yapıldığında bildirim alın',
+        followNotifications: 'Takipçiler',
+        followNotificationsDesc: 'Biri sizi takip etmeye başladığında bildirim alın',
+        changePassword: 'Şifre Değiştir',
+        changePasswordDesc: 'Hesap şifrenizi güncelleyin',
+        preferencesUpdateError: 'Tercihler güncellenirken bir hata oluştu.',
+            notificationPreferences: 'Bildirim Tercihleri',
+            passwordChangeSuccess: 'Şifreniz başarıyla güncellendi.',
+            unblockError: 'Kullanıcının engeli kaldırılamadı.',
     },
 
     // Errors
@@ -547,6 +601,11 @@ export default {
         addLocationTip: 'Gönderi oluştururken konum ekleyerek haritada görünebilirsiniz',
         postCount: '{{count}} gönderi',
         unknownLocation: 'Bilinmeyen Konum',
+        openInMap: 'Haritada Aç',
+        travelPoint: 'Seyahat Noktası',
+            journeyRoute: 'Yolculuk Rotası ({{count}} Nokta)',
+            noJourneyYet: 'Henüz yolculuk yok',
+            startExploring: 'Dünyayı keşfetmeye başlayın!',
     },
 
     // Destination Posts
@@ -722,5 +781,22 @@ export default {
             name: "Kaşif",
             description: "30 gün seyahat et"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'TARİH / SEYAHAT ZAMANI',
+        tapToChange: 'Tarihi değiştirmek için dokunun',
+        change: 'Değiştir',
+        today: 'Bugün',
+        yesterday: 'Dün',
+        tomorrow: 'Yarın',
+        threeDaysAgo: '3 Gün Önce',
+        calendar: 'Takvim',
+        selectDate: 'Seyahat Tarihi Seç',
+        selected: 'Seçilen Tarih:',
+        apply: 'Tarihi Uygula',
+        cancel: 'Vazgeç',
+        daysAgo: '{{count}} gün önce',
+        daysLater: '{{count}} gün sonra',
+    },
 };

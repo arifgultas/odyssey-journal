@@ -23,6 +23,12 @@ export default {
         yes: 'نعم',
         no: 'لا',
         and: 'و',
+        change: 'تعديل',
+        untitled: 'بدون عنوان',
+        yesterday: 'أمس',
+            info: 'معلومات',
+            completed: 'مكتمل',
+            progress: 'التقدم',
     },
     auth: {
         login: 'تسجيل الدخول',
@@ -82,6 +88,12 @@ export default {
         sendResetLink: 'إرسال الرابط',
         rememberPassword: 'تذكرت؟',
         resetLinkValidity: 'لأمانك، الرابط صالح لمدة ساعة.',
+            newPassword: 'كلمة مرور جديدة',
+            enterNewPassword: 'أدخل كلمة المرور الجديدة',
+            confirmNewPassword: 'تأكيد كلمة المرور الجديدة',
+            confirmNewPasswordPlaceholder: 'أعد إدخال كلمة المرور الجديدة',
+            passwordLengthError: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.',
+            passwordMatchError: 'كلمات المرور غير متطابقة.',
     },
     onboarding: {
         step1Title: 'ابدأ الاستكشاف',
@@ -105,6 +117,12 @@ export default {
         noFollowingPosts: 'لا توجد منشورات بعد',
         exploreTravelers: 'استكشف مسافرين آخرين في المجتمع وتابعهم لرؤية منشوراتهم هنا.',
         exploreButton: 'استكشف المسافرين',
+        sortLatest: 'الأحدث',
+        sortPopular: 'شائع',
+        sortLocation: 'مع الموقع',
+        sortLatestAccessibility: 'الترتيب حسب أحدث المنشورات',
+        sortPopularAccessibility: 'الترتيب حسب المنشورات الشائعة',
+        sortLocationAccessibility: 'تصفية حسب المنشورات ذات الموقع',
     },
     explore: {
         title: 'استكشف',
@@ -138,6 +156,12 @@ export default {
         user: 'مستخدم',
         category: 'فئة',
         noCategoryPosts: 'لا توجد منشورات في هذه الفئة',
+        readPost: 'قراءة المنشور',
+        newRoutesToExplore: 'مسارات جديدة للاستكشاف',
+        featuredContentDefault: 'اكتشف أجمل المسارات حول العالم وانطلق في مغامرة شيقة.',
+        viewCategoryPosts: 'عرض المنشورات في تصنيف {{category}}',
+            featuredDefaultTitle: 'مسارات جديدة للاستكشاف',
+            featuredDefaultDescription: 'اكتشف أجمل المسارات وانطلق في مغامرة جديدة.',
     },
     create: {
         title: 'منشور جديد',
@@ -178,6 +202,8 @@ export default {
         searchPlaceholder: 'ابحث عن مدينة أو مكان...',
         useCurrentLocation: 'استخدام الموقع الحالي (GPS)',
         noResults: 'لم يتم العثور على نتائج. يرجى المحاولة مرة أخرى.',
+            locationNotFound: 'لم يتم العثور على الموقع. يرجى تجربة بحث آخر.',
+            locationSearchError: 'حدث خطأ أثناء البحث عن الموقع.',
     },
     categories: {
         nature: 'الطبيعة',
@@ -192,6 +218,10 @@ export default {
         wildlife: 'الحياة البرية',
     },
     collection: {
+        saveToCollection: 'حفظ في المجموعة',
+        myCollections: 'مجموعاتي',
+        nameInputPlaceholder: 'اسم المجموعة...',
+
         createTitle: 'إنشاء مجموعة',
         editTitle: 'تعديل المجموعة',
         save: 'حفظ',
@@ -220,6 +250,9 @@ export default {
         noNote: 'لم تتم إضافة ملاحظة لهذا المنشور.',
         unknownLocation: 'موقع غير معروف',
         untitled: 'بدون عنوان',
+        noNotes: 'لم تتم إضافة ملاحظات لهذا المنشور.',
+        saveWithoutCollection: 'حفظ بدون مجموعة',
+        saveError: 'حدث خطأ أثناء الحفظ',
     },
 
     // Chat & Messaging
@@ -238,6 +271,9 @@ export default {
         requestBanner: 'هل تريد الدردشة مع هذا المستخدم؟ لا يمكنك الرد حتى تقبل الطلب.',
         declineConfirm: 'هل أنت متأكد أنك تريد رفض هذا الطلب؟ سيتم حذف سجل الدردشة.',
         noRequests: 'لم يتم العثور على طلبات رسائل.',
+        openLettersAndChats: 'فتح الرسائل والمحادثات',
+        typing: 'يكتب...',
+        yesterday: 'أمس',
     },
 
     saved: {
@@ -305,6 +341,11 @@ export default {
         blockError: 'فشل حظر المستخدم.',
         notFoundTitle: 'لم يتم العثور على المسافر',
         notFoundDesc: 'هذا الملف الشخصي غير متاح أو ليس لديك إذن لعرضه.',
+        natureLover: 'محب للطبيعة',
+        cityExplorer: 'مستكشف المدن',
+        historian: 'مؤرخ',
+        photographer: 'مصور',
+        traveler: 'مسافر',
     },
     editProfile: {
         title: 'تعديل الملف الشخصي',
@@ -370,6 +411,15 @@ export default {
         deleteConfirm: 'هل أنت متأكد من حذف هذا المنشور؟',
         deleteSuccess: 'تم حذف المنشور',
         reportSuccess: 'تم إرسال البلاغ',
+        editTitle: 'تعديل المنشور',
+        deleteTitle: 'حذف المنشور',
+            address: 'العنوان',
+            memoriesTitle: 'الذكريات والملاحظات',
+            memory: 'ذكرى',
+            notesCount: '{{count}} ملاحظات',
+            reportPost: 'إبلاغ عن المنشور',
+            viewNotes: 'عرض {{count}} ملاحظات',
+            writeNote: 'اكتب ملاحظة ليومياتك...',
     },
     report: {
         title: 'الإبلاغ عن المنشور',
@@ -440,6 +490,18 @@ export default {
         adminTitle: 'ADMIN',
         moderationPanel: 'Moderation Panel',
         moderationPanelDesc: 'Review reports, manage users',
+        likeNotifications: 'الإعجابات',
+        likeNotificationsDesc: 'تلقي إشعار عندما يُعجب أحدهم بمنشورك',
+        commentNotifications: 'التعليقات',
+        commentNotificationsDesc: 'تلقي إشعار عندما يُعلّق أحدهم على منشورك',
+        followNotifications: 'المتابعون',
+        followNotificationsDesc: 'تلقي إشعار عندما يبدأ شخص ما بمتابعتك',
+        changePassword: 'تغيير كلمة المرور',
+        changePasswordDesc: 'تحديث كلمة مرور حسابك',
+        preferencesUpdateError: 'حدث خطأ أثناء تحديث التفضيلات.',
+            notificationPreferences: 'تفضيلات الإشعارات',
+            passwordChangeSuccess: 'تم تحديث كلمة المرور الخاصة بك بنجاح.',
+            unblockError: 'فشل إلغاء حظر المستخدم.',
     },
     errors: {
         generic: 'حدث خطأ ما',
@@ -492,6 +554,11 @@ export default {
         postCount: '{{count}} منشورات',
         noPosts: 'لا توجد منشورات مع موقع',
         addLocationTip: 'أضف موقعاً لمنشوراتك',
+        openInMap: 'فتح في الخريطة',
+        travelPoint: 'نقطة السفر',
+            journeyRoute: 'مسار الرحلة ({{count}} نقاط)',
+            noJourneyYet: 'لا توجد رحلات بعد',
+            startExploring: 'ابدأ في استكشاف العالم!',
     },
 
     destinationPosts: {
@@ -656,5 +723,22 @@ export default {
             name: "المستكشف",
             description: "سافر لمدة 30 يومًا"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'التاريخ / وقت الرحلة',
+        tapToChange: 'انقر لتغيير التاريخ',
+        change: 'تعديل',
+        today: 'اليوم',
+        yesterday: 'أمس',
+        tomorrow: 'غداً',
+        threeDaysAgo: 'منذ 3 أيام',
+        calendar: 'التقويم',
+        selectDate: 'اختر تاريخ الرحلة',
+        selected: 'المحدد:',
+        apply: 'تطبيق التاريخ',
+        cancel: 'إلغاء',
+        daysAgo: 'منذ {{count}} أيام',
+        daysLater: 'خلال {{count}} أيام',
+    },
 };

@@ -22,6 +22,12 @@ export default {
         yes: 'Sì',
         no: 'No',
         and: 'e',
+        change: 'Modifica',
+        untitled: 'Senza titolo',
+        yesterday: 'Ieri',
+            info: 'Informazione',
+            completed: 'Completato',
+            progress: 'Progresso',
     },
     auth: {
         login: 'Accedi',
@@ -81,6 +87,12 @@ export default {
         sendResetLink: 'Invia link',
         rememberPassword: 'Ti ricordi?',
         resetLinkValidity: 'Per la tua sicurezza, il link è valido 1 ora.',
+            newPassword: 'Nuova Password',
+            enterNewPassword: 'Inserisci la tua nuova password',
+            confirmNewPassword: 'Conferma Nuova Password',
+            confirmNewPasswordPlaceholder: 'Reinserisci la tua nuova password',
+            passwordLengthError: 'La password deve contenere almeno 6 caratteri.',
+            passwordMatchError: 'Le password non corrispondono.',
     },
     onboarding: {
         step1Title: 'Inizia ad Esplorare',
@@ -104,6 +116,12 @@ export default {
         noFollowingPosts: 'Nessun post ancora',
         exploreTravelers: 'Esplora altri viaggiatori nella community e seguili per vedere i loro post qui.',
         exploreButton: 'Esplora viaggiatori',
+        sortLatest: 'Recenti',
+        sortPopular: 'Popolari',
+        sortLocation: 'Con Posizione',
+        sortLatestAccessibility: 'Ordina per post più recenti',
+        sortPopularAccessibility: 'Ordina per post più popolari',
+        sortLocationAccessibility: 'Filtra per post con posizione',
     },
     explore: {
         title: 'Esplora',
@@ -137,6 +155,12 @@ export default {
         user: 'Utente',
         category: 'Categoria',
         noCategoryPosts: 'Nessun post in questa categoria',
+        readPost: 'Leggi il post',
+        newRoutesToExplore: 'Nuove rotte da esplorare',
+        featuredContentDefault: 'Scopri gli itinerari più suggestivi e parti all\'avventura.',
+        viewCategoryPosts: 'Visualizza post nella categoria {{category}}',
+            featuredDefaultTitle: 'Nuovi Itinerari da Esplorare',
+            featuredDefaultDescription: 'Scopri i percorsi più belli e parti per nuove avventure.',
     },
     create: {
         title: 'Nuovo Post',
@@ -177,6 +201,8 @@ export default {
         searchPlaceholder: 'Cerca città o luogo...',
         useCurrentLocation: 'Usa posizione attuale (GPS)',
         noResults: 'Nessun risultato trovato. Riprova.',
+            locationNotFound: 'Posizione non trovata. Prova un\'altra ricerca.',
+            locationSearchError: 'Si è verificato un errore durante la ricerca della posizione.',
     },
     categories: {
         nature: 'Natura',
@@ -191,6 +217,10 @@ export default {
         wildlife: 'Fauna Selvatica',
     },
     collection: {
+        saveToCollection: 'Salva nella raccolta',
+        myCollections: 'Le mie raccolte',
+        nameInputPlaceholder: 'Nome della raccolta...',
+
         createTitle: 'Crea Collezione',
         editTitle: 'Modifica Collezione',
         save: 'Salva',
@@ -219,6 +249,9 @@ export default {
         noNote: 'Nessuna nota aggiunta per questo post.',
         unknownLocation: 'Posizione Sconosciuta',
         untitled: 'Senza Titolo',
+        noNotes: 'Nessuna nota aggiunta a questo post.',
+        saveWithoutCollection: 'Salva senza collezione',
+        saveError: 'Errore durante il salvataggio',
     },
 
     // Chat & Messaging
@@ -237,6 +270,9 @@ export default {
         requestBanner: 'Vuoi chattare con questo utente? Non puoi rispondere finché non accetti.',
         declineConfirm: 'Sei sicuro di voler rifiutare questa richiesta? La cronologia della chat verrà eliminata.',
         noRequests: 'Nessuna richiesta di messaggio trovata.',
+        openLettersAndChats: 'Apri lettere e chat',
+        typing: 'sta scrivendo...',
+        yesterday: 'Ieri',
     },
 
     saved: {
@@ -304,6 +340,11 @@ export default {
         blockError: 'Errore durante il blocco utente.',
         notFoundTitle: 'Viaggiatore non trovato',
         notFoundDesc: 'Questo profilo non è disponibile o non hai i permessi per visualizzarlo.',
+        natureLover: 'Amante della natura',
+        cityExplorer: 'Esploratore urbano',
+        historian: 'Storico',
+        photographer: 'Fotografo',
+        traveler: 'Viaggiatore',
     },
     editProfile: {
         title: 'Modifica Profilo',
@@ -381,6 +422,7 @@ export default {
         reportPost: 'Segnala Post',
         location: 'Posizione',
         address: 'Indirizzo',
+        editTitle: 'Modifica Post',
     },
     report: {
         title: 'Segnala post',
@@ -451,6 +493,18 @@ export default {
         adminTitle: 'ADMIN',
         moderationPanel: 'Pannello di Moderazione',
         moderationPanelDesc: 'Rivedi le segnalazioni, gestisci gli utenti',
+        likeNotifications: 'Mi piace',
+        likeNotificationsDesc: 'Ricevi notifiche quando qualcuno mette mi piace a un tuo post',
+        commentNotifications: 'Commenti',
+        commentNotificationsDesc: 'Ricevi notifiche quando qualcuno commenta un tuo post',
+        followNotifications: 'Follower',
+        followNotificationsDesc: 'Ricevi notifiche quando qualcuno inizia a seguirti',
+        changePassword: 'Cambia password',
+        changePasswordDesc: 'Aggiorna la password del tuo account',
+        preferencesUpdateError: 'Si è verificato un errore durante l\'aggiornamento delle preferenze.',
+            notificationPreferences: 'Preferenze di Notifica',
+            passwordChangeSuccess: 'La password è stata aggiornata con successo.',
+            unblockError: 'Impossibile sbloccare l\'utente.',
     },
     errors: {
         generic: 'Qualcosa è andato storto',
@@ -503,6 +557,11 @@ export default {
         postCount: '{{count}} post',
         noPosts: 'Nessun post con posizione',
         addLocationTip: 'Aggiungi posizione ai tuoi post',
+        openInMap: 'Apri nella mappa',
+        travelPoint: 'Punto di viaggio',
+            journeyRoute: 'Itinerario di Viaggio ({{count}} Tappe)',
+            noJourneyYet: 'Nessun viaggio ancora',
+            startExploring: 'Inizia ad esplorare il mondo!',
     },
 
     destinationPosts: {
@@ -667,5 +726,22 @@ export default {
             name: "Esploratore",
             description: "Viaggia per 30 giorni"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'DATA / ORA DI VIAGGIO',
+        tapToChange: 'Tocca per modificare la data',
+        change: 'Modifica',
+        today: 'Oggi',
+        yesterday: 'Ieri',
+        tomorrow: 'Domani',
+        threeDaysAgo: '3 giorni fa',
+        calendar: 'Calendario',
+        selectDate: 'Seleziona data del viaggio',
+        selected: 'Selezionato:',
+        apply: 'Applica data',
+        cancel: 'Annulla',
+        daysAgo: '{{count}} giorni fa',
+        daysLater: 'tra {{count}} giorni',
+    },
 };

@@ -11,6 +11,7 @@ import {
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
@@ -77,12 +78,12 @@ export default function BlockedUsersScreen() {
 
     const handleUnblockPress = (user: BlockedUserProfile) => {
         Alert.alert(
-            t('settings.unblockConfirmTitle') || 'Unblock User',
-            t('settings.unblockConfirmDesc') || `Are you sure you want to unblock ${user.full_name || user.username || 'this user'}?`,
+            t('settings.unblockConfirmTitle'),
+            t('settings.unblockConfirmDesc'),
             [
-                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: t('settings.unblockConfirmTitle') || 'Unblock',
+                    text: t('settings.unblockConfirmTitle'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -93,12 +94,12 @@ export default function BlockedUsersScreen() {
                                 queryClient.invalidateQueries({ queryKey: ['profile'] });
                                 queryClient.invalidateQueries({ queryKey: ['suggested-users'] });
 
-                                Alert.alert('', t('settings.unblockSuccess') || 'User has been unblocked.');
+                                Alert.alert(t('common.success'), t('settings.unblockSuccess'));
                                 setBlockedUsers((prev) => prev.filter((u) => u.id !== user.id));
                             }
                         } catch (error) {
                             console.error('Error unblocking user:', error);
-                            Alert.alert('Error', 'Failed to unblock user.');
+                            Alert.alert(t('common.error'), t('settings.unblockError'));
                         }
                     },
                 },
@@ -134,7 +135,7 @@ export default function BlockedUsersScreen() {
                 onPress={() => handleUnblockPress(item)}
             >
                 <Text style={[styles.unblockButtonText, { color: theme.stampRed }]}>
-                    {t('settings.unblockConfirmTitle') || 'Unblock'}
+                    {t('settings.unblockConfirmTitle')}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -146,7 +147,7 @@ export default function BlockedUsersScreen() {
                 <Ionicons name="ban-outline" size={48} color={theme.primary} />
             </View>
             <Text style={[styles.emptyTitle, { color: theme.textMain }]}>
-                {t('settings.noBlockedUsers') || 'No blocked users.'}
+                {t('settings.noBlockedUsers')}
             </Text>
         </View>
     );
@@ -162,12 +163,12 @@ export default function BlockedUsersScreen() {
                     borderBottomColor: `${theme.primary}20`,
                 }
             ]}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => safeGoBack('/settings')} style={styles.headerButton}>
                     <Ionicons name="arrow-back" size={28} color={theme.primary} />
                 </TouchableOpacity>
                 
                 <Text style={[styles.headerTitle, { color: theme.textMain }]}>
-                    {t('settings.blockedUsers') || 'Blocked Users'}
+                    {t('settings.blockedUsers')}
                 </Text>
                 
                 <View style={styles.headerButton} />

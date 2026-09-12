@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
@@ -168,22 +169,22 @@ export default function SettingsScreen() {
             refetchProfile();
         } catch (error) {
             console.error('Error updating notification preferences:', error);
-            Alert.alert(t('common.error') || 'Hata', 'Tercihler güncellenirken bir hata oluştu.');
+            Alert.alert(t('common.error'), t('settings.preferencesUpdateError'));
         }
     };
 
     const handleDownloadData = async () => {
         Alert.alert(
-            t('settings.exportDataTitle') || 'Download Data',
-            t('settings.exportDataDesc') || 'This will generate a file containing all your profile information, posts, comments, collections, and connections. The process may take a moment. Do you want to proceed?',
+            t('settings.exportDataTitle'),
+            t('settings.exportDataDesc'),
             [
-                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: t('settings.download') || 'Download',
+                    text: t('settings.download'),
                     onPress: async () => {
                         const success = await exportUserData(t);
                         if (success) {
-                            Alert.alert('Success', t('settings.exportSuccess') || 'Data exported successfully.');
+                            Alert.alert(t('common.success'), t('settings.exportSuccess'));
                         }
                     }
                 }
@@ -197,7 +198,7 @@ export default function SettingsScreen() {
 
     const displayProfile = profile || {
         id: user?.id || '',
-        full_name: user?.email?.split('@')[0] || 'Gezgin',
+        full_name: user?.email?.split('@')[0] || t('profile.defaultUser'),
         username: user?.email?.split('@')[0] || 'user',
         avatar_url: null,
         bio: null,
@@ -230,7 +231,7 @@ export default function SettingsScreen() {
             >
                 <TouchableOpacity
                     style={styles.headerButton}
-                    onPress={() => router.back()}
+                    onPress={() => safeGoBack('/(tabs)')}
                 >
                     <Ionicons name="arrow-back" size={28} color={isDark ? colors.accent : colors.textPrimary} />
                 </TouchableOpacity>
@@ -334,7 +335,7 @@ export default function SettingsScreen() {
                 >
                     <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
                         <Ionicons name="notifications-outline" size={20} color={colors.accent} />
-                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.notificationPreferences') || 'BİLDİRİM TERCİHLERİ'}</Text>
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.notificationPreferences').toUpperCase()}</Text>
                     </View>
                     <View style={styles.sectionContent}>
                         {(() => {
@@ -343,8 +344,8 @@ export default function SettingsScreen() {
                                 <>
                                     <View style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: Spacing.sm }]}>
                                         <View style={styles.settingInfo}>
-                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.likeNotifications') || 'Beğeniler'}</Text>
-                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.likeNotificationsDesc') || 'Gönderileriniz beğenildiğinde bildirim alın'}</Text>
+                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.likeNotifications')}</Text>
+                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.likeNotificationsDesc')}</Text>
                                         </View>
                                         <Switch
                                             value={prefs.likes}
@@ -357,8 +358,8 @@ export default function SettingsScreen() {
 
                                     <View style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: colors.border, paddingVertical: Spacing.sm }]}>
                                         <View style={styles.settingInfo}>
-                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.commentNotifications') || 'Yorumlar'}</Text>
-                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.commentNotificationsDesc') || 'Gönderilerinize yorum yapıldığında bildirim alın'}</Text>
+                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.commentNotifications')}</Text>
+                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.commentNotificationsDesc')}</Text>
                                         </View>
                                         <Switch
                                             value={prefs.comments}
@@ -371,8 +372,8 @@ export default function SettingsScreen() {
 
                                     <View style={[styles.settingRow, { paddingTop: Spacing.sm }]}>
                                         <View style={styles.settingInfo}>
-                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.followNotifications') || 'Takipçiler'}</Text>
-                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.followNotificationsDesc') || 'Biri sizi takip etmeye başladığında bildirim alın'}</Text>
+                                            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>{t('settings.followNotifications')}</Text>
+                                            <Text style={[styles.settingSubLabel, { color: colors.textSecondary }]}>{t('settings.followNotificationsDesc')}</Text>
                                         </View>
                                         <Switch
                                             value={prefs.follows}
@@ -396,12 +397,13 @@ export default function SettingsScreen() {
                     >
                         <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
                             <Ionicons name="shield-checkmark-outline" size={20} color={colors.accent} />
-                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.adminTitle') || 'ADMIN'}</Text>
+                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.adminTitle').toUpperCase()}</Text>
                         </View>
                         <View style={styles.sectionContent}>
                             <SettingsRow
-                                label={t('settings.moderationPanel') || 'Moderation Panel'}
-                                description={t('settings.moderationPanelDesc') || 'Review reports, manage users'}
+                                icon="shield-outline"
+                                label={t('settings.moderationPanel')}
+                                description={t('settings.moderationPanelDesc')}
                                 onPress={() => router.push('/admin' as any)}
                                 colors={colors}
                             />
@@ -416,12 +418,13 @@ export default function SettingsScreen() {
                 >
                     <View style={[styles.sectionHeader, { backgroundColor: colors.sectionBg, borderBottomColor: colors.border }]}>
                         <Ionicons name="book-outline" size={20} color={colors.accent} />
-                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.legal').toUpperCase() || 'LEGAL & COMMUNITY'}</Text>
+                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{t('settings.legal').toUpperCase()}</Text>
                     </View>
                     <View style={styles.sectionContent}>
                         <SettingsRow
-                            label={t('settings.communityGuidelines') || 'Community Guidelines'}
-                            description={t('settings.communityGuidelinesDesc') || 'Rules to keep our community safe'}
+                            icon="shield-checkmark-outline"
+                            label={t('settings.communityGuidelines')}
+                            description={t('settings.communityGuidelinesDesc')}
                             onPress={() => router.push('/community-guidelines' as any)}
                             colors={colors}
                         />
@@ -439,24 +442,26 @@ export default function SettingsScreen() {
                     </View>
                     <View style={styles.sectionContent}>
                         <SettingsRow
-                            label={t('settings.changePassword') || 'Şifre Değiştir'}
-                            description={t('settings.changePasswordDesc') || 'Hesap şifrenizi güncelleyin'}
+                            label={t('settings.changePassword')}
+                            description={t('settings.changePasswordDesc')}
                             onPress={() => setChangePasswordModalVisible(true)}
                             colors={colors}
                             rightElement={<Ionicons name="key-outline" size={22} color={colors.accent} />}
                         />
 
                         <SettingsRow
-                            label={t('settings.blockedUsers') || 'Blocked Users'}
-                            description={t('settings.blockedUsersDesc') || 'Manage and unblock users you have blocked'}
+                            icon="person-remove-outline"
+                            label={t('settings.blockedUsers')}
+                            description={t('settings.blockedUsersDesc')}
                             onPress={() => router.push('/blocked-users' as any)}
                             colors={colors}
                             rightElement={<Ionicons name="ban-outline" size={22} color={colors.accent} />}
                         />
 
                         <SettingsRow
-                            label={t('settings.exportDataTitle') || 'Download My Data'}
-                            description={t('settings.exportDataSubdesc') || 'Request a copy of your personal data'}
+                            icon="cloud-download-outline"
+                            label={t('settings.exportDataTitle')}
+                            description={t('settings.exportDataSubdesc')}
                             onPress={handleDownloadData}
                             colors={colors}
                             rightElement={<Ionicons name="download-outline" size={22} color={colors.accent} />}

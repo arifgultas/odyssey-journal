@@ -2,10 +2,8 @@ import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
-import { createCollection, updateCollection, uploadCollectionCover } from '@/lib/collections';
+import { createCollection, updateCollection } from '@/lib/collections';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
@@ -57,7 +55,6 @@ export function CreateCollectionModal({
 
     const [name, setName] = useState(editCollection?.name || '');
     const [selectedColor, setSelectedColor] = useState(editCollection?.color || PRESET_COLORS[0]);
-    const [coverImage, setCoverImage] = useState<string | null>(editCollection?.cover_image_url || null);
     const [isLoading, setIsLoading] = useState(false);
 
     const isEditMode = !!editCollection;
@@ -67,34 +64,8 @@ export function CreateCollectionModal({
         if (visible) {
             setName(editCollection?.name || '');
             setSelectedColor(editCollection?.color || PRESET_COLORS[0]);
-            setCoverImage(editCollection?.cover_image_url || null);
         }
     }, [visible, editCollection]);
-
-    const handlePickImage = async () => {
-        try {
-            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-            if (!permissionResult.granted) {
-                Alert.alert(t('collection.permissionRequired'), t('collection.galleryPermission'));
-                return;
-            }
-
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [3, 4],
-                quality: 0.8,
-            });
-
-            if (!result.canceled && result.assets[0]) {
-                setCoverImage(result.assets[0].uri);
-            }
-        } catch (error) {
-            console.error('Error picking image:', error);
-            Alert.alert(t('collection.errorTitle'), 'Resim seçilirken bir hata oluştu'); // "Resim seçilirken..." için ayrıca key oluşturmadım, ama Error Title çevrildi.
-        }
-    };
 
     const handleSave = async () => {
         if (!name.trim()) {
@@ -112,22 +83,12 @@ export function CreateCollectionModal({
                     name: name.trim(),
                     color: selectedColor,
                 });
-
-                // Upload new cover image if changed
-                if (coverImage && coverImage !== editCollection.cover_image_url && !coverImage.startsWith('http')) {
-                    await uploadCollectionCover(collection.id, coverImage);
-                }
             } else {
                 // Create new collection
                 collection = await createCollection({
                     name: name.trim(),
                     color: selectedColor,
                 });
-
-                // Upload cover image if selected
-                if (coverImage && !coverImage.startsWith('http')) {
-                    await uploadCollectionCover(collection.id, coverImage);
-                }
             }
 
             onSuccess?.(collection);
@@ -154,7 +115,7 @@ export function CreateCollectionModal({
             onRequestClose={onClose}
         >
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                behavior="padding"
                 style={[styles.container, { backgroundColor: modalBgColor }]}
             >
                 {/* Header */}
@@ -185,42 +146,9 @@ export function CreateCollectionModal({
                     style={styles.content}
                     contentContainerStyle={styles.contentContainer}
                     showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    keyboardDismissMode="interactive"
                 >
-                    {/* Cover Image */}
-                    <View style={styles.section}>
-                        <Text style={[styles.sectionLabel, { color: textSecondary }]}>
-                            {t('collection.coverPhoto')}
-                        </Text>
-                        <TouchableOpacity
-                            onPress={handlePickImage}
-                            style={[
-                                styles.coverImageContainer,
-                                { borderColor: borderColor, backgroundColor: inputBgColor },
-                            ]}
-                            activeOpacity={0.8}
-                        >
-                            {coverImage ? (
-                                <>
-                                    <Image
-                                        source={{ uri: coverImage }}
-                                        style={styles.coverImage}
-                                        contentFit="cover"
-                                    />
-                                    <View style={styles.coverImageOverlay}>
-                                        <MaterialIcons name="edit" size={24} color="#fff" />
-                                    </View>
-                                </>
-                            ) : (
-                                <View style={styles.coverImagePlaceholder}>
-                                    <Ionicons name="image-outline" size={48} color={textSecondary} />
-                                    <Text style={[styles.coverImageText, { color: textSecondary }]}>
-                                        {t('collection.addPhoto')}
-                                    </Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
                     {/* Collection Name */}
                     <View style={styles.section}>
                         <Text style={[styles.sectionLabel, { color: textSecondary }]}>
@@ -246,6 +174,8 @@ export function CreateCollectionModal({
                             {name.length}/50
                         </Text>
                     </View>
+
+
 
                     {/* Color Selection */}
                     <View style={styles.section}>
@@ -283,15 +213,7 @@ export function CreateCollectionModal({
                                     { backgroundColor: selectedColor },
                                 ]}
                             >
-                                {coverImage ? (
-                                    <Image
-                                        source={{ uri: coverImage }}
-                                        style={styles.previewImage}
-                                        contentFit="cover"
-                                    />
-                                ) : (
-                                    <View style={[styles.previewImage, { backgroundColor: selectedColor }]} />
-                                )}
+                                <View style={[styles.previewImage, { backgroundColor: selectedColor }]} />
                                 <View style={styles.previewGradient} />
                                 <View style={styles.previewInfo}>
                                     <Text style={styles.previewName}>
@@ -366,35 +288,6 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.sm,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
-    },
-    coverImageContainer: {
-        width: '100%',
-        aspectRatio: 3 / 4,
-        maxHeight: 280,
-        borderRadius: BorderRadius.lg,
-        borderWidth: 2,
-        borderStyle: 'dashed',
-        overflow: 'hidden',
-    },
-    coverImage: {
-        width: '100%',
-        height: '100%',
-    },
-    coverImageOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    coverImagePlaceholder: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: Spacing.sm,
-    },
-    coverImageText: {
-        fontSize: 14,
-        fontFamily: Typography.fonts.ui,
     },
     input: {
         borderWidth: 1,

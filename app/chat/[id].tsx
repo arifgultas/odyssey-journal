@@ -14,6 +14,7 @@ import {
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
@@ -195,17 +196,17 @@ export default function ChatRoomScreen() {
     const handleDecline = () => {
         if (!chatUserId) return;
         Alert.alert(
-            t('chat.decline') || 'Delete',
-            t('chat.declineConfirm') || 'Are you sure you want to decline this request? The chat history will be deleted.',
+            t('chat.decline'),
+            t('chat.declineConfirm'),
             [
-                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: t('chat.decline') || 'Delete',
+                    text: t('chat.decline'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             await declineConversation(chatUserId);
-                            router.back();
+                            safeGoBack('/chat');
                         } catch (error) {
                             console.error('Error declining request:', error);
                         }
@@ -349,7 +350,7 @@ export default function ChatRoomScreen() {
                     borderBottomColor: `${theme.primary}20`,
                 }
             ]}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+                <TouchableOpacity onPress={() => safeGoBack('/chat')} style={styles.headerButton}>
                     <Ionicons name="arrow-back" size={28} color={theme.primary} />
                 </TouchableOpacity>
 
@@ -406,7 +407,7 @@ export default function ChatRoomScreen() {
             {isOtherUserTyping && (
                 <View style={styles.typingContainer}>
                     <Text style={[styles.typingText, { color: theme.textMuted }]}>
-                        {profile?.full_name || profile?.username || 'Traveler'} {language === 'tr' ? 'yazıyor...' : 'is typing...'}
+                        {profile?.full_name || profile?.username || t('profile.traveler')} {t('chat.typing')}
                     </Text>
                 </View>
             )}

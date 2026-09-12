@@ -22,6 +22,12 @@ export default {
         yes: 'はい',
         no: 'いいえ',
         and: 'と',
+        change: '変更',
+        untitled: '無題',
+        yesterday: '昨日',
+            info: 'お知らせ',
+            completed: '完了',
+            progress: '進捗',
     },
     auth: {
         login: 'ログイン',
@@ -81,6 +87,12 @@ export default {
         sendResetLink: 'リンクを送信',
         rememberPassword: '思い出しましたか？',
         resetLinkValidity: 'セキュリティのため、リンクは1時間有効です。',
+            newPassword: '新しいパスワード',
+            enterNewPassword: '新しいパスワードを入力してください',
+            confirmNewPassword: '新しいパスワード（確認）',
+            confirmNewPasswordPlaceholder: '新しいパスワードを再入力してください',
+            passwordLengthError: 'パスワードは6文字以上である必要があります。',
+            passwordMatchError: 'パスワードが一致しません。',
     },
     onboarding: {
         step1Title: '探検を始めよう',
@@ -104,6 +116,12 @@ export default {
         noFollowingPosts: '投稿はまだありません',
         exploreTravelers: 'コミュニティの他の旅行者を探索し、フォローしてここに投稿を表示します。',
         exploreButton: '旅行者を探す',
+        sortLatest: '最新',
+        sortPopular: '人気',
+        sortLocation: '位置情報付き',
+        sortLatestAccessibility: '最新の投稿順に並べ替え',
+        sortPopularAccessibility: '人気の投稿順に並べ替え',
+        sortLocationAccessibility: '位置情報付きの投稿で絞り込み',
     },
     explore: {
         title: '探索',
@@ -137,6 +155,12 @@ export default {
         user: 'ユーザー',
         category: 'カテゴリ',
         noCategoryPosts: 'このカテゴリには投稿がありません',
+        readPost: '投稿を読む',
+        newRoutesToExplore: '新しいおすすめルート',
+        featuredContentDefault: '世界で最も美しいルートを見つけて旅に出かけましょう。',
+        viewCategoryPosts: '{{category}}カテゴリーの投稿を見る',
+            featuredDefaultTitle: '探検する新しいルート',
+            featuredDefaultDescription: '最も美しいルートを発見し、冒険に出かけましょう。',
     },
     create: {
         title: '新規投稿',
@@ -177,6 +201,8 @@ export default {
         searchPlaceholder: '都市または場所を検索...',
         useCurrentLocation: '現在地を使用 (GPS)',
         noResults: '結果が見つかりません。もう一度お試しください。',
+            locationNotFound: '場所が見つかりませんでした。別の検索をお試しください。',
+            locationSearchError: '位置情報の検索中にエラーが発生しました。',
     },
     categories: {
         nature: '自然',
@@ -191,6 +217,10 @@ export default {
         wildlife: '野生動物',
     },
     collection: {
+        saveToCollection: 'コレクションに保存',
+        myCollections: 'マイコレクション',
+        nameInputPlaceholder: 'コレクション名...',
+
         createTitle: 'コレクションを作成',
         editTitle: 'コレクションを編集',
         save: '保存',
@@ -219,6 +249,9 @@ export default {
         noNote: 'この投稿にはメモがありません。',
         unknownLocation: '不明な場所',
         untitled: '無題',
+        noNotes: 'この投稿にはメモがありません。',
+        saveWithoutCollection: 'コレクションなしで保存',
+        saveError: '保存中にエラーが発生しました',
     },
 
     // Chat & Messaging
@@ -237,6 +270,9 @@ export default {
         requestBanner: 'このユーザーとチャットしますか？許可するまで返信できません。',
         declineConfirm: 'このリクエストを削除しますか？チャット履歴も削除されます。',
         noRequests: 'メッセージリクエストはありません。',
+        openLettersAndChats: '手紙とチャットを開く',
+        typing: '入力中...',
+        yesterday: '昨日',
     },
 
     saved: {
@@ -304,6 +340,11 @@ export default {
         blockError: 'ユーザーのブロックに失敗しました。',
         notFoundTitle: '旅行者が見つかりません',
         notFoundDesc: 'このプロフィールは利用できないか、表示する権限がありません。',
+        natureLover: '自然愛好家',
+        cityExplorer: '都市探訪者',
+        historian: '歴史好き',
+        photographer: '写真愛好家',
+        traveler: '旅行者',
     },
     editProfile: {
         title: 'プロフィール編集',
@@ -369,6 +410,15 @@ export default {
         deleteConfirm: 'この投稿を削除しますか？',
         deleteSuccess: '投稿を削除しました',
         reportSuccess: '報告を送信しました',
+        editTitle: '投稿を編集',
+        deleteTitle: '投稿を削除',
+            address: '住所',
+            memoriesTitle: '思い出とメモ',
+            memory: '思い出',
+            notesCount: '{{count}} 件のメモ',
+            reportPost: '投稿を報告',
+            viewNotes: '{{count}} 件のメモを表示',
+            writeNote: 'ジャーナルにメモを書く...',
     },
     report: {
         title: '投稿を報告',
@@ -439,6 +489,18 @@ export default {
         adminTitle: 'ADMIN',
         moderationPanel: 'Moderation Panel',
         moderationPanelDesc: 'Review reports, manage users',
+        likeNotifications: 'いいね',
+        likeNotificationsDesc: '投稿にいいねがついたときに通知を受け取る',
+        commentNotifications: 'コメント',
+        commentNotificationsDesc: '投稿にコメントがついたときに通知を受け取る',
+        followNotifications: 'フォロワー',
+        followNotificationsDesc: '新しくフォローされたときに通知を受け取る',
+        changePassword: 'パスワード変更',
+        changePasswordDesc: 'アカウントのパスワードを更新',
+        preferencesUpdateError: '設定の更新中にエラーが発生しました。',
+            notificationPreferences: '通知設定',
+            passwordChangeSuccess: 'パスワードが正常に更新されました。',
+            unblockError: 'ユーザーのブロック解除に失敗しました。',
     },
     errors: {
         generic: 'エラーが発生しました',
@@ -491,6 +553,11 @@ export default {
         postCount: '{{count}} 投稿',
         noPosts: '場所付きの投稿はありません',
         addLocationTip: '投稿に場所を追加してください',
+        openInMap: '地図で開く',
+        travelPoint: '旅行スポット',
+            journeyRoute: '旅のルート ({{count}}地点)',
+            noJourneyYet: 'まだ旅がありません',
+            startExploring: '世界を探検し始めましょう！',
     },
 
     destinationPosts: {
@@ -655,5 +722,22 @@ export default {
             name: "探検家",
             description: "30日間旅をする"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: '日付 / 旅行の時期',
+        tapToChange: 'タップして日付を変更',
+        change: '変更',
+        today: '今日',
+        yesterday: '昨日',
+        tomorrow: '明日',
+        threeDaysAgo: '3日前',
+        calendar: 'カレンダー',
+        selectDate: '旅行日を選択',
+        selected: '選択済み:',
+        apply: '日付を適用',
+        cancel: 'キャンセル',
+        daysAgo: '{{count}}日前',
+        daysLater: '{{count}}日後',
+    },
 };

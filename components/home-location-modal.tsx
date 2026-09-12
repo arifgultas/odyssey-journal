@@ -55,7 +55,7 @@ export function HomeLocationModal({
                 setIsLoading(false);
                 await markPromptAsSeen();
                 Alert.alert(
-                    t('common.info') || 'Bilgi',
+                    t('common.info'),
                     t('homeLocation.permissionDenied')
                 );
                 onClose();
@@ -109,7 +109,7 @@ export function HomeLocationModal({
                 ? `${t('homeLocation.success')} (${locationLabel})`
                 : t('homeLocation.success');
 
-            Alert.alert(t('common.success') || 'Başarılı', successMsg);
+            Alert.alert(t('common.success'), successMsg);
 
             if (onSuccess) {
                 onSuccess();
@@ -118,7 +118,7 @@ export function HomeLocationModal({
         } catch (error: any) {
             console.error('Error setting home location:', error);
             Alert.alert(
-                t('common.error') || 'Hata',
+                t('common.error'),
                 t('homeLocation.error')
             );
         } finally {

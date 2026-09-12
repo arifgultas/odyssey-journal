@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
+import { safeGoBack } from '@/lib/navigation';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
@@ -181,7 +182,7 @@ export default function ForgotPasswordScreen() {
                         style={[styles.backButton, {
                             backgroundColor: isDark ? 'rgba(212, 165, 116, 0.1)' : 'rgba(44, 24, 16, 0.05)',
                         }]}
-                        onPress={() => router.back()}
+                        onPress={() => safeGoBack('/(auth)/login')}
                         activeOpacity={0.7}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >

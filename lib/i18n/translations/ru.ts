@@ -22,6 +22,12 @@ export default {
         yes: 'Да',
         no: 'Нет',
         and: 'и',
+        change: 'Изменить',
+        untitled: 'Без названия',
+        yesterday: 'Вчера',
+            info: 'Информация',
+            completed: 'Завершено',
+            progress: 'Прогресс',
     },
     auth: {
         login: 'Войти',
@@ -81,6 +87,12 @@ export default {
         sendResetLink: 'Отправить ссылку',
         rememberPassword: 'Вспомнили?',
         resetLinkValidity: 'Для безопасности ссылка действительна 1 час.',
+            newPassword: 'Новый пароль',
+            enterNewPassword: 'Введите новый пароль',
+            confirmNewPassword: 'Подтвердите новый пароль',
+            confirmNewPasswordPlaceholder: 'Повторите ввод нового пароля',
+            passwordLengthError: 'Пароль должен содержать не менее 6 символов.',
+            passwordMatchError: 'Пароли не совпадают.',
     },
     onboarding: {
         step1Title: 'Начните исследовать',
@@ -104,6 +116,12 @@ export default {
         noFollowingPosts: 'Пока нет публикаций',
         exploreTravelers: 'Ищите других путешественников в сообществе и подписывайтесь на них, чтобы видеть их публикации здесь.',
         exploreButton: 'Найти путешественников',
+        sortLatest: 'Новые',
+        sortPopular: 'Популярные',
+        sortLocation: 'С локацией',
+        sortLatestAccessibility: 'Сортировать по новизне',
+        sortPopularAccessibility: 'Сортировать по популярности',
+        sortLocationAccessibility: 'Фильтровать по публикациям с локацией',
     },
     explore: {
         title: 'Обзор',
@@ -137,6 +155,12 @@ export default {
         user: 'Пользователь',
         category: 'Категория',
         noCategoryPosts: 'В этой категории нет публикаций',
+        readPost: 'Читать публикацию',
+        newRoutesToExplore: 'Новые маршруты для открытий',
+        featuredContentDefault: 'Откройте для себя самые красивые маршруты мира и отправляйтесь в путь.',
+        viewCategoryPosts: 'Посмотреть публикации в категории {{category}}',
+            featuredDefaultTitle: 'Новые маршруты для исследований',
+            featuredDefaultDescription: 'Откройте для себя самые красивые маршруты и отправляйтесь в путь.',
     },
     create: {
         title: 'Новая публикация',
@@ -177,6 +201,8 @@ export default {
         searchPlaceholder: 'Поиск города или места...',
         useCurrentLocation: 'Использовать текущее местоположение (GPS)',
         noResults: 'Результаты не найдены. Пожалуйста, попробуйте еще раз.',
+            locationNotFound: 'Местоположение не найдено. Попробуйте другой поиск.',
+            locationSearchError: 'Произошла ошибка при поиске местоположения.',
     },
     categories: {
         nature: 'Природа',
@@ -191,6 +217,10 @@ export default {
         wildlife: 'Дикая природа',
     },
     collection: {
+        saveToCollection: 'Сохранить в коллекцию',
+        myCollections: 'Мои коллекции',
+        nameInputPlaceholder: 'Название коллекции...',
+
         createTitle: 'Создать коллекцию',
         editTitle: 'Редактировать коллекцию',
         save: 'Сохранить',
@@ -219,6 +249,9 @@ export default {
         noNote: 'Заметка для этой публикации не добавлена.',
         unknownLocation: 'Неизвестное место',
         untitled: 'Без названия',
+        noNotes: 'Для этой публикации нет заметок.',
+        saveWithoutCollection: 'Сохранить без коллекции',
+        saveError: 'Ошибка при сохранении',
     },
 
     // Chat & Messaging
@@ -237,6 +270,9 @@ export default {
         requestBanner: 'Хотите общаться с этим пользователем? Вы не можете ответить, пока не примете запрос.',
         declineConfirm: 'Вы уверены, что хотите отклонить этот запрос? История чата будет удалена.',
         noRequests: 'Запросы сообщений не найдены.',
+        openLettersAndChats: 'Открыть письма и чаты',
+        typing: 'печатает...',
+        yesterday: 'Вчера',
     },
 
     saved: {
@@ -304,6 +340,11 @@ export default {
         blockError: 'Ошибка при блокировке пользователя.',
         notFoundTitle: 'Путешественник не найден',
         notFoundDesc: 'Этот профиль недоступен или у вас нет прав на его просмотр.',
+        natureLover: 'Любитель природы',
+        cityExplorer: 'Исследователь городов',
+        historian: 'Историк',
+        photographer: 'Фотограф',
+        traveler: 'Путешественник',
     },
     editProfile: {
         title: 'Редактировать профиль',
@@ -369,6 +410,15 @@ export default {
         deleteConfirm: 'Удалить эту публикацию?',
         deleteSuccess: 'Публикация удалена',
         reportSuccess: 'Жалоба отправлена',
+        editTitle: 'Редактировать публикацию',
+        deleteTitle: 'Удалить публикацию',
+            address: 'Адрес',
+            memoriesTitle: 'Воспоминания и заметки',
+            memory: 'Воспоминание',
+            notesCount: '{{count}} заметок',
+            reportPost: 'Пожаловаться на публикацию',
+            viewNotes: 'Посмотреть {{count}} заметок',
+            writeNote: 'Напишите заметку для дневника...',
     },
     report: {
         title: 'Пожаловаться на публикацию',
@@ -439,6 +489,18 @@ export default {
         adminTitle: 'АДМИНИСТРИРОВАНИЕ',
         moderationPanel: 'Панель модерации',
         moderationPanelDesc: 'Просмотр жалоб, управление пользователями',
+        likeNotifications: 'Отметки «Нравится»',
+        likeNotificationsDesc: 'Получать уведомления, когда кому-то нравится ваша публикация',
+        commentNotifications: 'Комментарии',
+        commentNotificationsDesc: 'Получать уведомления, когда кто-то комментирует вашу публикацию',
+        followNotifications: 'Подписчики',
+        followNotificationsDesc: 'Получать уведомления, когда на вас подписываются',
+        changePassword: 'Сменить пароль',
+        changePasswordDesc: 'Обновите пароль вашей учетной записи',
+        preferencesUpdateError: 'Произошла ошибка при обновлении настроек.',
+            notificationPreferences: 'Настройки уведомлений',
+            passwordChangeSuccess: 'Ваш пароль успешно обновлен.',
+            unblockError: 'Не удалось разблокировать пользователя.',
     },
     errors: {
         generic: 'Что-то пошло не так',
@@ -491,6 +553,11 @@ export default {
         postCount: '{{count}} публикаций',
         noPosts: 'Нет публикаций с местоположением',
         addLocationTip: 'Добавьте местоположение к своим публикациям',
+        openInMap: 'Открыть на карте',
+        travelPoint: 'Точка маршрута',
+            journeyRoute: 'Маршрут путешествия ({{count}} точек)',
+            noJourneyYet: 'Пока нет путешествий',
+            startExploring: 'Начните исследовать мир!',
     },
 
     destinationPosts: {
@@ -655,5 +722,22 @@ export default {
             name: "Исследователь",
             description: "Путешествуйте 30 дней"
         }
-    }
+    },
+    // Date Picker
+    datePicker: {
+        title: 'ДАТА / ВРЕМЯ ПУТЕШЕСТВИЯ',
+        tapToChange: 'Нажмите, чтобы изменить дату',
+        change: 'Изменить',
+        today: 'Сегодня',
+        yesterday: 'Вчера',
+        tomorrow: 'Завтра',
+        threeDaysAgo: '3 дня назад',
+        calendar: 'Календарь',
+        selectDate: 'Выберите дату путешествия',
+        selected: 'Выбрано:',
+        apply: 'Применить дату',
+        cancel: 'Отмена',
+        daysAgo: '{{count}} дн. назад',
+        daysLater: 'через {{count}} дн.',
+    },
 };

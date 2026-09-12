@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { AnimatedPostCard } from '../animated-post-card';
 import { Post } from '@/lib/posts';
+import { t } from '@/lib/i18n';
 
 // Mock hook
 jest.mock('@/hooks/use-color-scheme', () => ({
@@ -86,7 +87,7 @@ describe('AnimatedPostCard Component', () => {
             <AnimatedPostCard post={mockPost} />
         );
 
-        expect(getByText('Istanbul, TU')).toBeTruthy();
+        expect(getByText('İstanbul, TR')).toBeTruthy();
         expect(getByText('Alice Explorer')).toBeTruthy();
         expect(getByText('Had a wonderful time exploring the ancient ruins!')).toBeTruthy();
     });
@@ -136,14 +137,14 @@ describe('AnimatedPostCard Component', () => {
         );
 
         // Menu should be hidden initially
-        expect(queryByText('Delete Post')).toBeNull();
+        expect(queryByText(t('post.deleteTitle'))).toBeNull();
 
         // Click ellipsis to toggle menu
         const menuToggle = getByText('ellipsis-horizontal');
         fireEvent.press(menuToggle);
 
         // Menu should be visible now
-        const deleteBtn = getByText('Delete Post');
+        const deleteBtn = getByText(t('post.deleteTitle'));
         expect(deleteBtn).toBeTruthy();
 
         // Click delete
@@ -158,14 +159,14 @@ describe('AnimatedPostCard Component', () => {
         );
 
         // Menu should be hidden initially
-        expect(queryByText('Report Post')).toBeNull();
+        expect(queryByText(t('post.reportPost'))).toBeNull();
 
         // Click ellipsis to toggle menu
         const menuToggle = getByText('ellipsis-horizontal');
         fireEvent.press(menuToggle);
 
         // Menu should be visible now
-        const reportBtn = getByText('Report Post');
+        const reportBtn = getByText(t('post.reportPost'));
         expect(reportBtn).toBeTruthy();
 
         // Click report

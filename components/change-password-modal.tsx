@@ -69,12 +69,12 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
         setErrorMessage('');
 
         if (password.length < 6) {
-            setErrorMessage(t('auth.passwordLengthError') || 'Şifre en az 6 karakter olmalıdır.');
+            setErrorMessage(t('auth.passwordLengthError'));
             return;
         }
 
         if (password !== confirmPassword) {
-            setErrorMessage(t('auth.passwordMatchError') || 'Şifreler eşleşmiyor.');
+            setErrorMessage(t('auth.passwordMatchError'));
             return;
         }
 
@@ -85,13 +85,13 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
             if (error) throw error;
 
             Alert.alert(
-                t('common.success') || 'Başarılı',
-                t('settings.passwordChangeSuccess') || 'Şifreniz başarıyla güncellendi.'
+                t('common.success'),
+                t('settings.passwordChangeSuccess')
             );
             handleClose();
         } catch (error: any) {
             console.error('Error changing password:', error);
-            setErrorMessage(error.message || t('errors.generic') || 'Şifre güncellenirken bir hata oluştu.');
+            setErrorMessage(error.message || t('errors.generic'));
         } finally {
             setIsLoading(false);
         }
@@ -104,29 +104,25 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
         onClose();
     };
 
+    if (!visible) return null;
+
     return (
         <Modal
             visible={visible}
             animationType="slide"
-            transparent
+            transparent={true}
             onRequestClose={handleClose}
         >
             <View style={styles.overlay}>
-                <BlurView intensity={20} style={StyleSheet.absoluteFill} />
-                <TouchableOpacity
-                    style={styles.backdrop}
-                    activeOpacity={1}
-                    onPress={handleClose}
-                />
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={[styles.modalContent, { backgroundColor: theme.background }]}
+                    style={styles.modalContent}
                 >
                     <SafeAreaView style={styles.safeArea}>
                         {/* Header */}
                         <View style={[styles.header, { borderBottomColor: theme.border }]}>
                             <Text style={[styles.title, { color: theme.text }]}>
-                                {t('settings.changePassword') || 'Şifre Değiştir'}
+                                {t('settings.changePassword')}
                             </Text>
                             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                                 <Ionicons name="close" size={24} color={theme.text} />
@@ -145,14 +141,14 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
                             {/* Password input */}
                             <View style={styles.inputContainer}>
                                 <Text style={[styles.inputLabel, { color: theme.textMuted }]}>
-                                    {t('auth.newPassword') || 'Yeni Şifre'}
+                                    {t('auth.newPassword')}
                                 </Text>
                                 <View style={[styles.inputWrapper, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                                     <TextInput
                                         style={[styles.input, { color: theme.text }]}
                                         value={password}
                                         onChangeText={setPassword}
-                                        placeholder={t('auth.enterNewPassword') || 'Yeni şifrenizi girin'}
+                                        placeholder={t('auth.enterNewPassword')}
                                         placeholderTextColor={theme.textMuted}
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
@@ -174,14 +170,14 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
                             {/* Confirm password input */}
                             <View style={styles.inputContainer}>
                                 <Text style={[styles.inputLabel, { color: theme.textMuted }]}>
-                                    {t('auth.confirmNewPassword') || 'Yeni Şifre (Tekrar)'}
+                                    {t('auth.confirmNewPassword')}
                                 </Text>
                                 <View style={[styles.inputWrapper, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                                     <TextInput
                                         style={[styles.input, { color: theme.text }]}
                                         value={confirmPassword}
                                         onChangeText={setConfirmPassword}
-                                        placeholder={t('auth.confirmNewPasswordPlaceholder') || 'Yeni şifrenizi tekrar girin'}
+                                        placeholder={t('auth.confirmNewPasswordPlaceholder')}
                                         placeholderTextColor={theme.textMuted}
                                         secureTextEntry={!showConfirmPassword}
                                         autoCapitalize="none"
@@ -212,7 +208,7 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
                                 ) : (
                                     <>
                                         <Text style={styles.submitButtonText}>
-                                            {t('common.save') || 'Şifreyi Güncelle'}
+                                            {t('common.save')}
                                         </Text>
                                         <Ionicons name="key" size={18} color="#2C1810" style={{ marginLeft: 6 }} />
                                     </>
