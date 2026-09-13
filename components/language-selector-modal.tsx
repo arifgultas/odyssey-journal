@@ -65,6 +65,7 @@ export function LanguageSelectorModal({ visible, onClose }: LanguageSelectorModa
                 ]}
                 onPress={() => handleSelectLanguage(item.code)}
                 activeOpacity={0.7}
+                testID={`language-option-${item.code}`}
             >
                 <View style={styles.languageInfo}>
                     <Text style={styles.flag}>{item.flag}</Text>

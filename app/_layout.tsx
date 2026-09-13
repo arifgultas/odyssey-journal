@@ -1,6 +1,6 @@
 import { OfflineIndicator } from '@/components/offline-indicator';
 import { AuthProvider } from '@/context/AuthContext';
-import { LanguageProvider } from '@/context/language-context';
+import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-context';
 import { useBookFonts } from '@/hooks/use-book-fonts';
 import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
@@ -36,6 +36,7 @@ export const unstable_settings = {
 
 // Inner layout that uses theme context
 function RootLayoutNav() {
+  const { t } = useLanguage();
   const { colorScheme, isDark } = useTheme();
   useDeepLinkHandler();
 
@@ -46,7 +47,7 @@ function RootLayoutNav() {
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal', title: t('modal.title') }} />
         <Stack.Screen name="comments/[postId]" options={{ headerShown: false }} />
         <Stack.Screen name="post-detail/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="user-profile/[id]" options={{ headerShown: false }} />

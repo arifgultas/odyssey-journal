@@ -12,7 +12,8 @@ import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { formatPolaroidDate } from '@/lib/date-formatter';
-import { formatPostLocation } from '@/lib/location-formatter';
+import { postLocationOf } from '@/lib/location-formatter';
+import { usePlaceName } from '@/hooks/use-place-name';
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -33,7 +34,6 @@ import { AnimatedLikeButton } from './animated-like-button';
 import { ImageCarousel } from './image-carousel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 
 interface AnimatedPostCardProps {
     post: Post;
@@ -62,6 +62,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
 }: AnimatedPostCardProps) {
     const router = useRouter();
     const { language, t } = useLanguage();
+    const locationText = usePlaceName(postLocationOf(post), post.title);
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -83,7 +84,6 @@ const _AnimatedPostCard = function AnimatedPostCard({
         const rotations = [-3, 2, -2, 1, -1, 3, 0];
         return rotations[index % rotations.length];
     }, [index]);
-
 
     // Appear animation on mount with stagger
     useEffect(() => {
@@ -127,16 +127,6 @@ const _AnimatedPostCard = function AnimatedPostCard({
     // Format date for polaroid caption using active language
     const formatDateForPolaroid = (dateString: string) => {
         return formatPolaroidDate(dateString, language);
-    };
-
-    // Get location display text
-    const getLocationText = () => {
-        const loc = post.location || (post.location_name ? {
-            city: post.location_name.includes(',') ? post.location_name.split(',')[0].trim() : post.location_name.trim(),
-            country: post.location_name.includes(',') ? post.location_name.split(',')[1].trim() : undefined,
-            name: post.location_name,
-        } : undefined);
-        return formatPostLocation(loc, language, post.title);
     };
 
     const handleLike = () => {
@@ -278,7 +268,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
                         >
                             <View style={styles.polaroidCaption}>
                                 <Text style={[styles.locationTitle, { color: theme.text }]}>
-                                    {getLocationText()}
+                                    {locationText}
                                 </Text>
                                 <Text style={[styles.dateText, { color: theme.textMuted }]}>
                                     {formatDateForPolaroid(post.created_at)}

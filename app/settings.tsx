@@ -311,6 +311,7 @@ export default function SettingsScreen() {
                         <TouchableOpacity
                             style={[styles.languageSelector, { backgroundColor: colors.sectionBg, borderColor: colors.border }]}
                             onPress={() => setLanguageModalVisible(true)}
+                            testID="settings-language-selector"
                             activeOpacity={0.8}
                         >
                             <View style={styles.languageSelectorLeft}>

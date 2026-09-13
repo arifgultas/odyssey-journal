@@ -1,4 +1,5 @@
 import { Colors, Shadows, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -74,7 +75,7 @@ export function BoardingPassCard({
             {/* ── Header: Odyssey Journal ── */}
             <View style={[styles.header, { backgroundColor: theme.headerBg }]}>
                 <Text style={[styles.headerText, { color: theme.text }]}>
-                    Boarding Pass
+                    {t('post.boardingPass')}
                 </Text>
             </View>
 

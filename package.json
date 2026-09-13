@@ -11,7 +11,11 @@
     "lint": "expo lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "i18n:check": "node scripts/i18n-check.js",
+    "i18n:format": "node scripts/i18n-format.js",
+    "i18n:places": "node scripts/generate-place-data.js",
+    "i18n:backfill": "node scripts/backfill-place-names.js"
   },
   "dependencies": {
     "@expo-google-fonts/caveat": "^0.4.2",

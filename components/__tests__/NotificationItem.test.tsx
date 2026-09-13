@@ -16,6 +16,8 @@ jest.mock('@/lib/i18n', () => ({
         }
         return key;
     },
+    getCurrentLanguage: () => 'en',
+    SUPPORTED_LANGUAGES: { en: { name: 'English', nativeName: 'English', flag: '🇬🇧' } },
 }));
 
 describe('NotificationItem Component', () => {

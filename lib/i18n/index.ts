@@ -58,8 +58,11 @@ const i18n = new I18n({
     zh,
 });
 
-// Default configuration
-i18n.defaultLocale = 'tr';
+// English is the fallback for any key a locale is missing: showing an international
+// user Turkish (the previous default) is more confusing than showing them English.
+export const FALLBACK_LANGUAGE: LanguageCode = 'en';
+
+i18n.defaultLocale = FALLBACK_LANGUAGE;
 i18n.enableFallback = true;
 
 // Get device locale
@@ -71,7 +74,7 @@ const getDeviceLocale = (): LanguageCode => {
             return locale as LanguageCode;
         }
     }
-    return 'tr'; // Default to Turkish
+    return FALLBACK_LANGUAGE;
 };
 
 // Initialize with device locale
@@ -108,14 +111,27 @@ export const loadPersistedLanguage = async (): Promise<LanguageCode> => {
     return getDeviceLocale();
 };
 
+/** i18n-js renders an unknown key as `[missing "en.foo.bar" translation]` */
+const isMissing = (value: unknown): boolean =>
+    typeof value === 'string' && /^\[missing "/i.test(value);
+
 /**
  * Translate function with type safety
  */
 export const t = (key: string, options?: Record<string, any>): string => {
     const translation = i18n.t(key, options);
-    if (typeof translation === 'string' && (translation.startsWith('[missing "') || translation.startsWith('[MISSING "'))) {
+
+    // Getting here means the key is absent from the active locale AND from the English
+    // fallback. Returning '' silently (the old behaviour) made the text vanish from the
+    // screen with nothing to debug, so make it loud in development instead.
+    if (isMissing(translation)) {
+        if (__DEV__) {
+            console.warn(`[i18n] Missing translation key: ${key}`);
+            return `⟦${key}⟧`;
+        }
         return '';
     }
+
     return translation;
 };
 
@@ -124,7 +140,7 @@ export const t = (key: string, options?: Record<string, any>): string => {
  */
 export const hasTranslation = (key: string): boolean => {
     const translation = i18n.t(key, { defaultValue: '__MISSING__' });
-    return translation !== '__MISSING__';
+    return translation !== '__MISSING__' && !isMissing(translation);
 };
 
 /**

@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { formatShortDate } from '@/lib/date-formatter';
 import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -67,7 +68,7 @@ export default function AdminScreen() {
     const colors = isDark ? AdminColors.dark : AdminColors.light;
     const insets = useSafeAreaInsets();
     const router = useRouter();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     const [authorized, setAuthorized] = useState<boolean | null>(null);
     const [reports, setReports] = useState<ReportWithDetails[]>([]);
@@ -119,21 +120,21 @@ export default function AdminScreen() {
 
     const handleDeletePost = (report: ReportWithDetails) => {
         Alert.alert(
-            'Delete Post',
-            'This will permanently delete this post. Are you sure?',
+            t('admin.deletePost'),
+            t('admin.deletePostConfirm'),
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: 'Delete',
+                    text: t('common.delete'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             await adminDeletePost(report.post_id);
                             await updateReportStatus(report.id, 'resolved');
                             await loadData();
-                            Alert.alert('Done', 'Post deleted and report resolved.');
+                            Alert.alert(t('common.done'), t('admin.deletePostDone'));
                         } catch (error) {
-                            Alert.alert('Error', 'Failed to delete post.');
+                            Alert.alert(t('common.error'), t('admin.deletePostFailed'));
                         }
                     },
                 },
@@ -144,24 +145,24 @@ export default function AdminScreen() {
     const handleBanUser = (report: ReportWithDetails) => {
         const userId = report.post?.user_id;
         if (!userId) return;
-        const username = report.post?.profiles?.username || report.post?.profiles?.full_name || 'User';
+        const username = report.post?.profiles?.username || report.post?.profiles?.full_name || t('admin.unknownUser');
 
         Alert.alert(
-            'Ban User',
-            `Ban ${username}? They will not be able to create posts or comments.`,
+            t('admin.banUser'),
+            t('admin.banUserConfirm', { username }),
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: 'Ban',
+                    text: t('admin.ban'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             await banUser(userId);
                             await updateReportStatus(report.id, 'resolved');
                             await loadData();
-                            Alert.alert('Done', `${username} has been banned.`);
+                            Alert.alert(t('common.done'), t('admin.banUserDone', { username }));
                         } catch (error) {
-                            Alert.alert('Error', 'Failed to ban user.');
+                            Alert.alert(t('common.error'), t('admin.banUserFailed'));
                         }
                     },
                 },
@@ -174,7 +175,7 @@ export default function AdminScreen() {
             await updateReportStatus(report.id, 'dismissed');
             await loadData();
         } catch (error) {
-            Alert.alert('Error', 'Failed to dismiss report.');
+            Alert.alert(t('common.error'), t('admin.dismissFailed'));
         }
     };
 
@@ -185,13 +186,13 @@ export default function AdminScreen() {
                 <View style={styles.unauthorizedContainer}>
                     <Ionicons name="shield-outline" size={64} color={colors.textSecondary} />
                     <Text style={[styles.unauthorizedText, { color: colors.textPrimary }]}>
-                        Access Denied
+                        {t('admin.accessDenied')}
                     </Text>
                     <Text style={[styles.unauthorizedSubtext, { color: colors.textSecondary }]}>
-                        You don&apos;t have admin privileges.
+                        {t('admin.noPrivileges')}
                     </Text>
                     <TouchableOpacity onPress={() => safeGoBack('/settings')}>
-                        <Text style={[styles.goBackText, { color: colors.accent }]}>Go Back</Text>
+                        <Text style={[styles.goBackText, { color: colors.accent }]}>{t('admin.goBack')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -216,16 +217,19 @@ export default function AdminScreen() {
         }
     };
 
+    // Reason ids are shared with the report modal, so reuse its translations
     const getReasonLabel = (reason: string): string => {
-        const labels: Record<string, string> = {
-            spam: '🚫 Spam',
-            harassment: '😡 Harassment',
-            inappropriate: '⚠️ Inappropriate',
-            violence: '🔴 Violence',
-            misinformation: '❌ Misinformation',
-            other: '📝 Other',
+        const icons: Record<string, string> = {
+            spam: '🚫',
+            harassment: '😡',
+            hate_speech: '⚠️',
+            violence: '🔴',
+            nudity: '🔞',
+            false_information: '❌',
+            other: '📝',
         };
-        return labels[reason] || reason;
+        const label = t(`report.reasons.${reason}.label`) || reason;
+        return icons[reason] ? `${icons[reason]} ${label}` : label;
     };
 
     const renderReportCard = ({ item, index }: { item: ReportWithDetails; index: number }) => (
@@ -238,7 +242,7 @@ export default function AdminScreen() {
                 <View style={styles.reportHeaderLeft}>
                     <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(item.status)}20` }]}>
                         <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
-                            {item.status.toUpperCase()}
+                            {t(`admin.${item.status}`).toUpperCase()}
                         </Text>
                     </View>
                     <Text style={[styles.reasonText, { color: colors.textPrimary }]}>
@@ -246,7 +250,7 @@ export default function AdminScreen() {
                     </Text>
                 </View>
                 <Text style={[styles.dateText, { color: colors.textSecondary }]}>
-                    {new Date(item.created_at).toLocaleDateString()}
+                    {formatShortDate(item.created_at, language)}
                 </Text>
             </View>
 
@@ -256,7 +260,7 @@ export default function AdminScreen() {
                     <View style={styles.postAuthor}>
                         <Ionicons name="person-circle" size={20} color={colors.accent} />
                         <Text style={[styles.postAuthorName, { color: colors.textPrimary }]}>
-                            {item.post.profiles?.username || item.post.profiles?.full_name || 'Unknown'}
+                            {item.post.profiles?.username || item.post.profiles?.full_name || t('admin.unknownUser')}
                         </Text>
                     </View>
                     <Text style={[styles.postTitle, { color: colors.textPrimary }]} numberOfLines={1}>
@@ -289,7 +293,7 @@ export default function AdminScreen() {
             {item.description && (
                 <View style={styles.descriptionContainer}>
                     <Text style={[styles.descriptionLabel, { color: colors.textSecondary }]}>
-                        Reporter&apos;s note:
+                        {t('admin.reporterNote')}
                     </Text>
                     <Text style={[styles.descriptionText, { color: colors.textPrimary }]} numberOfLines={3}>
                         {item.description}
@@ -302,7 +306,9 @@ export default function AdminScreen() {
                 <View style={styles.reporterInfo}>
                     <Ionicons name="flag" size={14} color={colors.textSecondary} />
                     <Text style={[styles.reporterText, { color: colors.textSecondary }]}>
-                        Reported by: {item.reporter?.username || item.reporter?.full_name || 'Anonymous'}
+                        {t('admin.reportedBy', {
+                            name: item.reporter?.username || item.reporter?.full_name || t('admin.anonymous'),
+                        })}
                     </Text>
                 </View>
             </View>
@@ -315,7 +321,7 @@ export default function AdminScreen() {
                         onPress={() => handleDismiss(item)}
                     >
                         <Ionicons name="close-circle-outline" size={16} color={colors.dismissed} />
-                        <Text style={[styles.actionButtonText, { color: colors.dismissed }]}>Dismiss</Text>
+                        <Text style={[styles.actionButtonText, { color: colors.dismissed }]}>{t('admin.dismiss')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -323,7 +329,7 @@ export default function AdminScreen() {
                         onPress={() => handleDeletePost(item)}
                     >
                         <Ionicons name="trash-outline" size={16} color={colors.danger} />
-                        <Text style={[styles.actionButtonText, { color: colors.danger }]}>Delete Post</Text>
+                        <Text style={[styles.actionButtonText, { color: colors.danger }]}>{t('admin.deletePost')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -331,7 +337,7 @@ export default function AdminScreen() {
                         onPress={() => handleBanUser(item)}
                     >
                         <Ionicons name="ban-outline" size={16} color={colors.danger} />
-                        <Text style={[styles.actionButtonText, { color: colors.danger }]}>Ban User</Text>
+                        <Text style={[styles.actionButtonText, { color: colors.danger }]}>{t('admin.banUser')}</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -358,7 +364,7 @@ export default function AdminScreen() {
                 <View style={styles.headerCenter}>
                     <Ionicons name="shield-checkmark" size={20} color={colors.accent} />
                     <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : colors.textPrimary }]}>
-                        ADMIN PANEL
+                        {t('admin.panelTitle')}
                     </Text>
                 </View>
                 <View style={styles.headerSpacer} />
@@ -372,17 +378,17 @@ export default function AdminScreen() {
                 >
                     <View style={styles.statItem}>
                         <Text style={[styles.statNumber, { color: colors.pending }]}>{stats.pendingReports}</Text>
-                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Pending</Text>
+                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('admin.pending')}</Text>
                     </View>
                     <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
                     <View style={styles.statItem}>
                         <Text style={[styles.statNumber, { color: colors.textPrimary }]}>{stats.totalReports}</Text>
-                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total</Text>
+                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('admin.total')}</Text>
                     </View>
                     <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
                     <View style={styles.statItem}>
                         <Text style={[styles.statNumber, { color: colors.danger }]}>{stats.bannedUsers}</Text>
-                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Banned</Text>
+                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('admin.banned')}</Text>
                     </View>
                 </Animated.View>
             )}
@@ -404,7 +410,7 @@ export default function AdminScreen() {
                                 { color: filter === f ? colors.accent : colors.textSecondary },
                             ]}
                         >
-                            {f ? f.charAt(0).toUpperCase() + f.slice(1) : 'All'}
+                            {f ? t(`admin.${f}`) : t('admin.all')}
                         </Text>
                     </TouchableOpacity>
                 ))}
@@ -428,10 +434,10 @@ export default function AdminScreen() {
                         <View style={styles.emptyContainer}>
                             <Ionicons name="checkmark-circle-outline" size={48} color={colors.accent} />
                             <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
-                                No reports found
+                                {t('admin.noReports')}
                             </Text>
                             <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-                                {filter === 'pending' ? 'All caught up! No pending reports.' : 'No reports match this filter.'}
+                                {filter === 'pending' ? t('admin.allCaughtUp') : t('admin.noMatchingReports')}
                             </Text>
                         </View>
                     }

@@ -1,0 +1,72 @@
+appId: com.odysseyjournal.app
+name: Language switch - every supported language
+tags:
+  - i18n
+---
+# Walks through all twelve languages and screenshots the feed, the map and the profile in
+# each one. Reviewing the screenshots side by side is the fastest way to spot a string that
+# did not change language, or one that came out blank.
+#
+# Taps use testIDs (settings-language-selector, language-option-<code>) on purpose: every
+# visible label changes with the language under test, so tapping by text would break as soon
+# as the flow does its job.
+#
+# Run: maestro test .maestro/language-switch.yaml
+#      screenshots land next to the flow as lang-<code>-<screen>.png
+
+- launchApp
+
+- tapOn: "Email or Username"
+- inputText: "explorer@odyssey.com"
+- tapOn: "Password"
+- inputText: "OdysseyPassword123!"
+- tapOn: "Login"
+
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: tr
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: en
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: es
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: fr
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: de
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: pt
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: it
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: ru
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: ja
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: ko
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: zh
+- runFlow:
+    file: subflows/switch-language.yaml
+    env:
+      LANG_CODE: ar

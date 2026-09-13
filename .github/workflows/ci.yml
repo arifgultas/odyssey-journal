@@ -48,6 +48,24 @@ jobs:
           path: coverage/
           retention-days: 7
 
+  i18n:
+    name: Translation Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fails when a locale is missing a key, still holds the English value, or drops
+      # an interpolation placeholder - the causes of stray untranslated text in the app.
+      - name: Check translations
+        run: npm run i18n:check
+
   typecheck:
     name: TypeScript Check
     runs-on: ubuntu-latest

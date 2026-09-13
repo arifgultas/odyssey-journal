@@ -1,0 +1,41 @@
+appId: com.odysseyjournal.app
+name: Switch to ${LANG_CODE} and screenshot the main screens
+---
+# Called once per language by language-switch.yaml. Everything is tapped by testID because
+# the labels themselves are what we are testing.
+
+- tapOn:
+    id: "settings-language-selector"
+    optional: true
+    retryTapIfNoChange: true
+
+# The selector lives on the Settings screen; get there first if the tap above found nothing
+- runFlow:
+    when:
+      notVisible:
+        id: "language-option-${LANG_CODE}"
+    commands:
+      - tapOn:
+          point: "90%,97%" # Profile tab
+      - tapOn:
+          id: "settings-button"
+          optional: true
+      - tapOn:
+          id: "settings-language-selector"
+
+- tapOn:
+    id: "language-option-${LANG_CODE}"
+
+# Back out of Settings to the feed
+- pressKey: Back
+- pressKey: Back
+
+- takeScreenshot: lang-${LANG_CODE}-feed
+
+- tapOn:
+    point: "50%,97%" # Map tab
+- takeScreenshot: lang-${LANG_CODE}-map
+
+- tapOn:
+    point: "90%,97%" # Profile tab
+- takeScreenshot: lang-${LANG_CODE}-profile

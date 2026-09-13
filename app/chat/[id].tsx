@@ -18,6 +18,7 @@ import { safeGoBack } from '@/lib/navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
+import { formatTime } from '@/lib/date-formatter';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getMessages, sendMessage, subscribeToMessages, Message, checkChatApproval, approveConversation, declineConversation } from '@/lib/chat';
 import { useProfile } from '@/hooks/use-profile';
@@ -297,10 +298,7 @@ export default function ChatRoomScreen() {
         }
     };
 
-    const formatMessageTime = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit' });
-    };
+    const formatMessageTime = (dateString: string) => formatTime(dateString);
 
     const renderMessageItem = ({ item }: { item: Message }) => {
         const isMyMessage = item.sender_id === currentUserId;

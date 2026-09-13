@@ -1,6 +1,7 @@
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { formatPostLocation } from '@/lib/location-formatter';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { usePostsByLocation } from '@/hooks/use-search';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,7 +27,7 @@ export default function DestinationPostsScreen() {
     console.log(`[DestinationPostsScreen] Raw params: locationName="${locationName}", lat="${lat}", lon="${lon}" -> Decoded: "${decodedLocationName}", lat: ${numLat}, lon: ${numLon}`);
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const theme = Colors[colorScheme ?? 'light'];
 
     const { data: posts, isLoading, isFetching, error } = usePostsByLocation(
@@ -128,7 +129,8 @@ export default function DestinationPostsScreen() {
                 <View style={styles.headerTitleContainer}>
                     <Ionicons name="location" size={20} color="#4A6FA5" style={{ marginRight: 8 }} />
                     <Text style={[styles.headerTitle, { color: theme.text }]} numberOfLines={1}>
-                        {decodedLocationName || t('destinationPosts.destination')}
+                        {formatPostLocation({ name: decodedLocationName }, language, decodedLocationName) ||
+                            t('destinationPosts.destination')}
                     </Text>
                 </View>
                 <View style={styles.headerSpacer} />

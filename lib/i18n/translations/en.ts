@@ -26,9 +26,14 @@ export default {
         change: 'Change',
         untitled: 'Untitled',
         yesterday: 'Yesterday',
-            info: 'Information',
-            completed: 'Completed',
-            progress: 'Progress',
+        info: 'Information',
+        completed: 'Completed',
+        progress: 'Progress',
+        unknownLocation: 'Unknown Location',
+        permissionRequired: 'Permission Required',
+        offlineMode: 'Offline Mode',
+        pullToRefresh: 'Pull to refresh',
+        releaseToRefresh: 'Release to refresh',
     },
 
     // Auth
@@ -92,12 +97,12 @@ export default {
         sendResetLink: 'Send Reset Link',
         rememberPassword: 'Remember your password?',
         resetLinkValidity: 'For your security, the password reset link is valid for 1 hour.',
-            newPassword: 'New Password',
-            enterNewPassword: 'Enter your new password',
-            confirmNewPassword: 'Confirm New Password',
-            confirmNewPasswordPlaceholder: 'Enter your new password again',
-            passwordLengthError: 'Password must be at least 6 characters.',
-            passwordMatchError: 'Passwords do not match.',
+        newPassword: 'New Password',
+        enterNewPassword: 'Enter your new password',
+        confirmNewPassword: 'Confirm New Password',
+        confirmNewPasswordPlaceholder: 'Enter your new password again',
+        passwordLengthError: 'Password must be at least 6 characters.',
+        passwordMatchError: 'Passwords do not match.',
     },
 
     // Onboarding
@@ -170,8 +175,9 @@ export default {
         newRoutesToExplore: 'New Routes to Explore',
         featuredContentDefault: 'Discover the world\'s most beautiful routes and embark on an adventure.',
         viewCategoryPosts: 'View posts in {{category}} category',
-            featuredDefaultTitle: 'New Routes to Explore',
-            featuredDefaultDescription: 'Discover the most beautiful routes and embark on adventures.',
+        featuredDefaultTitle: 'New Routes to Explore',
+        featuredDefaultDescription: 'Discover the most beautiful routes and embark on adventures.',
+        postCount: '{{count}} posts',
     },
 
     // Create Post
@@ -214,8 +220,8 @@ export default {
         searchPlaceholder: 'Search city or place...',
         useCurrentLocation: 'Use Current Location (GPS)',
         noResults: 'No results found. Please try again.',
-            locationNotFound: 'Location not found. Please try another search.',
-            locationSearchError: 'An error occurred while searching for location.',
+        locationNotFound: 'Location not found. Please try another search.',
+        locationSearchError: 'An error occurred while searching for location.',
     },
 
     // Categories
@@ -269,6 +275,7 @@ export default {
         noNotes: 'No note added for this post.',
         saveWithoutCollection: 'Save Without Collection',
         saveError: 'An error occurred while saving',
+        create: 'Create',
     },
 
     // Chat & Messaging
@@ -452,6 +459,7 @@ export default {
         location: 'Location',
         address: 'Address',
         editTitle: 'Edit Post',
+        boardingPass: 'Boarding Pass',
     },
 
     // Report
@@ -471,6 +479,11 @@ export default {
             false_information: { label: 'False Information', desc: 'Misleading or false content' },
             other: { label: 'Other', desc: 'Something else' },
         },
+        alreadyReportedTitle: 'Already Reported',
+        alreadyReportedDesc: 'You have already reported this post. We will review it soon.',
+        submittedTitle: 'Report Submitted',
+        submittedDesc: 'Thank you for your report. We will review it and take appropriate action.',
+        submitFailed: 'Failed to submit report. Please try again.',
     },
 
     // Follow
@@ -537,9 +550,9 @@ export default {
         changePassword: 'Change Password',
         changePasswordDesc: 'Update your account password',
         preferencesUpdateError: 'An error occurred while updating preferences.',
-            notificationPreferences: 'Notification Preferences',
-            passwordChangeSuccess: 'Your password has been updated successfully.',
-            unblockError: 'Failed to unblock user.',
+        notificationPreferences: 'Notification Preferences',
+        passwordChangeSuccess: 'Your password has been updated successfully.',
+        unblockError: 'Failed to unblock user.',
     },
 
     // Errors
@@ -557,6 +570,17 @@ export default {
         boundaryRetry: 'Restart App',
         boundaryShowDetails: 'Show Error Details',
         boundaryHideDetails: 'Hide Error Details',
+        noConnection: 'No Internet Connection',
+        permissionPhotos: 'Sorry, we need camera roll permissions to upload images.',
+        permissionCamera: 'Sorry, we need camera permissions to take photos.',
+        permissionLocation: 'Sorry, we need location permissions to add location to your posts.',
+        imagePickFailed: 'Failed to pick image. Please try again.',
+        imagesPickFailed: 'Failed to pick images. Please try again.',
+        photoCaptureFailed: 'Failed to take photo. Please try again.',
+        locationFailed: 'Failed to get current location. Please try again.',
+        signInTitle: 'Sign-in Error',
+        signInProviderFailed: 'There was a problem signing in with {{provider}}.',
+        shareFailed: 'Failed to share post',
     },
 
     // Time
@@ -603,9 +627,13 @@ export default {
         unknownLocation: 'Unknown Location',
         openInMap: 'Open in Map',
         travelPoint: 'Travel Point',
-            journeyRoute: 'Journey Route ({{count}} Points)',
-            noJourneyYet: 'No journey yet',
-            startExploring: 'Start exploring the world!',
+        journeyRoute: 'Journey Route ({{count}} Points)',
+        noJourneyYet: 'No journey yet',
+        startExploring: 'Start exploring the world!',
+        locationVisited: 'Location Visited',
+        locationsVisited: 'Locations Visited',
+        appleMaps: 'Apple Maps',
+        openInMaps: 'Maps',
     },
 
     // Destination Posts
@@ -674,13 +702,10 @@ export default {
         food: 'Food',
         history: 'History',
         art: 'Art',
+        emailNotVerifiedTitle: 'Email Verification Required',
+        emailNotVerifiedDesc: 'Please verify your email address to share new journal entries with the community.',
     },
 
-    countries: {
-        france: 'France',
-        italy: 'Italy',
-        japan: 'Japan',
-    },
 
     // Weather conditions
     weather: {
@@ -798,5 +823,44 @@ export default {
         cancel: 'Cancel',
         daysAgo: '{{count}} days ago',
         daysLater: 'in {{count}} days',
+    },
+
+    // Admin panel
+    admin: {
+        panelTitle: 'ADMIN PANEL',
+        accessDenied: 'Access Denied',
+        noPrivileges: 'You don\'t have admin privileges.',
+        goBack: 'Go Back',
+        all: 'All',
+        pending: 'Pending',
+        resolved: 'Resolved',
+        dismissed: 'Dismissed',
+        total: 'Total',
+        banned: 'Banned',
+        reporterNote: 'Reporter\'s note:',
+        reportedBy: 'Reported by: {{name}}',
+        anonymous: 'Anonymous',
+        unknownUser: 'Unknown',
+        dismiss: 'Dismiss',
+        deletePost: 'Delete Post',
+        deletePostConfirm: 'This will permanently delete this post. Are you sure?',
+        deletePostDone: 'Post deleted and report resolved.',
+        deletePostFailed: 'Failed to delete post.',
+        banUser: 'Ban User',
+        ban: 'Ban',
+        banUserConfirm: 'Ban {{username}}? They will not be able to create posts or comments.',
+        banUserDone: '{{username}} has been banned.',
+        banUserFailed: 'Failed to ban user.',
+        dismissFailed: 'Failed to dismiss report.',
+        noReports: 'No reports found',
+        allCaughtUp: 'All caught up! No pending reports.',
+        noMatchingReports: 'No reports match this filter.',
+    },
+
+    // Modal screen
+    modal: {
+        title: 'Modal',
+        heading: 'This is a modal',
+        goHome: 'Go to home screen',
     },
 };

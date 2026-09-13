@@ -6,6 +6,7 @@
  */
 
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
@@ -42,6 +43,7 @@ export function AnimatedFollowButton({
     loading = false,
     size = 'medium',
 }: AnimatedFollowButtonProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -242,7 +244,7 @@ export function AnimatedFollowButton({
                                 },
                             ]}
                         >
-                            {isFollowing ? 'Following' : 'Follow'}
+                            {isFollowing ? t('follow.following') : t('follow.follow')}
                         </Animated.Text>
                     </View>
                 )}

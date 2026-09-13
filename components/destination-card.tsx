@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -12,6 +13,8 @@ interface DestinationCardProps {
 }
 
 export function DestinationCard({ name, postCount, imageUrl, onPress }: DestinationCardProps) {
+    const { t } = useLanguage();
+
     return (
         <TouchableOpacity
             style={styles.container}
@@ -34,7 +37,9 @@ export function DestinationCard({ name, postCount, imageUrl, onPress }: Destinat
                             </Text>
                             <View style={styles.meta}>
                                 <Ionicons name="images-outline" size={14} color="#FFFFFF" />
-                                <Text style={styles.postCount}>{postCount} posts</Text>
+                                <Text style={styles.postCount}>
+                                    {t('explore.postCount', { count: postCount })}
+                                </Text>
                             </View>
                         </View>
                     </LinearGradient>
@@ -48,7 +53,9 @@ export function DestinationCard({ name, postCount, imageUrl, onPress }: Destinat
                         </Text>
                         <View style={styles.meta}>
                             <Ionicons name="images-outline" size={14} color={Colors.light.textSecondary} />
-                            <Text style={[styles.postCount, styles.placeholderText]}>{postCount} posts</Text>
+                            <Text style={[styles.postCount, styles.placeholderText]}>
+                                {t('explore.postCount', { count: postCount })}
+                            </Text>
                         </View>
                     </View>
                 </View>

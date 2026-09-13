@@ -3,6 +3,7 @@ import { ThemedText } from '@/components/themed-text';
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useResponsive } from '@/hooks/use-responsive';
 import { useLanguage } from '@/context/language-context';
+import { formatPolaroidDate } from '@/lib/date-formatter';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Collection } from '@/lib/collections';
 import { getCollections } from '@/lib/collections';
@@ -387,11 +388,7 @@ export default function SavedPostsScreen() {
                             {/* Footer */}
                             <View style={styles.backFooter}>
                                 <Text style={[styles.backDate, { color: isDark ? '#b8ad9d' : '#888' }]}>
-                                    {new Date(post.created_at).toLocaleDateString('tr-TR', {
-                                        day: 'numeric',
-                                        month: 'short',
-                                        year: 'numeric',
-                                    })}
+                                    {formatPolaroidDate(post.created_at, language)}
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => handlePostPress(post)}

@@ -1,4 +1,5 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { ProfileStats } from '@/lib/types/profile';
 import React from 'react';
@@ -17,6 +18,7 @@ export function ProfileStatsBar({
     onFollowersPress,
     onFollowingPress,
 }: ProfileStatsBarProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -28,7 +30,7 @@ export function ProfileStatsBar({
                 disabled={!onPostsPress}
             >
                 <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.postsCount}</Text>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Posts</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('profile.posts')}</Text>
             </TouchableOpacity>
 
             <View style={[styles.divider, { backgroundColor: theme.border }]} />
@@ -39,7 +41,7 @@ export function ProfileStatsBar({
                 disabled={!onFollowersPress}
             >
                 <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.followersCount}</Text>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Followers</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('profile.followers')}</Text>
             </TouchableOpacity>
 
             <View style={[styles.divider, { backgroundColor: theme.border }]} />
@@ -50,14 +52,14 @@ export function ProfileStatsBar({
                 disabled={!onFollowingPress}
             >
                 <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.followingCount}</Text>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Following</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('profile.following')}</Text>
             </TouchableOpacity>
 
             <View style={[styles.divider, { backgroundColor: theme.border }]} />
 
             <View style={styles.statItem}>
                 <Text style={[styles.statNumber, { color: theme.primary }]}>{stats.countriesVisited}</Text>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Countries</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('profile.countries')}</Text>
             </View>
         </View>
     );

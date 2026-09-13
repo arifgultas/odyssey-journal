@@ -161,7 +161,7 @@ export function LocationMapPreview({
                     >
                         <Ionicons name="navigate-outline" size={14} color={theme.primary} style={{ marginRight: 4 }} />
                         <Text style={[styles.openInMapsText, { color: theme.primary }]}>
-                            {Platform.OS === 'ios' ? 'Apple Haritalar' : 'Haritalar'}
+                            {Platform.OS === 'ios' ? t('map.appleMaps') : t('map.openInMaps')}
                         </Text>
                     </TouchableOpacity>
                 )}

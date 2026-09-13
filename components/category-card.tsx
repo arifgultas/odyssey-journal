@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Category } from '@/lib/types/categories';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +12,7 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category, onPress }: CategoryCardProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -23,9 +25,11 @@ export function CategoryCard({ category, onPress }: CategoryCardProps) {
             <View style={[styles.iconContainer, { backgroundColor: category.color }]}>
                 <Ionicons name={category.icon as any} size={24} color="#FFFFFF" />
             </View>
-            <Text style={[styles.name, { color: theme.text }]}>{category.name}</Text>
+            <Text style={[styles.name, { color: theme.text }]}>{t(`categories.${category.id}`)}</Text>
             {category.postCount !== undefined && (
-                <Text style={[styles.count, { color: theme.textSecondary }]}>{category.postCount} posts</Text>
+                <Text style={[styles.count, { color: theme.textSecondary }]}>
+                    {t('explore.postCount', { count: category.postCount })}
+                </Text>
             )}
         </TouchableOpacity>
     );

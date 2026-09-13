@@ -27,9 +27,14 @@ export default {
         change: 'Değiştir',
         untitled: 'Başlıksız',
         yesterday: 'Dün',
-            info: 'Bilgi',
-            completed: 'Tamamlandı',
-            progress: 'İlerleme',
+        info: 'Bilgi',
+        completed: 'Tamamlandı',
+        progress: 'İlerleme',
+        unknownLocation: 'Bilinmeyen Konum',
+        permissionRequired: 'İzin Gerekli',
+        offlineMode: 'Çevrimdışı Mod',
+        pullToRefresh: 'Yenilemek için çekin',
+        releaseToRefresh: 'Yenilemek için bırakın',
     },
 
     // Auth
@@ -93,12 +98,12 @@ export default {
         sendResetLink: 'Sıfırlama Bağlantısı Gönder',
         rememberPassword: 'Şifreni hatırladın mı?',
         resetLinkValidity: 'Güvenliğiniz için şifre sıfırlama bağlantısı 1 saat geçerlidir.',
-            newPassword: 'Yeni Şifre',
-            enterNewPassword: 'Yeni şifrenizi girin',
-            confirmNewPassword: 'Yeni Şifre (Tekrar)',
-            confirmNewPasswordPlaceholder: 'Yeni şifrenizi tekrar girin',
-            passwordLengthError: 'Şifre en az 6 karakter olmalıdır.',
-            passwordMatchError: 'Şifreler eşleşmiyor.',
+        newPassword: 'Yeni Şifre',
+        enterNewPassword: 'Yeni şifrenizi girin',
+        confirmNewPassword: 'Yeni Şifre (Tekrar)',
+        confirmNewPasswordPlaceholder: 'Yeni şifrenizi tekrar girin',
+        passwordLengthError: 'Şifre en az 6 karakter olmalıdır.',
+        passwordMatchError: 'Şifreler eşleşmiyor.',
     },
 
     // Onboarding
@@ -171,8 +176,9 @@ export default {
         newRoutesToExplore: 'Keşfedilecek Yeni Rotalar',
         featuredContentDefault: 'Türkiye\'nin en güzel rotalarını keşfedin ve maceraya atılın.',
         viewCategoryPosts: '{{category}} kategorisindeki gönderileri gör',
-            featuredDefaultTitle: 'Keşfedilecek Yeni Rotalar',
-            featuredDefaultDescription: 'En güzel rotaları keşfedin ve yeni maceralara atılın.',
+        featuredDefaultTitle: 'Keşfedilecek Yeni Rotalar',
+        featuredDefaultDescription: 'En güzel rotaları keşfedin ve yeni maceralara atılın.',
+        postCount: '{{count}} gönderi',
     },
 
     // Create Post
@@ -215,8 +221,8 @@ export default {
         searchPlaceholder: 'Şehir veya mekan ara...',
         useCurrentLocation: 'Anlık Konumu Kullan (GPS)',
         noResults: 'Sonuç bulunamadı. Lütfen tekrar deneyin.',
-            locationNotFound: 'Konum bulunamadı. Lütfen başka bir arama yapın.',
-            locationSearchError: 'Konum aranırken bir hata oluştu.',
+        locationNotFound: 'Konum bulunamadı. Lütfen başka bir arama yapın.',
+        locationSearchError: 'Konum aranırken bir hata oluştu.',
     },
 
     // Categories
@@ -270,6 +276,7 @@ export default {
         noNotes: 'Bu gönderi için not eklenmemiş.',
         saveWithoutCollection: 'Koleksiyonsuz Kaydet',
         saveError: 'Kaydetme sırasında bir hata oluştu',
+        create: 'Oluştur',
     },
 
     // Chat & Messaging
@@ -335,7 +342,7 @@ export default {
         logout: 'Çıkış Yap',
         defaultUser: 'Gezgin',
         journalNote: 'Günlük Notu',
-        republicOf: 'Republic of',
+        republicOf: 'Cumhuriyeti',
         surnameTitle: 'Soyad / Surname',
         nameTitle: 'Ad / Given Names',
         nationalityTitle: 'Uyruk / Nationality',
@@ -452,6 +459,7 @@ export default {
         location: 'Konum',
         address: 'Adres',
         editTitle: 'Gönderiyi Düzenle',
+        boardingPass: 'Uçuş Kartı',
     },
 
     // Report
@@ -463,7 +471,7 @@ export default {
         submit: 'Şikayeti Gönder',
         success: 'Şikayetiniz alındı',
         reasons: {
-            spam: { label: 'Spam', desc: 'Tekrarlayan veya alakasız içerik' },
+            spam: { label: 'İstenmeyen içerik', desc: 'Tekrarlayan veya alakasız içerik' },
             harassment: { label: 'Taciz veya Zorbalık', desc: 'Birini hedef alma veya saldırma' },
             hate_speech: { label: 'Nefret Söylemi', desc: 'Ayrımcı veya saldırgan içerik' },
             violence: { label: 'Şiddet veya Tehdit', desc: 'Şiddeti teşvik eden veya tehdit içeren' },
@@ -471,6 +479,11 @@ export default {
             false_information: { label: 'Yanlış Bilgi', desc: 'Yanıltıcı veya yanlış içerik' },
             other: { label: 'Diğer', desc: 'Başka bir şey' },
         },
+        alreadyReportedTitle: 'Zaten Şikayet Edildi',
+        alreadyReportedDesc: 'Bu gönderiyi daha önce şikayet ettiniz. En kısa sürede inceleyeceğiz.',
+        submittedTitle: 'Şikayet Gönderildi',
+        submittedDesc: 'Şikayetiniz için teşekkürler. İnceleyip gerekli işlemi yapacağız.',
+        submitFailed: 'Şikayet gönderilemedi. Lütfen tekrar deneyin.',
     },
 
     // Follow
@@ -537,9 +550,9 @@ export default {
         changePassword: 'Şifre Değiştir',
         changePasswordDesc: 'Hesap şifrenizi güncelleyin',
         preferencesUpdateError: 'Tercihler güncellenirken bir hata oluştu.',
-            notificationPreferences: 'Bildirim Tercihleri',
-            passwordChangeSuccess: 'Şifreniz başarıyla güncellendi.',
-            unblockError: 'Kullanıcının engeli kaldırılamadı.',
+        notificationPreferences: 'Bildirim Tercihleri',
+        passwordChangeSuccess: 'Şifreniz başarıyla güncellendi.',
+        unblockError: 'Kullanıcının engeli kaldırılamadı.',
     },
 
     // Errors
@@ -557,6 +570,17 @@ export default {
         boundaryRetry: 'Yeniden Başlat',
         boundaryShowDetails: 'Hata Detayını Göster',
         boundaryHideDetails: 'Hata Detayını Gizle',
+        noConnection: 'İnternet Bağlantısı Yok',
+        permissionPhotos: 'Üzgünüz, fotoğraf yüklemek için galeri izni gerekiyor.',
+        permissionCamera: 'Üzgünüz, fotoğraf çekmek için kamera izni gerekiyor.',
+        permissionLocation: 'Üzgünüz, gönderilerinize konum eklemek için konum izni gerekiyor.',
+        imagePickFailed: 'Fotoğraf seçilemedi. Lütfen tekrar deneyin.',
+        imagesPickFailed: 'Fotoğraflar seçilemedi. Lütfen tekrar deneyin.',
+        photoCaptureFailed: 'Fotoğraf çekilemedi. Lütfen tekrar deneyin.',
+        locationFailed: 'Mevcut konum alınamadı. Lütfen tekrar deneyin.',
+        signInTitle: 'Giriş Hatası',
+        signInProviderFailed: '{{provider}} ile oturum açılırken bir sorun oluştu.',
+        shareFailed: 'Gönderi paylaşılamadı',
     },
 
     // Time
@@ -603,9 +627,13 @@ export default {
         unknownLocation: 'Bilinmeyen Konum',
         openInMap: 'Haritada Aç',
         travelPoint: 'Seyahat Noktası',
-            journeyRoute: 'Yolculuk Rotası ({{count}} Nokta)',
-            noJourneyYet: 'Henüz yolculuk yok',
-            startExploring: 'Dünyayı keşfetmeye başlayın!',
+        journeyRoute: 'Yolculuk Rotası ({{count}} Nokta)',
+        noJourneyYet: 'Henüz yolculuk yok',
+        startExploring: 'Dünyayı keşfetmeye başlayın!',
+        locationVisited: 'Ziyaret Edilen Yer',
+        locationsVisited: 'Ziyaret Edilen Yerler',
+        appleMaps: 'Apple Haritalar',
+        openInMaps: 'Haritalar',
     },
 
     // Destination Posts
@@ -674,13 +702,10 @@ export default {
         food: 'Yemek',
         history: 'Tarih',
         art: 'Sanat',
+        emailNotVerifiedTitle: 'E-posta Doğrulaması Gerekli',
+        emailNotVerifiedDesc: 'Toplulukla yeni günlük girişleri paylaşmak için lütfen e-posta adresinizi doğrulayın.',
     },
 
-    countries: {
-        france: 'Fransa',
-        italy: 'İtalya',
-        japan: 'Japonya',
-    },
 
     // Hava durumu
     weather: {
@@ -798,5 +823,44 @@ export default {
         cancel: 'Vazgeç',
         daysAgo: '{{count}} gün önce',
         daysLater: '{{count}} gün sonra',
+    },
+
+    // Admin panel
+    admin: {
+        panelTitle: 'YÖNETİM PANELİ',
+        accessDenied: 'Erişim Reddedildi',
+        noPrivileges: 'Yönetici yetkiniz bulunmuyor.',
+        goBack: 'Geri Dön',
+        all: 'Tümü',
+        pending: 'Beklemede',
+        resolved: 'Çözüldü',
+        dismissed: 'Reddedildi',
+        total: 'Toplam',
+        banned: 'Yasaklı',
+        reporterNote: 'Şikayet edenin notu:',
+        reportedBy: 'Şikayet eden: {{name}}',
+        anonymous: 'Anonim',
+        unknownUser: 'Bilinmiyor',
+        dismiss: 'Reddet',
+        deletePost: 'Gönderiyi Sil',
+        deletePostConfirm: 'Bu gönderi kalıcı olarak silinecek. Emin misiniz?',
+        deletePostDone: 'Gönderi silindi ve şikayet çözüldü.',
+        deletePostFailed: 'Gönderi silinemedi.',
+        banUser: 'Kullanıcıyı Yasakla',
+        ban: 'Yasakla',
+        banUserConfirm: '{{username}} yasaklansın mı? Artık gönderi veya yorum oluşturamayacak.',
+        banUserDone: '{{username}} yasaklandı.',
+        banUserFailed: 'Kullanıcı yasaklanamadı.',
+        dismissFailed: 'Şikayet reddedilemedi.',
+        noReports: 'Şikayet bulunamadı',
+        allCaughtUp: 'Her şey tamam! Bekleyen şikayet yok.',
+        noMatchingReports: 'Bu filtreye uyan şikayet yok.',
+    },
+
+    // Modal screen
+    modal: {
+        title: 'Modal',
+        heading: 'Bu bir modal penceredir',
+        goHome: 'Ana ekrana git',
     },
 };

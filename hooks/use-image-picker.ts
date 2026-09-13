@@ -1,5 +1,6 @@
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
+import { useLanguage } from '@/context/language-context';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -12,6 +13,7 @@ export interface SelectedImage {
 }
 
 export function useImagePicker() {
+    const { t } = useLanguage();
     const [images, setImages] = useState<SelectedImage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -19,8 +21,8 @@ export function useImagePicker() {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert(
-                'Permission Required',
-                'Sorry, we need camera roll permissions to upload images.'
+                t('common.permissionRequired'),
+                t('errors.permissionPhotos')
             );
             return false;
         }
@@ -60,7 +62,7 @@ export function useImagePicker() {
             }
         } catch (error) {
             console.error('Error picking image:', error);
-            Alert.alert('Error', 'Failed to pick image. Please try again.');
+            Alert.alert(t('common.error'), t('errors.imagePickFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -103,7 +105,7 @@ export function useImagePicker() {
             }
         } catch (error) {
             console.error('Error picking images:', error);
-            Alert.alert('Error', 'Failed to pick images. Please try again.');
+            Alert.alert(t('common.error'), t('errors.imagesPickFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -113,8 +115,8 @@ export function useImagePicker() {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert(
-                'Permission Required',
-                'Sorry, we need camera permissions to take photos.'
+                t('common.permissionRequired'),
+                t('errors.permissionCamera')
             );
             return;
         }
@@ -147,7 +149,7 @@ export function useImagePicker() {
             }
         } catch (error) {
             console.error('Error taking photo:', error);
-            Alert.alert('Error', 'Failed to take photo. Please try again.');
+            Alert.alert(t('common.error'), t('errors.photoCaptureFailed'));
         } finally {
             setIsLoading(false);
         }

@@ -1,4 +1,5 @@
 import * as Location from 'expo-location';
+import { useLanguage } from '@/context/language-context';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -12,6 +13,7 @@ export interface LocationData {
 }
 
 export function useLocationPicker() {
+    const { t } = useLanguage();
     const [location, setLocation] = useState<LocationData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -19,8 +21,8 @@ export function useLocationPicker() {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert(
-                'Permission Required',
-                'Sorry, we need location permissions to add location to your posts.'
+                t('common.permissionRequired'),
+                t('errors.permissionLocation')
             );
             return false;
         }
@@ -63,7 +65,7 @@ export function useLocationPicker() {
             }
         } catch (error) {
             console.error('Error getting location:', error);
-            Alert.alert('Error', 'Failed to get current location. Please try again.');
+            Alert.alert(t('common.error'), t('errors.locationFailed'));
         } finally {
             setIsLoading(false);
         }

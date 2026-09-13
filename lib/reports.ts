@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { t } from './i18n';
 import { supabase } from './supabase';
 
 export type ReportReason =
@@ -69,8 +70,8 @@ export async function reportPost(data: CreateReportData): Promise<Report | null>
             // Check if it's a duplicate report
             if (error.code === '23505') {
                 Alert.alert(
-                    'Already Reported',
-                    'You have already reported this post. We will review it soon.'
+                    t('report.alreadyReportedTitle'),
+                    t('report.alreadyReportedDesc')
                 );
                 return null;
             }
@@ -78,14 +79,14 @@ export async function reportPost(data: CreateReportData): Promise<Report | null>
         }
 
         Alert.alert(
-            'Report Submitted',
-            'Thank you for your report. We will review it and take appropriate action.'
+            t('report.submittedTitle'),
+            t('report.submittedDesc')
         );
 
         return report;
     } catch (error) {
         console.error('Error reporting post:', error);
-        Alert.alert('Error', 'Failed to submit report. Please try again.');
+        Alert.alert(t('common.error'), t('report.submitFailed'));
         return null;
     }
 }

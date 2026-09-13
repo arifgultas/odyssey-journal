@@ -20,6 +20,10 @@ export interface LocationResult {
     name: string;
     country?: string;
     city?: string;
+    /** ISO 3166-1 alpha-2 code, so the label can be localized */
+    countryCode?: string;
+    /** Canonical place key: every spelling of one city shares it */
+    placeKey?: string;
     postCount: number;
     coordinates?: {
         latitude: number;

@@ -4,6 +4,7 @@ import { BorderRadius, Shadows, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { calculateMapCenter, calculateZoomDelta, fetchPostsWithLocation, clusterLocations, LocationCluster } from '@/lib/map-locations';
+import { getLocalizedCityName, getLocalizedCountryName } from '@/lib/location-formatter';
 import { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -91,7 +92,7 @@ interface BottomSheetProps {
  * PanResponder ile aşağı sürüklenerek kapatılabilir.
  */
 function BottomSheetPreview({ visible, cluster, onClose, onPostPress, theme }: BottomSheetProps) {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
     const panY = useRef(new Animated.Value(0)).current;
 
@@ -255,11 +256,12 @@ function BottomSheetPreview({ visible, cluster, onClose, onPostPress, theme }: B
                             </View>
                             <View>
                                 <Text style={[styles.bottomSheetTitle, { color: theme.text }]}>
-                                    {cluster.locationName || cluster.city || t('map.unknownLocation')}
+                                    {getLocalizedCityName(cluster.city || cluster.locationName || '', language) ||
+                                        t('map.unknownLocation')}
                                 </Text>
                                 <Text style={[styles.bottomSheetSubtitle, { color: theme.textSecondary }]}>
                                     {t('map.postCount', { count: cluster.postCount })}
-                                    {cluster.country ? ` • ${cluster.country}` : ''}
+                                    {cluster.country ? ` • ${getLocalizedCountryName(cluster.country, language)}` : ''}
                                 </Text>
                             </View>
                         </View>
@@ -654,10 +656,12 @@ export default function MapScreen() {
                                         </View>
                                         <View style={styles.webLocationInfo}>
                                             <Text style={[styles.webLocationName, { color: theme.text }]}>
-                                                {cluster.locationName || cluster.city || t('map.unknownLocation')}
+                                                {getLocalizedCityName(cluster.city || cluster.locationName || '', language) ||
+                                                    t('map.unknownLocation')}
                                             </Text>
                                             <Text style={[styles.webLocationMeta, { color: theme.textSecondary }]}>
-                                                {t('map.postCount', { count: cluster.postCount })} • {cluster.country || ''}
+                                                {t('map.postCount', { count: cluster.postCount })} •{' '}
+                                                {getLocalizedCountryName(cluster.country || '', language)}
                                             </Text>
                                         </View>
                                         <View style={[styles.webLocationBadge, { backgroundColor: theme.accent }]}>

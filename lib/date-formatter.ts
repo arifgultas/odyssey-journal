@@ -7,6 +7,8 @@
  * Does not rely on Hermes ICU implementation which may fail to localize on some devices.
  */
 
+import { t } from './i18n';
+
 export const MONTH_NAMES: Record<string, string[]> = {
     en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     tr: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
@@ -153,4 +155,81 @@ export function formatPostDetailDay(dateInput?: string | Date | number | null, l
     const dayIndex = d.getDay();
     const weekdays = WEEKDAY_NAMES[lang] || WEEKDAY_NAMES.en;
     return weekdays[dayIndex];
+}
+
+/**
+ * Formats a short date without the year, used for comment and notification timestamps:
+ * - English: "June 8"      - Turkish: "8 Haziran"
+ * - Japanese / Chinese: "6月8日"   - Korean: "6월 8일"
+ */
+export function formatShortDate(dateInput?: string | Date | number | null, language: string = 'en'): string {
+    const d = parseDate(dateInput);
+    const lang = (language || 'en').toLowerCase().split('-')[0];
+
+    const day = d.getDate();
+    const monthIndex = d.getMonth();
+    const month = (MONTH_NAMES[lang] || MONTH_NAMES.en)[monthIndex];
+
+    switch (lang) {
+        case 'en':
+            return `${month} ${day}`;
+        case 'es':
+        case 'pt':
+            return `${day} de ${month}`;
+        case 'de':
+            return `${day}. ${month}`;
+        case 'ja':
+        case 'zh':
+            return `${monthIndex + 1}月${day}日`;
+        case 'ko':
+            return `${monthIndex + 1}월 ${day}일`;
+        default:
+            return `${day} ${month}`;
+    }
+}
+
+/**
+ * Formats a 24-hour clock time ("09:41"). Deliberately deterministic rather than using
+ * toLocaleTimeString, which silently falls back to English on Hermes builds without ICU.
+ */
+export function formatTime(dateInput?: string | Date | number | null): string {
+    const d = parseDate(dateInput);
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+/**
+ * Short weekday name ("Mon", "Pzt", "月"), Sunday-indexed like Date.getDay()
+ */
+export function formatShortWeekday(dateInput?: string | Date | number | null, language: string = 'en'): string {
+    const d = parseDate(dateInput);
+    const lang = (language || 'en').toLowerCase().split('-')[0];
+    const table = SHORT_WEEKDAYS_MON_FIRST[lang] || SHORT_WEEKDAYS_MON_FIRST.en;
+    // The table starts on Monday, Date.getDay() starts on Sunday
+    const index = (d.getDay() + 6) % 7;
+    return table[index];
+}
+
+/**
+ * Relative time ("Now", "5 minutes ago", "3 days ago"), falling back to a short date
+ * once the difference passes a week. Uses the `time.*` translation keys.
+ */
+export function formatRelativeTime(dateInput?: string | Date | number | null, language: string = 'en'): string {
+    const d = parseDate(dateInput);
+    const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
+
+    if (seconds < 60) return t('time.now');
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return t(minutes === 1 ? 'time.minuteAgo' : 'time.minutesAgo', { count: minutes });
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return t(hours === 1 ? 'time.hourAgo' : 'time.hoursAgo', { count: hours });
+
+    const days = Math.floor(hours / 24);
+    if (days === 1) return t('time.yesterday');
+    if (days < 7) return t('time.daysAgo', { count: days });
+
+    return formatShortDate(d, language);
 }

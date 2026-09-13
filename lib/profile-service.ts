@@ -1,3 +1,4 @@
+import { getCountryCode } from './location-formatter';
 import { sanitizeBio, sanitizeFullName, sanitizeText, sanitizeUsername } from './sanitize';
 import { supabase } from './supabase';
 import type { CommonDestination, Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
@@ -216,9 +217,14 @@ export class ProfileService {
                         address?: string;
                         city?: string;
                         country?: string;
+                        countryCode?: string;
                     } | null;
 
                     if (location && location.latitude && location.longitude) {
+                        // Count by ISO code, not by the stored text: a post saved as
+                        // "Türkiye" and one saved as "Turkey" are the same country.
+                        const countryKey =
+                            location.countryCode || getCountryCode(location.country) || location.country || 'Unknown';
                         const country = location.country || 'Unknown';
                         const locationName = location.city || location.address || country;
                         const visitDate = post.created_at.split('T')[0]; // Get date part only
@@ -233,15 +239,15 @@ export class ProfileService {
                         });
 
                         // Track unique countries
-                        if (country !== 'Unknown') {
-                            uniqueCountries.add(country);
+                        if (countryKey !== 'Unknown') {
+                            uniqueCountries.add(countryKey);
                         }
 
                         // Track days per country
-                        if (!countryDays.has(country)) {
-                            countryDays.set(country, new Set());
+                        if (!countryDays.has(countryKey)) {
+                            countryDays.set(countryKey, new Set());
                         }
-                        countryDays.get(country)!.add(visitDate);
+                        countryDays.get(countryKey)!.add(visitDate);
 
                         // Calculate round-trip distance from home
                         const distance = this.calculateDistance(
@@ -504,6 +510,23 @@ export class ProfileService {
         } catch (error) {
             console.error('Error searching profiles:', error);
             return [];
+        }
+    }
+
+    /**
+     * Records the language the app is set to, so the server can write push notifications in
+     * it (the queue is built by a database trigger, which has no other way of knowing).
+     *
+     * Fire and forget: failing to record a preference must never interrupt the user.
+     */
+    static async syncPreferredLanguage(language: string): Promise<void> {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            await supabase.from('profiles').update({ preferred_language: language }).eq('id', user.id);
+        } catch (error) {
+            captureError(error as Error, { context: 'syncPreferredLanguage', language });
         }
     }
 }

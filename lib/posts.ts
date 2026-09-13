@@ -1,22 +1,39 @@
 import { getBlockedUsers } from './block';
 import { getModerationMessage, moderatePost, moderateText } from './content-moderation';
 import { deleteImage, uploadMultipleImages, uploadImage } from './image-upload';
+import { getCountryCode } from './location-formatter';
+import { placeKeyFor, resolvePlaceNames } from './place-names';
 import { LIMITS, sanitizePostContent, sanitizePostTitle, sanitizeText } from './sanitize';
 import { supabase } from './supabase';
 import { WeatherData } from './weather';
 import { captureError } from './sentry';
 
+/**
+ * A post's location. `countryCode` and `localizedNames` are filled in when the post is
+ * saved (see resolvePostLocation) so a card can name the place in the reader's language
+ * without any lookup - the rest is what the device geocoder gave us.
+ */
+export interface PostLocation {
+    latitude: number;
+    longitude: number;
+    address?: string;
+    city?: string;
+    country?: string;
+    name?: string;
+    /** ISO 3166-1 alpha-2 code */
+    countryCode?: string;
+    /** Wikidata entity id the names came from */
+    wikidataId?: string;
+    /** Canonical key for this place, shared with the place_names cache */
+    placeKey?: string;
+    /** City name per language */
+    localizedNames?: Partial<Record<string, string>>;
+}
+
 export interface CreatePostData {
     title: string;
     content: string;
-    location?: {
-        latitude: number;
-        longitude: number;
-        address?: string;
-        city?: string;
-        country?: string;
-        name?: string;
-    };
+    location?: PostLocation;
     images?: string[]; // URIs of local images
     imageCaptions?: string[]; // Captions for each image
     weatherData?: WeatherData; // Weather at time of post creation
@@ -29,15 +46,10 @@ export interface Post {
     user_id: string;
     title: string;
     content: string;
-    location?: {
-        latitude: number;
-        longitude: number;
-        address?: string;
-        city?: string;
-        country?: string;
-        name?: string;
-    };
+    location?: PostLocation;
     location_name?: string | null;
+    /** Canonical place key, so "Rome" and "Roma" count as one destination */
+    place_key?: string | null;
     latitude?: number | null;
     longitude?: number | null;
     images?: string[];
@@ -58,6 +70,44 @@ export interface Post {
     // Client-side state
     isLiked?: boolean;
     isBookmarked?: boolean;
+}
+
+/** The denormalized location_name column, kept for search and legacy readers */
+function buildLocationName(location?: PostLocation | null): string | null {
+    if (!location) return null;
+    if (location.city && location.country) return `${location.city}, ${location.country}`;
+    return location.city || location.country || location.address || null;
+}
+
+/**
+ * Resolves the place once, at save time, so every reader gets the name in their own
+ * language without a lookup. Falling back to the unresolved location is fine: the card
+ * resolves it on demand instead.
+ */
+async function resolvePostLocation(location?: PostLocation | null): Promise<PostLocation | null> {
+    if (!location) return null;
+    if (!location.city && !location.country) return location;
+
+    const countryCode = location.countryCode || getCountryCode(location.country) || undefined;
+    const base: PostLocation = {
+        ...location,
+        countryCode,
+        placeKey: placeKeyFor({ city: location.city, country: location.country }) || undefined,
+    };
+
+    try {
+        const resolved = await resolvePlaceNames({ city: location.city, country: location.country });
+        if (!resolved) return base;
+        return {
+            ...base,
+            countryCode: countryCode || resolved.countryCode,
+            wikidataId: resolved.wikidataId,
+            placeKey: resolved.key || base.placeKey,
+            localizedNames: resolved.names,
+        };
+    } catch {
+        return base;
+    }
 }
 
 /**
@@ -94,19 +144,8 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             throw new Error(getModerationMessage(textModeration.flaggedCategories));
         }
 
-        // Format location_name for legacy/search column compatibility
-        let locationName: string | null = null;
-        if (data.location) {
-            if (data.location.city && data.location.country) {
-                locationName = `${data.location.city}, ${data.location.country}`;
-            } else if (data.location.city) {
-                locationName = data.location.city;
-            } else if (data.location.country) {
-                locationName = data.location.country;
-            } else if (data.location.address) {
-                locationName = data.location.address;
-            }
-        }
+        const location = await resolvePostLocation(data.location);
+        const locationName = buildLocationName(location);
 
         // Create post in database
         const { data: post, error: postError } = await supabase
@@ -115,10 +154,11 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 user_id: user.id,
                 title: sanitizedTitle,
                 content: sanitizedContent,
-                location: data.location,
+                location,
                 location_name: locationName,
-                latitude: data.location?.latitude || null,
-                longitude: data.location?.longitude || null,
+                place_key: location?.placeKey || null,
+                latitude: location?.latitude || null,
+                longitude: location?.longitude || null,
                 images: imageUrls,
                 image_captions: sanitizedCaptions,
                 weather_data: data.weatherData || null,
@@ -215,8 +255,9 @@ export async function updatePost(
             updated_at: string;
             title?: string;
             content?: string;
-            location?: CreatePostData['location'];
+            location?: PostLocation | null;
             location_name?: string | null;
+            place_key?: string | null;
             latitude?: number | null;
             longitude?: number | null;
             images?: string[];
@@ -231,24 +272,12 @@ export async function updatePost(
         if (data.title !== undefined) updateData.title = sanitizePostTitle(data.title);
         if (data.content !== undefined) updateData.content = sanitizePostContent(data.content);
         if (data.location !== undefined) {
-            updateData.location = data.location;
-            if (data.location) {
-                updateData.latitude = data.location.latitude || null;
-                updateData.longitude = data.location.longitude || null;
-                if (data.location.city && data.location.country) {
-                    updateData.location_name = `${data.location.city}, ${data.location.country}`;
-                } else if (data.location.city) {
-                    updateData.location_name = data.location.city;
-                } else if (data.location.country) {
-                    updateData.location_name = data.location.country;
-                } else if (data.location.address) {
-                    updateData.location_name = data.location.address;
-                }
-            } else {
-                updateData.location_name = null;
-                updateData.latitude = null;
-                updateData.longitude = null;
-            }
+            const location = await resolvePostLocation(data.location);
+            updateData.location = location;
+            updateData.location_name = buildLocationName(location);
+            updateData.place_key = location?.placeKey || null;
+            updateData.latitude = location?.latitude || null;
+            updateData.longitude = location?.longitude || null;
         }
         if (imageUrls !== undefined) updateData.images = imageUrls;
         if (data.categories !== undefined) updateData.categories = data.categories;

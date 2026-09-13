@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ProfileHeader } from '../profile-header';
 import { Profile } from '@/lib/types/profile';
+import { t } from '@/lib/i18n';
 
 // Mock hook
 jest.mock('@/hooks/use-color-scheme', () => ({
@@ -40,11 +41,11 @@ describe('ProfileHeader Component', () => {
             />
         );
 
-        expect(getByText('Edit Profile')).toBeTruthy();
-        expect(queryByText('Follow')).toBeNull();
-        expect(queryByText('Following')).toBeNull();
+        expect(getByText(t('profile.editProfile'))).toBeTruthy();
+        expect(queryByText(t('follow.follow'))).toBeNull();
+        expect(queryByText(t('follow.following'))).toBeNull();
 
-        fireEvent.press(getByText('Edit Profile'));
+        fireEvent.press(getByText(t('profile.editProfile')));
         expect(mockEditPress).toHaveBeenCalledTimes(1);
     });
 
@@ -59,10 +60,10 @@ describe('ProfileHeader Component', () => {
             />
         );
 
-        expect(getByText('Follow')).toBeTruthy();
-        expect(queryByText('Edit Profile')).toBeNull();
+        expect(getByText(t('follow.follow'))).toBeTruthy();
+        expect(queryByText(t('profile.editProfile'))).toBeNull();
 
-        fireEvent.press(getByText('Follow'));
+        fireEvent.press(getByText(t('follow.follow')));
         expect(mockFollowPress).toHaveBeenCalledTimes(1);
     });
 
@@ -77,10 +78,10 @@ describe('ProfileHeader Component', () => {
             />
         );
 
-        expect(getByText('Following')).toBeTruthy();
-        expect(queryByText('Edit Profile')).toBeNull();
+        expect(getByText(t('follow.following'))).toBeTruthy();
+        expect(queryByText(t('profile.editProfile'))).toBeNull();
 
-        fireEvent.press(getByText('Following'));
+        fireEvent.press(getByText(t('follow.following')));
         expect(mockFollowPress).toHaveBeenCalledTimes(1);
     });
 

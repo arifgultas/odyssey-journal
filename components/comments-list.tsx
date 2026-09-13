@@ -1,6 +1,7 @@
 import { CommentItem } from '@/components/comment-item';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Comment } from '@/lib/comments';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,6 +29,7 @@ export function CommentsList({
     refreshing = false,
     hasMore = false,
 }: CommentsListProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -37,8 +39,8 @@ export function CommentsList({
         return (
             <View style={styles.emptyContainer}>
                 <Ionicons name="chatbubbles-outline" size={48} color={theme.textMuted} />
-                <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>No comments yet</ThemedText>
-                <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>Be the first to comment!</ThemedText>
+                <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>{t('comments.noComments')}</ThemedText>
+                <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>{t('comments.beFirst')}</ThemedText>
             </View>
         );
     };

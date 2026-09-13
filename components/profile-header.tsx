@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Shadows, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { Profile } from '@/lib/types/profile';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +25,7 @@ export function ProfileHeader({
     onFollowPress,
     isFollowLoading = false,
 }: ProfileHeaderProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -87,7 +89,7 @@ export function ProfileHeader({
                         onPress={onEditPress}
                     >
                         <Ionicons name="create-outline" size={18} color={theme.surface} />
-                        <Text style={[styles.editButtonText, { color: theme.surface }]}>Edit Profile</Text>
+                        <Text style={[styles.editButtonText, { color: theme.surface }]}>{t('profile.editProfile')}</Text>
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity
@@ -113,7 +115,7 @@ export function ProfileHeader({
                                     { color: theme.surface },
                                     isFollowing && { color: theme.primary }
                                 ]}>
-                                    {isFollowing ? 'Following' : 'Follow'}
+                                    {isFollowing ? t('follow.following') : t('follow.follow')}
                                 </Text>
                             </>
                         )}

@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
+import { useLanguage } from '@/context/language-context';
 import { supabase } from '@/lib/supabase';
 import { Alert } from 'react-native';
 
@@ -7,6 +8,8 @@ import { Alert } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 
 export function useOAuth() {
+    const { t } = useLanguage();
+
     const signInWithProvider = async (provider: 'google' | 'apple') => {
         try {
             // Create redirect URL matching our application scheme
@@ -54,7 +57,7 @@ export function useOAuth() {
         } catch (error) {
             console.error(`OAuth error with provider ${provider}:`, error);
             const providerName = provider === 'google' ? 'Google' : 'Apple';
-            Alert.alert('Giriş Hatası', `${providerName} ile oturum açılırken bir sorun oluştu.`);
+            Alert.alert(t('errors.signInTitle'), t('errors.signInProviderFailed', { provider: providerName }));
             return false;
         }
     };

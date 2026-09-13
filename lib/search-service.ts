@@ -223,11 +223,13 @@ export class SearchService {
             if (error) throw error;
 
             return (data || []).map((row: any) => {
-                const parts = row.location_name.split(',').map((p: string) => p.trim());
+                const parts = String(row.location_name || '').split(',').map((p: string) => p.trim());
                 return {
                     name: row.location_name,
-                    city: parts[0],
-                    country: parts[parts.length - 1],
+                    city: row.city || parts[0],
+                    country: parts.length > 1 ? parts[parts.length - 1] : undefined,
+                    countryCode: row.country_code || undefined,
+                    placeKey: row.place_key || undefined,
                     postCount: Number(row.post_count),
                     recentPostCount: Number(row.recent_post_count),
                     trendScore: Number(row.trend_score),
@@ -488,11 +490,13 @@ export class SearchService {
             if (error) throw error;
 
             return (data || []).map((row: any) => {
-                const parts = row.location_name.split(',').map((p: string) => p.trim());
+                const parts = String(row.location_name || '').split(',').map((p: string) => p.trim());
                 return {
                     name: row.location_name,
-                    city: parts[0],
-                    country: parts[parts.length - 1],
+                    city: row.city || parts[0],
+                    country: parts.length > 1 ? parts[parts.length - 1] : undefined,
+                    countryCode: row.country_code || undefined,
+                    placeKey: row.place_key || undefined,
                     postCount: Number(row.post_count),
                     imageUrl: row.image_url || undefined,
                     coordinates: row.latitude && row.longitude ? {

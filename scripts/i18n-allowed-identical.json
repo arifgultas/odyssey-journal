@@ -1,0 +1,92 @@
+{
+  "_comment": [
+    "Keys whose value may legitimately match the English source, so i18n-check does not",
+    "flag them as untranslated. Anything not listed here must differ from en.",
+    "'*' applies to every locale; the language keys list per-locale exceptions."
+  ],
+  "*": [
+    "home.title",
+    "auth.acceptSuffix",
+    "createPost.ok"
+  ],
+  "de": [
+    "common.info",
+    "collection.details",
+    "saved.details",
+    "editProfile.bio",
+    "report.reasons.spam.label",
+    "settings.version",
+    "settings.adminTitle",
+    "badgeList.gourmet.name",
+    "modal.title"
+  ],
+  "es": [
+    "common.error",
+    "common.no",
+    "collection.errorTitle",
+    "chat.error",
+    "createPost.errorTitle",
+    "report.reasons.spam.label",
+    "settings.adminTitle",
+    "badgeList.gourmet.name",
+    "map.appleMaps",
+    "admin.total",
+    "modal.title"
+  ],
+  "fr": [
+    "common.info",
+    "create.images",
+    "createPost.images",
+    "categories.nature",
+    "categories.art",
+    "categories.culture",
+    "createPost.nature",
+    "createPost.art",
+    "saved.collections",
+    "profile.badges",
+    "profile.message",
+    "editProfile.bio",
+    "notifications.title",
+    "post.notesCount",
+    "report.reasons.spam.label",
+    "settings.notifications",
+    "settings.version",
+    "settings.adminTitle",
+    "destinationPosts.destination",
+    "moderation.categories.violence",
+    "badgeList.gourmet.name",
+    "admin.total"
+  ],
+  "it": [
+    "common.no",
+    "auth.email",
+    "auth.password",
+    "collection.posts",
+    "saved.posts",
+    "editProfile.bio",
+    "report.reasons.spam.label",
+    "settings.account",
+    "settings.privacy",
+    "settings.adminTitle"
+  ],
+  "pt": [
+    "editProfile.bio",
+    "report.reasons.spam.label",
+    "settings.adminTitle",
+    "badgeList.gourmet.name",
+    "admin.total",
+    "modal.title"
+  ],
+  "ja": [
+    "editProfile.websitePlaceholder"
+  ],
+  "ko": [
+    "editProfile.websitePlaceholder"
+  ],
+  "zh": [
+    "editProfile.websitePlaceholder"
+  ],
+  "tr": [
+    "modal.title"
+  ]
+}

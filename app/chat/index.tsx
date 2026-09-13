@@ -14,6 +14,7 @@ import { safeGoBack } from '@/lib/navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLanguage } from '@/context/language-context';
+import { formatShortDate, formatShortWeekday, formatTime } from '@/lib/date-formatter';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getConversations, Conversation } from '@/lib/chat';
 
@@ -102,13 +103,13 @@ export default function ChatListScreen() {
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
         if (diffDays === 0) {
-            return date.toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit' });
+            return formatTime(date);
         } else if (diffDays === 1) {
             return t('chat.yesterday');
         } else if (diffDays < 7) {
-            return date.toLocaleDateString(language, { weekday: 'short' });
+            return formatShortWeekday(date, language);
         } else {
-            return date.toLocaleDateString(language, { month: 'short', day: 'numeric' });
+            return formatShortDate(date, language);
         }
     };
 

@@ -1,4 +1,6 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
+import { formatRelativeTime } from '@/lib/date-formatter';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Comment } from '@/lib/comments';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,41 +16,23 @@ interface CommentItemProps {
 
 export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemProps) {
     const [showActions, setShowActions] = useState(false);
+    const { t, language } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInMs = now.getTime() - date.getTime();
-        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-        const diffInHours = Math.floor(diffInMinutes / 60);
-        const diffInDays = Math.floor(diffInHours / 24);
-
-        if (diffInMinutes < 1) {
-            return 'Just now';
-        } else if (diffInMinutes < 60) {
-            return `${diffInMinutes}m ago`;
-        } else if (diffInHours < 24) {
-            return `${diffInHours}h ago`;
-        } else if (diffInDays < 7) {
-            return `${diffInDays}d ago`;
-        } else {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-    };
+    const formatDate = (dateString: string) => formatRelativeTime(dateString, language);
 
     const handleDelete = () => {
         Alert.alert(
-            'Delete Comment',
-            'Are you sure you want to delete this comment?',
+            t('comments.deleteComment'),
+            t('comments.deleteConfirm'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('common.cancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Delete',
+                    text: t('common.delete'),
                     style: 'destructive',
                     onPress: () => onDelete?.(comment.id),
                 },
@@ -99,7 +83,7 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
                 <View style={[styles.actionsMenu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                     <TouchableOpacity style={styles.actionItem} onPress={handleDelete}>
                         <Ionicons name="trash-outline" size={16} color={theme.error} />
-                        <Text style={[styles.deleteText, { color: theme.error }]}>Delete</Text>
+                        <Text style={[styles.deleteText, { color: theme.error }]}>{t('common.delete')}</Text>
                     </TouchableOpacity>
                 </View>
             )}

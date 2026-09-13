@@ -11,6 +11,7 @@ import {
     SUPPORTED_LANGUAGES,
     t,
 } from '@/lib/i18n';
+import { ProfileService } from '@/lib/profile-service';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
 interface LanguageContextType {
@@ -38,6 +39,9 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
             const persistedLang = await loadPersistedLanguage();
             setCurrentLanguage(persistedLang);
             setIsReady(true);
+            // Covers users who never open the language picker: their push notifications
+            // should still match the language the app is actually running in.
+            void ProfileService.syncPreferredLanguage(persistedLang);
         };
         init();
     }, []);
@@ -48,6 +52,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
         setCurrentLanguage(code);
         // Force re-render of all components using translations
         setUpdateKey(prev => prev + 1);
+        // Let the server know, so push notifications arrive in this language too
+        void ProfileService.syncPreferredLanguage(code);
     }, []);
 
     // Translation function - depends on language to trigger re-renders

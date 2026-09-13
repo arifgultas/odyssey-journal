@@ -194,7 +194,7 @@ export function JourneyMap({ locations, style }: JourneyMapProps) {
                     <View style={styles.statsText}>
                         <Text style={[styles.statsNumber, { color: colors.primary }]}>{locations.length}</Text>
                         <Text style={[styles.statsLabel, { color: colors.textSecondary }]}>
-                            {locations.length === 1 ? 'Location' : 'Locations'} Visited
+                            {locations.length === 1 ? t('map.locationVisited') : t('map.locationsVisited')}
                         </Text>
                     </View>
                 </View>

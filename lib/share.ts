@@ -1,4 +1,5 @@
 import { Alert, Platform, Share } from 'react-native';
+import { t } from './i18n';
 
 export interface SharePostData {
     title: string;
@@ -42,7 +43,7 @@ export async function sharePost(data: SharePostData): Promise<boolean> {
         return false;
     } catch (error) {
         console.error('Error sharing post:', error);
-        Alert.alert('Error', 'Failed to share post');
+        Alert.alert(t('common.error'), t('errors.shareFailed'));
         return false;
     }
 }

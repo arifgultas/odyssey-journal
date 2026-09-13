@@ -1,4 +1,5 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
 import React, { useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ interface OfflineIndicatorProps {
 }
 
 export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ position = 'top' }) => {
+    const { t } = useLanguage();
     const [isOffline, setIsOffline] = useState(false);
     const translateY = useSharedValue(position === 'top' ? -100 : 100);
     const opacity = useSharedValue(0);
@@ -64,7 +66,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ position = '
         <Animated.View style={[containerStyle, animatedStyle]}>
             <View style={styles.content}>
                 <Ionicons name="cloud-offline" size={20} color={Colors.light.surface} />
-                <Text style={styles.text}>No Internet Connection</Text>
+                <Text style={styles.text}>{t('errors.noConnection')}</Text>
             </View>
         </Animated.View>
     );
@@ -79,6 +81,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
     showIcon = true,
     iconSize = 16,
 }) => {
+    const { t } = useLanguage();
     const [connectionType, setConnectionType] = useState<string>('unknown');
     const [isConnected, setIsConnected] = useState(true);
 
@@ -104,7 +107,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
                     color={Colors.light.textMuted}
                 />
             )}
-            <Text style={styles.statusText}>Offline Mode</Text>
+            <Text style={styles.statusText}>{t('common.offlineMode')}</Text>
         </View>
     );
 };
