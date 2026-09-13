@@ -10,20 +10,23 @@
 | | Durum |
 |---|---|
 | Veritabanı migration'ları (026, 027, 028) | ✅ **CANLIDA** |
-| Uygulama kodu | ✅ **COMMIT EDİLDİ** — `bdc3a2c` (altyapı) + `i18n-finalize` dalı (bu tur) |
+| Uygulama kodu | ✅ **`main`'DE, PUSH EDİLDİ** — `bbb0a64` |
 | 12 dil × 729 anahtar | ✅ %100 eşit |
 | Sabit metin (t() dışı) | ✅ temiz — `i18n:check` 5. kuralı koruyor |
 | Arapça RTL | ✅ **YAPILDI** (bu tur) |
 | Türkçe ülke kısaltmaları | ✅ 3 harfli biçime taşındı (bu tur) |
 | EAS Android production build | ✅ **DÜZELTİLDİ** (bu tur) — sebebi i18n değildi |
-| Eski postların backfill'i | ⏳ dry-run senin elinde, gerçek yazma bekliyor |
-| Cihazda 12 dil taraması | ⏳ maestro akışı hazır, koşulmayı bekliyor |
+| Eski postların backfill'i | ✅ **UYGULANDI** — 13/13 post, 12 farklı yer, 0 çözülemeyen |
+| Cihazda 12 dil taraması | ⏳ elle yapılacak (aşağıdaki kontrol listesi) |
 | Push bildirimi doğrulaması | ⏳ SQL hazır, Supabase editöründen çalıştırılacak |
 | `npm test` | ✅ 19 suite / 207 test |
 | `npx tsc --noEmit` | ✅ tamamen temiz |
 
-`i18n-finalize` dalındaki commit'ler:
+Bu turda `main`'e giden commit'ler (`bdc3a2c..bbb0a64`, fast-forward):
 ```
+bbb0a64 chore: keep the service role key out of the EAS upload
+02b2fd0 docs: bring the i18n handoff note up to date
+e5a5c52 ci: run the EAS production build on demand, not on every commit
 6a5ef82 fix(router): remove the duplicate /notifications route
 101b6d9 fix(android): the three onboarding images are JPEGs, not PNGs
 781dddb i18n(ar): right-to-left layout
@@ -31,7 +34,10 @@
 f515f08 test(i18n): make the language-switch flow runnable
 23a9d99 i18n: never show a raw error message, and catch untranslated literals in CI
 ```
-(+ `ci: run the EAS production build on demand`)
+
+Push sonrası CI: Test / Lint / TypeScript / Translation Check dördü de yeşil, **54 saniye**
+(önceden 7+ dakika — production build artık her commit'te koşmuyor). `Deploy Supabase`
+`paths: supabase/**` filtresi sayesinde atlandı, bu turda migration değişmedi.
 
 ---
 
@@ -120,17 +126,49 @@ her ikisi de yanlış ülkeye okunuyordu. ABD ve İNG değişmedi; ja/zh tablola
 
 ## 5. Sıradaki adımlar
 
-### Adım 1 — Backfill (senin elinde)
-```
-! $env:SUPABASE_SERVICE_ROLE_KEY="<key>"; node scripts/backfill-place-names.js --dry-run
-! node scripts/backfill-place-names.js
-```
-Beklenen: 11 yer, 0 çözülemeyen (8 gömülü veriden, 3 Wikidata'dan).
+### ✅ Backfill — yapıldı
 
-> ⚠️ Anahtarı konuşmaya/terminale yapıştırdıysan sonrasında **döndür**: Supabase dashboard →
-> Project Settings → API → `service_role` → Rotate. `service_role` RLS'i tamamen baypas eder.
+```
+Scanned: 13   Updated: 13   No usable location: 0   Could not resolve: 0
+Distinct places: 12 (3 looked up live and cached)
+```
 
-### Adım 2 — Push bildirimi doğrulaması
+Canlıdan doğrulandı: 13 postun 13'ünde `place_key` ve `location.localizedNames` var, 12 farklı
+yer. Asıl örnek yerinde:
+
+```
+Constanța -> tr: Köstence   ja: コンスタンツァ   en: Constanța
+```
+
+Script'in koşulsuz çalıştığını bilmek işe yarar: tekrar çalıştırıldığında yine "13 to update"
+der, çünkü her postu mevcut değer aynı olsa da yeniden yazar. Bu bir hata değil.
+
+### Sıradaki 1 — Cihazda 12 dil
+
+Maestro **kullanılmıyor**; test Expo dev sunucusu + fiziksel Android cihaz, iOS ise TestFlight
+üzerinden. `.maestro/` akışları duruyor ve bu turda çalışır hale getirildi ama koşulmuyor.
+
+Her dilde aranan iki şey: **o dil dışında kalmış metin** ve **boş alan**.
+
+| Ekran | Özellikle bak |
+|---|---|
+| Feed | Kart altındaki yer satırı (`Köstence, RO`), göreli zaman (`3 saat önce`) |
+| Explore | Arama placeholder'ı, destinasyon kartları |
+| Harita | Şehir adları, ülke kısaltmaları — Türkçe artık `ALM`, `İSP`, `İTA` |
+| Post detayı | Tarih ve gün adı, yer satırı |
+| Yorumlar | **Yazma kutusunun placeholder'ı** — bu turda düzeltilen canlı hata |
+| Profil | Rozet detayı: yüzdenin yeri (tr `%50`, en `50%`) |
+| Ayarlar | En alttaki sürüm satırı (`Sürüm 1.0.0 • Derleme 1`) |
+| Giriş | Yanlış şifre gir — hata o dilde çıkmalı, İngilizce değil |
+
+**Arapça için:** dil değişince "uygulamayı yeniden başlat" uyarısı çıkar. Uygulamayı
+**tamamen kapatıp** aç — Fast Refresh veya dev menüden reload yetmez, `forceRTL` native
+tarafta uygulanıyor. İkinci açılışta düzen sağdan sola olmalı. RTL'in mekanik kısmı doğru
+ama görsel doğrulaması yapılmadı: 47 mutlak kenar ve 34 ikon çevrildi, aranan şey yanlış
+kenara yapışmış rozet/FAB/kapatma düğmesi veya ters bakan ok.
+
+### Sıradaki 2 — Push bildirimi doğrulaması
+
 Supabase SQL editöründe; sonunda `ROLLBACK` var, hiçbir şey kalıcı olmuyor ve gerçek bildirim
 gitmiyor:
 ```sql
@@ -147,28 +185,30 @@ ROLLBACK;
 ```
 Beklenen `body`: `<isim>さんがあなたの投稿にいいねしました`
 
-### Adım 3 — Cihazda 12 dil
-```bash
-maestro test .maestro/language-switch.yaml   # 12 dil × feed/map/profile = 36 ekran görüntüsü
-```
-Akıştaki iki gerçek kırık bu turda düzeltildi: login artık testID ile tıklıyor (etiketler
-çevrili olduğu için metinle tıklamak akışın kendi işini bozuyordu) ve `settings-button`
-testID'si eklendi (kodda hiç yoktu).
+### Sıradaki 3 — iOS build
 
-Akışın kapsamadığı, elle bakılacak ekranlar: create-post, post-detail, comments, notifications,
-chat, saved, collection, admin.
-
-**Arapça özellikle gözden geçirilmeli.** RTL'in düzen kısmı mekanik olarak doğru ama
-görsel doğrulaması yapılmadı: özellikle 47 mutlak kenar dönüşümü (rozetler, FAB, kapatma
-düğmeleri) ve 34 ikon çevirisi. Aranan: yanlış kenara yapışmış öğe, ters bakan ok.
-
-### Adım 4 — EAS production build
-```bash
-eas build --platform android --profile preview        # önce hızlı APK ile doğrula
-```
-ya da GitHub → Actions → CI → Run workflow → "Also run the EAS production build".
+`main` hazır. `eas build --platform ios --profile production`, sonra TestFlight.
 
 ---
+
+## 5b. Gizli anahtarlar nerede duruyor
+
+`.env` **her EAS build'inde Expo'nun sunucularına yükleniyor** — `.easignore` onu bilerek
+dışarıda bırakmıyor, çünkü `EXPO_PUBLIC_*` anahtarlarının build'e ulaşma yolu bu.
+
+Dolayısıyla ayrım şu:
+
+| Dosya | İçerik | EAS'e gider mi |
+|---|---|---|
+| `.env` | `EXPO_PUBLIC_*` anahtarları | evet, bilerek |
+| `.env.local` | `SUPABASE_SERVICE_ROLE_KEY` | **hayır** — `.easignore:51` `.env*.local` |
+
+İkisi de `.gitignore`'da. `SUPABASE_SERVICE_ROLE_KEY` RLS'i tamamen baypas eder ve uygulama
+kodunda hiçbir yerde okunmuyor; yalnızca `scripts/` altındaki araçlar kullanıyor.
+`scripts/backfill-place-names.js` önce `.env.local`'ı okuyor.
+
+Uygulama paketine hiç girmediğini bilmek önemli: Expo yalnızca `EXPO_PUBLIC_` önekli
+değişkenleri JS paketine gömer.
 
 ## 6. Açık konular
 
@@ -180,7 +220,14 @@ ya da GitHub → Actions → CI → Run workflow → "Also run the EAS productio
   düzende görüyor, ikinci açılışta düzen doğru. Açılışta uyarı göstermek `forceRTL` kalıcı
   olmazsa her açılışta uyarı riskine giriyordu; bilerek sessiz bırakıldı.
 - **`react-native-maps` 1.26.20**, SDK 54'ün beklediği 1.20.1 değil (`npx expo-doctor`).
-  Build artık geçtiği için acil değil ama bir yükseltmede ilk şüpheli bu olur.
+  Build artık geçtiği için acil değil ama bir yükseltmede ilk şüpheli bu olur. 16 paket
+  sürüm uyumsuzluğu var; `npx expo install --check` hepsini listeler.
+- **Service-role anahtarı döndürülmeli.** Anahtar bir oturumda düz metin olarak paylaşıldı.
+  Supabase dashboard → Project Settings → API → `service_role` → Rotate, ardından yeni değer
+  `.env.local`'a yazılır.
+- **`eas-build.yml` her push'ta bir preview Android build tetikliyor** (`--no-wait`).
+  `ci.yml`'den ayrı bir workflow; production build elle tetiklenir hale getirilirken buna
+  dokunulmadı. İstenmiyorsa ayrıca ele alınmalı.
 
 ---
 
