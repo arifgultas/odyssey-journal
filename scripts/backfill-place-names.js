@@ -44,14 +44,24 @@ const USER_AGENT = 'odyssey-journal-backfill/1.0 (https://github.com/arifgultas/
 // Environment
 // --------------------------------------------------------------------------- //
 
-/** Reads .env without adding a dependency just for this script */
+/**
+ * Reads the env files without adding a dependency just for this script.
+ *
+ * .env.local is read first and wins, because .easignore keeps .env in the archive uploaded
+ * to Expo's build servers - that is how the EXPO_PUBLIC_* keys reach a build. The service
+ * role key bypasses every row-level security policy and has no business going along for
+ * that ride, so it belongs in .env.local, which .easignore excludes.
+ */
 function loadEnv() {
-    const file = path.join(ROOT, '.env');
-    if (!fs.existsSync(file)) return;
-    for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
-        const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)$/);
-        if (match && !process.env[match[1]]) {
-            process.env[match[1]] = match[2].replace(/^["']|["']$/g, '').trim();
+    for (const name of ['.env.local', '.env']) {
+        const file = path.join(ROOT, name);
+        if (!fs.existsSync(file)) continue;
+        for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
+            const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)$/);
+            // First file to define a name wins, and a real environment variable beats both
+            if (match && !process.env[match[1]]) {
+                process.env[match[1]] = match[2].replace(/^["']|["']$/g, '').trim();
+            }
         }
     }
 }

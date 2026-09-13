@@ -42,4 +42,10 @@ tsc_errors.txt
 tsc_output.txt
 
 # NOTE: .env is NOT excluded here (unlike .gitignore)
-# EAS Build needs .env to inject API keys at build time
+# EAS Build needs .env to inject API keys at build time.
+#
+# That means everything in .env is uploaded to Expo's build servers, so .env is for
+# the EXPO_PUBLIC_* keys only. Server-side secrets - SUPABASE_SERVICE_ROLE_KEY above
+# all, which bypasses every row-level security policy - belong in .env.local, which
+# is excluded here and never leaves the machine.
+.env*.local
