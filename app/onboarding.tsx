@@ -31,19 +31,19 @@ export default function OnboardingScreen() {
     const onboardingData = [
         {
             id: 1,
-            image: require('@/assets/images/onboarding-cappadocia.png'),
+            image: require('@/assets/images/onboarding-cappadocia.jpg'),
             title: t('onboarding.step1Title'),
             description: t('onboarding.step1Desc'),
         },
         {
             id: 2,
-            image: require('@/assets/images/onboarding-sharing.png'),
+            image: require('@/assets/images/onboarding-sharing.jpg'),
             title: t('onboarding.step2Title'),
             description: t('onboarding.step2Desc'),
         },
         {
             id: 3,
-            image: require('@/assets/images/onboarding-community.png'),
+            image: require('@/assets/images/onboarding-community.jpg'),
             title: t('onboarding.step3Title'),
             description: t('onboarding.step3Desc'),
         },
