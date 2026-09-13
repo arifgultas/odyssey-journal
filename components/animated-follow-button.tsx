@@ -265,13 +265,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     icon: {
-        marginRight: 4,
+        marginEnd: 4,
     },
     buttonText: {
         fontFamily: Typography.fonts.bodyBold,
     },
     checkmarkContainer: {
         position: 'absolute',
-        left: -20,
+        start: -20,
     },
 });

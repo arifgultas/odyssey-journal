@@ -35,6 +35,7 @@ export default {
         pullToRefresh: 'Pull to refresh',
         releaseToRefresh: 'Release to refresh',
         percentValue: '{{value}}%',
+        ok: 'OK',
     },
 
     // Auth
@@ -555,6 +556,8 @@ export default {
         passwordChangeSuccess: 'Your password has been updated successfully.',
         unblockError: 'Failed to unblock user.',
         build: 'Build',
+        restartTitle: 'Restart required',
+        restartMessage: 'Close Odyssey Journal and open it again to finish switching the layout direction.',
     },
 
     // Errors

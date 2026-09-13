@@ -390,7 +390,7 @@ const AnimatedLocationCard = ({
                             </Text>
                             {weatherData && (
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                                    <Ionicons name={weatherData.icon as any} size={14} color={theme.accentBrown} style={{ marginRight: 4 }} />
+                                    <Ionicons name={weatherData.icon as any} size={14} color={theme.accentBrown} style={{ marginEnd: 4 }} />
                                     <Text style={{ fontFamily: Typography.fonts.ui, fontSize: 12, color: theme.accentBrown }}>
                                         {weatherData.temperature}°C • {t(`weather.${getWeatherTranslationKey(weatherData.condition)}`)}
                                     </Text>
@@ -827,7 +827,7 @@ export default function CreatePostScreen() {
                             {/* Search Input Section */}
                             <View style={styles.searchSection}>
                                 <View style={[styles.searchInputWrapper, { backgroundColor: theme.background, borderColor: theme.border }]}>
-                                    <Ionicons name="search-outline" size={20} color={theme.textSub} style={{ marginRight: 8 }} />
+                                    <Ionicons name="search-outline" size={20} color={theme.textSub} style={{ marginEnd: 8 }} />
                                     <TextInput
                                         style={[styles.searchInput, { color: theme.textMain }]}
                                         placeholder={t('create.searchPlaceholder')}
@@ -903,7 +903,7 @@ export default function CreatePostScreen() {
                                             }}
                                             activeOpacity={0.7}
                                         >
-                                            <Ionicons name="location-outline" size={20} color={theme.accentBrown} style={{ marginRight: 12, marginTop: 2 }} />
+                                            <Ionicons name="location-outline" size={20} color={theme.accentBrown} style={{ marginEnd: 12, marginTop: 2 }} />
                                             <View style={{ flex: 1 }}>
                                                 <Text style={[styles.resultTitleText, { color: theme.textMain }]}>
                                                     {result.name || result.address || t('create.locationSelected')}
@@ -992,7 +992,7 @@ export default function CreatePostScreen() {
                             onPress={() => setShowDatePickerModal(true)}
                             activeOpacity={0.8}
                         >
-                            <Ionicons name="calendar-outline" size={14} color={theme.accentBrown} style={{ marginRight: 6 }} />
+                            <Ionicons name="calendar-outline" size={14} color={theme.accentBrown} style={{ marginEnd: 6 }} />
                             <Text style={[styles.dateStampText, { color: theme.textSub }]}>
                                 {formatDate(selectedDate)}
                             </Text>
@@ -1143,7 +1143,7 @@ export default function CreatePostScreen() {
                                         ]}
                                     >
                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: weatherData ? 4 : 0 }}>
-                                            <Ionicons name="checkmark-circle" size={16} color="#2C1810" style={{ marginRight: 6 }} />
+                                            <Ionicons name="checkmark-circle" size={16} color="#2C1810" style={{ marginEnd: 6 }} />
                                             <Text style={styles.locationConfirmedText}>{t('create.locationSelected')}</Text>
                                         </View>
 
@@ -1151,7 +1151,7 @@ export default function CreatePostScreen() {
                                             <ActivityIndicator size="small" color="#2C1810" style={{ marginTop: 2 }} />
                                         ) : weatherData ? (
                                             <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12 }}>
-                                                <Ionicons name={weatherData.icon as any} size={14} color="#2C1810" style={{ marginRight: 4 }} />
+                                                <Ionicons name={weatherData.icon as any} size={14} color="#2C1810" style={{ marginEnd: 4 }} />
                                                 <Text style={{ fontFamily: Typography.fonts.uiBold, fontSize: 12, color: '#2C1810' }}>
                                                     {weatherData.temperature}°C {t(`weather.${getWeatherTranslationKey(weatherData.condition)}`)}
                                                 </Text>
@@ -1453,7 +1453,7 @@ const styles = StyleSheet.create({
     polaroidRemove: {
         position: 'absolute',
         top: -8,
-        right: -8,
+        end: -8,
         width: 24,
         height: 24,
         backgroundColor: '#2C1810',
@@ -1577,7 +1577,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '50%',
         left: '50%',
-        marginLeft: -24,
+        marginStart: -24,
         marginTop: -48,
         alignItems: 'center',
         justifyContent: 'flex-end',
@@ -1696,7 +1696,7 @@ const styles = StyleSheet.create({
     locationCardCorner: {
         position: 'absolute',
         top: -16,
-        right: -16,
+        end: -16,
         width: 40,
         height: 40,
         borderRadius: 20,
@@ -1704,7 +1704,7 @@ const styles = StyleSheet.create({
     locationConfirmedBadge: {
         position: 'absolute',
         bottom: Spacing.sm,
-        right: Spacing.sm,
+        end: Spacing.sm,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
@@ -1721,7 +1721,7 @@ const styles = StyleSheet.create({
     pinInstruction: {
         position: 'absolute',
         bottom: Spacing.sm,
-        right: Spacing.sm,
+        end: Spacing.sm,
         paddingHorizontal: Spacing.sm,
         paddingVertical: Spacing.xs,
         borderRadius: 4,
@@ -1815,8 +1815,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modalContent: {
-        borderTopLeftRadius: BorderRadius.lg,
-        borderTopRightRadius: BorderRadius.lg,
+        borderTopStartRadius: BorderRadius.lg,
+        borderTopEndRadius: BorderRadius.lg,
         paddingTop: Spacing.md,
         paddingHorizontal: Spacing.lg,
         paddingBottom: Spacing.xl + 20,

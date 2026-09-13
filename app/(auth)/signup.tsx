@@ -529,12 +529,12 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     inputWithIcon: {
-        paddingRight: 40,
+        paddingEnd: 40,
     },
     floatingLabelContainer: {
         position: 'absolute',
         top: -10,
-        left: 12,
+        start: 12,
         paddingHorizontal: 4,
     },
     floatingLabel: {
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     },
     visibilityButton: {
         position: 'absolute',
-        right: 12,
+        end: 12,
         padding: 4,
     },
     termsContainer: {

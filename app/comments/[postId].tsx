@@ -13,6 +13,7 @@ import { safeGoBack } from '@/lib/navigation';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 export default function CommentsScreen() {
     const { postId } = useLocalSearchParams<{ postId: string }>();
@@ -120,7 +121,7 @@ export default function CommentsScreen() {
             <ThemedView style={styles.container}>
                 <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, borderBottomColor: theme.border }]}>
                     <TouchableOpacity onPress={() => safeGoBack('/(tabs)')} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={theme.text} />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={24} color={theme.text} />
                     </TouchableOpacity>
                     <ThemedText style={styles.headerTitle}>
                         {t('comments.title')}
@@ -143,7 +144,7 @@ export default function CommentsScreen() {
             <ThemedView style={styles.container}>
                 <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, borderBottomColor: theme.border }]}>
                     <TouchableOpacity onPress={() => safeGoBack('/(tabs)')} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={theme.text} />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={24} color={theme.text} />
                     </TouchableOpacity>
                     <ThemedText style={styles.headerTitle}>
                         {t('comments.title')}

@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     imageCount: {
         position: 'absolute',
         top: Spacing.sm,
-        right: Spacing.sm,
+        end: Spacing.sm,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
         paddingHorizontal: Spacing.sm,
         paddingVertical: Spacing.xs,

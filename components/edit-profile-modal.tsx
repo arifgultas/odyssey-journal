@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     cameraIcon: {
         position: 'absolute',
         bottom: 0,
-        right: 0,
+        end: 0,
         backgroundColor: Colors.light.primary,
         width: 32,
         height: 32,

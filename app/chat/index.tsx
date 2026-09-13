@@ -17,6 +17,7 @@ import { useLanguage } from '@/context/language-context';
 import { formatShortDate, formatShortWeekday, formatTime } from '@/lib/date-formatter';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getConversations, Conversation } from '@/lib/chat';
+import { mirrorIcon } from '@/lib/rtl';
 
 // Google Stitch Design Colors
 const DesignColors = {
@@ -191,7 +192,7 @@ export default function ChatListScreen() {
                 }
             ]}>
                 <TouchableOpacity onPress={() => safeGoBack('/(tabs)')} style={styles.headerButton}>
-                    <Ionicons name="arrow-back" size={28} color={theme.primary} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={28} color={theme.primary} />
                 </TouchableOpacity>
                 
                 <Text style={[styles.headerTitle, { color: theme.textMain }]}>
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     },
     itemContent: {
         flex: 1,
-        marginLeft: Spacing.md,
+        marginStart: Spacing.md,
     },
     itemHeader: {
         flexDirection: 'row',
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.uiBold,
         fontSize: 15,
         flex: 1,
-        marginRight: Spacing.sm,
+        marginEnd: Spacing.sm,
     },
     timeText: {
         fontFamily: Typography.fonts.ui,
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.ui,
         fontSize: 13,
         flex: 1,
-        marginRight: Spacing.md,
+        marginEnd: Spacing.md,
     },
     badge: {
         minWidth: 18,
@@ -420,7 +421,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     tabBadge: {
-        marginLeft: 6,
+        marginStart: 6,
         paddingHorizontal: 6,
         height: 16,
         borderRadius: 8,

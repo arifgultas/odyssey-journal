@@ -12,6 +12,7 @@ import { ActivityIndicator, Alert, FlatList, RefreshControl, StyleSheet, Text, T
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { supabase } from '@/lib/supabase';
+import { mirrorIcon } from '@/lib/rtl';
 
 export default function FollowingScreen() {
     const { userId } = useLocalSearchParams<{ userId: string }>();
@@ -150,7 +151,7 @@ export default function FollowingScreen() {
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <View style={[styles.header, { paddingTop: insets.top + Spacing.xs, backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
                     <TouchableOpacity onPress={() => safeGoBack('/(tabs)/profile')} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={theme.text} />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={24} color={theme.text} />
                     </TouchableOpacity>
                     <Text style={[styles.headerTitle, { color: theme.text }]}>
                         {t('following.title')}
@@ -168,7 +169,7 @@ export default function FollowingScreen() {
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <View style={[styles.header, { paddingTop: insets.top + Spacing.xs, backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
                 <TouchableOpacity onPress={() => safeGoBack('/(tabs)/profile')} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color={theme.text} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={24} color={theme.text} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: theme.text }]}>
                     {t('following.title')}

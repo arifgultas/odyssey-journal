@@ -9,6 +9,7 @@ import { safeGoBack } from '@/lib/navigation';
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 export default function CommunityGuidelinesScreen() {
     const { t } = useLanguage();
@@ -43,7 +44,7 @@ export default function CommunityGuidelinesScreen() {
         <ThemedView style={styles.container}>
             <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, borderBottomColor: theme.border }]}>
                 <TouchableOpacity onPress={() => safeGoBack('/settings')} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color={theme.text} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={24} color={theme.text} />
                 </TouchableOpacity>
                 <ThemedText type="title" style={styles.headerTitle}>
                     {t('settings.communityGuidelines')}
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     sectionContent: {
         fontFamily: Typography.fonts.ui,
         lineHeight: 22,
-        paddingLeft: Spacing.sm + 6,
+        paddingStart: Spacing.sm + 6,
         opacity: 0.8,
     },
     footer: {

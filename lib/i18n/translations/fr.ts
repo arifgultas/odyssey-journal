@@ -34,6 +34,7 @@ export default {
         pullToRefresh: 'Tirez pour actualiser',
         releaseToRefresh: 'Relâchez pour actualiser',
         percentValue: '{{value}} %',
+        ok: 'OK',
     },
     auth: {
         login: 'Connexion',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: 'Votre mot de passe a été mis à jour avec succès.',
         unblockError: 'Impossible de débloquer l\'utilisateur.',
         build: 'Build',
+        restartTitle: 'Redémarrage nécessaire',
+        restartMessage: 'Fermez Odyssey Journal et rouvrez-le pour terminer le changement de sens de lecture.',
     },
     errors: {
         generic: 'Une erreur s\'est produite',

@@ -20,6 +20,7 @@ import {
     View,
     useColorScheme,
 } from 'react-native';
+import { mirrorIcon } from '@/lib/rtl';
 
 // Updated Stitch design colors matching login/signup screens
 const StitchColors = {
@@ -187,7 +188,7 @@ export default function ForgotPasswordScreen() {
                         activeOpacity={0.7}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                        <Ionicons name="arrow-back" size={24} color={isDark ? theme.primaryGold : theme.primaryDark} />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={24} color={isDark ? theme.primaryGold : theme.primaryDark} />
                     </TouchableOpacity>
 
                     {/* Logo Section */}
@@ -289,7 +290,7 @@ export default function ForgotPasswordScreen() {
                                         name="send-outline"
                                         size={18}
                                         color={isDark ? '#2C1810' : '#D4A574'}
-                                        style={{ marginRight: 8 }}
+                                        style={{ marginEnd: 8 }}
                                     />
                                     <Text style={{
                                         fontFamily: Typography.fonts.heading,
@@ -366,7 +367,7 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         top: 60,
-        left: 24,
+        start: 24,
         zIndex: 10,
         padding: 10,
         borderRadius: 12,
@@ -438,7 +439,7 @@ const styles = StyleSheet.create({
     floatingLabelContainer: {
         position: 'absolute',
         top: -10,
-        left: 12,
+        start: 12,
         paddingHorizontal: 4,
     },
     floatingLabel: {

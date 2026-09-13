@@ -26,6 +26,7 @@ import {
     View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 // Letter Theme Colors
 const LetterColors = {
@@ -318,7 +319,7 @@ export default function NotificationsScreen() {
 
                             {/* Comment preview */}
                             {notification.comment_preview && (
-                                <View style={[styles.commentPreview, { borderLeftColor: colorScheme === 'dark' ? `${letterTheme.gold}33` : `${letterTheme.waxRed}33` }]}>
+                                <View style={[styles.commentPreview, { borderStartColor: colorScheme === 'dark' ? `${letterTheme.gold}33` : `${letterTheme.waxRed}33` }]}>
                                     <Text style={[styles.commentText, { color: letterTheme.inkMuted }]}>
                                         {notification.comment_preview}
                                     </Text>
@@ -352,7 +353,7 @@ export default function NotificationsScreen() {
             <ThemedView style={[styles.container, { backgroundColor: letterTheme.background }]}>
                 <View style={[styles.header, { paddingTop: insets.top + 12, borderBottomColor: letterTheme.border }]}>
                     <TouchableOpacity style={styles.backButton} onPress={() => safeGoBack('/(tabs)')}>
-                        <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
                     </TouchableOpacity>
                     <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>{t('notifications.title').toUpperCase()}</Text>
                     <View style={styles.backButton} />
@@ -376,7 +377,7 @@ export default function NotificationsScreen() {
                     style={[styles.backButton, { borderColor: colorScheme === 'dark' ? `${letterTheme.gold}33` : `${letterTheme.ink}20` }]}
                     onPress={() => safeGoBack('/(tabs)')}
                 >
-                    <Ionicons name="arrow-back" size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={24} color={colorScheme === 'dark' ? letterTheme.gold : letterTheme.ink} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: letterTheme.ink }]}>{t('notifications.title').toUpperCase()}</Text>
                 <View style={styles.backButton} />
@@ -575,7 +576,7 @@ const styles = StyleSheet.create({
     waxSeal: {
         position: 'absolute',
         top: 8,
-        right: 8,
+        end: 8,
         width: 28,
         height: 28,
         borderRadius: 14,
@@ -611,7 +612,7 @@ const styles = StyleSheet.create({
     // Text
     textContent: {
         flex: 1,
-        paddingRight: 24,
+        paddingEnd: 24,
     },
     messageText: {
         fontSize: 15,
@@ -620,10 +621,10 @@ const styles = StyleSheet.create({
     },
     commentPreview: {
         marginTop: 8,
-        paddingLeft: 8,
+        paddingStart: 8,
         paddingVertical: 4,
-        paddingRight: 4,
-        borderLeftWidth: 2,
+        paddingEnd: 4,
+        borderStartWidth: 2,
         backgroundColor: 'rgba(0,0,0,0.05)',
         borderRadius: 2,
     },

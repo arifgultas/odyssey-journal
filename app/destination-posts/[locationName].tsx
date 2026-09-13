@@ -18,6 +18,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 export default function DestinationPostsScreen() {
     const { locationName, lat, lon } = useLocalSearchParams<{ locationName: string; lat?: string; lon?: string }>();
@@ -124,10 +125,10 @@ export default function DestinationPostsScreen() {
                     style={styles.backButton}
                     onPress={() => safeGoBack('/(tabs)/explore')}
                 >
-                    <Ionicons name="chevron-back" size={24} color={theme.text} />
+                    <Ionicons name={mirrorIcon('chevron-back')} size={24} color={theme.text} />
                 </TouchableOpacity>
                 <View style={styles.headerTitleContainer}>
-                    <Ionicons name="location" size={20} color="#4A6FA5" style={{ marginRight: 8 }} />
+                    <Ionicons name="location" size={20} color="#4A6FA5" style={{ marginEnd: 8 }} />
                     <Text style={[styles.headerTitle, { color: theme.text }]} numberOfLines={1}>
                         {formatPostLocation({ name: decodedLocationName }, language, decodedLocationName) ||
                             t('destinationPosts.destination')}
@@ -265,13 +266,13 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderRadius: 10,
-        marginRight: 6,
+        marginEnd: 6,
     },
     authorAvatarPlaceholder: {
         width: 20,
         height: 20,
         borderRadius: 10,
-        marginRight: 6,
+        marginEnd: 6,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     statText: {
         fontFamily: Typography.fonts.body,
         fontSize: 11,
-        marginLeft: 4,
+        marginStart: 4,
     },
     emptyContainer: {
         flex: 1,

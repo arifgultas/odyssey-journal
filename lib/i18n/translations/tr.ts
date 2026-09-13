@@ -36,6 +36,7 @@ export default {
         pullToRefresh: 'Yenilemek için çekin',
         releaseToRefresh: 'Yenilemek için bırakın',
         percentValue: '%{{value}}',
+        ok: 'Tamam',
     },
 
     // Auth
@@ -555,6 +556,8 @@ export default {
         passwordChangeSuccess: 'Şifreniz başarıyla güncellendi.',
         unblockError: 'Kullanıcının engeli kaldırılamadı.',
         build: 'Derleme',
+        restartTitle: 'Yeniden başlatma gerekli',
+        restartMessage: 'Yerleşim yönünün tamamlanması için Odyssey Journal’ı kapatıp yeniden açın.',
     },
 
     // Errors

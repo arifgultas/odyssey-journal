@@ -34,6 +34,7 @@ export default {
         pullToRefresh: '引っ張って更新',
         releaseToRefresh: '離して更新',
         percentValue: '{{value}}%',
+        ok: 'OK',
     },
     auth: {
         login: 'ログイン',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: 'パスワードが正常に更新されました。',
         unblockError: 'ユーザーのブロック解除に失敗しました。',
         build: 'ビルド',
+        restartTitle: '再起動が必要です',
+        restartMessage: 'レイアウトの方向を切り替えるため、Odyssey Journal を一度終了して開き直してください。',
     },
     errors: {
         generic: 'エラーが発生しました',

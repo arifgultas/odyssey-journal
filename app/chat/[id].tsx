@@ -3,6 +3,7 @@ import {
     ActivityIndicator,
     Alert,
     FlatList,
+    I18nManager,
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
@@ -23,6 +24,7 @@ import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getMessages, sendMessage, subscribeToMessages, Message, checkChatApproval, approveConversation, declineConversation } from '@/lib/chat';
 import { useProfile } from '@/hooks/use-profile';
 import { supabase } from '@/lib/supabase';
+import { mirrorIcon } from '@/lib/rtl';
 
 // Google Stitch Design Colors
 const DesignColors = {
@@ -349,7 +351,7 @@ export default function ChatRoomScreen() {
                 }
             ]}>
                 <TouchableOpacity onPress={() => safeGoBack('/chat')} style={styles.headerButton}>
-                    <Ionicons name="arrow-back" size={28} color={theme.primary} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={28} color={theme.primary} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={handleProfilePress} style={styles.headerUserInfo} activeOpacity={0.7}>
@@ -542,7 +544,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerUserText: {
-        marginLeft: Spacing.sm,
+        marginStart: Spacing.sm,
         flex: 1,
     },
     userNameText: {
@@ -570,10 +572,10 @@ const styles = StyleSheet.create({
         ...Shadows.sm,
     },
     myBubbleCorners: {
-        borderBottomRightRadius: 2,
+        borderBottomEndRadius: 2,
     },
     theirBubbleCorners: {
-        borderBottomLeftRadius: 2,
+        borderBottomStartRadius: 2,
     },
     messageContent: {
         fontFamily: Typography.fonts.ui,
@@ -583,7 +585,7 @@ const styles = StyleSheet.create({
     bubbleTime: {
         fontFamily: Typography.fonts.ui,
         fontSize: 9,
-        textAlign: 'right',
+        textAlign: I18nManager.isRTL ? 'left' : 'right',
         marginTop: 4,
         opacity: 0.6,
     },
@@ -605,7 +607,7 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.ui,
         fontSize: 14,
         maxHeight: 100,
-        marginRight: Spacing.sm,
+        marginEnd: Spacing.sm,
         paddingTop: Platform.OS === 'ios' ? 4 : 0,
     },
     sendButton: {

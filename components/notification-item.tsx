@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
         position: 'absolute',
-        left: Spacing.xs,
+        start: Spacing.xs,
         top: '50%',
         marginTop: -4,
     },
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        marginLeft: Spacing.xs,
+        marginStart: Spacing.xs,
         flexShrink: 0,
     },
     avatarImage: {

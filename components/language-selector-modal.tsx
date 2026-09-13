@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
     modalContent: {
-        borderTopLeftRadius: BorderRadius.xl,
-        borderTopRightRadius: BorderRadius.xl,
+        borderTopStartRadius: BorderRadius.xl,
+        borderTopEndRadius: BorderRadius.xl,
         maxHeight: '100%',
         minHeight: '70%',
     },

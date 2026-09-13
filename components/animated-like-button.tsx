@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     },
     particleContainer: {
         position: 'absolute',
-        left: 10,
+        start: 10,
         top: 10,
         zIndex: 10,
     },

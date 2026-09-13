@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     commentContent: {
-        marginLeft: 12,
+        marginStart: 12,
         flex: 1,
     },
 });

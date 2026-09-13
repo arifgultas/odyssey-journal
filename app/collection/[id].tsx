@@ -27,6 +27,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - Spacing.md * 3) / 2;
@@ -347,7 +348,7 @@ export default function CollectionDetailScreen() {
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 >
                                     <MaterialIcons
-                                        name="arrow-forward"
+                                        name={mirrorIcon('arrow-forward')}
                                         size={20}
                                         color={isDark ? '#D4A574' : '#2C1810'}
                                     />

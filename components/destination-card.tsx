@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     container: {
         width: 200,
         height: 250,
-        marginRight: Spacing.md,
+        marginEnd: Spacing.md,
         borderRadius: BorderRadius.lg,
         overflow: 'hidden',
         ...Shadows.md,

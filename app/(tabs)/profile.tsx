@@ -776,7 +776,7 @@ const styles = StyleSheet.create({
     statIconBg: {
         position: 'absolute',
         top: 4,
-        right: 4,
+        end: 4,
         opacity: 0.1,
     },
     statIcon: {
@@ -905,7 +905,7 @@ const styles = StyleSheet.create({
     badgeCount: {
         position: 'absolute',
         top: 0,
-        right: 0,
+        end: 0,
         width: 20,
         height: 20,
         borderRadius: 10,

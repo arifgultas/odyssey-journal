@@ -34,6 +34,7 @@ export default {
         pullToRefresh: 'Zum Aktualisieren ziehen',
         releaseToRefresh: 'Loslassen zum Aktualisieren',
         percentValue: '{{value}} %',
+        ok: 'OK',
     },
     auth: {
         login: 'Anmelden',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: 'Ihr Passwort wurde erfolgreich aktualisiert.',
         unblockError: 'Benutzer konnte nicht freigegeben werden.',
         build: 'Build',
+        restartTitle: 'Neustart erforderlich',
+        restartMessage: 'Schließe Odyssey Journal und öffne es erneut, um die Leserichtung zu übernehmen.',
     },
     errors: {
         generic: 'Etwas ist schief gelaufen',

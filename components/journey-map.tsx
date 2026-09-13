@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     statsOverlay: {
         position: 'absolute',
         top: Spacing.md,
-        right: Spacing.md,
+        end: Spacing.md,
     },
     statsCard: {
         flexDirection: 'row',

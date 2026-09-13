@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.light.border,
     },
     icon: {
-        marginRight: Spacing.sm,
+        marginEnd: Spacing.sm,
     },
     input: {
         flex: 1,

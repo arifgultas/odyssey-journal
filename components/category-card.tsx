@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         padding: Spacing.md,
         borderRadius: BorderRadius.lg,
         alignItems: 'center',
-        marginRight: Spacing.sm,
+        marginEnd: Spacing.sm,
         ...Shadows.sm,
     },
     iconContainer: {

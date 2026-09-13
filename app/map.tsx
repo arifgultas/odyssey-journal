@@ -26,6 +26,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
+import { mirrorIcon } from '@/lib/rtl';
 
 // Determine if we are running in Expo Go on iOS
 const isExpoGoOnIos = Platform.OS === 'ios' && Constants.appOwnership === 'expo';
@@ -209,7 +210,7 @@ function BottomSheetPreview({ visible, cluster, onClose, onPostPress, theme }: B
                     </Text>
                 </View>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={theme.textSecondary} />
+            <Ionicons name={mirrorIcon('chevron-forward')} size={20} color={theme.textSecondary} />
         </TouchableOpacity>
     );
 
@@ -325,7 +326,7 @@ function BottomSheetPreview({ visible, cluster, onClose, onPostPress, theme }: B
                                 <Text style={[styles.detailsButtonText, { color: theme.background }]}>
                                     {t('explore.readPost')}
                                 </Text>
-                                <Ionicons name="arrow-forward" size={16} color={theme.background} />
+                                <Ionicons name={mirrorIcon('arrow-forward')} size={16} color={theme.background} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -596,7 +597,7 @@ export default function MapScreen() {
                 ]}
             >
                 <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color={theme.text} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={24} color={theme.text} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: theme.text }]}>{t('map.title')}</Text>
                 <TouchableOpacity onPress={handleCenterMap} style={styles.centerButton}>
@@ -835,7 +836,7 @@ const styles = StyleSheet.create({
     markerCountBadge: {
         position: 'absolute',
         top: 0,
-        right: 2,
+        end: 2,
         minWidth: 22,
         height: 22,
         borderRadius: 11,
@@ -852,18 +853,18 @@ const styles = StyleSheet.create({
     markerTail: {
         width: 0,
         height: 0,
-        borderLeftWidth: 8,
-        borderRightWidth: 8,
+        borderStartWidth: 8,
+        borderEndWidth: 8,
         borderTopWidth: 10,
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
+        borderStartColor: 'transparent',
+        borderEndColor: 'transparent',
         marginTop: -1,
     },
 
     // ── Map Controls ────────────────────────────────────────────────────
     zoomControls: {
         position: 'absolute',
-        right: Spacing.md,
+        end: Spacing.md,
         gap: Spacing.sm,
     },
     zoomButton: {
@@ -896,7 +897,7 @@ const styles = StyleSheet.create({
     },
     statsBadge: {
         position: 'absolute',
-        left: Spacing.md,
+        start: Spacing.md,
         flexDirection: 'row',
         alignItems: 'center',
         gap: Spacing.xs,
@@ -923,8 +924,8 @@ const styles = StyleSheet.create({
     },
     bottomSheetContent: {
         maxHeight: SCREEN_HEIGHT * 0.55,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        borderTopStartRadius: 24,
+        borderTopEndRadius: 24,
         paddingBottom: 34,
         ...Shadows.lg,
     },
@@ -1009,7 +1010,7 @@ const styles = StyleSheet.create({
     },
     postInfo: {
         flex: 1,
-        marginLeft: Spacing.md,
+        marginStart: Spacing.md,
     },
     postTitle: {
         fontFamily: Typography.fonts.bodyBold,
@@ -1102,7 +1103,7 @@ const styles = StyleSheet.create({
     },
     webLocationInfo: {
         flex: 1,
-        marginLeft: Spacing.md,
+        marginStart: Spacing.md,
     },
     webLocationName: {
         fontFamily: Typography.fonts.bodyBold,

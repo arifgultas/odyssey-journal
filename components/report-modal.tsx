@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
+    I18nManager,
     Modal,
     ScrollView,
     StyleSheet,
@@ -169,8 +170,8 @@ const styles = StyleSheet.create({
     },
     container: {
         backgroundColor: Colors.light.surface,
-        borderTopLeftRadius: BorderRadius.xl,
-        borderTopRightRadius: BorderRadius.xl,
+        borderTopStartRadius: BorderRadius.xl,
+        borderTopEndRadius: BorderRadius.xl,
         maxHeight: '90%',
     },
     header: {
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.light.border,
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: Spacing.sm,
+        marginStart: Spacing.sm,
     },
     radioSelected: {
         borderColor: Colors.light.accent,
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.body,
         fontSize: 12,
         color: Colors.light.textMuted,
-        textAlign: 'right',
+        textAlign: I18nManager.isRTL ? 'left' : 'right',
         marginTop: Spacing.xs,
     },
     footer: {

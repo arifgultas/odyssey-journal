@@ -30,6 +30,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - Spacing.md * 3) / 2;
@@ -395,7 +396,7 @@ export default function SavedPostsScreen() {
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 >
                                     <MaterialIcons
-                                        name="arrow-forward"
+                                        name={mirrorIcon('arrow-forward')}
                                         size={20}
                                         color={isDark ? '#D4A574' : '#2C1810'}
                                     />
@@ -621,28 +622,28 @@ const styles = StyleSheet.create({
     },
     collectionCardWrapper: {
         width: COLLECTION_CARD_WIDTH,
-        marginRight: Spacing.md,
+        marginEnd: Spacing.md,
     },
     bookSpine: {
         position: 'absolute',
-        left: -8,
+        start: -8,
         top: 4,
         bottom: 4,
         width: 8,
         backgroundColor: '#1a100c',
-        borderTopLeftRadius: 2,
-        borderBottomLeftRadius: 2,
+        borderTopStartRadius: 2,
+        borderBottomStartRadius: 2,
     },
     collectionCard: {
         width: COLLECTION_CARD_WIDTH,
         aspectRatio: 3 / 4,
-        borderTopRightRadius: BorderRadius.lg,
-        borderBottomRightRadius: BorderRadius.lg,
-        borderTopLeftRadius: 2,
-        borderBottomLeftRadius: 2,
+        borderTopEndRadius: BorderRadius.lg,
+        borderBottomEndRadius: BorderRadius.lg,
+        borderTopStartRadius: 2,
+        borderBottomStartRadius: 2,
         overflow: 'hidden',
-        borderLeftWidth: 4,
-        borderLeftColor: 'rgba(212, 165, 116, 0.3)',
+        borderStartWidth: 4,
+        borderStartColor: 'rgba(212, 165, 116, 0.3)',
         ...Shadows.lg,
     },
     collectionImage: {
@@ -732,7 +733,7 @@ const styles = StyleSheet.create({
     tab: {
         paddingVertical: 12,
         paddingHorizontal: Spacing.sm,
-        marginRight: Spacing.lg,
+        marginEnd: Spacing.lg,
         position: 'relative',
     },
     tabText: {
@@ -751,11 +752,11 @@ const styles = StyleSheet.create({
         right: 0,
         height: 2,
         backgroundColor: '#D4A574',
-        borderTopLeftRadius: 2,
-        borderTopRightRadius: 2,
+        borderTopStartRadius: 2,
+        borderTopEndRadius: 2,
     },
     filterButton: {
-        marginLeft: 'auto',
+        marginStart: 'auto',
         paddingBottom: 12,
     },
 

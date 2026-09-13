@@ -19,7 +19,8 @@
     "settings.adminTitle",
     "badgeList.gourmet.name",
     "modal.title",
-    "settings.build"
+    "settings.build",
+    "common.ok"
   ],
   "es": [
     "common.error",
@@ -57,7 +58,8 @@
     "moderation.categories.violence",
     "badgeList.gourmet.name",
     "admin.total",
-    "settings.build"
+    "settings.build",
+    "common.ok"
   ],
   "it": [
     "common.no",
@@ -71,7 +73,8 @@
     "settings.privacy",
     "settings.adminTitle",
     "common.percentValue",
-    "settings.build"
+    "settings.build",
+    "common.ok"
   ],
   "pt": [
     "editProfile.bio",
@@ -80,11 +83,13 @@
     "badgeList.gourmet.name",
     "admin.total",
     "modal.title",
-    "common.percentValue"
+    "common.percentValue",
+    "common.ok"
   ],
   "ja": [
     "editProfile.websitePlaceholder",
-    "common.percentValue"
+    "common.percentValue",
+    "common.ok"
   ],
   "ko": [
     "editProfile.websitePlaceholder",

@@ -16,6 +16,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 const { width, height } = Dimensions.get('window');
 
@@ -284,7 +285,7 @@ export default function OnboardingScreen() {
                                     : t('onboarding.next')}
                             </Text>
                             <Ionicons
-                                name="arrow-forward"
+                                name={mirrorIcon('arrow-forward')}
                                 size={20}
                                 color={isDark ? '#2E291E' : theme.surface}
                                 style={styles.nextButtonIcon}
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
     },
     skipButtonContainer: {
         position: 'absolute',
-        right: 20,
+        end: 20,
         zIndex: 30,
     },
     skipButton: {
@@ -350,8 +351,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: height * 0.48,
-        borderTopLeftRadius: 40,
-        borderTopRightRadius: 40,
+        borderTopStartRadius: 40,
+        borderTopEndRadius: 40,
         paddingHorizontal: Spacing.xl,
         paddingTop: Spacing.lg,
         shadowColor: '#000',
@@ -426,6 +427,6 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     nextButtonIcon: {
-        marginLeft: 4,
+        marginStart: 4,
     },
 });

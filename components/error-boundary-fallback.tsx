@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     badge: {
         position: 'absolute',
         top: 0,
-        right: 0,
+        end: 0,
     },
     title: {
         fontSize: 24,

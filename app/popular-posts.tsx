@@ -17,6 +17,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 export default function PopularPostsScreen() {
     const insets = useSafeAreaInsets();
@@ -132,10 +133,10 @@ export default function PopularPostsScreen() {
                     style={styles.backButton}
                     onPress={() => safeGoBack('/(tabs)/explore')}
                 >
-                    <Ionicons name="chevron-back" size={24} color={theme.text} />
+                    <Ionicons name={mirrorIcon('chevron-back')} size={24} color={theme.text} />
                 </TouchableOpacity>
                 <View style={styles.headerTitleContainer}>
-                    <Ionicons name="trending-up" size={20} color="#DAA520" style={{ marginRight: 8 }} />
+                    <Ionicons name="trending-up" size={20} color="#DAA520" style={{ marginEnd: 8 }} />
                     <Text style={[styles.headerTitle, { color: theme.text }]}>
                         {t('popularPosts.title')}
                     </Text>
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
     rankBadge: {
         position: 'absolute',
         top: 8,
-        left: 8,
+        start: 8,
         width: 28,
         height: 28,
         borderRadius: 14,
@@ -287,13 +288,13 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderRadius: 10,
-        marginRight: 6,
+        marginEnd: 6,
     },
     authorAvatarPlaceholder: {
         width: 20,
         height: 20,
         borderRadius: 10,
-        marginRight: 6,
+        marginEnd: 6,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -308,12 +309,12 @@ const styles = StyleSheet.create({
     statItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: 12,
+        marginStart: 12,
     },
     statText: {
         fontFamily: Typography.fonts.body,
         fontSize: 11,
-        marginLeft: 4,
+        marginStart: 4,
     },
     emptyContainer: {
         flex: 1,

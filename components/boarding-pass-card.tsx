@@ -278,8 +278,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
         paddingVertical: 14,
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 16,
+        borderBottomStartRadius: 16,
+        borderBottomEndRadius: 16,
     },
     statItem: {
         flex: 1,

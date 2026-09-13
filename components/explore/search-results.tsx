@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     },
     resultInfo: {
         flex: 1,
-        marginLeft: 14,
+        marginStart: 14,
     },
     resultName: {
         fontSize: 15,

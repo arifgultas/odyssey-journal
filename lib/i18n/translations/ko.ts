@@ -34,6 +34,7 @@ export default {
         pullToRefresh: '당겨서 새로고침',
         releaseToRefresh: '놓아서 새로고침',
         percentValue: '{{value}}%',
+        ok: '확인',
     },
     auth: {
         login: '로그인',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: '비밀번호가 성공적으로 업데이트되었습니다.',
         unblockError: '사용자 차단을 해제하지 못했습니다.',
         build: '빌드',
+        restartTitle: '앱을 다시 시작해야 합니다',
+        restartMessage: '레이아웃 방향을 적용하려면 Odyssey Journal을 종료했다가 다시 열어 주세요.',
     },
     errors: {
         generic: '문제가 발생했습니다',

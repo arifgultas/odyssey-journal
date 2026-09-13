@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Spacing } from '@/constants/theme';
+import { mirrorIcon } from '@/lib/rtl';
 
 interface SettingsRowProps {
     icon?: any;
@@ -49,7 +50,7 @@ export function SettingsRow({
                 </View>
             </View>
             {rightElement !== undefined ? rightElement : (
-                onPress && <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                onPress && <Ionicons name={mirrorIcon('chevron-forward')} size={20} color={colors.textSecondary} />
             )}
         </Component>
     );
@@ -66,10 +67,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
-        marginRight: Spacing.md,
+        marginEnd: Spacing.md,
     },
     settingIcon: {
-        marginRight: Spacing.sm + 4,
+        marginEnd: Spacing.sm + 4,
     },
     settingInfo: {
         flex: 1,

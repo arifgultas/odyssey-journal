@@ -29,6 +29,7 @@ import {
 } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 const AdminColors = {
     light: {
@@ -359,7 +360,7 @@ export default function AdminScreen() {
                 ]}
             >
                 <TouchableOpacity style={styles.headerButton} onPress={() => safeGoBack('/settings')}>
-                    <Ionicons name="arrow-back" size={28} color={isDark ? colors.accent : colors.textPrimary} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={28} color={isDark ? colors.accent : colors.textPrimary} />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
                     <Ionicons name="shield-checkmark" size={20} color={colors.accent} />

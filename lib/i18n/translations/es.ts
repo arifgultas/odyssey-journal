@@ -34,6 +34,7 @@ export default {
         pullToRefresh: 'Desliza para actualizar',
         releaseToRefresh: 'Suelta para actualizar',
         percentValue: '{{value}} %',
+        ok: 'Aceptar',
     },
     auth: {
         login: 'Iniciar Sesión',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: 'Tu contraseña se ha actualizado correctamente.',
         unblockError: 'Error al desbloquear al usuario.',
         build: 'Compilación',
+        restartTitle: 'Es necesario reiniciar',
+        restartMessage: 'Cierra Odyssey Journal y vuelve a abrirlo para completar el cambio de dirección del diseño.',
     },
     errors: {
         generic: 'Algo salió mal',

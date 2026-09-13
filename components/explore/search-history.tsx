@@ -63,6 +63,6 @@ const styles = StyleSheet.create({
     historyText: {
         flex: 1,
         fontSize: 15,
-        marginLeft: 12,
+        marginStart: 12,
     },
 });

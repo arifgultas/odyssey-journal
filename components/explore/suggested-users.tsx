@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     usersScroll: {
-        paddingRight: 20,
+        paddingEnd: 20,
         gap: 12,
     },
     userCard: {
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     bookmarkButton: {
         position: 'absolute',
         top: 10,
-        right: 10,
+        end: 10,
     },
     followButton: {
         flexDirection: 'row',

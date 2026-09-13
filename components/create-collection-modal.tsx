@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
+    I18nManager,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
     charCount: {
         fontSize: 12,
         fontFamily: Typography.fonts.ui,
-        textAlign: 'right',
+        textAlign: I18nManager.isRTL ? 'left' : 'right',
         marginTop: Spacing.xs,
     },
     colorGrid: {

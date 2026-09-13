@@ -34,6 +34,7 @@ export default {
         pullToRefresh: 'Потяните для обновления',
         releaseToRefresh: 'Отпустите для обновления',
         percentValue: '{{value}} %',
+        ok: 'ОК',
     },
     auth: {
         login: 'Войти',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: 'Ваш пароль успешно обновлен.',
         unblockError: 'Не удалось разблокировать пользователя.',
         build: 'Сборка',
+        restartTitle: 'Требуется перезапуск',
+        restartMessage: 'Закройте Odyssey Journal и откройте снова, чтобы изменить направление интерфейса.',
     },
     errors: {
         generic: 'Что-то пошло не так',

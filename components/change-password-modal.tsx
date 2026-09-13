@@ -211,7 +211,7 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
                                         <Text style={styles.submitButtonText}>
                                             {t('common.save')}
                                         </Text>
-                                        <Ionicons name="key" size={18} color="#2C1810" style={{ marginLeft: 6 }} />
+                                        <Ionicons name="key" size={18} color="#2C1810" style={{ marginStart: 6 }} />
                                     </>
                                 )}
                             </TouchableOpacity>
@@ -232,8 +232,8 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
     },
     modalContent: {
-        borderTopLeftRadius: BorderRadius.xl,
-        borderTopRightRadius: BorderRadius.xl,
+        borderTopStartRadius: BorderRadius.xl,
+        borderTopEndRadius: BorderRadius.xl,
         maxHeight: '100%',
     },
     safeArea: {

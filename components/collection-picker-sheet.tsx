@@ -388,8 +388,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         maxHeight: SCREEN_HEIGHT * 0.75,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        borderTopStartRadius: 24,
+        borderTopEndRadius: 24,
         ...Shadows.lg,
     },
     handleContainer: {

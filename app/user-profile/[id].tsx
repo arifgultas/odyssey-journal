@@ -24,6 +24,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { mirrorIcon } from '@/lib/rtl';
 
 const { width } = Dimensions.get('window');
 
@@ -167,7 +168,7 @@ export default function UserProfileScreen() {
                     }
                 ]}>
                     <TouchableOpacity onPress={handleBack} style={styles.headerButton}>
-                        <Ionicons name="arrow-back" size={28} color={theme.primary} />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={28} color={theme.primary} />
                     </TouchableOpacity>
                 </View>
 
@@ -225,7 +226,7 @@ export default function UserProfileScreen() {
                     onPress={handleBack}
                     style={styles.headerButton}
                 >
-                    <Ionicons name="arrow-back" size={28} color={theme.primary} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={28} color={theme.primary} />
                 </TouchableOpacity>
                 <Text style={[styles.headerLabel, { color: `${theme.primary}CC` }]}>
                     {t('profile.passport')}
@@ -471,7 +472,7 @@ export default function UserProfileScreen() {
                                                             {post.likes_count || 0}
                                                         </Text>
                                                     </View>
-                                                    <Ionicons name="arrow-forward" size={14} color="#F5F1E880" />
+                                                    <Ionicons name={mirrorIcon('arrow-forward')} size={14} color="#F5F1E880" />
                                                 </View>
                                             </View>
                                         </View>
@@ -594,38 +595,38 @@ const styles = StyleSheet.create({
     cornerTL: {
         position: 'absolute',
         top: -4,
-        left: -4,
+        start: -4,
         width: 24,
         height: 24,
         borderTopWidth: 2,
-        borderLeftWidth: 2,
+        borderStartWidth: 2,
     },
     cornerTR: {
         position: 'absolute',
         top: -4,
-        right: -4,
+        end: -4,
         width: 24,
         height: 24,
         borderTopWidth: 2,
-        borderRightWidth: 2,
+        borderEndWidth: 2,
     },
     cornerBL: {
         position: 'absolute',
         bottom: -4,
-        left: -4,
+        start: -4,
         width: 24,
         height: 24,
         borderBottomWidth: 2,
-        borderLeftWidth: 2,
+        borderStartWidth: 2,
     },
     cornerBR: {
         position: 'absolute',
         bottom: -4,
-        right: -4,
+        end: -4,
         width: 24,
         height: 24,
         borderBottomWidth: 2,
-        borderRightWidth: 2,
+        borderEndWidth: 2,
     },
     photoContainer: {
         width: 128,

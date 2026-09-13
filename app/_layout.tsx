@@ -14,8 +14,15 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { I18nManager } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Arabic needs a right-to-left layout. React Native can only apply a direction change on
+// the next launch, so allowRTL is set here, before anything renders, and the language
+// context asks the reader to restart when the direction actually has to flip. The setting
+// is persisted natively, which is why the second launch is already correct.
+I18nManager.allowRTL(true);
 
 // Initialize Sentry error monitoring
 initSentry();

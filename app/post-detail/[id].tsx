@@ -63,6 +63,7 @@ import { useLanguage } from '@/context/language-context';
 import { formatPostDetailDate, formatPostDetailDay } from '@/lib/date-formatter';
 import { getLocalizedCityName, getLocalizedCountryName } from '@/lib/location-formatter';
 import { getWeatherTranslationKey } from '@/lib/weather';
+import { mirrorIcon } from '@/lib/rtl';
 
 export default function PostDetailScreen() {
     const insets = useSafeAreaInsets();
@@ -252,7 +253,7 @@ export default function PostDetailScreen() {
                         onPress={() => safeGoBack('/(tabs)')}
                         style={styles.floatingButton}
                     >
-                        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+                        <Ionicons name={mirrorIcon('arrow-back')} size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.loadingContainer}>
@@ -312,7 +313,7 @@ export default function PostDetailScreen() {
                     onPress={() => safeGoBack('/(tabs)')}
                     style={styles.floatingButton}
                 >
-                    <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+                    <Ionicons name={mirrorIcon('chevron-back')} size={24} color="#FFFFFF" />
                 </TouchableOpacity>
 
                 <View style={styles.floatingButtonGroup}>
@@ -581,7 +582,7 @@ export default function PostDetailScreen() {
                                 <Text style={[styles.viewCommentsText, { color: theme.textMain }]}>
                                     {t('post.viewNotes', { count: post.comments_count })}
                                 </Text>
-                                <Ionicons name="chevron-forward" size={20} color={theme.textSubtle} />
+                                <Ionicons name={mirrorIcon('chevron-forward')} size={20} color={theme.textSubtle} />
                             </TouchableOpacity>
                         )}
 
@@ -781,8 +782,8 @@ const styles = StyleSheet.create({
 
     // Content Card
     contentCard: {
-        borderTopLeftRadius: 40,
-        borderTopRightRadius: 40,
+        borderTopStartRadius: 40,
+        borderTopEndRadius: 40,
         paddingHorizontal: Spacing.lg,
         paddingTop: Spacing.lg,
         minHeight: height * 0.6,
@@ -822,7 +823,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 4,
         marginTop: 8,
-        marginLeft: 4,
+        marginStart: 4,
     },
     weatherCard: {
         width: 80,
@@ -837,12 +838,12 @@ const styles = StyleSheet.create({
     weatherCorner: {
         position: 'absolute',
         top: 0,
-        right: 0,
+        end: 0,
         width: 16,
         height: 16,
-        borderLeftWidth: 1,
+        borderStartWidth: 1,
         borderBottomWidth: 1,
-        borderBottomLeftRadius: 8,
+        borderBottomStartRadius: 8,
         backgroundColor: 'rgba(232, 220, 200, 0.3)',
     },
     weatherTemp: {
@@ -948,7 +949,7 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.handwritingBold,
         fontSize: 72,
         lineHeight: 72,
-        marginRight: 12,
+        marginEnd: 12,
     },
 
     // Map Card
@@ -1039,7 +1040,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '50%',
         left: '50%',
-        marginLeft: -20,
+        marginStart: -20,
         marginTop: -40,
     },
     mapSepiaOverlay: {
@@ -1107,7 +1108,7 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.body,
         fontSize: 16,
         flex: 1,
-        marginLeft: Spacing.sm,
+        marginStart: Spacing.sm,
     },
     dashedSeparator: {
         alignItems: 'center',
@@ -1124,7 +1125,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 8,
         paddingHorizontal: 8,
-        paddingRight: Spacing.md,
+        paddingEnd: Spacing.md,
         borderRadius: 999,
         borderWidth: 1,
         borderStyle: 'dashed',
@@ -1140,7 +1141,7 @@ const styles = StyleSheet.create({
     noteInputPlaceholder: {
         fontFamily: Typography.fonts.handwriting,
         fontSize: 20,
-        marginLeft: Spacing.sm,
+        marginStart: Spacing.sm,
         flex: 1,
     },
     historyIcon: {

@@ -6,6 +6,7 @@ import type { LocationResult, TrendingLocation } from '@/lib/types/search';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { mirrorIcon } from '@/lib/rtl';
 
 interface LocationCardProps {
     location: LocationResult | TrendingLocation;
@@ -56,7 +57,7 @@ export function LocationCard({ location, onPress, showTrending = false }: Locati
                 </View>
             </View>
 
-            <Ionicons name="chevron-forward" size={20} color={theme.textSecondary} />
+            <Ionicons name={mirrorIcon('chevron-forward')} size={20} color={theme.textSecondary} />
         </TouchableOpacity>
     );
 }
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light.background,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: Spacing.md,
+        marginEnd: Spacing.md,
     },
     content: {
         flex: 1,

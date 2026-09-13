@@ -35,6 +35,7 @@ export default {
         pullToRefresh: 'اسحب للتحديث',
         releaseToRefresh: 'أفلت للتحديث',
         percentValue: '{{value}}%',
+        ok: 'حسنًا',
     },
     auth: {
         login: 'تسجيل الدخول',
@@ -521,6 +522,8 @@ export default {
         passwordChangeSuccess: 'تم تحديث كلمة المرور الخاصة بك بنجاح.',
         unblockError: 'فشل إلغاء حظر المستخدم.',
         build: 'البناء',
+        restartTitle: 'يلزم إعادة التشغيل',
+        restartMessage: 'أغلق Odyssey Journal ثم افتحه مرة أخرى لإكمال تغيير اتجاه الواجهة.',
     },
     errors: {
         generic: 'حدث خطأ ما',

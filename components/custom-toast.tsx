@@ -118,7 +118,7 @@ export function CustomToast({
                 },
             ]}
         >
-            <View style={[styles.toast, { borderLeftColor: config.color }]}>
+            <View style={[styles.toast, { borderStartColor: config.color }]}>
                 <Ionicons name={config.icon} size={24} color={config.color} />
                 <Text style={styles.message}>{message}</Text>
             </View>
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: Spacing.sm,
-        borderLeftWidth: 4,
+        borderStartWidth: 4,
         ...Shadows.md,
     },
     message: {

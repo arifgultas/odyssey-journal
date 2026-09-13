@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         padding: Spacing.xs,
     },
     actionsMenu: {
-        marginLeft: 40,
+        marginStart: 40,
         marginTop: Spacing.xs,
         borderRadius: BorderRadius.sm,
         padding: Spacing.xs,

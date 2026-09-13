@@ -159,7 +159,7 @@ export function LocationMapPreview({
                         onPress={handleOpenMap}
                         activeOpacity={0.8}
                     >
-                        <Ionicons name="navigate-outline" size={14} color={theme.primary} style={{ marginRight: 4 }} />
+                        <Ionicons name="navigate-outline" size={14} color={theme.primary} style={{ marginEnd: 4 }} />
                         <Text style={[styles.openInMapsText, { color: theme.primary }]}>
                             {Platform.OS === 'ios' ? t('map.appleMaps') : t('map.openInMaps')}
                         </Text>
@@ -200,7 +200,7 @@ export function LocationMapPreview({
 
             {showOpenButton && (
                 <View style={[styles.openInMapsButton, { backgroundColor: isDark ? 'rgba(44, 24, 16, 0.9)' : 'rgba(255, 255, 255, 0.92)' }]}>
-                    <Ionicons name="navigate-outline" size={14} color={theme.primary} style={{ marginRight: 4 }} />
+                    <Ionicons name="navigate-outline" size={14} color={theme.primary} style={{ marginEnd: 4 }} />
                     <Text style={[styles.openInMapsText, { color: theme.primary }]}>
                         {t('map.openInMap')}
                     </Text>

@@ -18,6 +18,7 @@ import { useLanguage } from '@/context/language-context';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getBlockedUsersProfiles, unblockUser, BlockedUserProfile } from '@/lib/block';
 import { useQueryClient } from '@tanstack/react-query';
+import { mirrorIcon } from '@/lib/rtl';
 
 // Styling colors matching theme
 const DesignColors = {
@@ -164,7 +165,7 @@ export default function BlockedUsersScreen() {
                 }
             ]}>
                 <TouchableOpacity onPress={() => safeGoBack('/settings')} style={styles.headerButton}>
-                    <Ionicons name="arrow-back" size={28} color={theme.primary} />
+                    <Ionicons name={mirrorIcon('arrow-back')} size={28} color={theme.primary} />
                 </TouchableOpacity>
                 
                 <Text style={[styles.headerTitle, { color: theme.textMain }]}>
@@ -256,8 +257,8 @@ const styles = StyleSheet.create({
     },
     itemContent: {
         flex: 1,
-        marginLeft: Spacing.md,
-        marginRight: Spacing.sm,
+        marginStart: Spacing.md,
+        marginEnd: Spacing.sm,
     },
     fullName: {
         fontFamily: Typography.fonts.uiBold,

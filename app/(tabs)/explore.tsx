@@ -737,7 +737,7 @@ export default function ExploreScreen() {
           <Ionicons name="compass-outline" size={24} color={vintageTheme.textMuted} />
           <View style={styles.searchInputContainer}>
             <TextInput
-              style={[styles.searchInput, { color: vintageTheme.text, paddingRight: searchQuery.length > 0 ? 28 : 0 }]}
+              style={[styles.searchInput, { color: vintageTheme.text, paddingEnd: searchQuery.length > 0 ? 28 : 0 }]}
               value={searchQuery}
               onChangeText={handleSearch}
               placeholder=""
@@ -761,7 +761,7 @@ export default function ExploreScreen() {
             {searchQuery.length > 0 && (
               <TouchableOpacity
                 onPress={handleClearSearch}
-                style={{ position: 'absolute', right: 0, padding: 4 }}
+                style={{ position: 'absolute', end: 0, padding: 4 }}
               >
                 <Ionicons name="close-circle" size={20} color={vintageTheme.textMuted} />
               </TouchableOpacity>
@@ -792,8 +792,8 @@ const styles = StyleSheet.create({
   mapHeader: {
     height: 380,
     overflow: 'hidden',
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    borderBottomStartRadius: 32,
+    borderBottomEndRadius: 32,
   },
   mapBackground: {
     ...StyleSheet.absoluteFillObject,
@@ -882,7 +882,7 @@ const styles = StyleSheet.create({
     height: 10,
     transform: [{ rotate: '45deg' }],
     marginTop: -6,
-    borderRightWidth: 2,
+    borderEndWidth: 2,
     borderBottomWidth: 2,
   },
 
@@ -890,7 +890,7 @@ const styles = StyleSheet.create({
   zoomControls: {
     position: 'absolute',
     bottom: 100,
-    right: 16,
+    end: 16,
     gap: 10,
     zIndex: 30,
   },
@@ -958,7 +958,7 @@ const styles = StyleSheet.create({
   },
   categoryItem: {
     alignItems: 'center',
-    marginRight: 20,
+    marginEnd: 20,
   },
   categoryIcon: {
     width: 60,
@@ -1004,7 +1004,7 @@ const styles = StyleSheet.create({
   },
   postContent: {
     flex: 1,
-    paddingLeft: 14,
+    paddingStart: 14,
     justifyContent: 'space-between',
   },
   trendingBadge: {
@@ -1090,7 +1090,7 @@ const styles = StyleSheet.create({
   destinationBadge: {
     position: 'absolute',
     top: 12,
-    right: 12,
+    end: 12,
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -1142,7 +1142,7 @@ const styles = StyleSheet.create({
   editorBadge: {
     position: 'absolute',
     top: 14,
-    left: 14,
+    start: 14,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,

@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { mirrorIcon } from '@/lib/rtl';
 
 interface TravelDatePickerProps {
     selectedDate: Date;
@@ -280,7 +281,7 @@ export function TravelDatePicker({
                     onPress={handleOpen}
                     activeOpacity={0.8}
                 >
-                    <Ionicons name="calendar-outline" size={13} color={theme.accentBrown} style={{ marginRight: 4 }} />
+                    <Ionicons name="calendar-outline" size={13} color={theme.accentBrown} style={{ marginEnd: 4 }} />
                     <Text style={[styles.quickChipText, { color: theme.accentBrown, fontFamily: Typography.fonts.uiBold }]}>
                         {t('datePicker.calendar')}
                     </Text>
@@ -305,7 +306,7 @@ export function TravelDatePicker({
                         {/* Modal Header */}
                         <View style={[styles.modalHeader, { borderBottomColor: theme.line }]}>
                             <View style={styles.modalTitleRow}>
-                                <Ionicons name="calendar" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+                                <Ionicons name="calendar" size={20} color={theme.primary} style={{ marginEnd: 8 }} />
                                 <Text style={[styles.modalTitle, { color: isDark ? theme.textMain : '#2C1810' }]}>
                                     {t('datePicker.selectDate')}
                                 </Text>
@@ -326,7 +327,7 @@ export function TravelDatePicker({
                                 style={[styles.navArrow, { borderColor: theme.border }]}
                                 activeOpacity={0.7}
                             >
-                                <Ionicons name="chevron-back" size={18} color={theme.textMain} />
+                                <Ionicons name={mirrorIcon('chevron-back')} size={18} color={theme.textMain} />
                             </TouchableOpacity>
 
                             <Text style={[styles.monthYearText, { color: isDark ? theme.primary : '#2C1810' }]}>
@@ -338,7 +339,7 @@ export function TravelDatePicker({
                                 style={[styles.navArrow, { borderColor: theme.border }]}
                                 activeOpacity={0.7}
                             >
-                                <Ionicons name="chevron-forward" size={18} color={theme.textMain} />
+                                <Ionicons name={mirrorIcon('chevron-forward')} size={18} color={theme.textMain} />
                             </TouchableOpacity>
                         </View>
 
@@ -425,7 +426,7 @@ export function TravelDatePicker({
                                     onPress={handleConfirmModal}
                                     activeOpacity={0.8}
                                 >
-                                    <Ionicons name="checkmark" size={16} color="#2C1810" style={{ marginRight: 4 }} />
+                                    <Ionicons name="checkmark" size={16} color="#2C1810" style={{ marginEnd: 4 }} />
                                     <Text style={styles.confirmBtnText}>
                                         {t('datePicker.apply')}
                                     </Text>
@@ -493,7 +494,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        marginRight: Spacing.md,
+        marginEnd: Spacing.md,
     },
     dateInfo: {
         flex: 1,

@@ -34,6 +34,7 @@ export default {
         pullToRefresh: '下拉刷新',
         releaseToRefresh: '松开刷新',
         percentValue: '{{value}}%',
+        ok: '好',
     },
     auth: {
         login: '登录',
@@ -520,6 +521,8 @@ export default {
         passwordChangeSuccess: '您的密码已成功更新。',
         unblockError: '解除屏蔽用户失败。',
         build: '构建',
+        restartTitle: '需要重新启动',
+        restartMessage: '请关闭并重新打开 Odyssey Journal，以完成界面方向的切换。',
     },
     errors: {
         generic: '出错了',
