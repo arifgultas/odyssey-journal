@@ -1,5 +1,6 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
 import { Ionicons } from '@expo/vector-icons';
@@ -76,7 +77,7 @@ export default function LoginScreen() {
             password,
         });
 
-        if (error) Alert.alert(t('auth.loginError'), error.message);
+        if (error) Alert.alert(t('auth.loginError'), localizedErrorMessage(error));
         setLoading(false);
     }
 

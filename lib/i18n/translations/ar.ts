@@ -34,6 +34,7 @@ export default {
         offlineMode: 'وضع عدم الاتصال',
         pullToRefresh: 'اسحب للتحديث',
         releaseToRefresh: 'أفلت للتحديث',
+        percentValue: '{{value}}%',
     },
     auth: {
         login: 'تسجيل الدخول',
@@ -519,6 +520,7 @@ export default {
         notificationPreferences: 'تفضيلات الإشعارات',
         passwordChangeSuccess: 'تم تحديث كلمة المرور الخاصة بك بنجاح.',
         unblockError: 'فشل إلغاء حظر المستخدم.',
+        build: 'البناء',
     },
     errors: {
         generic: 'حدث خطأ ما',
@@ -545,6 +547,15 @@ export default {
         signInTitle: 'خطأ في تسجيل الدخول',
         signInProviderFailed: 'حدثت مشكلة أثناء تسجيل الدخول باستخدام {{provider}}.',
         shareFailed: 'فشل مشاركة المنشور',
+        emailNotConfirmed: 'يرجى تأكيد عنوان بريدك الإلكتروني قبل تسجيل الدخول',
+        emailExists: 'يوجد حساب بهذا البريد الإلكتروني بالفعل',
+        weakPassword: 'يرجى اختيار كلمة مرور أقوى',
+        samePassword: 'يجب أن تختلف كلمة المرور الجديدة عن الحالية',
+        rateLimit: 'محاولات كثيرة جدًا. انتظر قليلاً ثم حاول مرة أخرى',
+        linkExpired: 'انتهت صلاحية هذا الرابط. يرجى طلب رابط جديد',
+        userNotFound: 'لم يتم العثور على حساب بهذا البريد الإلكتروني',
+        signupDisabled: 'التسجيلات الجديدة مغلقة حاليًا',
+        usernameTaken: 'اسم المستخدم هذا مستخدم بالفعل',
     },
     time: {
         now: 'الآن',

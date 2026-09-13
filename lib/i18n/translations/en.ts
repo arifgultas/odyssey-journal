@@ -34,6 +34,7 @@ export default {
         offlineMode: 'Offline Mode',
         pullToRefresh: 'Pull to refresh',
         releaseToRefresh: 'Release to refresh',
+        percentValue: '{{value}}%',
     },
 
     // Auth
@@ -553,6 +554,7 @@ export default {
         notificationPreferences: 'Notification Preferences',
         passwordChangeSuccess: 'Your password has been updated successfully.',
         unblockError: 'Failed to unblock user.',
+        build: 'Build',
     },
 
     // Errors
@@ -581,6 +583,15 @@ export default {
         signInTitle: 'Sign-in Error',
         signInProviderFailed: 'There was a problem signing in with {{provider}}.',
         shareFailed: 'Failed to share post',
+        emailNotConfirmed: 'Please confirm your email address before signing in',
+        emailExists: 'An account with this email already exists',
+        weakPassword: 'Please choose a stronger password',
+        samePassword: 'The new password must be different from your current one',
+        rateLimit: 'Too many attempts. Please wait a moment and try again',
+        linkExpired: 'This link has expired. Please request a new one',
+        userNotFound: 'No account was found for this email address',
+        signupDisabled: 'New registrations are currently closed',
+        usernameTaken: 'This username is already taken',
     },
 
     // Time

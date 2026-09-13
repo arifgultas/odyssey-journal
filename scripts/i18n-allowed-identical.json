@@ -18,7 +18,8 @@
     "settings.version",
     "settings.adminTitle",
     "badgeList.gourmet.name",
-    "modal.title"
+    "modal.title",
+    "settings.build"
   ],
   "es": [
     "common.error",
@@ -55,7 +56,8 @@
     "destinationPosts.destination",
     "moderation.categories.violence",
     "badgeList.gourmet.name",
-    "admin.total"
+    "admin.total",
+    "settings.build"
   ],
   "it": [
     "common.no",
@@ -67,7 +69,9 @@
     "report.reasons.spam.label",
     "settings.account",
     "settings.privacy",
-    "settings.adminTitle"
+    "settings.adminTitle",
+    "common.percentValue",
+    "settings.build"
   ],
   "pt": [
     "editProfile.bio",
@@ -75,18 +79,25 @@
     "settings.adminTitle",
     "badgeList.gourmet.name",
     "admin.total",
-    "modal.title"
+    "modal.title",
+    "common.percentValue"
   ],
   "ja": [
-    "editProfile.websitePlaceholder"
+    "editProfile.websitePlaceholder",
+    "common.percentValue"
   ],
   "ko": [
-    "editProfile.websitePlaceholder"
+    "editProfile.websitePlaceholder",
+    "common.percentValue"
   ],
   "zh": [
-    "editProfile.websitePlaceholder"
+    "editProfile.websitePlaceholder",
+    "common.percentValue"
   ],
   "tr": [
     "modal.title"
+  ],
+  "ar": [
+    "common.percentValue"
   ]
 }

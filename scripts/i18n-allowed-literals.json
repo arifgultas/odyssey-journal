@@ -1,0 +1,16 @@
+{
+  "_comment": [
+    "Literal strings that may stay out of t(), keyed by file path relative to the repo root.",
+    "'*' allows a string anywhere. Everything else the scanner finds is a translation bug:",
+    "text written straight into the code never changes when the reader changes language.",
+    "Add an entry only for text that genuinely has no language - a brand name, a technical",
+    "identifier - or for the web export's static metadata, which is not part of the in-app UI."
+  ],
+  "*": [
+    "Odyssey Journal",
+    "ODYSSEY JOURNAL"
+  ],
+  "app/+html.tsx": [
+    "Odyssey Journal — Discover, Share, Inspire"
+  ]
+}

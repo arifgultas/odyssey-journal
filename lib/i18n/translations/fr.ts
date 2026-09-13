@@ -33,6 +33,7 @@ export default {
         offlineMode: 'Mode hors ligne',
         pullToRefresh: 'Tirez pour actualiser',
         releaseToRefresh: 'Relâchez pour actualiser',
+        percentValue: '{{value}} %',
     },
     auth: {
         login: 'Connexion',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: 'Préférences de Notification',
         passwordChangeSuccess: 'Votre mot de passe a été mis à jour avec succès.',
         unblockError: 'Impossible de débloquer l\'utilisateur.',
+        build: 'Build',
     },
     errors: {
         generic: 'Une erreur s\'est produite',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'Erreur de connexion',
         signInProviderFailed: 'Un problème est survenu lors de la connexion avec {{provider}}.',
         shareFailed: 'Impossible de partager la publication',
+        emailNotConfirmed: 'Veuillez confirmer votre adresse e-mail avant de vous connecter',
+        emailExists: 'Un compte existe déjà avec cette adresse e-mail',
+        weakPassword: 'Veuillez choisir un mot de passe plus robuste',
+        samePassword: 'Le nouveau mot de passe doit être différent de l\'actuel',
+        rateLimit: 'Trop de tentatives. Patientez un instant et réessayez',
+        linkExpired: 'Ce lien a expiré. Veuillez en demander un nouveau',
+        userNotFound: 'Aucun compte n\'a été trouvé pour cette adresse e-mail',
+        signupDisabled: 'Les nouvelles inscriptions sont actuellement fermées',
+        usernameTaken: 'Ce nom d\'utilisateur est déjà pris',
     },
     time: {
         now: 'Maintenant',

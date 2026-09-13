@@ -33,6 +33,7 @@ export default {
         offlineMode: '离线模式',
         pullToRefresh: '下拉刷新',
         releaseToRefresh: '松开刷新',
+        percentValue: '{{value}}%',
     },
     auth: {
         login: '登录',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: '通知偏好设置',
         passwordChangeSuccess: '您的密码已成功更新。',
         unblockError: '解除屏蔽用户失败。',
+        build: '构建',
     },
     errors: {
         generic: '出错了',
@@ -544,6 +546,15 @@ export default {
         signInTitle: '登录错误',
         signInProviderFailed: '使用 {{provider}} 登录时出现问题。',
         shareFailed: '分享帖子失败',
+        emailNotConfirmed: '请先验证您的邮箱地址后再登录',
+        emailExists: '该邮箱已注册过账号',
+        weakPassword: '请设置更强的密码',
+        samePassword: '新密码不能与当前密码相同',
+        rateLimit: '尝试次数过多，请稍后再试',
+        linkExpired: '该链接已过期，请重新获取',
+        userNotFound: '未找到使用该邮箱的账号',
+        signupDisabled: '目前暂不开放新用户注册',
+        usernameTaken: '该用户名已被使用',
     },
     time: {
         now: '刚刚',

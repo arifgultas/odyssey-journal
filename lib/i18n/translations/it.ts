@@ -33,6 +33,7 @@ export default {
         offlineMode: 'Modalità offline',
         pullToRefresh: 'Trascina per aggiornare',
         releaseToRefresh: 'Rilascia per aggiornare',
+        percentValue: '{{value}}%',
     },
     auth: {
         login: 'Accedi',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: 'Preferenze di Notifica',
         passwordChangeSuccess: 'La password è stata aggiornata con successo.',
         unblockError: 'Impossibile sbloccare l\'utente.',
+        build: 'Build',
     },
     errors: {
         generic: 'Qualcosa è andato storto',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'Errore di accesso',
         signInProviderFailed: 'Si è verificato un problema durante l\'accesso con {{provider}}.',
         shareFailed: 'Impossibile condividere il post',
+        emailNotConfirmed: 'Conferma il tuo indirizzo email prima di accedere',
+        emailExists: 'Esiste già un account con questa email',
+        weakPassword: 'Scegli una password più sicura',
+        samePassword: 'La nuova password deve essere diversa da quella attuale',
+        rateLimit: 'Troppi tentativi. Attendi un momento e riprova',
+        linkExpired: 'Questo link è scaduto. Richiedine uno nuovo',
+        userNotFound: 'Nessun account trovato per questo indirizzo email',
+        signupDisabled: 'Le nuove registrazioni sono momentaneamente chiuse',
+        usernameTaken: 'Questo nome utente è già in uso',
     },
     time: {
         now: 'Adesso',

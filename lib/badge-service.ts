@@ -139,14 +139,20 @@ export function calculateBadges(
 /**
  * Get only unlocked badges
  */
-export function getUnlockedBadges(stats: ProfileStats | null | undefined): Badge[] {
-    return calculateBadges(stats).filter((badge) => badge.unlocked);
+export function getUnlockedBadges(
+    stats: ProfileStats | null | undefined,
+    t: (key: string, options?: any) => string
+): Badge[] {
+    return calculateBadges(stats, t).filter((badge) => badge.unlocked);
 }
 
 /**
  * Get featured badge (for display priority)
  */
-export function getFeaturedBadge(stats: ProfileStats | null | undefined): Badge | null {
-    const badges = calculateBadges(stats);
+export function getFeaturedBadge(
+    stats: ProfileStats | null | undefined,
+    t: (key: string, options?: any) => string
+): Badge | null {
+    const badges = calculateBadges(stats, t);
     return badges.find((badge) => badge.featured && badge.unlocked) || null;
 }

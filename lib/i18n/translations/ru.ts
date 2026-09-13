@@ -33,6 +33,7 @@ export default {
         offlineMode: 'Автономный режим',
         pullToRefresh: 'Потяните для обновления',
         releaseToRefresh: 'Отпустите для обновления',
+        percentValue: '{{value}} %',
     },
     auth: {
         login: 'Войти',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: 'Настройки уведомлений',
         passwordChangeSuccess: 'Ваш пароль успешно обновлен.',
         unblockError: 'Не удалось разблокировать пользователя.',
+        build: 'Сборка',
     },
     errors: {
         generic: 'Что-то пошло не так',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'Ошибка входа',
         signInProviderFailed: 'При входе через {{provider}} произошла ошибка.',
         shareFailed: 'Не удалось поделиться записью',
+        emailNotConfirmed: 'Подтвердите адрес электронной почты, прежде чем войти',
+        emailExists: 'Аккаунт с этим адресом уже существует',
+        weakPassword: 'Выберите более надёжный пароль',
+        samePassword: 'Новый пароль должен отличаться от текущего',
+        rateLimit: 'Слишком много попыток. Подождите немного и повторите',
+        linkExpired: 'Срок действия ссылки истёк. Запросите новую',
+        userNotFound: 'Аккаунт с таким адресом не найден',
+        signupDisabled: 'Регистрация новых пользователей сейчас закрыта',
+        usernameTaken: 'Это имя пользователя уже занято',
     },
     time: {
         now: 'Сейчас',

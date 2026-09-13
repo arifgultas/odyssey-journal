@@ -33,6 +33,7 @@ export default {
         offlineMode: 'Offline-Modus',
         pullToRefresh: 'Zum Aktualisieren ziehen',
         releaseToRefresh: 'Loslassen zum Aktualisieren',
+        percentValue: '{{value}} %',
     },
     auth: {
         login: 'Anmelden',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: 'Benachrichtigungseinstellungen',
         passwordChangeSuccess: 'Ihr Passwort wurde erfolgreich aktualisiert.',
         unblockError: 'Benutzer konnte nicht freigegeben werden.',
+        build: 'Build',
     },
     errors: {
         generic: 'Etwas ist schief gelaufen',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'Anmeldefehler',
         signInProviderFailed: 'Bei der Anmeldung mit {{provider}} ist ein Problem aufgetreten.',
         shareFailed: 'Beitrag konnte nicht geteilt werden',
+        emailNotConfirmed: 'Bitte bestätige deine E-Mail-Adresse, bevor du dich anmeldest',
+        emailExists: 'Mit dieser E-Mail-Adresse existiert bereits ein Konto',
+        weakPassword: 'Bitte wähle ein stärkeres Passwort',
+        samePassword: 'Das neue Passwort muss sich vom aktuellen unterscheiden',
+        rateLimit: 'Zu viele Versuche. Warte einen Moment und versuche es erneut',
+        linkExpired: 'Dieser Link ist abgelaufen. Bitte fordere einen neuen an',
+        userNotFound: 'Zu dieser E-Mail-Adresse wurde kein Konto gefunden',
+        signupDisabled: 'Neue Registrierungen sind derzeit geschlossen',
+        usernameTaken: 'Dieser Benutzername ist bereits vergeben',
     },
     time: {
         now: 'Jetzt',

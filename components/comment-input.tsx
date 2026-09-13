@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
@@ -14,8 +15,9 @@ interface CommentInputProps {
 export function CommentInput({
     onSubmit,
     loading = false,
-    placeholder = 'Add a comment...'
+    placeholder,
 }: CommentInputProps) {
+    const { t } = useLanguage();
     const [comment, setComment] = useState('');
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
@@ -42,7 +44,7 @@ export function CommentInput({
                     borderColor: theme.border,
                     color: theme.text,
                 }]}
-                placeholder={placeholder}
+                placeholder={placeholder ?? t('comments.addComment')}
                 placeholderTextColor={theme.textMuted}
                 value={comment}
                 onChangeText={setComment}

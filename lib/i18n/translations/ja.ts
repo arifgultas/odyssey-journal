@@ -33,6 +33,7 @@ export default {
         offlineMode: 'オフラインモード',
         pullToRefresh: '引っ張って更新',
         releaseToRefresh: '離して更新',
+        percentValue: '{{value}}%',
     },
     auth: {
         login: 'ログイン',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: '通知設定',
         passwordChangeSuccess: 'パスワードが正常に更新されました。',
         unblockError: 'ユーザーのブロック解除に失敗しました。',
+        build: 'ビルド',
     },
     errors: {
         generic: 'エラーが発生しました',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'サインインエラー',
         signInProviderFailed: '{{provider}} でのサインイン中に問題が発生しました。',
         shareFailed: '投稿を共有できませんでした',
+        emailNotConfirmed: 'ログインする前にメールアドレスを確認してください',
+        emailExists: 'このメールアドレスのアカウントはすでに存在します',
+        weakPassword: 'より強力なパスワードを設定してください',
+        samePassword: '新しいパスワードは現在のものと異なる必要があります',
+        rateLimit: '試行回数が多すぎます。しばらく待ってからもう一度お試しください',
+        linkExpired: 'このリンクは有効期限が切れています。新しいリンクをリクエストしてください',
+        userNotFound: 'このメールアドレスのアカウントが見つかりません',
+        signupDisabled: '現在、新規登録を受け付けていません',
+        usernameTaken: 'このユーザー名はすでに使われています',
     },
     time: {
         now: '今',

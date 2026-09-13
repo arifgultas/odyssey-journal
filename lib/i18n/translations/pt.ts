@@ -33,6 +33,7 @@ export default {
         offlineMode: 'Modo offline',
         pullToRefresh: 'Arraste para atualizar',
         releaseToRefresh: 'Solte para atualizar',
+        percentValue: '{{value}}%',
     },
     auth: {
         login: 'Entrar',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: 'Preferências de Notificação',
         passwordChangeSuccess: 'Sua senha foi atualizada com sucesso.',
         unblockError: 'Falha ao desbloquear o usuário.',
+        build: 'Compilação',
     },
     errors: {
         generic: 'Algo deu errado',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'Erro ao entrar',
         signInProviderFailed: 'Ocorreu um problema ao entrar com {{provider}}.',
         shareFailed: 'Não foi possível compartilhar a publicação',
+        emailNotConfirmed: 'Confirme seu endereço de e-mail antes de entrar',
+        emailExists: 'Já existe uma conta com este e-mail',
+        weakPassword: 'Escolha uma senha mais forte',
+        samePassword: 'A nova senha deve ser diferente da atual',
+        rateLimit: 'Muitas tentativas. Aguarde um momento e tente novamente',
+        linkExpired: 'Este link expirou. Solicite um novo',
+        userNotFound: 'Nenhuma conta foi encontrada para este e-mail',
+        signupDisabled: 'Novos cadastros estão fechados no momento',
+        usernameTaken: 'Este nome de usuário já está em uso',
     },
     time: {
         now: 'Agora',

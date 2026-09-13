@@ -35,6 +35,7 @@ export default {
         offlineMode: 'Çevrimdışı Mod',
         pullToRefresh: 'Yenilemek için çekin',
         releaseToRefresh: 'Yenilemek için bırakın',
+        percentValue: '%{{value}}',
     },
 
     // Auth
@@ -553,6 +554,7 @@ export default {
         notificationPreferences: 'Bildirim Tercihleri',
         passwordChangeSuccess: 'Şifreniz başarıyla güncellendi.',
         unblockError: 'Kullanıcının engeli kaldırılamadı.',
+        build: 'Derleme',
     },
 
     // Errors
@@ -581,6 +583,15 @@ export default {
         signInTitle: 'Giriş Hatası',
         signInProviderFailed: '{{provider}} ile oturum açılırken bir sorun oluştu.',
         shareFailed: 'Gönderi paylaşılamadı',
+        emailNotConfirmed: 'Giriş yapmadan önce e-posta adresinizi doğrulayın',
+        emailExists: 'Bu e-posta adresiyle bir hesap zaten var',
+        weakPassword: 'Lütfen daha güçlü bir şifre seçin',
+        samePassword: 'Yeni şifre mevcut şifrenizden farklı olmalı',
+        rateLimit: 'Çok fazla deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin',
+        linkExpired: 'Bu bağlantının süresi doldu. Lütfen yenisini isteyin',
+        userNotFound: 'Bu e-posta adresine ait bir hesap bulunamadı',
+        signupDisabled: 'Yeni kayıtlar şu anda kapalı',
+        usernameTaken: 'Bu kullanıcı adı zaten alınmış',
     },
 
     // Time

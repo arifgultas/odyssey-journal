@@ -5,6 +5,7 @@
 
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { localizedErrorMessage } from '@/lib/auth-errors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -91,7 +92,7 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
             handleClose();
         } catch (error: any) {
             console.error('Error changing password:', error);
-            setErrorMessage(error.message || t('errors.generic'));
+            setErrorMessage(localizedErrorMessage(error));
         } finally {
             setIsLoading(false);
         }

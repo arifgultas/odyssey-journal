@@ -1,5 +1,6 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -80,7 +81,7 @@ export default function ForgotPasswordScreen() {
         });
 
         if (error) {
-            Alert.alert(t('common.error'), error.message);
+            Alert.alert(t('common.error'), localizedErrorMessage(error));
         } else {
             setEmailSent(true);
         }

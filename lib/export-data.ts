@@ -93,20 +93,20 @@ export async function exportUserData(t: (key: string) => string): Promise<boolea
         if (canShare) {
             await Sharing.shareAsync(fileUri, {
                 mimeType: 'application/json',
-                dialogTitle: t('settings.exportDataTitle') || 'Download My Data'
+                dialogTitle: t('settings.exportDataTitle')
             });
         } else {
             // Fallback for native if expo-sharing fails
             await Share.share({
                 url: fileUri,
-                title: 'Odyssey Journal Data Export'
+                title: t('settings.exportDataTitle')
             });
         }
 
         return true;
     } catch (error) {
         console.error('Error exporting user data:', error);
-        Alert.alert(t('common.error') || 'Error', t('settings.exportError') || 'Failed to export data.');
+        Alert.alert(t('common.error'), t('settings.exportError'));
         return false;
     }
 }

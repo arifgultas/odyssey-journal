@@ -2,17 +2,19 @@
 /**
  * i18n consistency checker.
  *
- * Guards the four ways translations silently rot:
+ * Guards the five ways translations silently rot:
  *   1. a locale is missing a key another locale has  -> user sees the fallback language
  *   2. a locale still holds the English value        -> user sees English
  *   3. code references a key no locale defines       -> user sees nothing at all
  *   4. interpolation placeholders drift              -> user sees a literal {{count}}
+ *   5. text never reaches a locale file at all       -> user sees it in one fixed language
  *
  * Run: npm run i18n:check
  */
 const fs = require('fs');
 const path = require('path');
 const { loadAll, SOURCE_LOCALE } = require('./i18n-lib.js');
+const { findLiterals } = require('./i18n-literals.js');
 
 const ROOT = path.join(__dirname, '..');
 const SCAN_DIRS = ['app', 'components', 'hooks', 'lib', 'context'];
@@ -96,10 +98,23 @@ if (undefinedKeys.length) {
     );
 }
 
+// 5: user-visible text that never goes through t() in the first place
+const literals = findLiterals();
+if (literals.length) {
+    problems.push(
+        `[code] ${literals.length} literal(s) shown to the user without t():\n` +
+            literals.map((l) => `    ${l.file}:${l.line}  ${JSON.stringify(l.text)}`).join('\n') +
+            '\n    (intentional ones belong in scripts/i18n-allowed-literals.json)'
+    );
+}
+
 if (problems.length) {
     console.error('i18n check FAILED\n');
     for (const p of problems) console.error('  - ' + p + '\n');
     process.exit(1);
 }
 
-console.log(`i18n check passed: ${Object.keys(locales).length} locales x ${sourceKeys.length} keys, ${used.size} keys referenced in code.`);
+console.log(
+    `i18n check passed: ${Object.keys(locales).length} locales x ${sourceKeys.length} keys, ` +
+        `${used.size} keys referenced in code, no untranslated literals on screen.`
+);

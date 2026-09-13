@@ -437,7 +437,7 @@ export default function ProfileScreen() {
                                 onPress={() => {
                                     Alert.alert(
                                         badge.name,
-                                        `${badge.requirement}\n\n${badge.unlocked ? t('common.completed') : `${t('common.progress')}: %${badge.progress}`}`
+                                        `${badge.requirement}\n\n${badge.unlocked ? t('common.completed') : `${t('common.progress')}: ${t('common.percentValue', { value: badge.progress })}`}`
                                     );
                                 }}
                             >

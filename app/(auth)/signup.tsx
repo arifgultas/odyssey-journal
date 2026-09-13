@@ -1,5 +1,6 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
 import { Ionicons } from '@expo/vector-icons';
@@ -104,7 +105,7 @@ export default function SignUpScreen() {
         });
 
         if (error) {
-            Alert.alert(t('auth.signupError'), error.message);
+            Alert.alert(t('auth.signupError'), localizedErrorMessage(error));
         } else {
             Alert.alert(
                 t('auth.accountCreated'),

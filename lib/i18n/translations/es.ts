@@ -33,6 +33,7 @@ export default {
         offlineMode: 'Modo sin conexión',
         pullToRefresh: 'Desliza para actualizar',
         releaseToRefresh: 'Suelta para actualizar',
+        percentValue: '{{value}} %',
     },
     auth: {
         login: 'Iniciar Sesión',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: 'Preferencias de Notificación',
         passwordChangeSuccess: 'Tu contraseña se ha actualizado correctamente.',
         unblockError: 'Error al desbloquear al usuario.',
+        build: 'Compilación',
     },
     errors: {
         generic: 'Algo salió mal',
@@ -544,6 +546,15 @@ export default {
         signInTitle: 'Error de inicio de sesión',
         signInProviderFailed: 'Hubo un problema al iniciar sesión con {{provider}}.',
         shareFailed: 'No se pudo compartir la publicación',
+        emailNotConfirmed: 'Confirma tu dirección de correo antes de iniciar sesión',
+        emailExists: 'Ya existe una cuenta con este correo electrónico',
+        weakPassword: 'Elige una contraseña más segura',
+        samePassword: 'La nueva contraseña debe ser distinta de la actual',
+        rateLimit: 'Demasiados intentos. Espera un momento e inténtalo de nuevo',
+        linkExpired: 'Este enlace ha caducado. Solicita uno nuevo',
+        userNotFound: 'No se encontró ninguna cuenta con este correo electrónico',
+        signupDisabled: 'Los nuevos registros están cerrados por ahora',
+        usernameTaken: 'Este nombre de usuario ya está en uso',
     },
     time: {
         now: 'Ahora',

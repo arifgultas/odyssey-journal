@@ -1,4 +1,5 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
+import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -17,12 +18,13 @@ interface SearchBarProps {
 export function SearchBar({
     value,
     onChangeText,
-    placeholder = 'Search locations, users...',
+    placeholder,
     onClear,
     onFocus,
     onBlur,
     autoFocus = false,
 }: SearchBarProps) {
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
@@ -33,7 +35,7 @@ export function SearchBar({
                 style={[styles.input, { color: theme.text }]}
                 value={value}
                 onChangeText={onChangeText}
-                placeholder={placeholder}
+                placeholder={placeholder ?? t('explore.searchPlaceholder')}
                 placeholderTextColor={theme.textSecondary}
                 onFocus={onFocus}
                 onBlur={onBlur}

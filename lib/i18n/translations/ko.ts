@@ -33,6 +33,7 @@ export default {
         offlineMode: '오프라인 모드',
         pullToRefresh: '당겨서 새로고침',
         releaseToRefresh: '놓아서 새로고침',
+        percentValue: '{{value}}%',
     },
     auth: {
         login: '로그인',
@@ -518,6 +519,7 @@ export default {
         notificationPreferences: '알림 설정',
         passwordChangeSuccess: '비밀번호가 성공적으로 업데이트되었습니다.',
         unblockError: '사용자 차단을 해제하지 못했습니다.',
+        build: '빌드',
     },
     errors: {
         generic: '문제가 발생했습니다',
@@ -544,6 +546,15 @@ export default {
         signInTitle: '로그인 오류',
         signInProviderFailed: '{{provider}}(으)로 로그인하는 중 문제가 발생했습니다.',
         shareFailed: '게시물을 공유하지 못했습니다',
+        emailNotConfirmed: '로그인하기 전에 이메일 주소를 인증해 주세요',
+        emailExists: '이 이메일로 등록된 계정이 이미 있습니다',
+        weakPassword: '더 강력한 비밀번호를 사용해 주세요',
+        samePassword: '새 비밀번호는 현재 비밀번호와 달라야 합니다',
+        rateLimit: '시도 횟수가 너무 많습니다. 잠시 후 다시 시도해 주세요',
+        linkExpired: '이 링크는 만료되었습니다. 새 링크를 요청해 주세요',
+        userNotFound: '이 이메일로 등록된 계정을 찾을 수 없습니다',
+        signupDisabled: '현재 신규 가입을 받지 않습니다',
+        usernameTaken: '이미 사용 중인 사용자 이름입니다',
     },
     time: {
         now: '지금',

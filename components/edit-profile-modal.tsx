@@ -1,5 +1,6 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { localizedErrorMessage } from '@/lib/auth-errors';
 import { useUpdateProfile, useUploadAvatar } from '@/hooks/use-profile';
 import type { Profile } from '@/lib/types/profile';
 import { Ionicons } from '@expo/vector-icons';
@@ -100,7 +101,7 @@ export function EditProfileModal({
             onClose();
         } catch (error: any) {
             console.error('Error in handleSave:', error);
-            Alert.alert(t('common.error'), error.message || t('editProfile.updateError'));
+            Alert.alert(t('common.error'), localizedErrorMessage(error, 'editProfile.updateError'));
         }
     };
 
