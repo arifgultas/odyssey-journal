@@ -268,6 +268,7 @@ export default function ProfileScreen() {
                 </View>
 
                 <TouchableOpacity
+                    testID="settings-button"
                     style={[styles.headerButton, { borderColor: colorScheme === 'dark' ? `${passportTheme.gold}33` : `${passportTheme.text}20` }]}
                     onPress={() => router.push('/settings')}
                 >

@@ -151,6 +151,7 @@ export default function LoginScreen() {
                                     borderWidth: emailFocused ? 1.5 : 1,
                                 }]}>
                                     <TextInput
+                                        testID="login-email"
                                         style={[styles.input, { color: theme.text }]}
                                         placeholder={t('auth.emailOrUsername')}
                                         placeholderTextColor={theme.textMuted}
@@ -184,6 +185,7 @@ export default function LoginScreen() {
                                     borderWidth: passwordFocused ? 1.5 : 1,
                                 }]}>
                                     <TextInput
+                                        testID="login-password"
                                         style={[styles.input, styles.inputWithIcon, { color: theme.text }]}
                                         placeholder={t('auth.password')}
                                         placeholderTextColor={theme.textMuted}
@@ -245,6 +247,7 @@ export default function LoginScreen() {
                                     shadowRadius: 4,
                                     elevation: 3,
                                 }}
+                                testID="login-submit"
                                 onPress={signInWithEmail}
                                 disabled={loading}
                                 activeOpacity={0.85}

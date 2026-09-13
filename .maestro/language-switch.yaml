@@ -16,11 +16,24 @@ tags:
 
 - launchApp
 
-- tapOn: "Email or Username"
-- inputText: "explorer@odyssey.com"
-- tapOn: "Password"
-- inputText: "OdysseyPassword123!"
-- tapOn: "Login"
+# Login is tapped by testID for the same reason the language switch is: the field labels
+# are translated, so tapping "Email or Username" only works while the app is in English -
+# which is exactly the state this flow exists to leave.
+# Skipped when the app resumes an existing session, which is the normal case on a device
+# the flow has already run on.
+- runFlow:
+    when:
+      visible:
+        id: "login-email"
+    commands:
+      - tapOn:
+          id: "login-email"
+      - inputText: "explorer@odyssey.com"
+      - tapOn:
+          id: "login-password"
+      - inputText: "OdysseyPassword123!"
+      - tapOn:
+          id: "login-submit"
 
 - runFlow:
     file: subflows/switch-language.yaml
