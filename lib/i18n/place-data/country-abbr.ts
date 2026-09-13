@@ -14,21 +14,27 @@
 import type { LanguageCode } from '../index';
 
 /**
- * Turkish abbreviations, as used on the cards before this file existed.
- * Mostly the first letters of the Turkish country name (İspanya -> İS, Almanya -> AL),
- * with a few established acronyms (ABD, BAE) and İNG for the United Kingdom.
+ * Turkish abbreviations, three letters each - the form Turkish sports and news coverage
+ * actually uses (ALM, İSP, İTA, POR), plus the established acronyms ABD, BAE and İNG.
+ *
+ * Two-letter forms were tried first and had to go. They collide with ISO 3166-1 alpha-2
+ * once the dotted capitals are folded: "AL" for Almanya is Albania's code, and "İS" for
+ * İspanya folds to "IS", Iceland's. getCountryCode() resolves an ISO code before an
+ * abbreviation, so a country stored in either form read back as the wrong country.
+ * Three letters also keep the pairs apart that two could not - İsviçre from İsveç,
+ * Portekiz from Polonya.
  */
 const TR_ABBREVIATIONS: Record<string, string> = {
     US: 'ABD',
     GB: 'İNG',
-    DE: 'AL',
-    ES: 'İS',
-    IT: 'İT',
-    GR: 'YU',
+    DE: 'ALM',
+    ES: 'İSP',
+    IT: 'İTA',
+    GR: 'YUN',
     AT: 'AVU',
     NL: 'HOL',
     CH: 'İSV',
-    SE: 'İSVE',
+    SE: 'İSVÇ',
     AE: 'BAE',
     EG: 'MIS',
     CZ: 'ÇEK',
@@ -37,8 +43,8 @@ const TR_ABBREVIATIONS: Record<string, string> = {
     HR: 'HIR',
     DK: 'DAN',
     BE: 'BEL',
-    PT: 'PO',
-    JP: 'JA',
+    PT: 'POR',
+    JP: 'JAP',
 };
 
 /**

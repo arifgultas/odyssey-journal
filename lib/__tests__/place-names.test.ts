@@ -5,7 +5,7 @@
  * "コンスタンツァ" for a Japanese one and "Constanța" in English - and the country has to be
  * abbreviated the way each language actually abbreviates it.
  */
-import { getCountryAbbreviation } from '../i18n/place-data/country-abbr';
+import { getCountryAbbreviation, TR_ABBREVIATIONS } from '../i18n/place-data/country-abbr';
 import {
     formatPostLocation,
     getCountryCode,
@@ -51,8 +51,8 @@ describe('place names', () => {
     describe('country abbreviations', () => {
         it('uses the convention each language actually has', () => {
             // Turkish abbreviates the Turkish name
-            expect(getLocalizedCountryCode('Spain', 'tr')).toBe('İS');
-            expect(getLocalizedCountryCode('Germany', 'tr')).toBe('AL');
+            expect(getLocalizedCountryCode('Spain', 'tr')).toBe('İSP');
+            expect(getLocalizedCountryCode('Germany', 'tr')).toBe('ALM');
             expect(getLocalizedCountryCode('United States', 'tr')).toBe('ABD');
 
             // Japanese and Chinese use their single-character abbreviations
@@ -82,11 +82,21 @@ describe('place names', () => {
             expect(getCountryCode('Türkiye')).toBe('TR');
         });
 
-        it('lets the ISO code win an ambiguous abbreviation', () => {
-            // Turkish abbreviates İspanya as "İS", which folds to the same letters as
-            // Iceland's ISO code. The standard code wins on purpose: abbreviations are only
-            // ever displayed, while a stored country is a full name or an ISO code.
-            expect(getCountryCode('İS')).toBe('IS');
+        it('reads every Turkish abbreviation back as its own country', () => {
+            // This is why the Turkish abbreviations are three letters. Two-letter ones
+            // collided once the dotted capitals were folded: "AL" for Almanya is Albania's
+            // ISO code and "İS" for İspanya folds to Iceland's, and getCountryCode()
+            // resolves an ISO code before an abbreviation - so each read back as the wrong
+            // country. Any new two-letter abbreviation would bring the bug straight back.
+            const fold = (value: string) =>
+                value.replace(/İ/g, 'I').replace(/Ş/g, 'S').replace(/Ç/g, 'C')
+                    .replace(/Ö/g, 'O').replace(/Ü/g, 'U').replace(/Ğ/g, 'G').toUpperCase();
+
+            for (const [code, abbreviation] of Object.entries(TR_ABBREVIATIONS)) {
+                expect(getCountryCode(fold(abbreviation))).toBe(code);
+                expect(getCountryCode(abbreviation)).toBe(code);
+            }
+
             expect(getLocalizedCountryName('İspanya', 'en')).toBe('Spain');
         });
     });

@@ -77,9 +77,9 @@ describe('location-formatter utility', () => {
             expect(getLocalizedCountryCode('Romanya', 'en')).toBe('RO');
         });
 
-        it('returns localized abbreviations for Spain (İS for tr, ES for en)', () => {
-            expect(getLocalizedCountryCode('Spain', 'tr')).toBe('İS');
-            expect(getLocalizedCountryCode('İspanya', 'tr')).toBe('İS');
+        it('returns localized abbreviations for Spain (İSP for tr, ES for en)', () => {
+            expect(getLocalizedCountryCode('Spain', 'tr')).toBe('İSP');
+            expect(getLocalizedCountryCode('İspanya', 'tr')).toBe('İSP');
             expect(getLocalizedCountryCode('Spain', 'en')).toBe('ES');
             expect(getLocalizedCountryCode('İspanya', 'en')).toBe('ES');
         });
@@ -92,10 +92,10 @@ describe('location-formatter utility', () => {
         });
 
         it('returns localized abbreviations for Italy, Germany, France, USA, UK', () => {
-            expect(getLocalizedCountryCode('Italy', 'tr')).toBe('İT');
+            expect(getLocalizedCountryCode('Italy', 'tr')).toBe('İTA');
             expect(getLocalizedCountryCode('Italy', 'en')).toBe('IT');
 
-            expect(getLocalizedCountryCode('Germany', 'tr')).toBe('AL');
+            expect(getLocalizedCountryCode('Germany', 'tr')).toBe('ALM');
             expect(getLocalizedCountryCode('Germany', 'en')).toBe('DE');
 
             expect(getLocalizedCountryCode('France', 'tr')).toBe('FR');
@@ -139,7 +139,7 @@ describe('location-formatter utility', () => {
 
         it('formats Madrid, Spain correctly according to viewer language', () => {
             const loc = { city: 'Madrid', country: 'Spain' };
-            expect(formatPostLocation(loc, 'tr')).toBe('Madrid, İS');
+            expect(formatPostLocation(loc, 'tr')).toBe('Madrid, İSP');
             expect(formatPostLocation(loc, 'en')).toBe('Madrid, ES');
         });
 
@@ -152,7 +152,7 @@ describe('location-formatter utility', () => {
         it('auto-resolves country code when only city is provided for known cities', () => {
             expect(formatPostLocation({ city: 'Bükreş' }, 'en')).toBe('Bucharest, RO');
             expect(formatPostLocation({ city: 'Bükreş' }, 'tr')).toBe('Bükreş, RO');
-            expect(formatPostLocation({ city: 'Rome' }, 'tr')).toBe('Roma, İT');
+            expect(formatPostLocation({ city: 'Rome' }, 'tr')).toBe('Roma, İTA');
             expect(formatPostLocation({ city: 'Roma' }, 'en')).toBe('Rome, IT');
         });
 
