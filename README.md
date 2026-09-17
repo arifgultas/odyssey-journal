@@ -1,4 +1,12 @@
-# Welcome to your Expo app 👋
+# Odyssey Journal
+
+> **Nerede kaldık:** [`FINALIZE.md`](./FINALIZE.md) — yayına kadar kalan işler, öncelik sırasıyla.
+> Çok dilli destek notları: [`I18N_HANDOFF.md`](./I18N_HANDOFF.md).
+
+---
+
+## Expo
+
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
