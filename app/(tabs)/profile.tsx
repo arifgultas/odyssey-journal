@@ -8,6 +8,7 @@ import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCurrentProfile, useProfileStats, useUserPosts } from '@/hooks/use-profile';
 import { calculateBadges, type Badge } from '@/lib/badge-service';
+import { getLocalizedCityName, getLocalizedCountryName } from '@/lib/location-formatter';
 import type { Post } from '@/lib/posts';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -376,8 +377,8 @@ export default function ProfileScreen() {
                                                             latitude: loc.latitude,
                                                             longitude: loc.longitude,
                                                         }}
-                                                        title={loc.name}
-                                                        description={loc.country}
+                                                        title={getLocalizedCityName(loc.name, language)}
+                                                        description={getLocalizedCountryName(loc.country, language)}
                                                     />
                                                 ))}
                                             </MapView>
@@ -395,7 +396,9 @@ export default function ProfileScreen() {
                                                 // Calculate center point
                                                 const avgLat = locations.reduce((sum, loc) => sum + loc.latitude, 0) / locations.length;
                                                 const avgLng = locations.reduce((sum, loc) => sum + loc.longitude, 0) / locations.length;
-                                                return `https://maps.googleapis.com/maps/api/staticmap?center=${avgLat},${avgLng}&zoom=2&size=400x200&scale=2&maptype=roadmap&${markers}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+                                                // &language asks the Static Maps API for its labels in the reader's
+                                                // language; without it they come back in the map's own default.
+                                                return `https://maps.googleapis.com/maps/api/staticmap?center=${avgLat},${avgLng}&zoom=2&size=400x200&scale=2&maptype=roadmap&language=${language}&${markers}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`;
                                             })()
                                         }}
                                         style={styles.mapImage}

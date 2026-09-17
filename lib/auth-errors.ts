@@ -105,6 +105,20 @@ export function localizedErrorMessage(error: unknown, fallbackKey: string = 'err
     return t(keyFor(error) ?? fallbackKey);
 }
 
+/**
+ * The translation key for an error, for callers that have to keep it around.
+ *
+ * Anything that stores an error in state should store this rather than the rendered string:
+ * a message translated once and parked in state stays in the old language when the reader
+ * switches, because nothing re-runs the translation.
+ *
+ * @param error       whatever was caught or returned in `{ error }`
+ * @param fallbackKey translation key used when the error is not recognised
+ */
+export function localizedErrorKey(error: unknown, fallbackKey: string = 'errors.generic'): string {
+    return keyFor(error) ?? fallbackKey;
+}
+
 /** True when this app knows a specific translated message for the error */
 export function isRecognizedError(error: unknown): boolean {
     return keyFor(error) !== null;

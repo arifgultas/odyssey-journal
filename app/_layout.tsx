@@ -13,7 +13,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { I18nManager } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -77,33 +77,53 @@ function RootLayoutNav() {
   );
 }
 
-function RootLayoutInner() {
+/**
+ * Holds the splash screen until the app can paint in the right language and the right font.
+ *
+ * i18n starts on the device's locale (lib/i18n/index.ts) and the reader's saved choice only
+ * lands after an async read, so painting before `isReady` shows one frame of the wrong
+ * language to anyone whose choice differs from their device.
+ */
+function SplashGate({ children }: { children: ReactNode }) {
   const { fontsLoaded, fontError } = useBookFonts();
+  const { isReady: languageReady } = useLanguage();
+  const ready = (fontsLoaded || fontError) && languageReady;
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if (ready) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [ready]);
 
-  if (!fontsLoaded && !fontError) {
+  if (!ready) {
     return null;
   }
 
+  return <>{children}</>;
+}
+
+// The crash screen is translated, so the boundary has to sit inside LanguageProvider - outside
+// it the fallback reads the device locale instead of the language the reader picked.
+const GuardedApp = SentryErrorBoundary(function GuardedApp() {
+  return (
+    <SplashGate>
+      <AuthProvider>
+        <AppThemeProvider>
+          <RootLayoutNav />
+        </AppThemeProvider>
+      </AuthProvider>
+    </SplashGate>
+  );
+});
+
+export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
         <LanguageProvider>
-          <AuthProvider>
-            <AppThemeProvider>
-              <RootLayoutNav />
-            </AppThemeProvider>
-          </AuthProvider>
+          <GuardedApp />
         </LanguageProvider>
       </PersistQueryClientProvider>
     </SafeAreaProvider>
   );
 }
-
-// Wrap with Sentry error boundary for automatic crash reporting
-export default SentryErrorBoundary(RootLayoutInner);
