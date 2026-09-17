@@ -8,6 +8,7 @@
  *   3. code references a key no locale defines       -> user sees nothing at all
  *   4. interpolation placeholders drift              -> user sees a literal {{count}}
  *   5. text never reaches a locale file at all       -> user sees it in one fixed language
+ *   6. the React Compiler freezes t()                 -> user sees the previous language
  *
  * Run: npm run i18n:check
  */
@@ -15,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const { loadAll, SOURCE_LOCALE } = require('./i18n-lib.js');
 const { findLiterals } = require('./i18n-literals.js');
+const { checkCompiledTranslate } = require('./i18n-compiler-check.js');
 
 const ROOT = path.join(__dirname, '..');
 const SCAN_DIRS = ['app', 'components', 'hooks', 'lib', 'context'];
@@ -108,6 +110,9 @@ if (literals.length) {
     );
 }
 
+// 6: the language switch surviving the React Compiler (see scripts/i18n-compiler-check.js)
+problems.push(...checkCompiledTranslate());
+
 if (problems.length) {
     console.error('i18n check FAILED\n');
     for (const p of problems) console.error('  - ' + p + '\n');
@@ -116,5 +121,6 @@ if (problems.length) {
 
 console.log(
     `i18n check passed: ${Object.keys(locales).length} locales x ${sourceKeys.length} keys, ` +
-        `${used.size} keys referenced in code, no untranslated literals on screen.`
+        `${used.size} keys referenced in code, no untranslated literals on screen, ` +
+        `t re-created per language under the React Compiler.`
 );

@@ -1,6 +1,6 @@
 # Çok Dilli Destek — Devir Notu
 
-**Son güncelleme:** 2026-09-13 (finalize turu)
+**Son güncelleme:** 2026-09-17 (React Compiler turu)
 **Konu:** "Bir dile geçtiğimde tüm yazılar o dilde olsun" + yer adlarının çevrilmesi (Constanța → Köstence)
 
 ---
@@ -13,16 +13,18 @@
 | Uygulama kodu | ✅ **`main`'DE, PUSH EDİLDİ** — `bbb0a64` |
 | 12 dil × 729 anahtar | ✅ %100 eşit |
 | Sabit metin (t() dışı) | ✅ temiz — `i18n:check` 5. kuralı koruyor |
-| Arapça RTL | ✅ **YAPILDI** (bu tur) |
-| Türkçe ülke kısaltmaları | ✅ 3 harfli biçime taşındı (bu tur) |
-| EAS Android production build | ✅ **DÜZELTİLDİ** (bu tur) — sebebi i18n değildi |
+| Derleyici kaynaklı donma | ✅ `i18n:check` 6. kuralı koruyor |
+| Arapça RTL | ✅ **YAPILDI** (finalize turu) |
+| Türkçe ülke kısaltmaları | ✅ 3 harfli biçime taşındı (finalize turu) |
+| EAS Android production build | ✅ **DÜZELTİLDİ** (finalize turu) — sebebi i18n değildi |
 | Eski postların backfill'i | ✅ **UYGULANDI** — 13/13 post, 12 farklı yer, 0 çözülemeyen |
+| Dil değişiminde donan metinler | ✅ **DÜZELTİLDİ** (React Compiler turu) — §1b |
 | Cihazda 12 dil taraması | ⏳ elle yapılacak (aşağıdaki kontrol listesi) |
 | Push bildirimi doğrulaması | ⏳ SQL hazır, Supabase editöründen çalıştırılacak |
-| `npm test` | ✅ 19 suite / 207 test |
+| `npm test` | ✅ 20 suite / 211 test |
 | `npx tsc --noEmit` | ✅ tamamen temiz |
 
-Bu turda `main`'e giden commit'ler (`bdc3a2c..bbb0a64`, fast-forward):
+Finalize turunda `main`'e giden commit'ler (`bdc3a2c..bbb0a64`, fast-forward):
 ```
 bbb0a64 chore: keep the service role key out of the EAS upload
 02b2fd0 docs: bring the i18n handoff note up to date
@@ -35,9 +37,117 @@ f515f08 test(i18n): make the language-switch flow runnable
 23a9d99 i18n: never show a raw error message, and catch untranslated literals in CI
 ```
 
-Push sonrası CI: Test / Lint / TypeScript / Translation Check dördü de yeşil, **54 saniye**
+Finalize turunun push'undan sonra CI: Test / Lint / TypeScript / Translation Check dördü de
+yeşil, **54 saniye**
 (önceden 7+ dakika — production build artık her commit'te koşmuyor). `Deploy Supabase`
-`paths: supabase/**` filtresi sayesinde atlandı, bu turda migration değişmedi.
+`paths: supabase/**` filtresi sayesinde atlandı, o turda migration değişmedi.
+
+---
+
+## 1b. React Compiler turu (2026-09-17) — dil değişince donan metinler
+
+Kullanıcı iki ekran görüntüsü gönderdi: dil **English** seçiliyken Ayarlar'da
+"TITOLARE DEL PASSAPORTO" / "MODIFICA PROFILO", Profil'de "Carta d'imbarco / Paesi /
+Chilometri / Giorni" İtalyanca kalmıştı. Aynı ekranın geri kalanı doğru İngilizceydi.
+
+**Eksik anahtar değildi** — `en.ts` hepsini doğru içeriyor. Metinler doğru çevrilmiş halde
+duruyordu ama **bir önceki dilde** ekrana basılıyordu.
+
+### Kök neden
+
+`app.config.ts` içinde `experiments.reactCompiler: true`. Projeyi gerçek Metro
+`caller` bayraklarıyla derleyip çıktıya bakınca iki şey görüldü:
+
+1. `context/language-context.tsx` içindeki
+
+   ```tsx
+   const translate = useCallback((key, options) => t(key, options), [language]);
+   ```
+
+   React Compiler bağımlılık dizisine güvenmez, gövdeden kendi çıkarımını yapar. Gövde
+   yalnızca modül seviyesindeki `t`'yi kullandığı için bağımlılık bulamayıp fonksiyonu
+   **modül kapsamına kaldırıyordu**: derlenmiş çıktı birebir `var translate = _temp;`.
+   Yani `[language]` bağımlılığı derlemede yok oluyordu ve `t`'nin kimliği uygulama
+   boyunca hiç değişmiyordu.
+
+2. Derlenen her bileşen çevirilerini `t` kimliğine göre önbelleğe alıyor:
+
+   ```js
+   if ($[7] !== t) { t4 = t("post.boardingPass"); $[7] = t; $[8] = t4; }
+   else { t4 = $[8]; }
+   ```
+
+   `t` hiç değişmediği için bu satır **bir kez** çalışıyor ve metin, bileşenin ilk
+   mount edildiği andaki dilde donuyordu.
+
+Ekrandaki karışık tabloyu açıklayan şey, derleyicinin bazı dosyalarda pes etmesi:
+`app/settings.tsx` ve `app/(tabs)/profile.tsx` optimize edilmemiş (→ her render'da
+yeniden çevriliyor, doğru), `components/settings/profile-card.tsx` ve
+`components/boarding-pass-card.tsx` optimize edilmiş (→ donmuş).
+
+Tarama: `app/` + `components/` altındaki 99 `.tsx` dosyasının 57'si optimize ediliyor,
+**18 dosyada 66 donmuş çeviri yuvası** vardı — dil seçme modalının kendisi dahil.
+
+### Düzeltme
+
+Dil artık **veri olarak** akıtılıyor:
+
+```tsx
+const translate = useCallback(
+    (key, options) => t(key, { locale: language, ...options }),
+    [language],
+);
+```
+
+`language` gövdede gerçekten okunduğu için derleyici onu gerçek bağımlılık sayıyor,
+`translate` modül kapsamına kaldırılamıyor ve her dil değişiminde yeni kimlik alıyor —
+66 önbellek yuvasının hepsi böylece geçersiz kılınıyor. `i18n-js` çağrı başına `locale`
+desteklediği için `lib/i18n/index.ts` değişmedi; `i18n.locale` hâlâ güncelleniyor,
+dolayısıyla React dışından çağıran modüller (`lib/notifications.ts`, `lib/share.ts`, …)
+etkilenmedi.
+
+### Bu tur eklenen koruma — `i18n:check`'in 6. kuralı
+
+Hata tamamen **derleme çıktısında** yaşıyordu: kaynak koda bakan hiçbir lint kuralı ve
+hiçbir Jest testi göremezdi, çünkü Jest React Compiler'ı çalıştırmıyor. Bu yüzden
+`scripts/i18n-compiler-check.js` dosyayı projenin gerçek Metro `caller` bayraklarıyla
+derleyip üç durumu ayırt ediyor:
+
+| Durum | Sonuç |
+|---|---|
+| `var translate = _temp` (modül kapsamına kaldırılmış) | ❌ yayınlanan hata |
+| `useCallback` yerinde duruyor (derleyici pes etmiş) | ❌ memoizasyon kayıp, doğrulanamıyor |
+| `$[n] !== language` ile anahtarlanmış blok | ✅ |
+
+Üçü de elle test edildi. İkinci durum teorik değil: bu turda `init` içine bir `try`
+eklenince derleyici **bütün dosyadan** vazgeçti ve kural bunu yakaladı. Bu yüzden
+`LanguageProvider` gövdesinde `try` yok — hata yakalama modül seviyesindeki
+`applyLayoutDirection` içine taşındı.
+
+Ayrıca `lib/__tests__/i18n-locale-option.test.ts`, düzeltmenin dayandığı
+`t(key, { locale })` davranışını doğruluyor.
+
+### Aynı turda düzeltilen üç küçük kusur
+
+- **`components/change-password-modal.tsx`** çevrilmiş hata metnini state'e yazıyordu;
+  modal açıkken dil değişirse mesaj eski dilde kalıyordu. Artık **anahtar** saklanıyor,
+  render'da çevriliyor. `lib/auth-errors.ts` bunun için `localizedErrorKey()` veriyor.
+- **Açılıştaki dil titremesi.** `lib/i18n/index.ts` locale'i önce cihaz dilinden kuruyor,
+  kayıtlı seçim async geliyordu; hesaplanan ama hiç okunmayan `isReady` bayrağı artık
+  `app/_layout.tsx` içindeki `SplashGate` ile ilk kareyi bekletiyor.
+- **Çökme ekranı** `LanguageProvider`'ın dışındaydı ve cihaz dilini kullanıyordu. Sentry
+  hata sınırı provider'ın içine alındı, `ErrorBoundaryFallback` artık `useLanguage()`
+  kullanıyor ve açılışta çökme olursa splash'ı kendisi kapatıyor.
+
+### Harita (kısmi, bilerek)
+
+- Profil haritasının pin başlıkları ham sunucu verisi basıyordu; artık
+  `getLocalizedCityName` / `getLocalizedCountryName` üzerinden geçiyor
+  (`app/post-detail/[id].tsx` zaten bu deseni kullanıyordu).
+- Statik harita URL'sine `&language=` eklendi.
+- `app.config.ts` → `ios.infoPlist.CFBundleLocalizations` 12 dili bildiriyor.
+- **Native harita etiketleri (ekran görüntüsündeki "AVRUPA") hâlâ cihaz dilini izliyor.**
+  iOS'ta MapKit bunu uygulama içi seçimle değiştirmeye izin vermiyor; kapsam dışı bırakıldı.
 
 ---
 
@@ -66,22 +176,22 @@ Push sonrası CI: Test / Lint / TypeScript / Translation Check dördü de yeşil
   dilinde push bildirimleri.
 - `scripts/i18n-check.js` + `lib/__tests__/i18n-parity.test.ts`, CI'da "Translation Check".
 
-### Aşama 4 (bu tur) — kalan sabit metinler ve daha güçlü koruma
+### Aşama 4 (finalize turu) — kalan sabit metinler ve daha güçlü koruma
 
 - **Ham `error.message` artık hiçbir yerde ekrana çıkmıyor.** Supabase bu mesajları her zaman
   İngilizce döndürür. `lib/auth-errors.ts` hatayı `code` alanından tanıyıp çeviri anahtarıyla
   cevaplıyor; tanınmayan hata `errors.generic`'e düşüyor. 6 çağrı yeri düzeltildi.
 - `lib/export-data.ts` native paylaşım başlığı, `t(...) || 'English'` yedekleri, `%50`'nin
   Türkçe konumu, sürüm altbilgisindeki `V.`/`Build` düzeltildi.
-- **İki canlı hata bulundu:** `CommentInput`'un varsayılan `'Add a comment...'` metni yorumlar
+- **İki canlı hata bulundu (finalize turu):** `CommentInput`'un varsayılan `'Add a comment...'` metni yorumlar
   ekranında 12 dilde de İngilizce çıkıyormuş — üstelik `comments.addComment` çevirisi dosyalarda
   kullanılmadan duruyormuş. `SearchBar` aynı durumda.
 - **`scripts/i18n-literals.js` → `i18n:check`'in 5. kuralı.** Diğer dört kural metnin çeviri
   dosyasında olduğunu varsayıyor, dolayısıyla "hiç oraya girmemiş" metni göremiyor —
-  bu turda düzeltilenlerin hepsi tam olarak o biçimdeydi. İstisnalar
+  finalize turunda düzeltilenlerin hepsi tam olarak o biçimdeydi. İstisnalar
   `scripts/i18n-allowed-literals.json` içinde.
 
-### Aşama 5 (bu tur) — Arapça RTL
+### Aşama 5 (finalize turu) — Arapça RTL
 
 - `app/_layout.tsx`'te `I18nManager.allowRTL(true)`, her şeyden önce.
 - `context/language-context.tsx` yön değiştiğinde `forceRTL` yazıp kullanıcıya **kendi dilinde**
@@ -97,7 +207,7 @@ Push sonrası CI: Test / Lint / TypeScript / Translation Check dördü de yeşil
 - `lib/__tests__/rtl.test.ts` `app/` ve `components/` içinde Left/Right stil özelliği geri
   gelirse düşüyor.
 
-### Aşama 6 (bu tur) — Türkçe ülke kısaltmaları
+### Aşama 6 (finalize turu) — Türkçe ülke kısaltmaları
 
 `AL → ALM`, `İS → İSP`, `İT → İTA`, `YU → YUN`, `İSVE → İSVÇ`, `PO → POR`, `JA → JAP`.
 İki harfli biçimler ISO 3166-1 alpha-2 ile çakışıyordu: `AL` Arnavutluk'un kodu, `İS`
@@ -121,6 +231,10 @@ her ikisi de yanlış ülkeye okunuyordu. ABD ve İNG değişmedi; ja/zh tablola
 | Arapça RTL **yapıldı**, native bağımlılık eklenmeden | Yeniden başlatma modalı, otomatik reload yerine |
 | EAS production build elle tetikleniyor | Her commit'te 6 dk harcayıp kimsenin almadığı artifact üretiyordu |
 | `categories.wildlife` duruyor | İleride kategori eklenirse çevirisi hazır |
+| Dil `t()`'ye **veri olarak** geçiyor (`{ locale }`) | Bağımlılık dizisi React Compiler'a yetmiyor |
+| React Compiler kapatılmadı | Hatayı gizlerdi ve performans geri adımı olurdu |
+| `key={language}` ile yeniden mount **yapılmadı** | Scroll, form ve modal durumunu sıfırlardı |
+| React Query anahtarlarına dil eklenmedi | Postlar 12 dilin hepsini taşıyor, önbellek dilden bağımsız |
 
 ---
 
@@ -146,9 +260,25 @@ der, çünkü her postu mevcut değer aynı olsa da yeniden yazar. Bu bir hata d
 ### Sıradaki 1 — Cihazda 12 dil
 
 Maestro **kullanılmıyor**; test Expo dev sunucusu + fiziksel Android cihaz, iOS ise TestFlight
-üzerinden. `.maestro/` akışları duruyor ve bu turda çalışır hale getirildi ama koşulmuyor.
+üzerinden. `.maestro/` akışları duruyor ve finalize turunda çalışır hale getirildi ama koşulmuyor.
 
 Her dilde aranan iki şey: **o dil dışında kalmış metin** ve **boş alan**.
+
+**Donma hatası için ayrı bir tur gerekiyor** (§1b): hata yalnızca "dil değiştir, aynı ekranda
+kal" durumunda ortaya çıkıyordu, uygulama yeniden başlatılınca kayboluyordu. Yani bu kontrol
+**uygulamayı kapatmadan** yapılmalı:
+
+| Ekran | Donmuş yuva |
+|---|---|
+| Topluluk Kuralları | 13 |
+| Yeni Post (tarih seçici) | 11 |
+| Şifremi Unuttum | 7 |
+| Yeni Post (kategoriler) | 5 |
+| Ayarlar profil kartı / Profil biniş kartı | 4 + 4 |
+| Keşfet (sonuçlar, öneriler, geçmiş) | 2 + 1 + 1 |
+| Dil seçme modalının kendisi | 1 |
+
+Bu ekranlar açıkken dili değiştir; hepsi anında yeni dile geçmeli.
 
 | Ekran | Özellikle bak |
 |---|---|
@@ -156,7 +286,7 @@ Her dilde aranan iki şey: **o dil dışında kalmış metin** ve **boş alan**.
 | Explore | Arama placeholder'ı, destinasyon kartları |
 | Harita | Şehir adları, ülke kısaltmaları — Türkçe artık `ALM`, `İSP`, `İTA` |
 | Post detayı | Tarih ve gün adı, yer satırı |
-| Yorumlar | **Yazma kutusunun placeholder'ı** — bu turda düzeltilen canlı hata |
+| Yorumlar | **Yazma kutusunun placeholder'ı** — finalize turunda düzeltilen canlı hata |
 | Profil | Rozet detayı: yüzdenin yeri (tr `%50`, en `50%`) |
 | Ayarlar | En alttaki sürüm satırı (`Sürüm 1.0.0 • Derleme 1`) |
 | Giriş | Yanlış şifre gir — hata o dilde çıkmalı, İngilizce değil |
@@ -234,12 +364,14 @@ değişkenleri JS paketine gömer.
 ## 7. Komut referansı
 
 ```bash
-npm run i18n:check                  # 5 kural: eksik/çevrilmemiş/tanımsız anahtar,
-                                    # placeholder kayması, t()'den geçmeyen metin
+npm run i18n:check                  # 6 kural: eksik/çevrilmemiş/tanımsız anahtar,
+                                    # placeholder kayması, t()'den geçmeyen metin,
+                                    # React Compiler t()'yi donduruyor mu
+node scripts/i18n-compiler-check.js # 6. kuralı tek başına koştur
 npm run i18n:format                 # locale dosyalarını normalleştir
 npm run i18n:places                 # yer verisini Wikidata'dan yeniden üret
 node scripts/backfill-place-names.js --preview   # anahtar gerekmez, hiçbir şey yazmaz
-npm test                            # 19 suite / 207 test
+npm test                            # 20 suite / 211 test
 npx tsc --noEmit                    # tip kontrolü
 ```
 
@@ -247,7 +379,7 @@ Wikidata istekleri `.place-data-cache/` altında önbelleğe alınır (gitignore
 
 ---
 
-## 8. Dil dışı, ama bu turda çözülen
+## 8. Dil dışı, ama finalize turunda çözülen
 
 **EAS Android production build 5 commit'tir düşüyordu ve sebebi i18n değildi.**
 `:app:mergeReleaseResources` şu hatayla düşüyordu:

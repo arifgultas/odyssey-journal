@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -8,7 +8,8 @@ import {
     useColorScheme,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { t } from '@/lib/i18n';
+import * as SplashScreen from 'expo-splash-screen';
+import { useLanguage } from '@/context/language-context';
 import { Colors, Spacing, BorderRadius, Fonts } from '@/constants/theme';
 
 interface ErrorBoundaryFallbackProps {
@@ -18,11 +19,22 @@ interface ErrorBoundaryFallbackProps {
 }
 
 export function ErrorBoundaryFallback({ error, resetError }: ErrorBoundaryFallbackProps) {
+    // Through the context, not the bare module t: this screen is rendered inside
+    // LanguageProvider so that it speaks the language the reader chose, not the device's.
+    const { t } = useLanguage();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const activeColors = isDark ? Colors.dark : Colors.light;
 
     const [showDetails, setShowDetails] = useState(false);
+
+    // A crash on the startup path can happen before anything hid the splash screen, which
+    // would leave the reader staring at the launch image with this screen behind it.
+    useEffect(() => {
+        SplashScreen.hideAsync().catch(() => {
+            // Already hidden, or never shown - either way there is nothing to recover from.
+        });
+    }, []);
 
     return (
         <View style={[styles.container, { backgroundColor: activeColors.background }]}>

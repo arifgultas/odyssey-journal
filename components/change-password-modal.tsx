@@ -5,7 +5,7 @@
 
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
-import { localizedErrorMessage } from '@/lib/auth-errors';
+import { localizedErrorKey } from '@/lib/auth-errors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -64,18 +64,20 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    // The translation key, not the translated text: a rendered string parked in state
+    // would stay in the old language when the reader switches while this modal is open.
+    const [errorKey, setErrorKey] = useState('');
 
     const handleSave = async () => {
-        setErrorMessage('');
+        setErrorKey('');
 
         if (password.length < 6) {
-            setErrorMessage(t('auth.passwordLengthError'));
+            setErrorKey('auth.passwordLengthError');
             return;
         }
 
         if (password !== confirmPassword) {
-            setErrorMessage(t('auth.passwordMatchError'));
+            setErrorKey('auth.passwordMatchError');
             return;
         }
 
@@ -92,7 +94,7 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
             handleClose();
         } catch (error: any) {
             console.error('Error changing password:', error);
-            setErrorMessage(localizedErrorMessage(error));
+            setErrorKey(localizedErrorKey(error));
         } finally {
             setIsLoading(false);
         }
@@ -101,7 +103,7 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
     const handleClose = () => {
         setPassword('');
         setConfirmPassword('');
-        setErrorMessage('');
+        setErrorKey('');
         onClose();
     };
 
@@ -132,10 +134,10 @@ export function ChangePasswordModal({ visible, onClose }: ChangePasswordModalPro
 
                         {/* Form */}
                         <View style={styles.form}>
-                            {errorMessage ? (
+                            {errorKey ? (
                                 <View style={[styles.errorBox, { backgroundColor: `${theme.error}15`, borderColor: theme.error }]}>
                                     <Ionicons name="alert-circle-outline" size={20} color={theme.error} />
-                                    <Text style={[styles.errorText, { color: theme.text }]}>{errorMessage}</Text>
+                                    <Text style={[styles.errorText, { color: theme.text }]}>{t(errorKey)}</Text>
                                 </View>
                             ) : null}
 

@@ -42,12 +42,19 @@ interface LanguageProviderProps {
  * @returns true when the direction changed and a restart is needed
  */
 function applyLayoutDirection(code: LanguageCode): boolean {
-    const shouldBeRTL = isRTL(code);
-    if (shouldBeRTL === I18nManager.isRTL) return false;
+    try {
+        const shouldBeRTL = isRTL(code);
+        if (shouldBeRTL === I18nManager.isRTL) return false;
 
-    I18nManager.allowRTL(true);
-    I18nManager.forceRTL(shouldBeRTL);
-    return true;
+        I18nManager.allowRTL(true);
+        I18nManager.forceRTL(shouldBeRTL);
+        return true;
+    } catch (error) {
+        // Called on the startup path, which the splash screen waits on. A direction we could
+        // not write is worth one badly laid out launch, not a hung app.
+        console.error('Error applying layout direction:', error);
+        return false;
+    }
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
@@ -56,6 +63,12 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 
     // Load persisted language on mount
     useEffect(() => {
+        // Nothing before setIsReady is allowed to throw: the first frame waits on it
+        // (app/_layout.tsx), so a failure here would hold the splash screen forever rather
+        // than cost one wrong-language frame. loadPersistedLanguage and applyLayoutDirection
+        // both swallow their own errors, and the push-language sync runs after the flag.
+        // Keep it that way, and keep `try` out of this component - the React Compiler bails
+        // out of the whole file over one, which would drop the memoisation t relies on.
         const init = async () => {
             const persistedLang = await loadPersistedLanguage();
             setCurrentLanguage(persistedLang);
@@ -88,11 +101,25 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
         }
     }, []);
 
-    // Translation function - depends on language to trigger re-renders
-    const translate = useCallback((key: string, options?: Record<string, any>): string => {
-        // Including language in the dependency ensures components re-render when language changes
-        return t(key, options);
-    }, [language]); // Re-create when language changes
+    /**
+     * The translation function handed to the rest of the app.
+     *
+     * `language` MUST be read inside the body, not only listed as a dependency. The React
+     * Compiler (app.config.ts -> experiments.reactCompiler) re-derives dependencies from the
+     * body and ignores the array, so a body that closed over nothing but the module-level `t`
+     * was hoisted to module scope and kept one identity for the whole life of the app. Every
+     * compiled component caches its strings as `if ($[n] !== t) { ... a translated string ... }`, so
+     * a frozen `t` froze the text on screen in whatever language was active when that component
+     * first mounted - which is exactly the bug where a screen kept showing Italian after the
+     * reader had switched to English.
+     *
+     * Passing the locale through as data also makes the result a pure function of its arguments
+     * rather than of the mutable `i18n.locale`. Keep `language` in the body.
+     */
+    const translate = useCallback(
+        (key: string, options?: Record<string, any>): string => t(key, { locale: language, ...options }),
+        [language],
+    );
 
     const value: LanguageContextType = {
         language,
@@ -119,7 +146,8 @@ export function useLanguage(): LanguageContextType {
         return {
             language: getCurrentLanguage(),
             setLanguage: async () => {},
-            t: (key: string, options?: Record<string, any>) => t(key, options),
+            t: (key: string, options?: Record<string, any>) =>
+                t(key, { locale: getCurrentLanguage(), ...options }),
             languages: SUPPORTED_LANGUAGES,
             isReady: true,
         };

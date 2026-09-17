@@ -15,6 +15,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         bundleIdentifier: 'app.odysseyjournal',
         buildNumber: '3',
         infoPlist: {
+            // The twelve languages the app ships (lib/i18n). Declaring them lets iOS - and
+            // MapKit with it - treat this as a localized app instead of an English-only one.
+            // Map labels still follow the device's preferred language, not the in-app choice;
+            // that is a MapKit limitation, not something this list overrides.
+            CFBundleLocalizations: ['tr', 'en', 'es', 'fr', 'de', 'pt', 'it', 'ru', 'ja', 'ko', 'zh', 'ar'],
             ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription: 'Odyssey Journal needs access to your camera to take photos for your travel posts.',
             NSPhotoLibraryUsageDescription: 'Odyssey Journal needs access to your photo library to select images for your travel posts.',
