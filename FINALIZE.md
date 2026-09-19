@@ -56,7 +56,9 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
 | 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
 | 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
-| 8 | Oturum | **Code review + security review** (sonraki oturum, aşağıdaki not) |
+| 8 | ✅ Oturum | **Code review + security review yapıldı (19 Eylül)** — bulgular aşağıda "Review bulguları"; düzeltmeler bekliyor |
+| 9 | Kullanıcı | "Review bulguları" altındaki **doğrulama SQL'ini** Supabase SQL editöründe çalıştır, çıktıyı oturuma ver (salt okuma) |
+| 10 | Oturum | K1-K2 + Y1-Y4 düzeltmeleri: `030_security_fixes.sql` + istemci düzeltmeleri. **Dikkat:** `supabase/**` push'u canlıya otomatik `db push` yapar |
 
 ### Sonraki oturum: code review + security review için notlar
 Kapsam önerisi ve bilinen şüpheli noktalar (henüz incelenmedi, yalnızca işaret):
@@ -79,6 +81,94 @@ Kapsam önerisi ve bilinen şüpheli noktalar (henüz incelenmedi, yalnızca iş
   `supabase-deploy` main'e her `supabase/**` push'unda canlıya `db push` yapıyor.
 - **Bağımlılıklar:** `npm audit`; B4'teki 16 sürüm uyuşmazlığı.
 - Review bulguları düzeltilirse yeni build gerekir → EAS kredisi durumu (yukarıdaki engel) hesaba katılmalı.
+
+### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
+Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
+yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;
+`interactions` tablosu **yok**). Sütun yetkileri ve fonksiyon gövdeleri canlıda doğrulanmadı →
+aşağıdaki SQL.
+
+**Kritik**
+- **K1 — Kullanıcı kendini admin yapabilir / banını kaldırabilir.** `profiles` UPDATE politikası
+  yalnızca `auth.uid() = id` bakıyor (`019_…sql:132`), sütun kısıtı yok, koruyan trigger yok.
+  `supabase.from('profiles').update({ is_admin: true })` → admin paneli + `admin_delete_post` /
+  `admin_ban_user` açılır. Aynı yolla `is_banned=false`, `followers_count`, `posts_count` de yazılır.
+  Düzeltme: BEFORE UPDATE trigger (auth.uid() sahibiyse `is_admin/is_banned/banned_at/*_count`
+  değişemez) ya da `REVOKE UPDATE` + yalnız izinli sütunlara `GRANT UPDATE (…)`.
+- **K2 — Hesap silme canlıda hata veriyor olabilir.** `011_delete_user_account.sql:44`
+  `DELETE FROM public.interactions` — tablo canlıda yok (PGRST205). 011 sürümü canlıdaysa RPC her
+  seferinde düşer; uygulama "genel hata" gösterir (Apple 5.1.1(v) reddi). `FULL_SETUP.sql`
+  sürümünde bu satır yok; hangisinin canlıda olduğu SQL #3 ile görülür. Ayrıca hiçbir sürüm
+  storage'daki avatar / gönderi görsellerini silmiyor (URL'ler herkese açık kalıyor).
+
+**Yüksek**
+- **Y1 — Herkes herkesin avatarını ezebilir/silebilir.** `FIX_AVATAR_UPLOAD.sql` + `FULL_SETUP.sql:992-994`
+  avatars UPDATE/DELETE'i tüm authenticated'a açıyor. Sebep: `profile-service.ts:352` yolu
+  `avatars/<uid>-<ts>` (klasör uid değil) → sahiplik politikası işlemiyordu. Düzeltme: yol
+  `${userId}/…` + sahiplik politikaları (collection-covers'daki gibi).
+- **Y2 — `posts` bucket'a herkes her yola yazabilir.** INSERT yalnız `bucket_id` + authenticated
+  (`FULL_SETUP.sql:998`); klasör, MIME, boyut sınırı yok → herkese açık dosya barındırma,
+  başkasının klasörüne dosya bırakma. Düzeltme: `(storage.foldername(name))[1] = auth.uid()::text`
+  + bucket `allowed_mime_types = {image/jpeg,image/png,image/webp}`, `file_size_limit`.
+- **Y3 — Engelleme DM'leri kapsamıyor.** `messages` INSERT yalnız `sender_id = auth.uid()`;
+  `lib/chat.ts`'de de engel kontrolü yok. Engellenen kişi mesaj atmaya devam eder (okunmamış
+  sayacı artar, realtime düşer). UGC şartı açısından önemli. Düzeltme: INSERT WITH CHECK'e
+  `NOT public.is_blocked_by(sender_id, receiver_id)`; SELECT'e de aynısı.
+- **Y4 — Herkes herkese bildirim + push üretebilir.** `notifications` INSERT: `auth.uid() = actor_id`,
+  `user_id` serbest → engel ve bildirim tercihleri atlanır, döngüyle push spam. İstemci
+  bildirimi hiç doğrudan eklemiyor (hepsi SECURITY DEFINER tetikleyici) → politikayı düşürmek yeter.
+- **Y5 — `expo_push_token` her oturum açmış kullanıcıya açık** (profiles SELECT tüm sütunlar;
+  `is_admin`, `notification_preferences` da). Expo push, "enhanced push security" kapalıyken
+  kimlik istemediği için token'ı bilen herkes o cihaza push atabilir. Düzeltme: token'ı yalnız
+  sahibinin okuyabildiği ayrı tabloya taşımak ya da `REVOKE SELECT (expo_push_token, …)`.
+  (Kolon REVOKE'u `select('*')` kullanan sorguları kırar → önce istemcide `*` taraması.)
+
+**Orta**
+- **O1 — Şifre sıfırlama akışı çalışmıyor.** `forgot-password.tsx:81` `odysseyjournal://reset-password`'a
+  yönlendiriyor ama bu rota/ekran yok, `PASSWORD_RECOVERY` dinlenmiyor, token hiç
+  kullanılmıyor. Kullanıcı e-postadaki linke basınca hiçbir şey olmaz. Ayrıca Supabase Auth →
+  Redirect URLs'de bu şema kayıtlı olmalı.
+- **O2 — Paylaşım linkleri 404.** `lib/share.ts:59` `https://odysseyjournal.app/post/<id>` → sitede
+  404; AASA / assetlinks de 404 (universal link yok). Ya sitede `/post/*` sayfası ya da mesajdan URL'yi çıkarmak.
+- **O3 — Gönderi düzenleme moderasyonsuz.** `updatePost` (`lib/posts.ts:201`) metin/görsel
+  moderasyonu çağırmıyor; temiz gönderi sonradan değiştirilebilir. (Moderasyon zaten tamamen
+  istemcide ve fail-open — doğrudan API çağrısıyla atlanabilir; bilinen tasarım sınırı.)
+- **O4 — Gönderi hız sınırı `created_at` geri alınarak atlanır.** `created_at` istemciden geliyor
+  (`posts.ts:165`, seyahat tarihi) ve limit `created_at >= now()-1h` sayıyor.
+- **O5 — Alıcı, aldığı mesajın `content`/`sender_id`'sini değiştirebilir** (UPDATE politikası sütun
+  kısıtsız); DELETE her iki tarafa da tüm satırı sildiriyor ("benden sil" UI'si dışında).
+- **O6 — Profil sekmesinden çıkışta push token silinmiyor** (`(tabs)/profile.tsx:181` → `signOut`;
+  yalnız Ayarlar yolu `removePushToken` çağırıyor). Aynı cihazda sonraki hesap öncekinin
+  bildirimlerini alır. Düzeltme: `removePushToken`'ı `AuthContext.signOut` içine almak.
+- **O7 — Gönderi sahibi `likes_count`/`comments_count`'u yazabilir** (posts UPDATE sütun kısıtsız) → trend manipülasyonu.
+
+**Düşük / bakım**
+- **D1** `fix_function_search_path.sql` elle yeniden çalıştırılırsa bildirim tercihi kontrolünü
+  (023) geri alır. Numarasız 4 dosyayı `db push` zaten atlıyor → `supabase/archive/`'e taşıyın.
+- **D2** `send-push-notifications` hâlâ repoda; CI `supabase functions deploy` her seferinde yeniden
+  deploy ediyor. Silinmeli + `supabase functions delete send-push-notifications`.
+- **D3** `moderate-content` iç hata metnini istemciye döndürüyor; `imageUrls` serbest.
+- **D4** Google Maps anahtarı (güncel olan) git geçmişinde. Binary'de zaten var; Google Cloud'da
+  Android paket+SHA-1 / iOS bundle kısıtı olduğundan emin olun. Service-role / sb_secret **geçmişte yok** ✅.
+- **D5** `npm audit --omit=dev`: 46 (2 critical: `tar`, `shell-quote`) — hepsi expo-cli/metro
+  derleme araçlarında, uygulama paketinde değil. Yayından önce yükseltmeyin (B4).
+- **D6** `supabase-deploy.yml` onaysız canlıya `db push` + CLI `version: latest`. GitHub
+  Environment + required reviewer önerilir.
+- **D7** E-postayla veri talebi: privacy@ yanıt vermeden önce talebin hesabın kendi
+  e-postasından geldiğini doğrulamalı (süreç notu).
+
+**Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır):**
+```sql
+select has_column_privilege('authenticated','public.profiles','is_admin','UPDATE') as k1_is_admin_writable,
+       has_column_privilege('authenticated','public.profiles','expo_push_token','SELECT') as y5_token_readable;
+select tgname from pg_trigger where tgrelid='public.profiles'::regclass and not tgisinternal;
+select position('interactions' in prosrc) > 0 as k2_broken from pg_proc where proname='delete_user_account';
+select policyname, cmd, qual, with_check from pg_policies
+ where (schemaname='storage' and tablename='objects') or tablename in ('profiles','notifications','messages') order by tablename, policyname;
+select id, public, file_size_limit, allowed_mime_types from storage.buckets;
+select proname, position('notification_preferences' in prosrc) > 0 as respects_prefs from pg_proc
+ where proname in ('create_like_notification','create_comment_notification','create_follow_notification');
+```
 
 **Kısıtlar (önceki oturumlardan):** canlı veritabanına yazma ve auth admin çağrıları izin sınıflandırıcısı
 tarafından reddediliyor — etrafından dolaşmayın, SQL'i kullanıcıya verin. iOS build'i kullanıcı alır.
