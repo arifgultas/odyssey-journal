@@ -55,7 +55,7 @@ prop'u silmek `SettingsRow`'un varsayılan `>` okunu gösterirdi.
 
 ---
 
-## 1. 17-18 Eylül — React Compiler turu — React Compiler turu
+## 1. 17-18 Eylül — React Compiler turu
 
 **Bildirilen sorun:** Dil İngilizce seçiliyken Ayarlar'da "TITOLARE DEL PASSAPORTO" /
 "MODIFICA PROFILO", Profil'de "Carta d'imbarco / Paesi / Chilometri / Giorni" İtalyanca
@@ -145,7 +145,8 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Mağaza metinleri (`STORE_LISTING.md`) | ✅ EN + TR hazır |
 | iOS TestFlight | ✅ build 4 cihazda · **build 5 bekleniyor** (19 Eylül değişiklikleri) |
 | Android production build | ✅ AAB hazır (19 Eylül) · Play Console'a yüklenmedi |
-| **Mağaza ekran görüntüleri / mockup** | 🟡 fal.ai (GPT Image 2.5) hattı planlandı, §3 A3 |
+| Mağaza ekran görüntüleri / mockup | ✅ 32 kare + 2 Feature Graphic, `mockup_feature/` (§3 A3) |
+| **Push bildirimleri** | ⚠️ hiç gönderilmemişti — 029 ile düzeltildi, canlıda doğrulanmadı (§3 B2) |
 | Mağazaya gönderim | ❌ |
 
 ---
@@ -172,32 +173,43 @@ Bu adım daha önce `:app:mergeReleaseResources` hatasıyla düşüyordu; sebep 
 (onboarding görselleri JPEG'ken `.png` adlanmıştı) ve `lib/__tests__/assets.test.ts` artık
 koruyor, ama build'in gerçekten geçtiği bir kez daha görülmedi.
 
-**A3. Mağaza ekran görüntüleri ve grafikler (Faz B).**
-_19 Eylül:_ EN + TR, iOS 1290×2796 + Android 1080×1920 + Feature Graphic 1024×500. iPad yok
-(`supportsTablet: false`). Ekran sırası ve sloganlar:
+**A3. ✅ Mağaza görselleri hazır (19 Eylül).** `mockup_feature/` (git'e girmiyor, büyük ikili):
+- `ios/{en,tr}/01…08-*.png` — 1290×2796 (6.9"/6.7"; ASC küçüklere kendisi ölçekler)
+- `android/{en,tr}/01…08-*.png` — 1080×1920
+- `feature-graphic/feature-graphic-{en,tr}.png` — 1024×500 (yalnız Play)
 
 | # | Ekran | EN | TR |
 |---|---|---|---|
 | 1 | Feed | See the world through travelers' eyes | Dünyayı gezginlerin gözünden gör |
 | 2 | Profil (biniş kartı) | Your passport, stamped with memories | Anılarla damgalanmış pasaportun |
 | 3 | Harita | Pin every place you've been | Gittiğin her yeri haritana işle |
-| 4 | Gönderi oluştur | Turn photos into travel stories | Fotoğraflarını seyahat hikâyesine dönüştür |
-| 5 | Keşfet | Find your next destination | Sıradaki rotanı keşfet |
-| 6 | Koleksiyonlar | Save the places you dream of | Hayalindeki yerleri biriktir |
+| 4 | Keşfet | Find your next destination | Sıradaki rotanı keşfet |
+| 5 | Şehir gönderileri | Every city, told by travelers | Her şehir, gezginlerin kaleminden |
+| 6 | Gönderi oluştur | Turn photos into travel stories | Fotoğraflarını seyahat hikâyesine dönüştür |
 | 7 | Mesajlar | Plan the next trip together | Sonraki yolculuğu birlikte planla |
-| 8 | Onboarding | Every journey deserves a story | Her yolculuk bir hikâyeyi hak eder |
+| 8 | Ayarlar (pasaport + 12 dil) | Your journal, in 12 languages | Günlüğün, 12 dilde |
 | FG | Feature Graphic | Capture your journey. Share your story. | Yolculuğunu kaydet. Hikâyeni paylaş. |
 
-_Karar (19 Eylül):_ hibrit yöntem. Kullanıcının verdiği gerçek ekran görüntülerinde yalnızca
-gönderi fotoğrafı/metin alanları fal.ai `openai/gpt-image-2.5/flare/edit` ile **maskeli** olarak
-yenileniyor (UI birebir kalıyor → Apple 2.3.3). Cihaz çerçevesi, başlık ve kesin boyutlar yerel
-script ile. Feature Graphic: fal text-to-image + yerel logo/slogan. `FAL_KEY` `.env.local`'da.
+Onboarding ve Koleksiyonlar listeden çıktı: onboarding görüntüsü yoktu, Kaydedilenler boştu.
 
-TestFlight cihazda hazır olduğu için doğrudan iPhone'dan alınabilir. 8 ekran: Onboarding,
-Feed, Keşfet, Gönderi oluşturma, Harita, Profil, Mesajlaşma, Koleksiyonlar. Boyutlar:
-iPhone 6.7" (1290×2796), 6.5" (1242×2688), Play Feature Graphic (1024×500).
-**Not:** ekran görüntülerini almadan önce A4'teki dil turunu yapın — mağazaya yanlış dilde
-donmuş bir metin girmesin.
+**Nasıl üretildi** (`scripts/store-assets/`, hepsi tekrar çalıştırılabilir):
+- `edit-screen.js <iş>` — gerçek ekran görüntüsünde yalnızca `jobs.js`'teki bölgeler fal.ai
+  `openai/gpt-image-2.5/flare/edit` (medium) ile yeniden çiziliyor; model tüm kareyi yeniden
+  çizdiği için çıktısından **yalnızca bu bölgeler** kesilip orijinalin üstüne yapıştırılıyor →
+  arayüz pikseli uygulamanın kendisi (Apple 2.3.3). `keep` (bölge içinde korunacak UI),
+  `stack` (tek mesaj satırını çoğaltma), `clear`, `labels` (bozuk harita etiketini yerelde
+  düzeltme). `--recomposite` modeli çağırmadan yeniden birleştirir (ücretsiz).
+- `compose.js [ios|android|all] [en|tr|all]` — arka plan, Playfair başlık, çerçeve. Android
+  karelerinde iPhone görüntüsünün durum çubuğu, Android görüntüsünden kesilen gerçek durum
+  çubuğuyla değiştiriliyor.
+- `feature-graphic.js` — `openai/gpt-image-2.5/flare/text-to-image` sanat + yerel ikon/yazı.
+- Harcama: 13 çağrı, tahmini ~$1.16 (`mockup_feature/_work/spend.json`; script $5'ta durur).
+- Kaynak ekran görüntüleri `SS/` (git dışı). Harita ve Profil için Android'e özel gerçek
+  yakalama kullanıldı (Google Maps); diğer 6 ekran iPhone görüntüsü.
+
+**Bilinen sınırlar:** TR setindeki ekranların arayüzü İngilizce (yalnız başlıklar Türkçe) — TR
+ekran görüntüsü alınmadı. İstenirse aynı `jobs.js` TR ekran görüntüleriyle bir kez daha
+çalıştırılır; üretilmiş fotoğraflar aynı yerlere denk geldiği için maliyet düşük olur.
 
 **A4. 12 dilde cihaz taraması — özellikle donma hatası.**
 Bugünkü hata yalnızca **"dili değiştir, aynı ekranda kal"** durumunda çıkıyordu; uygulamayı
@@ -240,11 +252,23 @@ _19 Eylül bulgusu:_ Supabase'de eski (legacy) anahtarlar yalnız başına dönd
 service_role birlikte kapatılıyor. Uygulama hâlâ legacy anon anahtarını kullanıyor ve **push
 cron'u (`013_push_notification_cron.sql:21`) `send-push-notifications`'ı legacy service_role
 JWT ile çağırıyor** — legacy kapatılırsa push bildirimleri durur. Sıra:
-1. Dashboard → API Keys → `sb_publishable_…` ve `sb_secret_…` oluştur. `.env`
-   `EXPO_PUBLIC_SUPABASE_ANON_KEY` ← publishable (değişken adı aynı, kod değişmez),
-   `.env.local` `SUPABASE_SERVICE_ROLE_KEY` ← secret. Yeni build + cihaz testi.
-2. Yeni migration: cron'u yeni secret anahtara taşı + edge function'ın yetki kontrolü.
-3. Push'un çalıştığını gör → Dashboard'dan legacy anahtarları kapat (geri alınabilir).
+1. ✅ Dashboard → API Keys → `sb_publishable_…` ve `sb_secret_…` oluşturuldu; `.env`
+   `EXPO_PUBLIC_SUPABASE_ANON_KEY` ← publishable, `.env.local` `SUPABASE_SERVICE_ROLE_KEY` ←
+   secret. İkisi de salt-okuma sorgusuyla test edildi (REST 200, auth 200).
+2. ✅ (kod) `029_push_delivery_in_database.sql` + `moderate-content` düzeltmesi. **Asıl bulgu:
+   push bildirimleri hiç gönderilmemişti** — kuyruktaki 10 satırın hepsi `sent = false`, en
+   eskisi Haziran. Cron (`013`) `current_setting('app.settings.service_role_key')` ile
+   edge function'ı çağırıyordu; bu ayar barındırılan projede hiç yoktu. 029 teslimi tamamen
+   Postgres'e alıyor: `pg_cron` her dakika `flush_push_queue()` → `pg_net` ile doğrudan Expo'ya.
+   Hiçbir API anahtarına bağlı değil. 1 günden eski birikmiş satırlar gönderilmeden kapatılıyor.
+   `moderate-content` artık istekteki `apikey` başlığını (publishable) kullanıyor, enjekte
+   edilen legacy anon anahtarını değil. `send-push-notifications` fonksiyonu artık kullanılmıyor.
+   **Canlıya gitmesi:** `main`'e push → `Deploy Supabase` workflow'u (`db push` + functions deploy).
+3. ⏳ Canlıda doğrula: yeni bir beğeni/takip → 1 dk içinde telefona bildirim + kuyrukta
+   `sent = true`. Sonra **yeni anahtarlı build'ler** (iOS + Android) cihazda doğrulanınca
+   Dashboard → API Keys → legacy anahtarları kapat (geri alınabilir). **Dikkat:** 19 Eylül'deki
+   Android AAB (`324319a5`) legacy anon anahtarıyla derlendi; legacy kapatılmadan önce Android
+   yeniden build alınmalı. iOS build 6'nın hangi anahtarla çıktığı kullanıcıya soruldu.
 Neden: anahtar bir oturumda düz metin paylaşıldı ve RLS'i tamamen baypas eder. Uygulama kodu okumuyor;
 yalnızca `scripts/` altındaki araçlar ve push cron'u kullanıyor.
 

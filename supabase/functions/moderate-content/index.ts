@@ -145,7 +145,9 @@ Deno.serve(async (req) => {
 
         // Verify the request is from an authenticated user
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-        const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+        // The caller's own key (the app's publishable key) rather than the injected legacy anon
+        // key, which stops working once the legacy keys are switched off.
+        const supabaseAnonKey = req.headers.get("apikey") ?? Deno.env.get("SUPABASE_ANON_KEY")!;
         const authHeader = req.headers.get("Authorization");
 
         if (!authHeader) {

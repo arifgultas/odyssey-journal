@@ -48,3 +48,7 @@ app-example
 tsc_errors.txt
 tsc_output.txt
 scratch/
+
+# store screenshots and generated store art (large binaries)
+SS/
+mockup_feature/
