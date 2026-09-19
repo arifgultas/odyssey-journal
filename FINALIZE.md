@@ -31,10 +31,16 @@ yeni anahtarlı AAB (versionCode 2) alınır, ardından legacy anahtarlar kapat�
 | 1 | Kullanıcı | iOS build 7 al → TestFlight. Giriş, akış, mesajlar, gönderi oluşturma çalışıyor mu (yeni anahtar) |
 | 2 | Kullanıcı | Push testi: Admin2 ile Admin'in gönderisini beğen → iPhone'a bildirim |
 | 3 | Kullanıcı | App Store Connect: ekran görüntüleri (`mockup_feature/ios/`), metinler (`STORE_LISTING.md`), yaş anketi (UGC + mesajlaşma → 12+/13+), gizlilik etiketleri, inceleme için demo hesap, build 7'yi seç, incelemeye gönder |
-| 4 | Kullanıcı | Play Console: uygulama oluştur, mevcut AAB ile dahili/kapalı test, mağaza sayfası (`mockup_feature/android/` + feature graphic), içerik formları |
-| 5 | Oturum | 1 Ekim: Android AAB (versionCode 2, yeni anahtar) |
-| 6 | Kullanıcı | Yeni build'ler doğrulanınca: Supabase → API Keys → legacy anahtarları kapat |
-| 7 | Kullanıcı | fal.ai anahtarını yenile (sohbete yapıştırılmıştı) |
+| 4 | Kullanıcı | **Android AAB'yi Android Studio'dan kendisi alıyor** (EAS kotası yerine). `android/` 19 Eylül'de `expo prebuild --clean` ile yeniden üretildi (versionCode 2, Maps anahtarı). Build → Generate Signed App Bundle → **yeni upload keystore** (proje dışında saklanmalı; kaybolursa güncelleme yüklenemez). EAS AAB'si (`324319a5`) Play'e **yüklenmeyecek**. İleride EAS'ten Android build alınacaksa bu keystore `eas credentials` ile EAS'e yüklenmeli. |
+| 5 | Kullanıcı | Play Console: uygulama, dahili test, mağaza sayfası (`mockup_feature/android/`, feature graphic, `mockup_feature/play-icon-512.png`), içerik formları. Hesap silme URL'si: `privacy-policy.html` (silme bölümü var) |
+| 6 | Kullanıcı → Oturum doğrular | iOS build 7 + Android versionCode 2 yeni anahtarla doğrulanınca: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys". Oturum salt-okuma testiyle doğrular (legacy reddediliyor, yeni çalışıyor). Geri alınabilir. Eski TestFlight build'leri (≤6) bundan sonra çalışmaz. |
+| 7 | ✅ | fal.ai anahtarı `.env.local`'dan silindi (fal panelinden de iptal edilmeli) |
+
+Push testi için Admin2 şifresi hatırlanmıyor → testi **review demo hesabıyla** yapın (Android'de demo
+hesapla giriş → Admin'in gönderisini beğen).
+
+Canlı web sayfaları (GitHub Pages, 200 döndüğü doğrulandı):
+`https://arifgultas.github.io/odyssey-journal/` · `…/privacy-policy.html` · `…/terms-of-service.html`
 
 ---
 
