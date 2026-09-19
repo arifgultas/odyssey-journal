@@ -13,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: "app.odysseyjournal",
-    buildNumber: "6",
+    buildNumber: "7",
     infoPlist: {
       // The twelve languages the app ships (lib/i18n). Declaring them lets iOS - and
       // MapKit with it - treat this as a localized app instead of an English-only one.
@@ -46,7 +46,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: "com.odysseyjournal.app",
-    versionCode: 1,
+    versionCode: 2,
     softwareKeyboardLayoutMode: "resize",
     adaptiveIcon: {
       backgroundColor: "#F5F1E8",
