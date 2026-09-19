@@ -13,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: "app.odysseyjournal",
-    buildNumber: "7",
+    buildNumber: "8",
     infoPlist: {
       // The twelve languages the app ships (lib/i18n). Declaring them lets iOS - and
       // MapKit with it - treat this as a localized app instead of an English-only one.

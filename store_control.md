@@ -26,11 +26,19 @@ Mağaza formlarında kullanılacak adresler (projede zaten bu adresler geçiyor 
   ya da privacy@odysseyjournal.app adresine yazın." Google Play bu linki ayrıca soruyor.
 - `/support` sayfası yoksa, en azından destek e-postasını (support@odysseyjournal.app) gösteren
   basit bir sayfa yeterli. Apple Support URL'nin açılmasını şart koşuyor.
-- Site yayına alınınca bu 4 adresin açıldığını kontrol edin (oturuma söylerseniz o da kontrol eder).
+- ✅ 19 Eylül: 4 adres ve `/delete-account` açılıyor (200) — kontrol edildi.
 
 ---
 
-## 1. iOS build 7
+## 1. iOS build 7 → build 8
+
+> **Build 8 gerekiyor** (`buildNumber: "8"`, commit 8e4bb2e):
+> - Kayıt ekranındaki Kullanım Koşulları / Gizlilik linkleri artık siteyi açıyor.
+> - Ayarlar → Yasal bölümüne bu iki satır eklendi.
+> - Google/Apple butonları gizlendi. Supabase'de kapalı oldukları için basınca hata veriyorlardı (Apple reddi riski).
+>
+> Build 7'yi yine test edin (anahtar ve giriş testi için), ama **incelemeye build 8'i gönderin**.
+> Android AAB bu değişikliklerden sonra alınacağı için onda zaten olacak.
 
 - Build 7 alınıyor (`buildNumber: "7"`), yeni Supabase anahtarı (`sb_publishable_…`) içinde.
 - TestFlight'ta gelince kontrol:
@@ -84,7 +92,7 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
 - [ ] **Promotional Text / Description / Keywords:** `STORE_LISTING.md`'den
 - [ ] **Support URL:** `https://odysseyjournal.app/support`
 - [ ] **Marketing URL (isteğe bağlı):** `https://odysseyjournal.app`
-- [ ] **Build:** "+" → **7**. Şifreleme sorusu çıkmaz (`ITSAppUsesNonExemptEncryption: false` kodda).
+- [ ] **Build:** "+" → **8**. Şifreleme sorusu çıkmaz (`ITSAppUsesNonExemptEncryption: false` kodda).
 
 ### 3.5 Aynı sayfa — Turkish
 - [ ] `mockup_feature/ios/tr/` görselleri + `STORE_LISTING.md`'deki Türkçe metin
