@@ -144,7 +144,7 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Legal dokümanlar & KVKK | ✅ |
 | Mağaza metinleri (`STORE_LISTING.md`) | ✅ EN + TR hazır |
 | iOS TestFlight | ✅ build 4 cihazda · **build 5 bekleniyor** (19 Eylül değişiklikleri) |
-| **Android production build** | ❌ **hiç alınmadı** |
+| Android production build | ✅ AAB hazır (19 Eylül) · Play Console'a yüklenmedi |
 | **Mağaza ekran görüntüleri / mockup** | 🟡 fal.ai (GPT Image 2.5) hattı planlandı, §3 A3 |
 | Mağazaya gönderim | ❌ |
 
@@ -164,7 +164,7 @@ denemede takılırsınız. iOS'ta her build'de elle artırılıyor, Android'de h
 **Yapılacak:** Android'e ilk yüklemeden önce artırın, sonrasında her yüklemede. İkisini
 otomatik artırmak isterseniz `eas.json` içinde `autoIncrement` var, konuşalım.
 
-**A2. Android production build alınmadı.** _(19 Eylül: oturum alıyor — kullanıcı EAS akışını devretti.)_
+**A2. ✅ Android production build geçti (19 Eylül)** — EAS build `324319a5`, commit `844dff1`, `versionCode: 1`, mevcut EAS keystore'u. AAB: https://expo.dev/artifacts/eas/itRd32wL2IfZ-fyEvwPAjYpWJgJyk8pppMM9i3xlMhY.aab . Sırada: Play Console'a elle ilk yükleme (dahili test). `mergeReleaseResources` hatası bir daha görülmedi.
 ⚠️ Kişisel geliştirici hesabı Kasım 2023'ten sonra açıldıysa Play, production'dan önce
 **12 test kullanıcılı, 14 günlük kapalı test** istiyor. En uzun süren adım bu.
 `eas build --platform android --profile production` → AAB → Play Console dahili test kanalı.
