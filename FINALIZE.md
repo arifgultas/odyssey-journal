@@ -34,7 +34,7 @@ Google Cloud Console → APIs & Services → Credentials:
      (`android/app/debug.keystore`; geliştirme build'leri). Bu React Native şablonunun herkeste aynı
      olan debug anahtarı → **yayından önce kaldırılır**.
    - **AAB alınınca — upload key:** Android Studio'da oluşturulan `odyssey-upload.jks`
-     (`store_control.md` §2). `"C:\Program Files\Android\Android Studio\jbrbin\keytool.exe" -list -v -keystore <jks> -alias upload`
+     (`store_control.md` §2). `"C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -list -v -keystore <jks> -alias upload`
      → `SHA1:` satırı. (Oturum da çıkarabilir.)
    - **İlk Play yüklemesinden sonra — app signing key:** Play Console → Test and release →
      App integrity → App signing → *App signing key certificate* SHA-1. Play'den (dahili test dahil)
