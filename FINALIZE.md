@@ -85,7 +85,7 @@ Google Cloud Console → APIs & Services → Credentials:
 | Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
 | Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
 | Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
-| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: O2 (site), D4, D5, D7 |
+| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: D4 (kısmen), D5, D7 |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler
@@ -101,7 +101,7 @@ Google Cloud Console → APIs & Services → Credentials:
 | 8 | ✅ Kullanıcı | Doğrulama SQL'i çalıştı (19 Eylül): 030 canlıda beklendiği gibi (guard tetikleyicileri, `k2_broken:false`, bildirim INSERT politikası 0, `push_tokens: 2`, profilde token 0, bucket sınırları). İki kalıntı çıktı → `031` (aşağıda) |
 | 9 | ✅ Kullanıcı | Redirect URLs'e `odysseyjournal://reset-password` eklendi (19 Eylül) |
 | 10 | ✅ Kullanıcı | `send-push-notifications` Dashboard'dan silindi (19 Eylül) |
-| 11 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
+| 11 | ✅ Oturum | O2: paylaşım linki artık `https://odysseyjournal.app/?post=<id>` (ana sayfa, 200). Site Hostinger'da (`Server: hcdn`), gönderi sayfası yok. İleride: sitede `?post=` okuyan sayfa / universal link. **Sitede App Store / Google Play butonlarına mağaza linkleri yayında eklenmeli** |
 | 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
 | 13 | Kullanıcı — kısmen ✅ | Maps: yeni anahtarlar kuruldu ve doğrulandı; eski anahtarları silme + SHA-1'ler yeni build'lerle ("ÖNCELİK 1" bölümü) |
 | 15 | ✅ Kullanıcı | 031 onaylandı, canlıya uygulandı (19 Eylül, run 35460360360) — environment onayı ilk kez sorunsuz çalıştı |
@@ -114,7 +114,7 @@ Google Cloud Console → APIs & Services → Credentials:
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
 > **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2, D3 **düzeltildi** (aşağıda "Review düzeltmeleri").
-> Açık: **D4 — ÖNCELİK 1** (en üstte), **O2** (site işi), **D5, D7**. D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
+> Açık: **D4 — ÖNCELİK 1** (kısmen, en üstte), **D5, D7**. O2 ✅ (ana sayfaya yönlendirme). D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
 
 Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
 yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;

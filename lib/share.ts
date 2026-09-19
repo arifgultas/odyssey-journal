@@ -52,8 +52,10 @@ export async function sharePost(data: SharePostData): Promise<boolean> {
  * Generate shareable post URL
  */
 export function generatePostShareUrl(postId: string): string {
-    // Web URL for shareable links — supports link previews and universal links
-    return `https://odysseyjournal.app/post/${postId}`;
+    // The site (Hostinger) has no per-post pages, so /post/<id> was a 404. The home page is
+    // where the store links are; the id rides along so a future post page or universal link
+    // can still pick up links that were shared before it existed.
+    return `https://odysseyjournal.app/?post=${encodeURIComponent(postId)}`;
 }
 
 /**
