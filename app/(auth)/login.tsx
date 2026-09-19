@@ -3,6 +3,7 @@ import { useLanguage } from '@/context/language-context';
 import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
+import { SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -265,53 +266,57 @@ export default function LoginScreen() {
                                 )}
                             </TouchableOpacity>
 
-                            {/* Divider */}
-                            <View style={styles.dividerContainer}>
-                                <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
-                                <View style={[styles.dividerTextContainer, { backgroundColor: theme.background }]}>
-                                    <Text style={[styles.dividerText, {
-                                        color: isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.5)',
-                                    }]}>
-                                        {t('auth.orContinueWith')}
-                                    </Text>
+                            {SOCIAL_SIGN_IN_ENABLED && (
+                            <>
+                                {/* Divider */}
+                                <View style={styles.dividerContainer}>
+                                    <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
+                                    <View style={[styles.dividerTextContainer, { backgroundColor: theme.background }]}>
+                                        <Text style={[styles.dividerText, {
+                                            color: isDark ? 'rgba(212, 165, 116, 0.5)' : 'rgba(44, 24, 16, 0.5)',
+                                        }]}>
+                                            {t('auth.orContinueWith')}
+                                        </Text>
+                                    </View>
+                                    <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
                                 </View>
-                                <View style={[styles.dividerLine, { backgroundColor: theme.divider }]} />
-                            </View>
-
-                            {/* Social Login Buttons - Circular */}
-                            <View style={styles.socialButtonsContainer}>
-                                {/* Google Button */}
-                                <TouchableOpacity
-                                    style={[styles.socialButtonCircle, {
-                                        backgroundColor: isDark ? theme.surface : '#FFFFFF',
-                                        borderColor: isDark ? 'rgba(212, 165, 116, 0.2)' : 'rgba(44, 24, 16, 0.1)',
-                                    }]}
-                                    onPress={signInWithGoogle}
-                                    activeOpacity={0.7}
-                                >
-                                    <Image
-                                        source={require('@/assets/icons/icon _google.png')}
-                                        style={styles.socialIcon}
-                                        contentFit="contain"
-                                    />
-                                </TouchableOpacity>
-
-                                {/* Apple Button */}
-                                <TouchableOpacity
-                                    style={[styles.socialButtonCircle, {
-                                        backgroundColor: '#181611',
-                                        borderColor: '#000000',
-                                    }]}
-                                    onPress={signInWithApple}
-                                    activeOpacity={0.7}
-                                >
-                                    <Ionicons
-                                        name="logo-apple"
-                                        size={24}
-                                        color="#FFFFFF"
-                                    />
-                                </TouchableOpacity>
-                            </View>
+    
+                                {/* Social Login Buttons - Circular */}
+                                <View style={styles.socialButtonsContainer}>
+                                    {/* Google Button */}
+                                    <TouchableOpacity
+                                        style={[styles.socialButtonCircle, {
+                                            backgroundColor: isDark ? theme.surface : '#FFFFFF',
+                                            borderColor: isDark ? 'rgba(212, 165, 116, 0.2)' : 'rgba(44, 24, 16, 0.1)',
+                                        }]}
+                                        onPress={signInWithGoogle}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Image
+                                            source={require('@/assets/icons/icon _google.png')}
+                                            style={styles.socialIcon}
+                                            contentFit="contain"
+                                        />
+                                    </TouchableOpacity>
+    
+                                    {/* Apple Button */}
+                                    <TouchableOpacity
+                                        style={[styles.socialButtonCircle, {
+                                            backgroundColor: '#181611',
+                                            borderColor: '#000000',
+                                        }]}
+                                        onPress={signInWithApple}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Ionicons
+                                            name="logo-apple"
+                                            size={24}
+                                            color="#FFFFFF"
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                            )}
                         </View>
                     </View>
 

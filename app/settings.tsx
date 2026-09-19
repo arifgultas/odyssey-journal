@@ -11,6 +11,7 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { isAdmin } from '@/lib/admin-service';
+import { openLegalPage } from '@/lib/legal-links';
 import { exportUserData } from '@/lib/export-data';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { removePushToken } from '@/lib/push-notifications';
@@ -429,6 +430,18 @@ export default function SettingsScreen() {
                             description={t('settings.communityGuidelinesDesc')}
                             onPress={() => router.push('/community-guidelines' as any)}
                             colors={colors}
+                        />
+                        <SettingsRow
+                            icon="document-text-outline"
+                            label={t('settings.terms')}
+                            onPress={() => openLegalPage('terms')}
+                            colors={colors}
+                        />
+                        <SettingsRow
+                            icon="lock-closed-outline"
+                            label={t('settings.privacyPolicy')}
+                            onPress={() => openLegalPage('privacy')}
+                            colors={colors}
                         />
                     </View>
                 </Animated.View>
