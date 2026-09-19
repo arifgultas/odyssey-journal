@@ -43,6 +43,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | Web sitesi | `https://odysseyjournal.app` yayında; `/privacy-policy`, `/terms`, `/support`, `/delete-account` 200. GitHub Pages **kullanılmıyor** |
 | Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
 | Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
+| Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler
@@ -206,7 +207,7 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Alan | Durum |
 |---|---|
 | Kod geliştirme (34 özellik, 55+ bileşen) | ✅ |
-| 12 dil × 729 anahtar, %100 eşit | ✅ |
+| 12 dil × 727 anahtar, %100 eşit | ✅ |
 | Dil değişiminde donan metinler | ✅ düzeltildi (§1), **cihazda doğrulanmadı** |
 | Arapça RTL | ✅ yapıldı, **görsel doğrulaması yok** |
 | Yer adları (Wikidata, 6.209 şehir × 12 dil) | ✅ canlıda, backfill 13/13 |

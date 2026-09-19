@@ -7,6 +7,12 @@ export const LEGAL_URLS = {
     support: 'https://odysseyjournal.app/support',
 } as const;
 
+// Same addresses as the website's /support and /delete-account pages.
+export const LEGAL_EMAILS = {
+    privacy: 'privacy@odysseyjournal.app',
+    support: 'support@odysseyjournal.app',
+} as const;
+
 export function openLegalPage(page: keyof typeof LEGAL_URLS) {
     return WebBrowser.openBrowserAsync(LEGAL_URLS[page]);
 }

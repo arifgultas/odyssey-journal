@@ -11,8 +11,7 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { isAdmin } from '@/lib/admin-service';
-import { openLegalPage } from '@/lib/legal-links';
-import { exportUserData } from '@/lib/export-data';
+import { LEGAL_EMAILS, openLegalPage } from '@/lib/legal-links';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { removePushToken } from '@/lib/push-notifications';
 import { supabase } from '@/lib/supabase';
@@ -25,6 +24,7 @@ import React, { useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
+    Linking,
     Platform,
     ScrollView,
     StyleSheet,
@@ -175,21 +175,24 @@ export default function SettingsScreen() {
         }
     };
 
-    const handleDownloadData = async () => {
+    // Data copies are handled by email, as the website's account-deletion page says; the app
+    // itself does not export anything.
+    const handleRequestData = () => {
         Alert.alert(
             t('settings.exportDataTitle'),
             t('settings.exportDataDesc'),
             [
                 { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: t('settings.download'),
-                    onPress: async () => {
-                        const success = await exportUserData(t);
-                        if (success) {
-                            Alert.alert(t('common.success'), t('settings.exportSuccess'));
-                        }
-                    }
-                }
+                    text: t('settings.sendEmail'),
+                    onPress: () => {
+                        const subject = encodeURIComponent('Data copy request');
+                        const body = encodeURIComponent(`Account email: ${user?.email ?? ''}`);
+                        Linking.openURL(`mailto:${LEGAL_EMAILS.privacy}?subject=${subject}&body=${body}`).catch(() => {
+                            // No mail app configured: the address is already in the message above.
+                        });
+                    },
+                },
             ]
         );
     };
@@ -474,10 +477,10 @@ export default function SettingsScreen() {
                         />
 
                         <SettingsRow
-                            icon="cloud-download-outline"
+                            icon="mail-outline"
                             label={t('settings.exportDataTitle')}
                             description={t('settings.exportDataSubdesc')}
-                            onPress={handleDownloadData}
+                            onPress={handleRequestData}
                             colors={colors}
                             rightElement={null}
                         />
