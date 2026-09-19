@@ -10,6 +10,34 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
+## ★ Yayın kontrol listesi (19 Eylül akşamı — buradan devam edin)
+
+**Durum:** kod tarafı bitti. `main` = `e03bba4`. iOS `buildNumber: "7"`, Android `versionCode: 2`,
+`.env` yeni `sb_publishable_…` anahtarını taşıyor.
+
+**Push testi "bildirim gelmedi" — hata değil:** 19 Eylül'deki iki beğeni **Admin'in kendi
+gönderilerine Admin hesabından** yapılmış; tetikleyici kendi gönderini beğenince bilerek bildirim
+üretmiyor (`023_…sql:19`). Doğru test: Admin2 (Android, token `QICjy…`) ile Admin'in bir
+gönderisini beğen → Admin'in iPhone'una (token `8DGSX…`) 1 dk içinde bildirim.
+
+**Android build kotası:** EAS ücretsiz planın Android kotası bu ay doldu, **1 Ekim'de** sıfırlanıyor.
+Karar önerisi: Play'e şimdilik mevcut AAB (`324319a5`, versionCode 1, legacy anahtar) ile
+dahili/kapalı test başlatılsın — 14 günlük kapalı test saati böylece hemen başlar. 1 Ekim'de
+yeni anahtarlı AAB (versionCode 2) alınır, ardından legacy anahtarlar kapatılır. EAS upload'u
+125 MB'tı (görsel klasörleri gidiyordu) → `.easignore`'a `SS/`, `mockup_feature/` eklendi.
+
+| # | Kim | İş |
+|---|---|---|
+| 1 | Kullanıcı | iOS build 7 al → TestFlight. Giriş, akış, mesajlar, gönderi oluşturma çalışıyor mu (yeni anahtar) |
+| 2 | Kullanıcı | Push testi: Admin2 ile Admin'in gönderisini beğen → iPhone'a bildirim |
+| 3 | Kullanıcı | App Store Connect: ekran görüntüleri (`mockup_feature/ios/`), metinler (`STORE_LISTING.md`), yaş anketi (UGC + mesajlaşma → 12+/13+), gizlilik etiketleri, inceleme için demo hesap, build 7'yi seç, incelemeye gönder |
+| 4 | Kullanıcı | Play Console: uygulama oluştur, mevcut AAB ile dahili/kapalı test, mağaza sayfası (`mockup_feature/android/` + feature graphic), içerik formları |
+| 5 | Oturum | 1 Ekim: Android AAB (versionCode 2, yeni anahtar) |
+| 6 | Kullanıcı | Yeni build'ler doğrulanınca: Supabase → API Keys → legacy anahtarları kapat |
+| 7 | Kullanıcı | fal.ai anahtarını yenile (sohbete yapıştırılmıştı) |
+
+---
+
 ## 0. 19 Eylül — cihazda görülen iki düzeltme + küçük temizlik
 
 **"FOLLOWER" İtalyancada İngilizce kalıyordu.** Donma hatası değildi: `it.ts` ve `de.ts`'de
