@@ -516,7 +516,7 @@ export default {
         version: 'Version',
         logout: 'Log Out',
         deleteAccount: 'Delete Account',
-        deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.',
+        deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.\n\nIf you would like a copy of your data first, write to privacy@odysseyjournal.app and we will export it for you.',
         deleteAccountWarning: 'All your posts, comments, and data will be permanently deleted.',
         blockedUsers: 'Blocked Users',
         blockedUsersDesc: 'Manage and unblock users you have blocked',

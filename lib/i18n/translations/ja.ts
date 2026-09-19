@@ -481,7 +481,7 @@ export default {
         version: 'バージョン',
         logout: 'ログアウト',
         deleteAccount: 'アカウント削除',
-        deleteAccountConfirm: 'アカウントを削除しますか？この操作は元に戻せません。',
+        deleteAccountConfirm: 'アカウントを削除しますか？この操作は元に戻せません。\n\n削除の前にデータのコピーが必要な場合は、privacy@odysseyjournal.app までご連絡ください。エクスポートしてお送りします。',
         deleteAccountWarning: 'すべての投稿、コメント、データが完全に削除されます。',
         blockedUsers: 'ブロックしたユーザー',
         blockedUsersDesc: 'ブロックしたユーザーの管理とブロック解除',

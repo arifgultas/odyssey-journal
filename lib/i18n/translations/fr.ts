@@ -481,7 +481,7 @@ export default {
         version: 'Version',
         logout: 'Déconnexion',
         deleteAccount: 'Supprimer le compte',
-        deleteAccountConfirm: 'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.',
+        deleteAccountConfirm: 'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.\n\nSi vous souhaitez d\'abord une copie de vos données, écrivez à privacy@odysseyjournal.app et nous l\'exporterons pour vous.',
         deleteAccountWarning: 'Toutes vos publications, commentaires et données seront définitivement supprimés.',
         blockedUsers: 'Utilisateurs bloqués',
         blockedUsersDesc: 'Gérer et débloquer les utilisateurs que vous avez bloqués',

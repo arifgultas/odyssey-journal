@@ -481,7 +481,7 @@ export default {
         version: 'Versión',
         logout: 'Cerrar Sesión',
         deleteAccount: 'Eliminar Cuenta',
-        deleteAccountConfirm: '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.',
+        deleteAccountConfirm: '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.\n\nSi antes quieres una copia de tus datos, escribe a privacy@odysseyjournal.app y la exportaremos por ti.',
         deleteAccountWarning: 'Todas tus publicaciones, comentarios y datos se eliminarán permanentemente.',
         blockedUsers: 'Usuarios bloqueados',
         blockedUsersDesc: 'Administra y desbloquea los usuarios que has bloqueado',

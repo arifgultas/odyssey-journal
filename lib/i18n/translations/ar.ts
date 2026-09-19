@@ -482,7 +482,7 @@ export default {
         version: 'الإصدار',
         logout: 'تسجيل الخروج',
         deleteAccount: 'حذف الحساب',
-        deleteAccountConfirm: 'هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.',
+        deleteAccountConfirm: 'هل أنت متأكد من حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.\n\nإذا كنت تريد نسخة من بياناتك أولاً، راسلنا على privacy@odysseyjournal.app وسنصدّرها لك.',
         deleteAccountWarning: 'سيتم حذف جميع منشوراتك وتعليقاتك وبياناتك نهائياً.',
         blockedUsers: 'المستخدمون المحظورون',
         blockedUsersDesc: 'إدارة وإلغاء حظر المستخدمين الذين قمت بحظرهم',

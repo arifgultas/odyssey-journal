@@ -481,7 +481,7 @@ export default {
         version: 'Version',
         logout: 'Abmelden',
         deleteAccount: 'Konto löschen',
-        deleteAccountConfirm: 'Möchten Sie Ihr Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+        deleteAccountConfirm: 'Möchten Sie Ihr Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.\n\nWenn Sie vorher eine Kopie Ihrer Daten möchten, schreiben Sie an privacy@odysseyjournal.app – wir exportieren sie für Sie.',
         deleteAccountWarning: 'Alle Ihre Beiträge, Kommentare und Daten werden dauerhaft gelöscht.',
         blockedUsers: 'Blockierte Benutzer',
         blockedUsersDesc: 'Verwalten und Entblocken Sie von Ihnen blockierte Benutzer',

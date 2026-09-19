@@ -481,7 +481,7 @@ export default {
         version: '版本',
         logout: '退出',
         deleteAccount: '删除账户',
-        deleteAccountConfirm: '确定要删除账户吗？此操作无法撤销。',
+        deleteAccountConfirm: '确定要删除账户吗？此操作无法撤销。\n\n如需在删除前获取数据副本，请发送邮件至 privacy@odysseyjournal.app，我们会为您导出。',
         deleteAccountWarning: '您的所有帖子、评论和数据将被永久删除。',
         blockedUsers: '已屏蔽的用户',
         blockedUsersDesc: '管理和解除屏蔽您已屏蔽的用户',

@@ -516,7 +516,7 @@ export default {
         version: 'Sürüm',
         logout: 'Çıkış Yap',
         deleteAccount: 'Hesabı Sil',
-        deleteAccountConfirm: 'Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
+        deleteAccountConfirm: 'Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.\n\nÖnce verilerinizin bir kopyasını isterseniz privacy@odysseyjournal.app adresine yazın, sizin için dışa aktaralım.',
         deleteAccountWarning: 'Tüm gönderileriniz, yorumlarınız ve verileriniz kalıcı olarak silinecektir.',
         blockedUsers: 'Engellenen Kullanıcılar',
         blockedUsersDesc: 'Engellediğiniz kullanıcıları yönetin ve engellerini kaldırın',

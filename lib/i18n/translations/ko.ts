@@ -481,7 +481,7 @@ export default {
         version: '버전',
         logout: '로그아웃',
         deleteAccount: '계정 삭제',
-        deleteAccountConfirm: '계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+        deleteAccountConfirm: '계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.\n\n삭제 전에 데이터 사본이 필요하시면 privacy@odysseyjournal.app으로 연락해 주세요. 데이터를 내보내 드립니다.',
         deleteAccountWarning: '모든 게시물, 댓글 및 데이터가 영구적으로 삭제됩니다.',
         blockedUsers: '차단된 사용자',
         blockedUsersDesc: '차단한 사용자를 관리하고 차단 해제',
