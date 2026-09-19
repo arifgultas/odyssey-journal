@@ -39,8 +39,9 @@ yeni anahtarlı AAB (versionCode 2) alınır, ardından legacy anahtarlar kapat�
 Push testi için Admin2 şifresi hatırlanmıyor → testi **review demo hesabıyla** yapın (Android'de demo
 hesapla giriş → Admin'in gönderisini beğen).
 
-Canlı web sayfaları (GitHub Pages, 200 döndüğü doğrulandı):
-`https://arifgultas.github.io/odyssey-journal/` · `…/privacy-policy.html` · `…/terms-of-service.html`
+**Adım adım mağaza talimatları: `store_control.md`.** Web sitesi `https://odysseyjournal.app`
+(GitHub Pages kullanılmayacak — kullanıcı kararı, 19 Eylül). Mağaza formlarındaki adresler:
+`/privacy-policy`, `/terms`, `/support`. Site yayına alınınca açıldıkları kontrol edilecek.
 
 ---
 
