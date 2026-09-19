@@ -1,7 +1,8 @@
 {
   "_comment": [
     "Keys whose value may legitimately match the English source, so i18n-check does not",
-    "flag them as untranslated. Anything not listed here must differ from en.",
+    "flag them as untranslated. Case and a trailing s are ignored (Post matches Posts).",
+    "Anything not listed here must differ from en.",
     "'*' applies to every locale; the language keys list per-locale exceptions."
   ],
   "*": [
@@ -20,7 +21,8 @@
     "badgeList.gourmet.name",
     "modal.title",
     "settings.build",
-    "common.ok"
+    "common.ok",
+    "profile.kilometers"
   ],
   "es": [
     "common.error",
@@ -74,7 +76,16 @@
     "settings.adminTitle",
     "common.percentValue",
     "settings.build",
-    "common.ok"
+    "common.ok",
+    "explore.categories",
+    "explore.posts",
+    "explore.postCount",
+    "create.categories",
+    "collection.zeroPosts",
+    "profile.posts",
+    "profile.badges",
+    "post.notesCount",
+    "map.postCount"
   ],
   "pt": [
     "editProfile.bio",

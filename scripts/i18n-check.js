@@ -80,11 +80,17 @@ for (const [code, table] of Object.entries(locales)) {
     if (drift.length) problems.push(`[${code}] placeholder mismatch: ${drift.join(', ')}`);
 }
 
-// 2: values left identical to English
+// 2: values left identical to English. Also catches the near-miss that exact comparison let
+// through: Italian and German shipped "Follower" against "Followers" - same word, English plural
+// dropped. Case and a trailing "s" are ignored for that reason.
+const looselyEqual = (a, b) => {
+    const norm = (s) => String(s).toLowerCase().trim().replace(/s$/, '');
+    return a === b || norm(a) === norm(b);
+};
 for (const [code, table] of Object.entries(locales)) {
     if (code === SOURCE_LOCALE) continue;
     const allowed = new Set([...(allowedIdentical['*'] || []), ...(allowedIdentical[code] || [])]);
-    const untranslated = sourceKeys.filter((k) => k in table && table[k] === source[k] && !allowed.has(k));
+    const untranslated = sourceKeys.filter((k) => k in table && looselyEqual(table[k], source[k]) && !allowed.has(k));
     if (untranslated.length) {
         problems.push(`[${code}] ${untranslated.length} value(s) still in English: ${untranslated.join(', ')}`);
     }

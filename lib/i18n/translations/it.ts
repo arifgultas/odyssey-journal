@@ -305,7 +305,7 @@ export default {
     profile: {
         title: 'Profilo',
         editProfile: 'Modifica Profilo',
-        followers: 'Follower',
+        followers: 'Seguaci',
         following: 'Seguiti',
         posts: 'Post',
         settings: 'Impostazioni',
@@ -460,9 +460,9 @@ export default {
         follow: 'Segui',
         following: 'Seguiti',
         unfollow: 'Smetti di seguire',
-        followers: 'Follower',
+        followers: 'Seguaci',
         followingList: 'Seguiti',
-        noFollowers: 'Nessun follower ancora',
+        noFollowers: 'Ancora nessun seguace',
         noFollowing: 'Non segue nessuno',
     },
     settings: {
@@ -512,7 +512,7 @@ export default {
         likeNotificationsDesc: 'Ricevi notifiche quando qualcuno mette mi piace a un tuo post',
         commentNotifications: 'Commenti',
         commentNotificationsDesc: 'Ricevi notifiche quando qualcuno commenta un tuo post',
-        followNotifications: 'Follower',
+        followNotifications: 'Nuovi seguaci',
         followNotificationsDesc: 'Ricevi notifiche quando qualcuno inizia a seguirti',
         changePassword: 'Cambia password',
         changePasswordDesc: 'Aggiorna la password del tuo account',
@@ -616,10 +616,10 @@ export default {
         error: 'Si è verificato un errore',
     },
     followers: {
-        title: 'Follower',
-        noFollowers: 'Nessun follower ancora',
+        title: 'Seguaci',
+        noFollowers: 'Ancora nessun seguace',
         noFollowersDesc: 'Quando le persone seguiranno questo utente, appariranno qui',
-        loadError: 'Impossibile caricare i follower',
+        loadError: 'Impossibile caricare i seguaci',
         followError: 'Impossibile aggiornare lo stato di follow',
     },
     following: {

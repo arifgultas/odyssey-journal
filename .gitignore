@@ -43,3 +43,8 @@ app-example
 /ios
 /android
 .place-data-cache/
+
+# build output and scratch notes, not source
+tsc_errors.txt
+tsc_output.txt
+scratch/

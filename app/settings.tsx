@@ -457,7 +457,7 @@ export default function SettingsScreen() {
                             description={t('settings.blockedUsersDesc')}
                             onPress={() => router.push('/blocked-users' as any)}
                             colors={colors}
-                            rightElement={<Ionicons name="ban-outline" size={22} color={colors.accent} />}
+                            rightElement={null}
                         />
 
                         <SettingsRow
@@ -466,7 +466,7 @@ export default function SettingsScreen() {
                             description={t('settings.exportDataSubdesc')}
                             onPress={handleDownloadData}
                             colors={colors}
-                            rightElement={<Ionicons name="download-outline" size={22} color={colors.accent} />}
+                            rightElement={null}
                         />
 
                         <SettingsRow

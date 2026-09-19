@@ -305,7 +305,7 @@ export default {
     profile: {
         title: 'Profil',
         editProfile: 'Profil bearbeiten',
-        followers: 'Follower',
+        followers: 'Abonnenten',
         following: 'Folgt',
         posts: 'Beiträge',
         settings: 'Einstellungen',
@@ -460,9 +460,9 @@ export default {
         follow: 'Folgen',
         following: 'Folgt',
         unfollow: 'Entfolgen',
-        followers: 'Follower',
+        followers: 'Abonnenten',
         followingList: 'Folgt',
-        noFollowers: 'Noch keine Follower',
+        noFollowers: 'Noch keine Abonnenten',
         noFollowing: 'Folgt niemandem',
     },
     settings: {
@@ -512,7 +512,7 @@ export default {
         likeNotificationsDesc: 'Benachrichtigung erhalten, wenn jemandem Ihr Beitrag gefällt',
         commentNotifications: 'Kommentare',
         commentNotificationsDesc: 'Benachrichtigung erhalten, wenn jemand Ihren Beitrag kommentiert',
-        followNotifications: 'Follower',
+        followNotifications: 'Neue Abonnenten',
         followNotificationsDesc: 'Benachrichtigung erhalten, wenn Ihnen jemand folgt',
         changePassword: 'Passwort ändern',
         changePasswordDesc: 'Aktualisieren Sie Ihr Kontopasswort',
@@ -617,10 +617,10 @@ export default {
     },
 
     followers: {
-        title: 'Follower',
-        noFollowers: 'Noch keine Follower',
+        title: 'Abonnenten',
+        noFollowers: 'Noch keine Abonnenten',
         noFollowersDesc: 'Wenn Personen diesem Benutzer folgen, erscheinen sie hier',
-        loadError: 'Follower konnten nicht geladen werden',
+        loadError: 'Abonnenten konnten nicht geladen werden',
         followError: 'Folgestatus konnte nicht aktualisiert werden',
     },
 

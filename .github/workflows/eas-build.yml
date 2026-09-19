@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  # Preview APKs are built on demand only - a push to main used to queue one nobody installed.
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -32,7 +34,7 @@ jobs:
   build_preview:
     name: Trigger EAS Build Preview
     needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

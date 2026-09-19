@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-18
+**Son güncelleme:** 2026-09-19
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -10,7 +10,34 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## 1. Dün/bugün ne yapıldı (17-18 Eylül) — React Compiler turu
+## 0. 19 Eylül — cihazda görülen iki düzeltme + küçük temizlik
+
+**"FOLLOWER" İtalyancada İngilizce kalıyordu.** Donma hatası değildi: `it.ts` ve `de.ts`'de
+değer gerçekten `'Follower'` idi. `i18n:check` kural 2 yalnızca İngilizceyle **birebir aynı**
+değerleri yakalıyordu; "Follower" ≠ "Followers" olduğu için geçti.
+- IT → **Seguaci** (liste başlığı, profil sayacı, bildirim ayarı "Nuovi seguaci", boş durum
+  "Ancora nessun seguace", hata metni). DE → **Abonnenten** (aynı 7 yuva).
+- Diğer İtalyanca alıntı kelimeler (Post, Badge, Account, Password, Email, Feed) **bilerek
+  bırakıldı** — İtalyancada standart kullanım. Kullanıcı kararı; yeniden açmayın.
+- Push şablonu zaten doğruydu (`028_…sql:85` "ha iniziato a seguirti").
+- **Kural 2 genişletildi:** büyük/küçük harf ve sondaki "s" yok sayılarak karşılaştırılıyor.
+  Meşru 10 yakın eşleşme (IT: Categorie, Post, Badge, Note…; DE: Kilometer)
+  `i18n-allowed-identical.json`'a eklendi. Negatif test: `Seguaci` → `Follower` geri
+  alınınca kural `[it] profile.followers` diye düşüyor.
+
+**Ayarlar → Hesap:** "Engellenen Kullanıcılar" ve "Verilerimi İndir" satırlarının sağındaki
+ikonlar (ban / download) kaldırıldı, soldaki ikonlar duruyor. `rightElement={null}` verildi —
+prop'u silmek `SettingsRow`'un varsayılan `>` okunu gösterirdi.
+
+**Küçük temizlik:** B1 (preview build artık yalnızca `workflow_dispatch`), C1 + C2
+(`tsc_*.txt` ve `scratch/` `.gitignore`'da, repodan çıkarıldı — dosyalar diskte duruyor).
+
+`tsc` temiz · `i18n:check` geçti · 20 suite / 211 test · lint 0 hata / 185 uyarı.
+**Cihazda doğrulanmadı** — yeni build gerekiyor.
+
+---
+
+## 1. 17-18 Eylül — React Compiler turu — React Compiler turu
 
 **Bildirilen sorun:** Dil İngilizce seçiliyken Ayarlar'da "TITOLARE DEL PASSAPORTO" /
 "MODIFICA PROFILO", Profil'de "Carta d'imbarco / Paesi / Chilometri / Giorni" İtalyanca
@@ -100,7 +127,7 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Mağaza metinleri (`STORE_LISTING.md`) | ✅ EN + TR hazır |
 | iOS TestFlight | ✅ cihazda çalışıyor (build 4 = dil düzeltmesi) |
 | **Android production build** | ❌ **hiç alınmadı** |
-| **Mağaza ekran görüntüleri / mockup** | ❌ **başlanmadı** |
+| **Mağaza ekran görüntüleri / mockup** | 🟡 fal.ai (GPT Image 2.5) hattı planlandı, §3 A3 |
 | Mağazaya gönderim | ❌ |
 
 ---
@@ -109,7 +136,10 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 
 ### A — Yayını durduran işler
 
-**A1. Android `versionCode` hiç artırılmadı.**
+**A1. Android `versionCode` elle artırılıyor — ilk yüklemeden SONRA unutmayın.**
+_Düzeltme (19 Eylül):_ ilk AAB için `1` geçerli; Play yalnızca **aynı** kodu ikinci kez reddeder.
+Aşağıdaki uyarı ikinci yüklemeden itibaren geçerli.
+
 `app.config.ts:32` hâlâ `versionCode: 1`, iOS ise `buildNumber: '4'`. Play Console aynı
 `versionCode` ile ikinci bir yükleme kabul etmez; ilk AAB'yi yüklemeden fark edilmezse her
 denemede takılırsınız. iOS'ta her build'de elle artırılıyor, Android'de hiç artırılmamış.
@@ -123,6 +153,11 @@ Bu adım daha önce `:app:mergeReleaseResources` hatasıyla düşüyordu; sebep 
 koruyor, ama build'in gerçekten geçtiği bir kez daha görülmedi.
 
 **A3. Mağaza ekran görüntüleri ve grafikler (Faz B).**
+_Karar (19 Eylül):_ hibrit yöntem. Kullanıcının verdiği gerçek ekran görüntülerinde yalnızca
+gönderi fotoğrafı/metin alanları fal.ai `openai/gpt-image-2.5/flare/edit` ile **maskeli** olarak
+yenileniyor (UI birebir kalıyor → Apple 2.3.3). Cihaz çerçevesi, başlık ve kesin boyutlar yerel
+script ile. Feature Graphic: fal text-to-image + yerel logo/slogan. `FAL_KEY` `.env.local`'da.
+
 TestFlight cihazda hazır olduğu için doğrudan iPhone'dan alınabilir. 8 ekran: Onboarding,
 Feed, Keşfet, Gönderi oluşturma, Harita, Profil, Mesajlaşma, Koleksiyonlar. Boyutlar:
 iPhone 6.7" (1290×2796), 6.5" (1242×2688), Play Feature Graphic (1024×500).
@@ -158,7 +193,7 @@ Supabase SQL editöründe; sorgunun sonunda `ROLLBACK` var, gerçek bildirim git
 
 ### B — Yapılmalı ama yayını durdurmaz
 
-**B1. `eas-build.yml` her `main` push'unda bir preview Android build tetikliyor.**
+**B1. ✅ (19 Eylül) — `eas-build.yml` her `main` push'unda bir preview Android build tetikliyordu.**
 `.github/workflows/eas-build.yml:35` (`if: push && ref == main`) + `:59`
 (`eas build --platform android --profile preview --no-wait`). `ci.yml`'deki production
 build'i elle tetiklenir hale getirmiştik ama bu ayrı workflow'a dokunulmamıştı — yani dünkü
@@ -187,10 +222,10 @@ yükseltme yapılacaksa yeni bir build ve yeni bir cihaz turu gerekir.
 
 ### C — Teknik borç, sonraya
 
-**C1. `tsc_errors.txt` (0 bayt) ve `tsc_output.txt` repoda izleniyor.** Build çıktısı, kaynak
+**C1. ✅ (19 Eylül)** — `tsc_errors.txt` (0 bayt) ve `tsc_output.txt` repoda izleniyor.** Build çıktısı, kaynak
 değil. `.gitignore`'a alınıp `git rm --cached` yapılmalı.
 
-**C2. `scratch/` klasörü repoda izleniyor.** İçindeki iki `.md` 8 Eylül tarihli ve artık yanlış
+**C2. ✅ (19 Eylül)** — `scratch/` klasörü repoda izleniyor.** İçindeki iki `.md` 8 Eylül tarihli ve artık yanlış
 bilgi veriyor (97 test diyor, 211 var). Ya güncellensin ya `.gitignore`'a alınsın.
 
 **C3. 185 eslint uyarısı** (0 hata). Çoğu kullanılmayan değişken ve eksik hook bağımlılığı.
@@ -214,13 +249,12 @@ Play Store listelemesini 12 dile çevirmek yayını engellemez ama dönüşümü
 
 ## 4. Yarın akşam için önerilen sıra
 
-1. **A4** — TestFlight build 4 elinizde; dil turunu yapın. Bugünkü düzeltmenin gerçekten
+1. **A4** — 19 Eylül değişikliklerini taşıyan yeni build'le dil turunu yapın (IT/DE profilde Seguaci/Abonnenten). Bugünkü düzeltmenin gerçekten
    çalıştığını görmeden diğerlerine geçmeyin. (~30 dk)
 2. **A5** + **A6** — Arapça göz kontrolü ve push SQL'i. İkisi de kısa. (~20 dk)
 3. **A3** — Ekran görüntüleri. Dil turu temizse mağaza görselleri güvenle alınır. (~1 sa)
-4. **A1 → A2** — `versionCode` artır, Android production build, Play Console dahili test.
-5. **B1** — preview build workflow'unu kapat (Android build'i alırken EAS kuyruğunu meşgul
-   etmesin).
+4. **A2** — Android production build (ilk AAB `versionCode: 1` ile olur; sonrakilerde artırın), Play Console dahili test.
+5. ~~**B1**~~ — ✅ 19 Eylül'de yapıldı.
 6. **B2** — anahtar rotasyonu.
 
 A1-A6 biterse yayına gönderim önünde teknik engel kalmıyor.
