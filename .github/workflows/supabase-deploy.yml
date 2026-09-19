@@ -9,6 +9,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Changes production. The 'production' environment requires an approval in GitHub
+    # (Actions -> this run -> Review deployments) before the job starts, and only main may deploy.
+    environment: production
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
     steps:
@@ -18,7 +21,8 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pinned so a new CLI release cannot change how migrations are applied without us noticing
+          version: 2.117.0
 
       - name: Link Supabase Project
         env:

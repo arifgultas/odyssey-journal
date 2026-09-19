@@ -44,7 +44,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
 | Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
 | Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
-| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: O2 (site), D4–D7 |
+| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: O2 (site), D4, D5, D7 |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler
@@ -52,22 +52,27 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 |---|---|---|
 | 1 | Kullanıcı | TestFlight build 7'yi test et: giriş, akış, mesajlar, gönderi (yeni anahtar), "Derleme 7", IT/DE takipçi |
 | 2 | Kullanıcı | **Push testi:** Android'de review demo hesabıyla giriş → Admin'in gönderisini beğen → Admin'in iPhone'una 1 dk içinde bildirim. (Kendi gönderini beğenmek bilerek bildirim üretmez, `023_…sql:19`. Admin2 şifresi unutuldu.) Gelmezse oturum `push_notification_queue`'ya bakar |
-| 3 | Kullanıcı | Android AAB (Android Studio, yeni upload keystore) → Play dahili test (`store_control.md` §2-3) |
+| 3 | Kullanıcı — **sonraya** | Android AAB → Play dahili test. Aşağıda "Sonra yapılacaklar" |
 | 4 | Kullanıcı | EAS kredisi gelince iOS build 8 → App Store'a **build 8** gönder |
 | 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
 | 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
 | 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
-| 8 | Kullanıcı | **Review doğrulama SQL'i** (aşağıda) → Supabase SQL editörü, çıktıyı oturuma ver. Artık asıl amacı: 030'un canlı hâlini teyit etmek + **takipçi sayacı çift mi artıyor** (son satır) |
-| 9 | Kullanıcı | Supabase → Authentication → URL Configuration → **Redirect URLs**'e `odysseyjournal://reset-password` ekle (yoksa sıfırlama linki siteye düşer) |
-| 10 | Kullanıcı | Deploy edilmiş eski fonksiyonu sil: `! npx supabase functions delete send-push-notifications --project-ref <ref>` |
+| 8 | Kullanıcı | **Review doğrulama SQL'i** (aşağıda, tek sorgu → tek satır JSON) → çıktıyı oturuma ver. İlk deneme "No rows returned" verdi: editör yalnız son sorgunun sonucunu gösteriyordu, bu yüzden tek sorguya çevrildi |
+| 9 | ✅ Kullanıcı | Redirect URLs'e `odysseyjournal://reset-password` eklendi (19 Eylül) |
+| 10 | Kullanıcı | Deploy edilmiş eski fonksiyonu sil: `! npx supabase login` sonra `! npx supabase functions delete send-push-notifications --project-ref tkamxnpayxqxymjtpnef` (ya da Dashboard → Edge Functions → send-push-notifications → Delete) |
 | 11 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
 | 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
 | 13 | Kullanıcı | Google Cloud → Maps anahtarında Android paket + SHA-1 / iOS bundle kısıtı var mı (D4) |
-| 14 | Kullanıcı karar | `supabase-deploy.yml` onaysız canlıya gidiyor (D6): GitHub Environment + required reviewer eklensin mi? |
+| 14 | ✅ Oturum | D6: `production` environment (onaylayıcı: arifgultas, yalnız `main`) + `supabase-deploy.yml` ona bağlı, CLI `2.117.0`'a sabit. **Artık her `supabase/**` push'unda deploy onay bekler:** GitHub → Actions → "Deploy Supabase" çalışması → *Review deployments* → Approve |
+
+### Sonra yapılacaklar (kullanıcı ertelendi)
+- **Android AAB → Play dahili test** (`store_control.md` §2-3; Android Studio, yeni upload keystore,
+  `versionCode: 2`). 19 Eylül'deki tüm güvenlik düzeltmelerini (e80f841, e5af2fc) içerir. Yüklenince
+  #12'deki cihaz listesi bu build'le denenir.
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
 > **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2, D3 **düzeltildi** (aşağıda "Review düzeltmeleri").
-> Açık: **O2** (site işi), **D4–D7** (hepsi kullanıcı tarafı: Google Cloud, bağımlılık, GitHub ayarı, süreç). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
+> Açık: **O2** (site işi), **D4, D5, D7** (Google Cloud, bağımlılık, süreç). D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
 
 Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
 yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;
@@ -138,8 +143,8 @@ aşağıdaki SQL.
   Android paket+SHA-1 / iOS bundle kısıtı olduğundan emin olun. Service-role / sb_secret **geçmişte yok** ✅.
 - **D5** `npm audit --omit=dev`: 46 (2 critical: `tar`, `shell-quote`) — hepsi expo-cli/metro
   derleme araçlarında, uygulama paketinde değil. Yayından önce yükseltmeyin (B4).
-- **D6** `supabase-deploy.yml` onaysız canlıya `db push` + CLI `version: latest`. GitHub
-  Environment + required reviewer önerilir.
+- **D6** ✅ `supabase-deploy.yml` onaysız canlıya `db push` + CLI `version: latest` idi. Artık
+  `environment: production` (required reviewer) + CLI `2.117.0`.
 - **D7** E-postayla veri talebi: privacy@ yanıt vermeden önce talebin hesabın kendi
   e-postasından geldiğini doğrulamalı (süreç notu).
 
@@ -181,21 +186,34 @@ Testte fark edilen, 030 dışı: FULL_SETUP (`trigger_update_follow_counts`) ve 
 (`update_follower_counts_trigger`) iki ayrı takip sayacı tetikleyicisi kuruyor; ikisi de canlıdaysa
 takipçi sayıları **çift** artar. Aşağıdaki SQL'in son satırı bunu gösterir.
 
-**Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır).** 030 sonrası beklenen: ilk satır
-`is_admin_writable` yine `true` çıkar (koruma sütun yetkisiyle değil `guard_profile_columns`
-tetikleyicisiyle; ikinci sorguda görünmeli), `k2_broken = false`, storage'da avatars/posts için
-yalnız 030'un 7 politikası, üç bucket'ta `file_size_limit = 10485760`:
+**Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır).** Supabase SQL editörü yalnız **son**
+sorgunun sonucunu gösterir; bu yüzden tek sorgu, tek satır JSON. 030 sonrası beklenen:
+`profiles_triggers` içinde `guard_profile_columns` ve `move_profile_push_token`, `k2_broken: false`,
+`notif_insert_policies: 0`, `profile_tokens_left: 0`, `buckets` üçünde de `10485760`,
+`prefs_respected` hepsi `true`. `follow_count_drift` > 0 ise takipçi sayıları tutmuyor
+(`follows_triggers`'da iki sayaç tetikleyicisi varsa çift sayım):
 ```sql
-select has_column_privilege('authenticated','public.profiles','is_admin','UPDATE') as k1_is_admin_writable,
-       has_column_privilege('authenticated','public.profiles','expo_push_token','SELECT') as y5_token_readable;
-select tgname from pg_trigger where tgrelid='public.profiles'::regclass and not tgisinternal;
-select position('interactions' in prosrc) > 0 as k2_broken from pg_proc where proname='delete_user_account';
-select policyname, cmd, qual, with_check from pg_policies
- where (schemaname='storage' and tablename='objects') or tablename in ('profiles','notifications','messages') order by tablename, policyname;
-select id, public, file_size_limit, allowed_mime_types from storage.buckets;
-select proname, position('notification_preferences' in prosrc) > 0 as respects_prefs from pg_proc
- where proname in ('create_like_notification','create_comment_notification','create_follow_notification');
-select tgname from pg_trigger where tgrelid='public.follows'::regclass and not tgisinternal;  -- iki sayaç tetikleyicisi var mı?
+select jsonb_pretty(jsonb_build_object(
+  'profiles_triggers', (select jsonb_agg(tgname order by tgname) from pg_trigger
+                        where tgrelid = 'public.profiles'::regclass and not tgisinternal),
+  'follows_triggers',  (select jsonb_agg(tgname order by tgname) from pg_trigger
+                        where tgrelid = 'public.follows'::regclass and not tgisinternal),
+  'k2_broken',         (select bool_or(position('interactions' in prosrc) > 0) from pg_proc
+                        where proname = 'delete_user_account'),
+  'notif_insert_policies', (select count(*) from pg_policies
+                        where schemaname = 'public' and tablename = 'notifications' and cmd = 'INSERT'),
+  'storage_policies',  (select jsonb_agg(policyname order by policyname) from pg_policies
+                        where schemaname = 'storage' and tablename = 'objects'),
+  'buckets',           (select jsonb_object_agg(id, file_size_limit) from storage.buckets),
+  'push_tokens',       (select count(*) from public.push_tokens),
+  'profile_tokens_left', (select count(*) from public.profiles where expo_push_token is not null),
+  'prefs_respected',   (select jsonb_object_agg(proname, position('notification_preferences' in prosrc) > 0)
+                        from pg_proc where proname in ('create_like_notification',
+                        'create_comment_notification', 'create_follow_notification')),
+  'follow_count_drift', (select count(*) from public.profiles p
+                        where p.followers_count <> (select count(*) from public.follows f where f.following_id = p.id)
+                           or p.following_count <> (select count(*) from public.follows f where f.follower_id = p.id))
+)) as report;
 ```
 
 **Kısıtlar (önceki oturumlardan):** canlı veritabanına yazma ve auth admin çağrıları izin sınıflandırıcısı
