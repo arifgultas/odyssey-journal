@@ -8,6 +8,7 @@ import { useCommonDestinations, useProfile, useUserPosts } from '@/hooks/use-pro
 import { blockUser } from '@/lib/block';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeGoBack } from '@/lib/navigation';
 import React from 'react';
@@ -455,7 +456,10 @@ export default function UserProfileScreen() {
                                                     <Ionicons name="image" size={40} color={theme.textMuted} />
                                                 </View>
                                             )}
-                                            <View style={styles.journalGradient} />
+                                            <LinearGradient
+                                                colors={['transparent', 'rgba(0,0,0,0.8)']}
+                                                style={styles.journalGradient}
+                                            />
                                             <View style={styles.journalContent}>
                                                 <Text style={styles.journalTitle} numberOfLines={1}>
                                                     {post.title}
@@ -513,7 +517,10 @@ export default function UserProfileScreen() {
                                                     <Ionicons name="image" size={40} color={theme.textMuted} />
                                                 </View>
                                             )}
-                                            <View style={styles.journalGradient} />
+                                            <LinearGradient
+                                                colors={['transparent', 'rgba(0,0,0,0.8)']}
+                                                style={styles.journalGradient}
+                                            />
                                             <View style={styles.journalContent}>
                                                 <Text style={styles.journalTitle} numberOfLines={1}>
                                                     {post.title}
@@ -943,13 +950,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     journalGradient: {
+        // The gradient itself comes from LinearGradient: CSS backgroundImage used to be set here,
+        // which only ever worked on web and drew nothing on a phone.
         position: 'absolute',
         left: 0,
         right: 0,
         bottom: 0,
         height: '60%',
-        backgroundColor: 'transparent',
-        backgroundImage: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
     },
     journalContent: {
         position: 'absolute',
