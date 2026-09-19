@@ -17,6 +17,12 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 **Mağaza adımları ayrı dosyada: `store_control.md`** (yalnızca App Store / Play işleri).
 
 ### ★★ ÖNCELİK 1 — Google Maps anahtarını yenile ve kısıtla (D4, kullanıcı)
+> **Durum (19 Eylül):** 1–4 ✅. İki yeni anahtar `.env`'de; oturum doğruladı: Static anahtar
+> staticmap → 200, başka API → REQUEST_DENIED; SDK anahtarı düz HTTP'de → 403 (kısıt çalışıyor).
+> Kalan: yeni build'lerde harita görülünce **eski anahtarları sil** (5), upload + app signing SHA-1'lerini ekle
+> (AAB işiyle), yayından önce debug SHA-1'ini kaldır. Öneri: Static Maps günlük kotasını **300**'e
+> çek (ayda ~9.000 < 10.000 ücretsiz; ücret hiç çıkmaz). Maps SDK for Android harita yüklemeleri ücretsiz.
+
 **Neden acil:** repo **public** ve şu an kullanılan Maps anahtarı (`AIzaSyCEGo…`) git geçmişinde
 açık duruyor (eskisi `AIzaSyDzxS…` da). Kısıtsızsa herkes kendi projesinde kullanıp faturayı bize
 yazdırabilir. **Bir sonraki build'den (Android AAB, iOS build 8) ÖNCE yapılmalı**, yoksa yeni
@@ -96,7 +102,7 @@ Google Cloud Console → APIs & Services → Credentials:
 | 10 | ✅ Kullanıcı | `send-push-notifications` Dashboard'dan silindi (19 Eylül) |
 | 11 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
 | 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
-| 13 | Kullanıcı — **ÖNCELİK 1** | Maps anahtarlarını yenile + kısıtla — en üstteki "ÖNCELİK 1" bölümü |
+| 13 | Kullanıcı — kısmen ✅ | Maps: yeni anahtarlar kuruldu ve doğrulandı; eski anahtarları silme + SHA-1'ler yeni build'lerle ("ÖNCELİK 1" bölümü) |
 | 15 | ✅ Kullanıcı | 031 onaylandı, canlıya uygulandı (19 Eylül, run 35460360360) — environment onayı ilk kez sorunsuz çalıştı |
 | 14 | ✅ Oturum | D6: `production` environment (onaylayıcı: arifgultas, yalnız `main`) + `supabase-deploy.yml` ona bağlı, CLI `2.117.0`'a sabit. **Artık her `supabase/**` push'unda deploy onay bekler:** GitHub → Actions → "Deploy Supabase" çalışması → *Review deployments* → Approve |
 
