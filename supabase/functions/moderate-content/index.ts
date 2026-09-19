@@ -8,6 +8,12 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const OPENAI_MODERATION_URL = "https://api.openai.com/v1/moderations";
 
+// The app sends at most a post's worth of images, all from this project's posts bucket.
+// Anything else is not ours to moderate, and would let any signed-in user spend our OpenAI
+// quota on arbitrary URLs.
+const MAX_IMAGES = 10;
+const MAX_TEXT_LENGTH = 20000;
+
 interface ModerationRequest {
     text?: string;
     imageUrls?: string[];
@@ -172,6 +178,21 @@ Deno.serve(async (req) => {
         // Parse request
         const { text, imageUrls } = (await req.json()) as ModerationRequest;
 
+        const postImagePrefix = `${supabaseUrl}/storage/v1/object/public/posts/`;
+        if (
+            (text !== undefined && (typeof text !== "string" || text.length > MAX_TEXT_LENGTH)) ||
+            (imageUrls !== undefined && (
+                !Array.isArray(imageUrls) ||
+                imageUrls.length > MAX_IMAGES ||
+                imageUrls.some((url) => typeof url !== "string" || !url.startsWith(postImagePrefix))
+            ))
+        ) {
+            return new Response(
+                JSON.stringify({ error: "Invalid content" }),
+                { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+        }
+
         if (!text && (!imageUrls || imageUrls.length === 0)) {
             return new Response(
                 JSON.stringify({ error: "No content to moderate" }),
@@ -240,9 +261,10 @@ Deno.serve(async (req) => {
     } catch (error) {
         console.error("Moderation error:", error);
         return new Response(
+            // The details stay in the function log; the caller only learns that moderation was skipped
             JSON.stringify({
                 approved: true, // Fail-open: allow content if moderation service fails
-                error: (error as Error).message,
+                error: "Moderation unavailable",
             }),
             {
                 status: 200, // Return 200 even on error so the post isn't blocked by infrastructure issues

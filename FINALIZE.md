@@ -44,7 +44,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
 | Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
 | Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
-| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: O2 (site), D3–D7 |
+| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: O2 (site), D4–D7 |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler
@@ -66,8 +66,8 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | 14 | Kullanıcı karar | `supabase-deploy.yml` onaysız canlıya gidiyor (D6): GitHub Environment + required reviewer eklensin mi? |
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
-> **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2 **düzeltildi** (aşağıda "Review düzeltmeleri").
-> Açık: **O2** (site işi), **D3–D7**. Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
+> **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2, D3 **düzeltildi** (aşağıda "Review düzeltmeleri").
+> Açık: **O2** (site işi), **D4–D7** (hepsi kullanıcı tarafı: Google Cloud, bağımlılık, GitHub ayarı, süreç). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
 
 Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
 yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;
@@ -133,7 +133,7 @@ aşağıdaki SQL.
   (023) geri alır. Numarasız 4 dosyayı `db push` zaten atlıyor → `supabase/archive/`'e taşıyın.
 - **D2** `send-push-notifications` hâlâ repoda; CI `supabase functions deploy` her seferinde yeniden
   deploy ediyor. Silinmeli + `supabase functions delete send-push-notifications`.
-- **D3** `moderate-content` iç hata metnini istemciye döndürüyor; `imageUrls` serbest.
+- **D3** ✅ `moderate-content` iç hata metnini istemciye döndürüyordu; `imageUrls` serbestti. Artık hata yalnız logda, istemciye `"Moderation unavailable"`; en fazla 10 görsel, yalnız bu projenin `posts` bucket URL'leri, metin ≤ 20.000 karakter (aksi 400).
 - **D4** Google Maps anahtarı (güncel olan) git geçmişinde. Binary'de zaten var; Google Cloud'da
   Android paket+SHA-1 / iOS bundle kısıtı olduğundan emin olun. Service-role / sb_secret **geçmişte yok** ✅.
 - **D5** `npm audit --omit=dev`: 46 (2 critical: `tar`, `shell-quote`) — hepsi expo-cli/metro
