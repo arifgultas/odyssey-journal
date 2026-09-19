@@ -51,9 +51,12 @@ const TR_ABBREVIATIONS: Record<string, string> = {
  * Japanese single-kanji country abbreviations (国名の漢字略称), the set still in everyday
  * use in headlines and compounds (日米関係, 独仏).
  *
- * Deliberately conservative: only unambiguous characters are listed. 瑞 is Switzerland and
- * 典 is Sweden, which are easy to confuse, and characters such as 墺 / 羅 are archaic enough
- * that they would read as noise - those countries fall back to their ISO code.
+ * Deliberately conservative: only unambiguous characters are listed, and archaic ones such
+ * as 墺 / 羅 would read as noise - those countries fall back to their ISO code.
+ *
+ * Left out on review: Switzerland (瑞西) and Sweden (瑞典) both abbreviate to 瑞, so 日瑞
+ * reads either way, and 典 alone is barely recognised - the same collision the Chinese table
+ * avoids. Belgium's 白 (白耳義) is rare and reads as "white" or as Belarus (白露).
  */
 const JA_ABBREVIATIONS: Record<string, string> = {
     US: '米',
@@ -72,9 +75,6 @@ const JA_ABBREVIATIONS: Record<string, string> = {
     BR: '伯',
     MX: '墨',
     NL: '蘭',
-    BE: '白',
-    CH: '瑞',
-    SE: '典',
     TR: '土',
     GR: '希',
     PT: '葡',

@@ -29,6 +29,24 @@ değerleri yakalıyordu; "Follower" ≠ "Followers" olduğu için geçti.
 ikonlar (ban / download) kaldırıldı, soldaki ikonlar duruyor. `rightElement={null}` verildi —
 prop'u silmek `SettingsRow`'un varsayılan `>` okunu gösterirdi.
 
+**Build 5 öncesi aynı gün eklenenler:**
+- `supportsTablet: false` — `true` iken App Store Connect 13" iPad ekran görüntüsü istiyordu;
+  uygulama yalnızca dikey ve telefon için tasarlandı. iPad'de iPhone uyumluluk modunda açılır.
+  `ios.buildNumber` → `'5'`.
+- **Ayarlar'daki "Derleme" etiketi iOS'ta hep 1 gösteriyordu:** `android.versionCode || ios.buildNumber`
+  okuyordu, yani iOS'ta da Android'in `1`'i çıkıyordu. Artık platforma göre.
+- `eas.json` → `cli.appVersionSource: "local"` açıkça yazıldı; build numarası
+  `app.config.ts`'ten gelir (elle artırma düzeni aynen devam).
+- **B3 yapıldı** (ana dil gözden geçirmesi yerine inceleme): JA'dan `CH:'瑞'`, `SE:'典'`
+  (Japoncada 瑞 hem İsviçre hem İsveç, 日瑞 iki türlü okunur — ZH ile aynı karar) ve `BE:'白'`
+  (nadir, "beyaz"/白露 Belarus okunur) çıkarıldı → ISO. ZH tablosu olduğu gibi doğru.
+  Kayıtlı 14 gönderinin hiçbiri bu karakterleri kullanmıyor.
+- **A6 kısmen doğrulandı (salt okuma, bildirim gitmedi):** `push_notification_texts` canlıda
+  12 dil × 6 tip (`actor_fallback, comment, default, follow, like, mention`), eksik yok. Tablo ve
+  tetikleyici aynı migration'da (028) → tetikleyici de canlı. Kuyruktaki son kayıtlar Temmuz'dan
+  (028 öncesi), yani gerçek bir yerelleştirilmiş bildirim henüz görülmedi. Uçtan uca kanıt
+  isteniyorsa `I18N_HANDOFF.md` §5'teki ROLLBACK'li sorgu hâlâ geçerli.
+
 **Küçük temizlik:** B1 (preview build artık yalnızca `workflow_dispatch`), C1 + C2
 (`tsc_*.txt` ve `scratch/` `.gitignore`'da, repodan çıkarıldı — dosyalar diskte duruyor).
 
@@ -125,7 +143,7 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Şikâyet / engelleme (UGC şartı) | ✅ `report-modal`, `blocked-users`, `community-guidelines` |
 | Legal dokümanlar & KVKK | ✅ |
 | Mağaza metinleri (`STORE_LISTING.md`) | ✅ EN + TR hazır |
-| iOS TestFlight | ✅ cihazda çalışıyor (build 4 = dil düzeltmesi) |
+| iOS TestFlight | ✅ build 4 cihazda · **build 5 bekleniyor** (19 Eylül değişiklikleri) |
 | **Android production build** | ❌ **hiç alınmadı** |
 | **Mağaza ekran görüntüleri / mockup** | 🟡 fal.ai (GPT Image 2.5) hattı planlandı, §3 A3 |
 | Mağazaya gönderim | ❌ |
@@ -146,13 +164,30 @@ denemede takılırsınız. iOS'ta her build'de elle artırılıyor, Android'de h
 **Yapılacak:** Android'e ilk yüklemeden önce artırın, sonrasında her yüklemede. İkisini
 otomatik artırmak isterseniz `eas.json` içinde `autoIncrement` var, konuşalım.
 
-**A2. Android production build alınmadı.**
+**A2. Android production build alınmadı.** _(19 Eylül: oturum alıyor — kullanıcı EAS akışını devretti.)_
+⚠️ Kişisel geliştirici hesabı Kasım 2023'ten sonra açıldıysa Play, production'dan önce
+**12 test kullanıcılı, 14 günlük kapalı test** istiyor. En uzun süren adım bu.
 `eas build --platform android --profile production` → AAB → Play Console dahili test kanalı.
 Bu adım daha önce `:app:mergeReleaseResources` hatasıyla düşüyordu; sebep bulunup düzeltildi
 (onboarding görselleri JPEG'ken `.png` adlanmıştı) ve `lib/__tests__/assets.test.ts` artık
 koruyor, ama build'in gerçekten geçtiği bir kez daha görülmedi.
 
 **A3. Mağaza ekran görüntüleri ve grafikler (Faz B).**
+_19 Eylül:_ EN + TR, iOS 1290×2796 + Android 1080×1920 + Feature Graphic 1024×500. iPad yok
+(`supportsTablet: false`). Ekran sırası ve sloganlar:
+
+| # | Ekran | EN | TR |
+|---|---|---|---|
+| 1 | Feed | See the world through travelers' eyes | Dünyayı gezginlerin gözünden gör |
+| 2 | Profil (biniş kartı) | Your passport, stamped with memories | Anılarla damgalanmış pasaportun |
+| 3 | Harita | Pin every place you've been | Gittiğin her yeri haritana işle |
+| 4 | Gönderi oluştur | Turn photos into travel stories | Fotoğraflarını seyahat hikâyesine dönüştür |
+| 5 | Keşfet | Find your next destination | Sıradaki rotanı keşfet |
+| 6 | Koleksiyonlar | Save the places you dream of | Hayalindeki yerleri biriktir |
+| 7 | Mesajlar | Plan the next trip together | Sonraki yolculuğu birlikte planla |
+| 8 | Onboarding | Every journey deserves a story | Her yolculuk bir hikâyeyi hak eder |
+| FG | Feature Graphic | Capture your journey. Share your story. | Yolculuğunu kaydet. Hikâyeni paylaş. |
+
 _Karar (19 Eylül):_ hibrit yöntem. Kullanıcının verdiği gerçek ekran görüntülerinde yalnızca
 gönderi fotoğrafı/metin alanları fal.ai `openai/gpt-image-2.5/flare/edit` ile **maskeli** olarak
 yenileniyor (UI birebir kalıyor → Apple 2.3.3). Cihaz çerçevesi, başlık ve kesin boyutlar yerel
@@ -200,12 +235,20 @@ build'i elle tetiklenir hale getirmiştik ama bu ayrı workflow'a dokunulmamış
 push da bir preview build kuyruğa sokmuş olabilir. Kimsenin almadığı artifact için EAS
 dakikası yakıyor. **Yapılacak:** `workflow_dispatch`'e çevirin ya da silin.
 
-**B2. Service-role anahtarı döndürülmedi.**
-Anahtar bir oturumda düz metin paylaşıldı. RLS'i tamamen baypas eder. Supabase dashboard →
-Project Settings → API → `service_role` → Rotate, yeni değer `.env.local`'a. Uygulama kodunda
-hiçbir yerde okunmuyor, yalnızca `scripts/` altındaki araçlar kullanıyor.
+**B2. Service-role anahtarı döndürülmedi — iki aşamalı, YAYINDAN ÖNCE bitmeli.**
+_19 Eylül bulgusu:_ Supabase'de eski (legacy) anahtarlar yalnız başına döndürülemiyor; anon +
+service_role birlikte kapatılıyor. Uygulama hâlâ legacy anon anahtarını kullanıyor ve **push
+cron'u (`013_push_notification_cron.sql:21`) `send-push-notifications`'ı legacy service_role
+JWT ile çağırıyor** — legacy kapatılırsa push bildirimleri durur. Sıra:
+1. Dashboard → API Keys → `sb_publishable_…` ve `sb_secret_…` oluştur. `.env`
+   `EXPO_PUBLIC_SUPABASE_ANON_KEY` ← publishable (değişken adı aynı, kod değişmez),
+   `.env.local` `SUPABASE_SERVICE_ROLE_KEY` ← secret. Yeni build + cihaz testi.
+2. Yeni migration: cron'u yeni secret anahtara taşı + edge function'ın yetki kontrolü.
+3. Push'un çalıştığını gör → Dashboard'dan legacy anahtarları kapat (geri alınabilir).
+Neden: anahtar bir oturumda düz metin paylaşıldı ve RLS'i tamamen baypas eder. Uygulama kodu okumuyor;
+yalnızca `scripts/` altındaki araçlar ve push cron'u kullanıyor.
 
-**B3. Japonca / Çince ülke kısaltmaları ana dil gözden geçirmesi.**
+**B3. ✅ (19 Eylül, §0)** — Japonca / Çince ülke kısaltmaları gözden geçirildi.
 Emin olunmayanlar zaten ISO'ya düşürülmüş; sette kalanlar
 `lib/i18n/place-data/country-abbr.ts` içinde yorumla işaretli (Japoncada `瑞` İsviçre, `典`
 İsveç — karıştırılması kolay).
@@ -241,6 +284,9 @@ bilerek sessiz bırakıldı; otomatik yeniden başlatma yeni bir native bağıml
 iOS'ta MapKit bunu uygulama içi seçimle değiştirmeye izin vermiyor. Pin başlıkları ve statik
 harita URL'si düzeltildi, kıta/ülke etiketleri düzeltilemedi. Gerçekten şart olursa Android'de
 process locale'i zorlamak konuşulabilir; iOS'ta çözüm yok.
+
+**C7. Yaş derecelendirmesi.** `STORE_LISTING.md` "4+" diyor; kullanıcı gönderileri ve doğrudan
+mesajlaşma olduğu için Apple'ın yeni anketinde büyük olasılıkla 12+/13+ çıkar. Anketi dürüst doldurun.
 
 **C6. Mağaza metinleri yalnızca EN + TR.** Uygulama 12 dil destekliyor. App Store /
 Play Store listelemesini 12 dile çevirmek yayını engellemez ama dönüşümü artırır.

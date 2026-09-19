@@ -501,7 +501,7 @@ export default function SettingsScreen() {
 
                     {/* Version Info */}
                     <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-                        {t('settings.version')} {Constants.expoConfig?.version || '1.0.0'} • {t('settings.build')} {Constants.expoConfig?.android?.versionCode || Constants.expoConfig?.ios?.buildNumber || '1'}
+                        {t('settings.version')} {Constants.expoConfig?.version || '1.0.0'} • {t('settings.build')} {(Platform.OS === 'ios' ? Constants.expoConfig?.ios?.buildNumber : Constants.expoConfig?.android?.versionCode) || '1'}
                     </Text>
                 </Animated.View>
             </ScrollView>
