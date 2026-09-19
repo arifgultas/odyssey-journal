@@ -58,7 +58,10 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
 | 8 | ✅ Oturum | **Code review + security review yapıldı (19 Eylül)** — bulgular aşağıda "Review bulguları"; düzeltmeler bekliyor |
 | 9 | Kullanıcı | "Review bulguları" altındaki **doğrulama SQL'ini** Supabase SQL editöründe çalıştır, çıktıyı oturuma ver (salt okuma) |
-| 10 | Oturum | K1-K2 + Y1-Y4 düzeltmeleri: `030_security_fixes.sql` + istemci düzeltmeleri. **Dikkat:** `supabase/**` push'u canlıya otomatik `db push` yapar |
+| 10 | ✅ Oturum | Düzeltmeler yapıldı ve push edildi (aşağıda "Review düzeltmeleri"). `Deploy Supabase` workflow'u 030'u canlıya uyguladı mı kontrol edilmeli |
+| 11 | Kullanıcı | Supabase → Authentication → URL Configuration → **Redirect URLs**'e `odysseyjournal://reset-password` ekle (yoksa sıfırlama linki siteye düşer) |
+| 12 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
+| 13 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir, gönderi düzenle, çıkış yap → başka hesapla gir, şifre sıfırla, hesap sil (test hesabıyla) |
 
 ### Sonraki oturum: code review + security review için notlar
 Kapsam önerisi ve bilinen şüpheli noktalar (henüz incelenmedi, yalnızca işaret):
@@ -157,6 +160,41 @@ aşağıdaki SQL.
 - **D7** E-postayla veri talebi: privacy@ yanıt vermeden önce talebin hesabın kendi
   e-postasından geldiğini doğrulamalı (süreç notu).
 
+### Review düzeltmeleri — 19 Eylül
+`supabase/migrations/030_security_fixes.sql` (PGlite'ta FULL_SETUP + 004/025/028/011 üstünde
+33 kontrolle test edildi; `posts_count`'suz şemada da):
+- **K1** `guard_profile_columns` tetikleyicisi: istemci (`authenticated`/`anon`) `is_admin`,
+  `is_banned`, `banned_at`, takipçi/gönderi sayaçlarını yazamaz — eski değer geri konur, hata
+  vermez. SECURITY DEFINER sayaç tetikleyicileri ve admin fonksiyonları etkilenmez.
+- **K2** `delete_user_account` `interactions`'sız yeniden tanımlandı. İstemci önce kendi
+  storage dosyalarını siliyor (`deleteAllUserImages`, `lib/image-upload.ts`).
+- **Y1/Y2** avatars + posts bucket'larındaki tüm politikalar düşürülüp sahiplik temelli yeniden
+  kuruldu; üç bucket'a MIME (görsel) + 10 MB sınırı. Avatar yolu artık `<uid>/<zaman>.jpg`
+  (`uploadImage` ile, JPEG). Eski `avatars/<uid>-…` dosyaları sahibi tarafından değiştirilebilir/silinebilir.
+  **Eski build'lerde (TestFlight 7) avatar yükleme artık başarısız olur** — beklenen.
+- **Y3** Engellenen kullanıcı mesaj gönderemez (INSERT politikası). **O5** alıcı yalnız
+  `is_read`'i değiştirebilir (`guard_message_columns`).
+- **Y4** `notifications` INSERT politikası kaldırıldı.
+- **Y5** Token'lar `push_tokens` tablosunda (yalnız sahibi okur; yazma `set_push_token` /
+  `clear_push_token` RPC'leriyle). Mevcut token'lar taşındı, `profiles.expo_push_token` boşaltıldı.
+  Eski build'ler hâlâ o sütuna yazarsa tetikleyici token'ı `push_tokens`'a taşıyıp sütunu boşaltır
+  → eski build'lerde push çalışmaya devam eder. Bir cihaz token'ı tek hesaba ait.
+- **O4** `posts.inserted_at` (sunucu zamanı) — hız sınırı artık buna göre; yorumların `created_at`'i sunucuda sabitleniyor.
+- **O7** gönderi sahibi `likes_count`/`comments_count` yazamaz (`guard_post_columns`).
+
+İstemci: **O1** `app/reset-password.tsx` (linkteki token/`code` → oturum → mevcut
+`ChangePasswordModal`; hatada `errors.linkExpired`). **O3** `updatePost` metin + yeni görsel
+moderasyonu; kaldırılan görseller artık yalnız güncelleme başarılı olunca siliniyor.
+**O6** `removePushToken` artık `AuthContext.signOut` içinde (her çıkış yolu).
+**D1** numarasız 4 SQL → `supabase/archive/` (README: yeniden çalıştırmayın). **D2**
+`send-push-notifications` repodan silindi — **deploy edilmiş kopyası duruyor**, kaldırmak için:
+`npx supabase functions delete send-push-notifications --project-ref <ref>`.
+`FULL_SETUP.sql` başına "030'u da uygula" notu. Açık kalanlar: O2 (site), D3, D4, D5, D6, D7.
+
+Testte fark edilen, 030 dışı: FULL_SETUP (`trigger_update_follow_counts`) ve 004
+(`update_follower_counts_trigger`) iki ayrı takip sayacı tetikleyicisi kuruyor; ikisi de canlıdaysa
+takipçi sayıları **çift** artar. Aşağıdaki SQL'in son satırı bunu gösterir.
+
 **Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır):**
 ```sql
 select has_column_privilege('authenticated','public.profiles','is_admin','UPDATE') as k1_is_admin_writable,
@@ -168,6 +206,7 @@ select policyname, cmd, qual, with_check from pg_policies
 select id, public, file_size_limit, allowed_mime_types from storage.buckets;
 select proname, position('notification_preferences' in prosrc) > 0 as respects_prefs from pg_proc
  where proname in ('create_like_notification','create_comment_notification','create_follow_notification');
+select tgname from pg_trigger where tgrelid='public.follows'::regclass and not tgisinternal;  -- iki sayaç tetikleyicisi var mı?
 ```
 
 **Kısıtlar (önceki oturumlardan):** canlı veritabanına yazma ve auth admin çağrıları izin sınıflandırıcısı

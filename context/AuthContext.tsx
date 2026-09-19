@@ -1,3 +1,4 @@
+import { removePushToken } from '@/lib/push-notifications';
 import { clearSentryUser, setSentryUser } from '@/lib/sentry';
 import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
@@ -79,6 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [session, segments, isLoading]);
 
     const signOut = async () => {
+        // Otherwise the next account signed in on this device gets this user's notifications
+        await removePushToken();
         clearSentryUser();
         await supabase.auth.signOut();
         router.replace('/(auth)/login');

@@ -1,3 +1,4 @@
+import { uploadImage } from './image-upload';
 import { getCountryCode } from './location-formatter';
 import { sanitizeBio, sanitizeFullName, sanitizeText, sanitizeUsername } from './sanitize';
 import { supabase } from './supabase';
@@ -348,29 +349,8 @@ export class ProfileService {
      */
     static async uploadAvatar(uri: string, userId: string): Promise<string | null> {
         try {
-            const fileExt = uri.split('.').pop()?.toLowerCase() || 'jpg';
-            const fileName = `${userId}-${Date.now()}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
-
-            // Convert URI to blob
-            const response = await fetch(uri);
-            const blob = await response.blob();
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, blob, {
-                    contentType: `image/${fileExt}`,
-                    upsert: true,
-                });
-
-            if (uploadError) throw uploadError;
-
-            // Get public URL
-            const { data } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-
-            return data.publicUrl;
+            // '<userId>/<time>.jpg': storage only lets a user write inside their own folder
+            return await uploadImage(uri, 'avatars', userId);
         } catch (error) {
             console.error('Error uploading avatar:', error);
             throw error;

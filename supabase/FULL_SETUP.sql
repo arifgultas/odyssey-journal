@@ -1,4 +1,7 @@
 -- ================================================================
+-- NOT: Bu dosya 030_security_fixes.sql öncesi hâli gösteriyor. Yeni bir projede bunu çalıştırdıktan sonra
+-- supabase/migrations/ altındaki 025, 026, 027, 028, 029 ve 030 da uygulanmalı; aksi hâlde
+-- 030 ile kapatılan açıklar (admin yetkisi, avatar/storage politikaları, push token) açık kalır.
 -- ODYSSEY JOURNAL — Komple Veritabanı Kurulumu (Frankfurt)
 -- Bu dosyayı yeni Supabase projesinin SQL Editor'üne yapıştır
 -- ve çalıştır. Tüm tablolar, policy'ler, trigger'lar, fonksiyonlar

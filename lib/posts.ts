@@ -227,26 +227,35 @@ export async function updatePost(
             console.error('Error fetching old post images for cleanup:', fetchOldError);
         }
 
+        // Same moderation as createPost: an approved post must not become something else on edit
+        if (data.title !== undefined || data.content !== undefined) {
+            const title = data.title !== undefined ? sanitizePostTitle(data.title) : '';
+            const content = data.content !== undefined ? sanitizePostContent(data.content) : '';
+            const textModeration = await moderateText(`${title}\n\n${content}`);
+            if (!textModeration.approved) {
+                throw new Error(getModerationMessage(textModeration.flaggedCategories));
+            }
+        }
+
         // Upload new (local) images, keeping existing remote ones
         let imageUrls: string[] | undefined;
+        const newImageUrls: string[] = [];
         if (data.images) {
             const uploadPromises = data.images.map(async (uri) => {
                 if (uri.startsWith('http://') || uri.startsWith('https://')) {
                     return uri; // Already uploaded remote image
                 }
-                return await uploadImage(uri, 'posts', user.id);
+                const url = await uploadImage(uri, 'posts', user.id);
+                newImageUrls.push(url);
+                return url;
             });
             imageUrls = await Promise.all(uploadPromises);
 
-            // Clean up removed images from storage in background
-            const removedImages = oldPostImages.filter((url) => !imageUrls?.includes(url));
-            if (removedImages.length > 0) {
-                for (const url of removedImages) {
-                    try {
-                        await deleteImage(url, 'posts');
-                    } catch (deleteError) {
-                        console.error('Error deleting removed post image from storage:', deleteError);
-                    }
+            if (newImageUrls.length > 0) {
+                const imageModeration = await moderatePost('', '', newImageUrls);
+                if (!imageModeration.approved) {
+                    await Promise.all(newImageUrls.map((url) => deleteImage(url, 'posts')));
+                    throw new Error(getModerationMessage(imageModeration.flaggedCategories));
                 }
             }
         }
@@ -298,7 +307,21 @@ export async function updatePost(
             .single();
 
         if (postError) {
+            if (newImageUrls.length > 0) {
+                await Promise.all(newImageUrls.map((url) => deleteImage(url, 'posts')));
+            }
             throw postError;
+        }
+
+        // Only now that the post points at the new set: remove the images the edit dropped
+        const keptImages = imageUrls;
+        const removedImages = keptImages ? oldPostImages.filter((url) => !keptImages.includes(url)) : [];
+        for (const url of removedImages) {
+            try {
+                await deleteImage(url, 'posts');
+            } catch (deleteError) {
+                console.error('Error deleting removed post image from storage:', deleteError);
+            }
         }
 
         return post;

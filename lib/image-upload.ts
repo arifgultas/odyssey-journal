@@ -166,3 +166,42 @@ export async function deleteMultipleImages(
         throw new Error('Failed to delete images');
     }
 }
+
+/**
+ * Remove every file a user has in storage, before their account is deleted.
+ * The database cannot delete storage objects itself, and the public URLs of these files would
+ * otherwise keep working after the account is gone. Best effort: a file that fails to delete
+ * must not block the account deletion.
+ * @param userId - The user whose files are removed
+ */
+export async function deleteAllUserImages(userId: string): Promise<void> {
+    const buckets = ['posts', 'avatars', 'collection-covers'] as const;
+    const pageSize = 1000;
+
+    for (const bucket of buckets) {
+        try {
+            const paths: string[] = [];
+            for (let offset = 0; ; offset += pageSize) {
+                const { data, error } = await supabase.storage
+                    .from(bucket)
+                    .list(userId, { limit: pageSize, offset });
+                if (error) throw error;
+                paths.push(...(data || []).map((file) => `${userId}/${file.name}`));
+                if (!data || data.length < pageSize) break;
+            }
+            if (bucket === 'avatars') {
+                // Older builds saved every avatar as 'avatars/<userId>-<time>.<ext>'
+                const { data } = await supabase.storage
+                    .from(bucket)
+                    .list('avatars', { limit: pageSize, search: `${userId}-` });
+                paths.push(...(data || []).map((file) => `avatars/${file.name}`));
+            }
+            if (paths.length > 0) {
+                const { error } = await supabase.storage.from(bucket).remove(paths);
+                if (error) throw error;
+            }
+        } catch (error) {
+            console.error(`Error deleting ${bucket} files for account deletion:`, error);
+        }
+    }
+}

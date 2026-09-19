@@ -11,9 +11,9 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { isAdmin } from '@/lib/admin-service';
+import { deleteAllUserImages } from '@/lib/image-upload';
 import { LEGAL_EMAILS, openLegalPage } from '@/lib/legal-links';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
-import { removePushToken } from '@/lib/push-notifications';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -96,7 +96,6 @@ export default function SettingsScreen() {
                     text: t('auth.logout'),
                     style: 'destructive',
                     onPress: async () => {
-                        await removePushToken();
                         signOut();
                     },
                 },
@@ -125,6 +124,9 @@ export default function SettingsScreen() {
                                     style: 'destructive',
                                     onPress: async () => {
                                         try {
+                                            // Files first: the database cannot remove storage objects, and
+                                            // after the RPC this session can no longer reach them
+                                            if (user?.id) await deleteAllUserImages(user.id);
                                             // Call the database function to delete all user data
                                             const { error } = await supabase.rpc('delete_user_account');
                                             if (error) throw error;
@@ -438,13 +440,15 @@ export default function SettingsScreen() {
                             icon="document-text-outline"
                             label={t('settings.terms')}
                             onPress={() => openLegalPage('terms')}
-                            colors={colors}
+                            colors={colors}
+
                         />
                         <SettingsRow
                             icon="lock-closed-outline"
                             label={t('settings.privacyPolicy')}
                             onPress={() => openLegalPage('privacy')}
-                            colors={colors}
+                            colors={colors}
+
                         />
                     </View>
                 </Animated.View>

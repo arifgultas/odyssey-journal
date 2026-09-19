@@ -68,17 +68,15 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
 }
 
 /**
- * Save the push token to the user's profile in Supabase
+ * Save this device's push token for the signed-in user
  */
 export async function savePushToken(token: string): Promise<boolean> {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return false;
 
-        const { error } = await supabase
-            .from('profiles')
-            .update({ expo_push_token: token })
-            .eq('id', user.id);
+        // Tokens live in push_tokens, which only their owner can read (030_security_fixes.sql)
+        const { error } = await supabase.rpc('set_push_token', { p_token: token });
 
         return !error;
     } catch {
@@ -87,17 +85,14 @@ export async function savePushToken(token: string): Promise<boolean> {
 }
 
 /**
- * Remove the push token from the user's profile (on logout)
+ * Remove the signed-in user's push token (on logout)
  */
 export async function removePushToken(): Promise<boolean> {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return false;
 
-        const { error } = await supabase
-            .from('profiles')
-            .update({ expo_push_token: null })
-            .eq('id', user.id);
+        const { error } = await supabase.rpc('clear_push_token');
 
         return !error;
     } catch {
