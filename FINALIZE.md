@@ -20,8 +20,9 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 > **Durum (19 Eylül):** 1–4 ✅. İki yeni anahtar `.env`'de; oturum doğruladı: Static anahtar
 > staticmap → 200, başka API → REQUEST_DENIED; SDK anahtarı düz HTTP'de → 403 (kısıt çalışıyor).
 > Kalan: yeni build'lerde harita görülünce **eski anahtarları sil** (5), upload + app signing SHA-1'lerini ekle
-> (AAB işiyle), yayından önce debug SHA-1'ini kaldır. Öneri: Static Maps günlük kotasını **300**'e
-> çek (ayda ~9.000 < 10.000 ücretsiz; ücret hiç çıkmaz). Maps SDK for Android harita yüklemeleri ücretsiz.
+> (AAB işiyle), yayından önce debug SHA-1'ini kaldır. Static Maps günlük kotası **300** ✅ (ayda ~9.000 <
+> 10.000 ücretsiz → kötüye kullanımda bile ücret çıkmaz). Maps SDK for Android harita yüklemeleri ücretsiz.
+> Bütçe uyarısı yalnız e-posta atar, harcamayı durdurmaz; durduran kota.
 
 **Neden acil:** repo **public** ve şu an kullanılan Maps anahtarı (`AIzaSyCEGo…`) git geçmişinde
 açık duruyor (eskisi `AIzaSyDzxS…` da). Kısıtsızsa herkes kendi projesinde kullanıp faturayı bize
