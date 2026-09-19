@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-19
+**Son güncelleme:** 2026-09-19 (gece)
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -10,38 +10,78 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ Yayın kontrol listesi (19 Eylül akşamı — buradan devam edin)
+## ★ Güncel durum — 19 Eylül gecesi (BURADAN DEVAM EDİN)
 
-**Durum:** kod tarafı bitti. `main` = `e03bba4`. iOS `buildNumber: "7"`, Android `versionCode: 2`,
-`.env` yeni `sb_publishable_…` anahtarını taşıyor.
+**Kod:** `main` = son commit. iOS `buildNumber: "8"`, Android `versionCode: 2`. `.env` yeni
+`sb_publishable_…` anahtarını taşıyor. `tsc` temiz · lint 0 hata · `i18n:check` geçti · 211 test.
+**Mağaza adımları ayrı dosyada: `store_control.md`** (yalnızca App Store / Play işleri).
 
-**Push testi "bildirim gelmedi" — hata değil:** 19 Eylül'deki iki beğeni **Admin'in kendi
-gönderilerine Admin hesabından** yapılmış; tetikleyici kendi gönderini beğenince bilerek bildirim
-üretmiyor (`023_…sql:19`). Doğru test: Admin2 (Android, token `QICjy…`) ile Admin'in bir
-gönderisini beğen → Admin'in iPhone'una (token `8DGSX…`) 1 dk içinde bildirim.
+### Engel: Expo (EAS) build kredileri bitti — iOS ve Android
+- **iOS build 8 şu an alınamıyor.** Windows'ta yerel iOS build mümkün değil (Mac + Xcode gerekir;
+  `eas build --local` da iOS için macOS ister). Seçenekler:
+  1. EAS ücretsiz kotasının aylık sıfırlanmasını beklemek (Android için **1 Ekim** görülmüştü;
+     iOS'un tarihi expo.dev → Billing/Usage'dan kontrol edilmeli).
+  2. Ücretli EAS planı (güncel fiyat: expo.dev/pricing).
+  3. Build 7'yi incelemeye göndermek — **önerilmez**: kayıt ekranındaki Koşullar/Gizlilik linkleri
+     ölü, Google/Apple butonları hata veriyor (Guideline 2.1 reddi riski).
+- **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §4).
+  Güncel kodla alınacağı için build 8 değişikliklerini zaten içerir. `android/` 19 Eylül'de
+  `expo prebuild --clean` ile üretildi; o tarihten sonra `app.config.ts`'te native bir değişiklik
+  yok (yalnızca iOS `buildNumber`), yeniden prebuild gerekmez. JS değişiklikleri Gradle
+  build'inde bundle'a otomatik girer.
 
-**Android build kotası:** EAS ücretsiz planın Android kotası bu ay doldu, **1 Ekim'de** sıfırlanıyor.
-Karar önerisi: Play'e şimdilik mevcut AAB (`324319a5`, versionCode 1, legacy anahtar) ile
-dahili/kapalı test başlatılsın — 14 günlük kapalı test saati böylece hemen başlar. 1 Ekim'de
-yeni anahtarlı AAB (versionCode 2) alınır, ardından legacy anahtarlar kapatılır. EAS upload'u
-125 MB'tı (görsel klasörleri gidiyordu) → `.easignore`'a `SS/`, `mockup_feature/` eklendi.
+### 19 Eylül'de yapılanlar (özet — ayrıntı §0 ve §3)
+| Konu | Sonuç |
+|---|---|
+| IT/DE "Follower" | Seguaci / Abonnenten; i18n kural 2 yakın eşleşmeleri de yakalıyor |
+| Ayarlar → Hesap sağ ikonlar | kaldırıldı (`rightElement={null}`) |
+| Derleme etiketi | platforma göre (iOS buildNumber / Android versionCode) |
+| `supportsTablet: false` | iPad ekran görüntüsü istenmiyor |
+| Push bildirimleri | **hiç gönderilmemişti** → `029` ile Postgres'ten (`pg_cron` + `pg_net`) doğrudan Expo'ya; canlıda. Uçtan uca cihaz testi yapılmadı |
+| Supabase anahtarları | yeni `sb_publishable_` / `sb_secret_` devrede; legacy henüz açık |
+| Mağaza görselleri | 32 kare + 2 feature graphic + Play ikonu, `mockup_feature/` (§3 A3), fal harcaması ~$1.16 |
+| Web sitesi | `https://odysseyjournal.app` yayında; `/privacy-policy`, `/terms`, `/support`, `/delete-account` 200. GitHub Pages **kullanılmıyor** |
+| Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
+| Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
+| Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
+### Sıradaki işler
 | # | Kim | İş |
 |---|---|---|
-| 1 | Kullanıcı | iOS build 7 al → TestFlight. Giriş, akış, mesajlar, gönderi oluşturma çalışıyor mu (yeni anahtar) |
-| 2 | Kullanıcı | Push testi: Admin2 ile Admin'in gönderisini beğen → iPhone'a bildirim |
-| 3 | Kullanıcı | App Store Connect: ekran görüntüleri (`mockup_feature/ios/`), metinler (`STORE_LISTING.md`), yaş anketi (UGC + mesajlaşma → 12+/13+), gizlilik etiketleri, inceleme için demo hesap, build 7'yi seç, incelemeye gönder |
-| 4 | Kullanıcı | **Android AAB'yi Android Studio'dan kendisi alıyor** (EAS kotası yerine). `android/` 19 Eylül'de `expo prebuild --clean` ile yeniden üretildi (versionCode 2, Maps anahtarı). Build → Generate Signed App Bundle → **yeni upload keystore** (proje dışında saklanmalı; kaybolursa güncelleme yüklenemez). EAS AAB'si (`324319a5`) Play'e **yüklenmeyecek**. İleride EAS'ten Android build alınacaksa bu keystore `eas credentials` ile EAS'e yüklenmeli. |
-| 5 | Kullanıcı | Play Console: uygulama, dahili test, mağaza sayfası (`mockup_feature/android/`, feature graphic, `mockup_feature/play-icon-512.png`), içerik formları. Hesap silme URL'si: `privacy-policy.html` (silme bölümü var) |
-| 6 | Kullanıcı → Oturum doğrular | iOS build 7 + Android versionCode 2 yeni anahtarla doğrulanınca: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys". Oturum salt-okuma testiyle doğrular (legacy reddediliyor, yeni çalışıyor). Geri alınabilir. Eski TestFlight build'leri (≤6) bundan sonra çalışmaz. |
-| 7 | ✅ | fal.ai anahtarı `.env.local`'dan silindi (fal panelinden de iptal edilmeli) |
+| 1 | Kullanıcı | TestFlight build 7'yi test et: giriş, akış, mesajlar, gönderi (yeni anahtar), "Derleme 7", IT/DE takipçi |
+| 2 | Kullanıcı | **Push testi:** Android'de review demo hesabıyla giriş → Admin'in gönderisini beğen → Admin'in iPhone'una 1 dk içinde bildirim. (Kendi gönderini beğenmek bilerek bildirim üretmez, `023_…sql:19`. Admin2 şifresi unutuldu.) Gelmezse oturum `push_notification_queue`'ya bakar |
+| 3 | Kullanıcı | Android AAB (Android Studio, yeni upload keystore) → Play dahili test (`store_control.md` §4-5) |
+| 4 | Kullanıcı | EAS kredisi gelince iOS build 8 → App Store'a **build 8** gönder |
+| 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
+| 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
+| 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
+| 8 | Oturum | **Code review + security review** (sonraki oturum, aşağıdaki not) |
 
-Push testi için Admin2 şifresi hatırlanmıyor → testi **review demo hesabıyla** yapın (Android'de demo
-hesapla giriş → Admin'in gönderisini beğen).
+### Sonraki oturum: code review + security review için notlar
+Kapsam önerisi ve bilinen şüpheli noktalar (henüz incelenmedi, yalnızca işaret):
+- **Supabase RLS / fonksiyonlar:** `supabase/migrations/` 30 dosya, 15'inde `SECURITY DEFINER`.
+  Özellikle `delete_user_account`, `flush_push_queue` (029, `search_path=''`, PUBLIC/anon/authenticated'dan
+  REVOKE edildi), tetikleyiciler, admin fonksiyonları (`lib/admin-service.ts`).
+- **Numarasız migration'lar:** `add_weather_captions.sql`, `FIX_AVATAR_UPLOAD.sql`,
+  `fix_function_search_path.sql`, `fix_security_definer_views.sql` — `db push` sırası/uygulanıp
+  uygulanmadığı belirsiz; canlı şemayla karşılaştırılmalı.
+- **Storage bucket politikaları** (avatar/post görselleri): kim neyi yazabiliyor/silebiliyor.
+- **Edge functions:** `moderate-content` (istekteki `apikey` + kullanıcı JWT'si),
+  `send-push-notifications` artık kullanılmıyor → deploy'dan kaldırılması düşünülmeli.
+- **Anahtarlar:** service_role (legacy) ve fal anahtarı geçmiş oturumlarda sohbette düz metin
+  paylaşıldı → legacy kapatma (#5) ve fal iptali (#6) bunu kapatır. `git ls-files` → yalnız
+  `.env.example` izleniyor; `.env`/`.env.local` git dışı. Git geçmişinde sızıntı taraması yapılmalı.
+- **İstemci:** `hooks/use-oauth.ts` (token'lar redirect hash'inden okunuyor; butonlar gizli ama kod
+  duruyor), `forgot-password.tsx` deep link `odysseyjournal://reset-password`, `lib/share.ts`,
+  mesajlaşma (realtime kanal yetkisi), şikâyet/engelleme akışı, `lib/export-data.ts`.
+- **CI:** `.github/workflows/` (`ci.yml`, `eas-build.yml`, `supabase-deploy.yml`) — secret kullanımı,
+  `supabase-deploy` main'e her `supabase/**` push'unda canlıya `db push` yapıyor.
+- **Bağımlılıklar:** `npm audit`; B4'teki 16 sürüm uyuşmazlığı.
+- Review bulguları düzeltilirse yeni build gerekir → EAS kredisi durumu (yukarıdaki engel) hesaba katılmalı.
 
-**Adım adım mağaza talimatları: `store_control.md`.** Web sitesi `https://odysseyjournal.app`
-(GitHub Pages kullanılmayacak — kullanıcı kararı, 19 Eylül). Mağaza formlarındaki adresler:
-`/privacy-policy`, `/terms`, `/support`. Site yayına alınınca açıldıkları kontrol edilecek.
+**Kısıtlar (önceki oturumlardan):** canlı veritabanına yazma ve auth admin çağrıları izin sınıflandırıcısı
+tarafından reddediliyor — etrafından dolaşmayın, SQL'i kullanıcıya verin. iOS build'i kullanıcı alır.
+Kullanıcıya her zaman Türkçe yanıt.
 
 ---
 
@@ -178,10 +218,10 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Şikâyet / engelleme (UGC şartı) | ✅ `report-modal`, `blocked-users`, `community-guidelines` |
 | Legal dokümanlar & KVKK | ✅ |
 | Mağaza metinleri (`STORE_LISTING.md`) | ✅ EN + TR hazır |
-| iOS TestFlight | ✅ build 4 cihazda · **build 5 bekleniyor** (19 Eylül değişiklikleri) |
-| Android production build | ✅ AAB hazır (19 Eylül) · Play Console'a yüklenmedi |
+| iOS TestFlight | build 7 (yeni anahtar) test ediliyor · **build 8 EAS kredisi bekliyor** |
+| Android production build | Android Studio'dan yerel AAB (versionCode 2) alınacak · EAS AAB `324319a5` kullanılmayacak |
 | Mağaza ekran görüntüleri / mockup | ✅ 32 kare + 2 Feature Graphic, `mockup_feature/` (§3 A3) |
-| **Push bildirimleri** | ⚠️ hiç gönderilmemişti — 029 ile düzeltildi, canlıda doğrulanmadı (§3 B2) |
+| **Push bildirimleri** | ⚠️ hiç gönderilmemişti — 029 ile düzeltildi, cihazda uçtan uca doğrulanmadı (§3 B2) |
 | Mağazaya gönderim | ❌ |
 
 ---
