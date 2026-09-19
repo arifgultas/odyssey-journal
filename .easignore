@@ -49,3 +49,7 @@ tsc_output.txt
 # all, which bypasses every row-level security policy - belong in .env.local, which
 # is excluded here and never leaves the machine.
 .env*.local
+
+# Store screenshots and generated store art: large, and not part of the app.
+SS/
+mockup_feature/
