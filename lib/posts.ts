@@ -169,9 +169,10 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             .single();
 
         if (postError) {
-            // If post creation fails, delete uploaded images
+            // If post creation fails, delete uploaded images. allSettled: a failed cleanup must
+            // not replace the error the user needs to see
             if (imageUrls.length > 0) {
-                await Promise.all(imageUrls.map((url) => deleteImage(url, 'posts')));
+                await Promise.allSettled(imageUrls.map((url) => deleteImage(url, 'posts')));
             }
             throw postError;
         }
@@ -182,7 +183,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             if (!imageModeration.approved) {
                 // Delete the post and images if flagged
                 await supabase.from('posts').delete().eq('id', post.id);
-                await Promise.all(imageUrls.map((url) => deleteImage(url, 'posts')));
+                await Promise.allSettled(imageUrls.map((url) => deleteImage(url, 'posts')));
                 throw new Error(getModerationMessage(imageModeration.flaggedCategories));
             }
         }
@@ -254,7 +255,7 @@ export async function updatePost(
             if (newImageUrls.length > 0) {
                 const imageModeration = await moderatePost('', '', newImageUrls);
                 if (!imageModeration.approved) {
-                    await Promise.all(newImageUrls.map((url) => deleteImage(url, 'posts')));
+                    await Promise.allSettled(newImageUrls.map((url) => deleteImage(url, 'posts')));
                     throw new Error(getModerationMessage(imageModeration.flaggedCategories));
                 }
             }
@@ -308,7 +309,7 @@ export async function updatePost(
 
         if (postError) {
             if (newImageUrls.length > 0) {
-                await Promise.all(newImageUrls.map((url) => deleteImage(url, 'posts')));
+                await Promise.allSettled(newImageUrls.map((url) => deleteImage(url, 'posts')));
             }
             throw postError;
         }

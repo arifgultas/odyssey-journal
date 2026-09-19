@@ -166,8 +166,11 @@ aşağıdaki SQL.
 - **K1** `guard_profile_columns` tetikleyicisi: istemci (`authenticated`/`anon`) `is_admin`,
   `is_banned`, `banned_at`, takipçi/gönderi sayaçlarını yazamaz — eski değer geri konur, hata
   vermez. SECURITY DEFINER sayaç tetikleyicileri ve admin fonksiyonları etkilenmez.
-- **K2** `delete_user_account` `interactions`'sız yeniden tanımlandı. İstemci önce kendi
-  storage dosyalarını siliyor (`deleteAllUserImages`, `lib/image-upload.ts`).
+- **K2** `delete_user_account` `interactions`'sız yeniden tanımlandı. İstemci dosya yollarını
+  RPC'den önce listeliyor, RPC **başarılı olunca** siliyor (`listAllUserImages` /
+  `removeUserImages`, `lib/image-upload.ts`) — RPC düşerse hesap görselleriyle kalır. Silme,
+  kullanıcı silindikten sonra hâlâ geçerli olan oturum JWT'siyle yapılıyor; test hesabı silinince
+  `posts/<uid>/` ve `avatars/<uid>/`'in boşaldığı Dashboard → Storage'dan doğrulanmalı.
 - **Y1/Y2** avatars + posts bucket'larındaki tüm politikalar düşürülüp sahiplik temelli yeniden
   kuruldu; üç bucket'a MIME (görsel) + 10 MB sınırı. Avatar yolu artık `<uid>/<zaman>.jpg`
   (`uploadImage` ile, JPEG). Eski `avatars/<uid>-…` dosyaları sahibi tarafından değiştirilebilir/silinebilir.

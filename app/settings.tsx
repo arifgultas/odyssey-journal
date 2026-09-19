@@ -11,7 +11,7 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { isAdmin } from '@/lib/admin-service';
-import { deleteAllUserImages } from '@/lib/image-upload';
+import { listAllUserImages, removeUserImages } from '@/lib/image-upload';
 import { LEGAL_EMAILS, openLegalPage } from '@/lib/legal-links';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -124,12 +124,14 @@ export default function SettingsScreen() {
                                     style: 'destructive',
                                     onPress: async () => {
                                         try {
-                                            // Files first: the database cannot remove storage objects, and
-                                            // after the RPC this session can no longer reach them
-                                            if (user?.id) await deleteAllUserImages(user.id);
+                                            // Listed now, removed only once the account is really gone: if the
+                                            // RPC fails, the account keeps its images
+                                            const images = user?.id ? await listAllUserImages(user.id) : {};
                                             // Call the database function to delete all user data
                                             const { error } = await supabase.rpc('delete_user_account');
                                             if (error) throw error;
+                                            // The session's token is still valid for storage until sign-out
+                                            await removeUserImages(images);
                                             Alert.alert(t('common.success'), t('settings.accountDeleted'));
                                             signOut();
                                         } catch (error) {

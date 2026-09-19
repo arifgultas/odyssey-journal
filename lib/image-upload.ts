@@ -167,16 +167,20 @@ export async function deleteMultipleImages(
     }
 }
 
+type UserImageBucket = 'posts' | 'avatars' | 'collection-covers';
+export type UserImagePaths = Partial<Record<UserImageBucket, string[]>>;
+
 /**
- * Remove every file a user has in storage, before their account is deleted.
+ * List every file a user has in storage, so they can be removed once the account is deleted.
  * The database cannot delete storage objects itself, and the public URLs of these files would
- * otherwise keep working after the account is gone. Best effort: a file that fails to delete
- * must not block the account deletion.
- * @param userId - The user whose files are removed
+ * otherwise keep working after the account is gone. Listed before deletion, while the session
+ * is certainly still valid; a bucket that cannot be listed is skipped.
+ * @param userId - The user whose files are listed
  */
-export async function deleteAllUserImages(userId: string): Promise<void> {
-    const buckets = ['posts', 'avatars', 'collection-covers'] as const;
+export async function listAllUserImages(userId: string): Promise<UserImagePaths> {
+    const buckets: UserImageBucket[] = ['posts', 'avatars', 'collection-covers'];
     const pageSize = 1000;
+    const result: UserImagePaths = {};
 
     for (const bucket of buckets) {
         try {
@@ -196,12 +200,26 @@ export async function deleteAllUserImages(userId: string): Promise<void> {
                     .list('avatars', { limit: pageSize, search: `${userId}-` });
                 paths.push(...(data || []).map((file) => `avatars/${file.name}`));
             }
-            if (paths.length > 0) {
-                const { error } = await supabase.storage.from(bucket).remove(paths);
-                if (error) throw error;
-            }
+            result[bucket] = paths;
         } catch (error) {
-            console.error(`Error deleting ${bucket} files for account deletion:`, error);
+            console.error(`Error listing ${bucket} files for account deletion:`, error);
+        }
+    }
+    return result;
+}
+
+/**
+ * Remove files listed by listAllUserImages. Best effort: runs after the account is already
+ * deleted, so a failure is only logged.
+ */
+export async function removeUserImages(paths: UserImagePaths): Promise<void> {
+    for (const [bucket, files] of Object.entries(paths)) {
+        if (!files || files.length === 0) continue;
+        try {
+            const { error } = await supabase.storage.from(bucket).remove(files);
+            if (error) throw error;
+        } catch (error) {
+            console.error(`Error deleting ${bucket} files after account deletion:`, error);
         }
     }
 }
