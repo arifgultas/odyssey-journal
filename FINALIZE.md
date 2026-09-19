@@ -58,7 +58,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
 | 8 | ✅ Oturum | **Code review + security review yapıldı (19 Eylül)** — bulgular aşağıda "Review bulguları"; düzeltmeler bekliyor |
 | 9 | Kullanıcı | "Review bulguları" altındaki **doğrulama SQL'ini** Supabase SQL editöründe çalıştır, çıktıyı oturuma ver (salt okuma) |
-| 10 | ✅ Oturum | Düzeltmeler yapıldı ve push edildi (aşağıda "Review düzeltmeleri"). `Deploy Supabase` workflow'u 030'u canlıya uyguladı mı kontrol edilmeli |
+| 10 | ✅ Oturum | Düzeltmeler yapıldı ve push edildi (aşağıda "Review düzeltmeleri"). `Deploy Supabase` 030'u canlıya uyguladı (e80f841, başarılı); anon yoklaması: `push_tokens` ve `set_push_token` anon'a kapalı |
 | 11 | Kullanıcı | Supabase → Authentication → URL Configuration → **Redirect URLs**'e `odysseyjournal://reset-password` ekle (yoksa sıfırlama linki siteye düşer) |
 | 12 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
 | 13 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir, gönderi düzenle, çıkış yap → başka hesapla gir, şifre sıfırla, hesap sil (test hesabıyla) |
