@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-19 (gece, code + security review sonrası)
+**Son güncelleme:** 2026-09-19 (gece — code + security review, düzeltmeler, 12 dil mağaza metni ve görselleri)
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -12,113 +12,101 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ## ★ Güncel durum — 19 Eylül gecesi (BURADAN DEVAM EDİN)
 
-**Kod:** `main` = son commit. iOS `buildNumber: "8"`, Android `versionCode: 2`. `.env` yeni
-`sb_publishable_…` anahtarını taşıyor. `tsc` temiz · lint 0 hata · `i18n:check` geçti · 211 test.
-**Mağaza adımları ayrı dosyada: `store_control.md`** (yalnızca App Store / Play işleri).
-**Kullanıcının bütün işleri tek listede, kategorili: `arif_todo.md`** — kullanıcı bir işi bitirince orayı da güncelleyin.
+**Kod:** `main` = son commit, push edildi. iOS `buildNumber: "8"`, Android `versionCode: 2`.
+`tsc` temiz · lint 0 hata (185 uyarı) · `i18n:check` geçti · 20 suite / 211 test.
+**Canlı veritabanı:** `031`'e kadar uygulandı. `supabase/**` push'ları artık GitHub'da **onay bekler**
+(`production` environment) — onayı kullanıcı verir.
 
-### ★★ ÖNCELİK 1 — Google Maps anahtarını yenile ve kısıtla (D4, kullanıcı)
-> **Durum (19 Eylül):** 1–4 ✅. İki yeni anahtar `.env`'de; oturum doğruladı: Static anahtar
-> staticmap → 200, başka API → REQUEST_DENIED; SDK anahtarı düz HTTP'de → 403 (kısıt çalışıyor).
-> Kalan: yeni build'lerde harita görülünce **eski anahtarları sil** (5), upload + app signing SHA-1'lerini ekle
-> (AAB işiyle), yayından önce debug SHA-1'ini kaldır. Static Maps günlük kotası **300** ✅ (ayda ~9.000 <
-> 10.000 ücretsiz → kötüye kullanımda bile ücret çıkmaz). Maps SDK for Android harita yüklemeleri ücretsiz.
-> Bütçe uyarısı yalnız e-posta atar, harcamayı durdurmaz; durduran kota.
+**Hangi dosya ne için:**
+| Dosya | İçerik |
+|---|---|
+| **`arif_todo.md`** | Kullanıcının **bütün** işleri, kategorili. Kullanıcı bir işi bitirince orayı ve buradaki ilgili satırı güncelleyin |
+| `store_control.md` | App Store / Play formları adım adım |
+| `STORE_LISTING.md` | 12 dil mağaza metni + görsel klasörleri |
+| Bu dosya | Durum, kararlar, oturum tarafında bekleyenler, teknik geçmiş |
 
-**Neden acil:** repo **public** ve şu an kullanılan Maps anahtarı (`AIzaSyCEGo…`) git geçmişinde
-açık duruyor (eskisi `AIzaSyDzxS…` da). Kısıtsızsa herkes kendi projesinde kullanıp faturayı bize
-yazdırabilir. **Bir sonraki build'den (Android AAB, iOS build 8) ÖNCE yapılmalı**, yoksa yeni
-build'ler de açıktaki anahtarla çıkar.
+**Yayın önündeki tek teknik engel:** iOS build 8 için EAS kredisi (aşağıda). Geri kalanı kullanıcının
+mağaza formları ve cihaz testleri (`arif_todo.md`).
 
-Kod hazır (19 Eylül): anahtar ikiye ayrıldı, çünkü profildeki statik harita düz bir HTTP isteği
-ve uygulamaya kilitli (Android paket) bir anahtarla çalışmaz. `EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY`
-yoksa eski anahtara düşer, yani adımlar bitene kadar hiçbir şey kırılmaz.
-
-Google Cloud Console → APIs & Services → Credentials:
-1. **Yeni anahtar "Android Maps SDK"** → Application restrictions: *Android apps* →
-   paket `com.odysseyjournal.app` + SHA-1'ler. API restrictions: yalnız **Maps SDK for Android**.
-   (iOS'ta harita Apple Maps; bu anahtar iOS'ta kullanılmıyor.) SHA-1'ler üç aşamada eklenir:
-   - **Şimdi — debug:** `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`
-     (`android/app/debug.keystore`; geliştirme build'leri). Bu React Native şablonunun herkeste aynı
-     olan debug anahtarı → **yayından önce kaldırılır**.
-   - **AAB alınınca — upload key:** Android Studio'da oluşturulan `odyssey-upload.jks`
-     (`store_control.md` §2). `"C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -list -v -keystore <jks> -alias upload`
-     → `SHA1:` satırı. (Oturum da çıkarabilir.)
-   - **İlk Play yüklemesinden sonra — app signing key:** Play Console → Test and release →
-     App integrity → App signing → *App signing key certificate* SHA-1. Play'den (dahili test dahil)
-     inen her build bununla imzalı; **eklenmezse Play'den kurulan uygulamada harita boş gelir.**
-2. **Yeni anahtar "Static Maps"** → Application restrictions: *None* (düz HTTP, başka türlüsü
-   çalışmaz) → API restrictions: yalnız **Maps Static API**. Sonra APIs & Services → Maps Static
-   API → **Quotas**: günlük istek sınırı (ör. 2.000). Anahtar uygulamadan çıkarılabilir; zararı
-   bu kota ile sınırlanır.
-3. Billing → Budgets & alerts: aylık küçük bir bütçe + e-posta uyarısı.
-4. `.env`: `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=<1. anahtar>`,
-   `EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY=<2. anahtar>` → oturuma haber ver, oturum doğrular
-   (statik harita isteği 200, SDK anahtarı düz HTTP'de reddediliyor mu).
-5. Yeni build'ler cihazda haritayı gösterdikten sonra **eski iki anahtarı sil** (Credentials →
-   Delete). TestFlight 7'deki haritalar o anda durur — beklenen.
-
-### Engel: Expo (EAS) build kredileri bitti — iOS ve Android
+### Engel: Expo (EAS) build kredileri bitti — iOS
 - **iOS build 8 şu an alınamıyor.** Windows'ta yerel iOS build mümkün değil (Mac + Xcode gerekir;
   `eas build --local` da iOS için macOS ister). Seçenekler:
   1. EAS ücretsiz kotasının aylık sıfırlanmasını beklemek (Android için **1 Ekim** görülmüştü;
      iOS'un tarihi expo.dev → Billing/Usage'dan kontrol edilmeli).
   2. Ücretli EAS planı (güncel fiyat: expo.dev/pricing).
   3. Build 7'yi incelemeye göndermek — **önerilmez**: kayıt ekranındaki Koşullar/Gizlilik linkleri
-     ölü, Google/Apple butonları hata veriyor (Guideline 2.1 reddi riski).
-- **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §2).
-  Güncel kodla alınacağı için build 8 değişikliklerini zaten içerir. `android/` 19 Eylül'de
+     ölü, Google/Apple butonları hata veriyor (Guideline 2.1 reddi riski); 19 Eylül güvenlik
+     düzeltmelerini de içermiyor.
+- **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §2) — kullanıcı
+  sonraya bıraktı. Güncel kodla alınacağı için bütün düzeltmeleri içerir. `android/` 19 Eylül'de
   `expo prebuild --clean` ile üretildi; o tarihten sonra `app.config.ts`'te native bir değişiklik
-  yok (yalnızca iOS `buildNumber`), yeniden prebuild gerekmez. JS değişiklikleri Gradle
-  build'inde bundle'a otomatik girer.
+  yok, yeniden prebuild gerekmez. JS değişiklikleri Gradle build'inde bundle'a otomatik girer.
 
-### 19 Eylül'de yapılanlar (özet — ayrıntı §0 ve §3)
+### Oturum tarafında bekleyenler (kullanıcıdan haber gelince)
+| Tetikleyici | Oturum ne yapar |
+|---|---|
+| Kullanıcı `odyssey-upload.jks`'yi oluşturdu | SHA-1'ini çıkar (`keytool`, komut aşağıda "Google Maps anahtarları") → kullanıcı Maps SDK anahtarına ekler |
+| Kullanıcı legacy Supabase anahtarlarını kapattı | Salt-okuma testi: publishable anahtarla REST 200, eski anon JWT ile 401 |
+| Push testi başarısız | `push_notification_queue` ve `push_tokens`'a bak (SQL'i kullanıcıya ver) |
+| Play "12 test kullanıcısı / 14 gün" şartı çıktı | Kapalı test kurulumuna yardım |
+| Cihaz testinde hata | Düzelt; `supabase/` değişirse push sonrası onay kullanıcıda |
+
+### Kullanıcı kararları (yeniden açmayın)
+- **Web sitesi hiçbir zaman kullanıcı içeriği göstermeyecek** (19 Eylül): sitede giriş yok, dolayısıyla
+  gönderi/profil sayfası anlamsız. Site statik: ana sayfa (mağaza linkleri), gizlilik, şartlar, destek,
+  hesap silme. Paylaşım linki ana sayfaya gider (`/?post=<id>`); `id` yalnız ileride kurulabilecek
+  universal link / App Link (uygulama yüklüyse gönderiyi uygulamada açar) için linkte duruyor.
+- **Veri kopyası yalnız e-postayla** (privacy@), uygulama içi dışa aktarma yok.
+- İtalyancadaki alıntı kelimeler (Post, Badge, Account…) bilerek bırakıldı (§0).
+- Google / Apple girişi 1.0'da kapalı, 1.1'e bırakıldı.
+- `supabase/**` deploy'u onaylı (D6) — hangisi iyiyse diye kullanıcı oturuma bıraktı.
+
+### Google Maps anahtarları (D4) — durum
+Repo **public** ve eski Maps anahtarı (`AIzaSyCEGo…`, daha eskisi `AIzaSyDzxS…`) git geçmişinde açık.
+19 Eylül'de iki yeni kısıtlı anahtar kuruldu ve oturum doğruladı:
+- **"Odyssey Android Maps SDK"** → `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY`. Android apps kısıtı
+  (`com.odysseyjournal.app`), yalnız Maps SDK for Android. Düz HTTP'de 403 → kısıt çalışıyor.
+  Harita yüklemeleri ücretsiz. iOS'ta harita Apple Maps, bu anahtar kullanılmıyor.
+- **"Odyssey Static Maps"** → `EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY` (profildeki statik harita;
+  düz HTTP olduğu için uygulama kısıtı konamaz). Yalnız Maps Static API, günlük kota **300**
+  (ayda ~9.000 < 10.000 ücretsiz → kötüye kullanımda bile ücret çıkmaz). Bütçe uyarısı var; o yalnız
+  e-posta atar, harcamayı durduran kota.
+
+SHA-1'ler üç aşamada (Maps SDK anahtarına **+ Add**, aynı paket adıyla):
+- ✅ debug: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25` — RN şablonunda herkeste
+  aynı, **yayından önce kaldırılır**.
+- ⏳ upload key (AAB alınınca): `"C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -list -v -keystore <jks> -alias upload` → `SHA1:`
+- ⏳ app signing key (ilk Play yüklemesinden sonra): Play Console → Test and release → App integrity →
+  App signing. **Eklenmezse Play'den kurulan uygulamada harita boş gelir.**
+
+Kalan: yeni build'lerde harita çalışınca eski iki anahtarı silmek (kullanıcı, `arif_todo.md` §7).
+
+### 19 Eylül'de yapılanlar (özet — ayrıntı aşağıda ve §0, §3)
 | Konu | Sonuç |
 |---|---|
 | IT/DE "Follower" | Seguaci / Abonnenten; i18n kural 2 yakın eşleşmeleri de yakalıyor |
 | Ayarlar → Hesap sağ ikonlar | kaldırıldı (`rightElement={null}`) |
 | Derleme etiketi | platforma göre (iOS buildNumber / Android versionCode) |
 | `supportsTablet: false` | iPad ekran görüntüsü istenmiyor |
-| Push bildirimleri | **hiç gönderilmemişti** → `029` ile Postgres'ten (`pg_cron` + `pg_net`) doğrudan Expo'ya; canlıda. Uçtan uca cihaz testi yapılmadı |
+| Push bildirimleri | **hiç gönderilmemişti** → `029` ile Postgres'ten (`pg_cron` + `pg_net`) doğrudan Expo'ya; token'lar artık `push_tokens`'ta (030). Uçtan uca cihaz testi yapılmadı |
 | Supabase anahtarları | yeni `sb_publishable_` / `sb_secret_` devrede; legacy henüz açık |
-| Mağaza görselleri | 32 kare + 2 feature graphic + Play ikonu, `mockup_feature/` (§3 A3), fal harcaması ~$1.16 |
-| Web sitesi | `https://odysseyjournal.app` yayında; `/privacy-policy`, `/terms`, `/support`, `/delete-account` 200. GitHub Pages **kullanılmıyor** |
-| Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
-| Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
-| Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
-| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: D4 (kısmen), D5, D7 |
-| Mağaza metinleri (C6) | `STORE_LISTING.md` **12 dil** (subtitle, kısa açıklama, promo, anahtar kelime, açıklama, what's new; sınırlar script'le doğrulandı). Yanlış "çevrimdışı yazma" iddiası ve "4+" çıkarıldı. `store_control.md` 12 dile göre güncellendi |
+| Web sitesi | `https://odysseyjournal.app` (Hostinger) yayında; `/privacy-policy`, `/terms`, `/support`, `/delete-account` 200. GitHub Pages **kullanılmıyor** |
+| Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır |
+| Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı**; butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizli. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrak `true`. Apple 4.8: Google varsa Apple da olmalı |
+| Veri kopyası | Uygulama içi "Verilerimi İndir" kaldırıldı → "Verilerimi İste" (`mailto:privacy@`), 12 dil, site ile aynı |
+| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu ("Review bulguları"). `030` + `031` canlıda, istemci düzeltmeleri e80f841 / e5af2fc. Açık: D4 (kısmen), D5, D7 — hepsi kullanıcı tarafı |
+| Supabase deploy | `production` environment onayı + CLI `2.117.0` sabit (D6) |
+| `moderate-content` | yalnız bu projenin `posts` görselleri, ≤ 10 görsel, ≤ 20k karakter; hata metni istemciye gitmiyor (D3) |
+| Google Maps | yeni SDK + Static anahtarları, kota 300 (yukarıda) |
+| Paylaşım linkleri (O2) | `/post/<id>` 404 idi → `/?post=<id>` (ana sayfa). Site gönderi göstermeyecek (kullanıcı kararı) |
+| Mağaza metinleri (C6) | `STORE_LISTING.md` **12 dil**, sınırlar script'le doğrulandı; yanlış "çevrimdışı yazma" iddiası ve "4+" çıkarıldı |
+| Mağaza görselleri | 12 dil × 8 ekran × iOS/Android (192) + 12 feature graphic, yerelde maliyetsiz (`compose.js`, `feature-graphic.js`, `fonts.js`: JA/KO/ZH/AR için Noto Serif / Naskh, `mockup_feature/_work/fonts/`, git dışı). Satır genişlikleri script'le ölçüldü; arayüz her dilde EN. İlk EN/TR seti fal ile (~$1.16, §3 A3) |
 | KO çeviri hatası | `컨렉션` → `컬렉션` (3 yer, `ko.ts`) |
-| Mağaza görselleri 12 dil | 192 ekran görüntüsü (12 dil × 8 × iOS/Android) + 12 feature graphic, yerelde ve maliyetsiz (`compose.js`, `feature-graphic.js`, yeni `fonts.js`: JA/KO/ZH/AR için Noto Serif / Naskh, `mockup_feature/_work/fonts/`, git dışı). Satır genişlikleri script'le ölçüldü (FR/RU 5 başlık kısaltıldı); JA, 9 dilin uzun başlıkları ve 4 feature graphic gözle kontrol edildi. Arayüz her dilde EN |
-| Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
-
-### Sıradaki işler
-| # | Kim | İş |
-|---|---|---|
-| 1 | Kullanıcı | TestFlight build 7'yi test et: giriş, akış, mesajlar, gönderi (yeni anahtar), "Derleme 7", IT/DE takipçi |
-| 2 | Kullanıcı | **Push testi:** Android'de review demo hesabıyla giriş → Admin'in gönderisini beğen → Admin'in iPhone'una 1 dk içinde bildirim. (Kendi gönderini beğenmek bilerek bildirim üretmez, `023_…sql:19`. Admin2 şifresi unutuldu.) Gelmezse oturum `push_notification_queue`'ya bakar |
-| 3 | Kullanıcı — **sonraya** | Android AAB → Play dahili test. Aşağıda "Sonra yapılacaklar" |
-| 4 | Kullanıcı | EAS kredisi gelince iOS build 8 → App Store'a **build 8** gönder |
-| 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
-| 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
-| 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
-| 8 | ✅ Kullanıcı | Doğrulama SQL'i çalıştı (19 Eylül): 030 canlıda beklendiği gibi (guard tetikleyicileri, `k2_broken:false`, bildirim INSERT politikası 0, `push_tokens: 2`, profilde token 0, bucket sınırları). İki kalıntı çıktı → `031` (aşağıda) |
-| 9 | ✅ Kullanıcı | Redirect URLs'e `odysseyjournal://reset-password` eklendi (19 Eylül) |
-| 10 | ✅ Kullanıcı | `send-push-notifications` Dashboard'dan silindi (19 Eylül) |
-| 11 | ✅ Oturum | O2: paylaşım linki artık `https://odysseyjournal.app/?post=<id>` (ana sayfa, 200). Site Hostinger'da (`Server: hcdn`), gönderi sayfası yok. İleride: sitede `?post=` okuyan sayfa / universal link. **Sitede App Store / Google Play butonlarına mağaza linkleri yayında eklenmeli** |
-| 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
-| 13 | Kullanıcı — kısmen ✅ | Maps: yeni anahtarlar kuruldu ve doğrulandı; eski anahtarları silme + SHA-1'ler yeni build'lerle ("ÖNCELİK 1" bölümü) |
-| 15 | ✅ Kullanıcı | 031 onaylandı, canlıya uygulandı (19 Eylül, run 35460360360) — environment onayı ilk kez sorunsuz çalıştı |
-| 14 | ✅ Oturum | D6: `production` environment (onaylayıcı: arifgultas, yalnız `main`) + `supabase-deploy.yml` ona bağlı, CLI `2.117.0`'a sabit. **Artık her `supabase/**` push'unda deploy onay bekler:** GitHub → Actions → "Deploy Supabase" çalışması → *Review deployments* → Approve |
-
-### Sonra yapılacaklar (kullanıcı ertelendi)
-- **Android AAB → Play dahili test** (`store_control.md` §2-3; Android Studio, yeni upload keystore,
-  `versionCode: 2`). 19 Eylül'deki tüm güvenlik düzeltmelerini (e80f841, e5af2fc) içerir. Yüklenince
-  #12'deki cihaz listesi bu build'le denenir.
+| Web sitesi metin hataları | kullanıcı düzeltiyor (`arif_todo.md` §6) |
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
 > **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2, D3 **düzeltildi** (aşağıda "Review düzeltmeleri").
-> Açık: **D4 — ÖNCELİK 1** (kısmen, en üstte), **D5, D7**. O2 ✅ (ana sayfaya yönlendirme). D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
+> Açık: **D4** (kısmen, yukarıda "Google Maps anahtarları"), **D5, D7**. O2 ✅ (ana sayfaya yönlendirme). D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
 
 Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
 yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;
@@ -185,8 +173,8 @@ aşağıdaki SQL.
 - **D2** `send-push-notifications` hâlâ repoda; CI `supabase functions deploy` her seferinde yeniden
   deploy ediyor. Silinmeli + `supabase functions delete send-push-notifications`.
 - **D3** ✅ `moderate-content` iç hata metnini istemciye döndürüyordu; `imageUrls` serbestti. Artık hata yalnız logda, istemciye `"Moderation unavailable"`; en fazla 10 görsel, yalnız bu projenin `posts` bucket URL'leri, metin ≤ 20.000 karakter (aksi 400).
-- **D4 — ÖNCELİK 1** Google Maps anahtarı (güncel olan) git geçmişinde ve **repo public**.
-  Kod tarafı hazır (SDK / Static ayrı anahtar); kullanıcı adımları en üstte. Service-role / sb_secret **geçmişte yok** ✅.
+- **D4 — kısmen ✅** Google Maps anahtarı git geçmişinde ve **repo public**. Yeni kısıtlı anahtarlar
+  kuruldu (yukarıda "Google Maps anahtarları"); eski anahtarların silinmesi yeni build'lerden sonra. Service-role / sb_secret **geçmişte yok** ✅.
 - **D5** `npm audit --omit=dev`: 46 (2 critical: `tar`, `shell-quote`) — hepsi expo-cli/metro
   derleme araçlarında, uygulama paketinde değil. Yayından önce yükseltmeyin (B4).
 - **D6** ✅ `supabase-deploy.yml` onaysız canlıya `db push` + CLI `version: latest` idi. Artık
@@ -572,25 +560,19 @@ iOS'ta MapKit bunu uygulama içi seçimle değiştirmeye izin vermiyor. Pin baş
 harita URL'si düzeltildi, kıta/ülke etiketleri düzeltilemedi. Gerçekten şart olursa Android'de
 process locale'i zorlamak konuşulabilir; iOS'ta çözüm yok.
 
-**C7. Yaş derecelendirmesi** (`STORE_LISTING.md`'deki "4+" kaldırıldı; anket kullanıcıda, `arif_todo.md` §4). `STORE_LISTING.md` "4+" diyor; kullanıcı gönderileri ve doğrudan
-mesajlaşma olduğu için Apple'ın yeni anketinde büyük olasılıkla 12+/13+ çıkar. Anketi dürüst doldurun.
+**C7. Yaş derecelendirmesi** — `STORE_LISTING.md`'deki "4+" kaldırıldı (19 Eylül). Kullanıcı gönderileri ve
+doğrudan mesajlaşma olduğu için Apple'ın anketinde büyük olasılıkla 12+/13+ çıkar; anket kullanıcıda (`arif_todo.md` §4).
 
-**C6. ✅ (19 Eylül) Mağaza metinleri yalnızca EN + TR idi** — artık 12 dil, `STORE_LISTING.md`. Uygulama 12 dil destekliyor. App Store /
-Play Store listelemesini 12 dile çevirmek yayını engellemez ama dönüşümü artırır.
+**C6. ✅ (19 Eylül) Mağaza metinleri ve görselleri yalnızca EN + TR idi** — artık 12 dil (`STORE_LISTING.md`, `mockup_feature/`).
 
 ---
 
-## 4. Yarın akşam için önerilen sıra
+## 4. Önerilen sıra
 
-1. **A4** — 19 Eylül değişikliklerini taşıyan yeni build'le dil turunu yapın (IT/DE profilde Seguaci/Abonnenten). Bugünkü düzeltmenin gerçekten
-   çalıştığını görmeden diğerlerine geçmeyin. (~30 dk)
-2. **A5** + **A6** — Arapça göz kontrolü ve push SQL'i. İkisi de kısa. (~20 dk)
-3. **A3** — Ekran görüntüleri. Dil turu temizse mağaza görselleri güvenle alınır. (~1 sa)
-4. **A2** — Android production build (ilk AAB `versionCode: 1` ile olur; sonrakilerde artırın), Play Console dahili test.
-5. ~~**B1**~~ — ✅ 19 Eylül'de yapıldı.
-6. **B2** — anahtar rotasyonu.
-
-A1-A6 biterse yayına gönderim önünde teknik engel kalmıyor.
+Artık kullanıcı işleri `arif_todo.md`'de, yapılma sırasına göre kategorili. Özetle: fal anahtarı iptali →
+iOS build 8 (EAS kredisi) + Android AAB → cihaz testleri (A4 dil turu, A5 RTL, push, 19 Eylül güvenlik
+listesi) → mağaza formları → yayından hemen önce legacy Supabase / eski Maps anahtarları ve debug SHA-1.
+A1–A3 ✅; A4–A6 cihaz testi bekliyor.
 
 ---
 
