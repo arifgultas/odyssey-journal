@@ -24,7 +24,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
   2. Ücretli EAS planı (güncel fiyat: expo.dev/pricing).
   3. Build 7'yi incelemeye göndermek — **önerilmez**: kayıt ekranındaki Koşullar/Gizlilik linkleri
      ölü, Google/Apple butonları hata veriyor (Guideline 2.1 reddi riski).
-- **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §4).
+- **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §2).
   Güncel kodla alınacağı için build 8 değişikliklerini zaten içerir. `android/` 19 Eylül'de
   `expo prebuild --clean` ile üretildi; o tarihten sonra `app.config.ts`'te native bir değişiklik
   yok (yalnızca iOS `buildNumber`), yeniden prebuild gerekmez. JS değişiklikleri Gradle
@@ -51,7 +51,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 |---|---|---|
 | 1 | Kullanıcı | TestFlight build 7'yi test et: giriş, akış, mesajlar, gönderi (yeni anahtar), "Derleme 7", IT/DE takipçi |
 | 2 | Kullanıcı | **Push testi:** Android'de review demo hesabıyla giriş → Admin'in gönderisini beğen → Admin'in iPhone'una 1 dk içinde bildirim. (Kendi gönderini beğenmek bilerek bildirim üretmez, `023_…sql:19`. Admin2 şifresi unutuldu.) Gelmezse oturum `push_notification_queue`'ya bakar |
-| 3 | Kullanıcı | Android AAB (Android Studio, yeni upload keystore) → Play dahili test (`store_control.md` §4-5) |
+| 3 | Kullanıcı | Android AAB (Android Studio, yeni upload keystore) → Play dahili test (`store_control.md` §2-3) |
 | 4 | Kullanıcı | EAS kredisi gelince iOS build 8 → App Store'a **build 8** gönder |
 | 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
 | 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
@@ -74,7 +74,7 @@ Kapsam önerisi ve bilinen şüpheli noktalar (henüz incelenmedi, yalnızca iş
   `.env.example` izleniyor; `.env`/`.env.local` git dışı. Git geçmişinde sızıntı taraması yapılmalı.
 - **İstemci:** `hooks/use-oauth.ts` (token'lar redirect hash'inden okunuyor; butonlar gizli ama kod
   duruyor), `forgot-password.tsx` deep link `odysseyjournal://reset-password`, `lib/share.ts`,
-  mesajlaşma (realtime kanal yetkisi), şikâyet/engelleme akışı, `lib/export-data.ts`.
+  mesajlaşma (realtime kanal yetkisi), şikâyet/engelleme akışı, `mailto:` veri talebi (`app/settings.tsx` `handleRequestData`).
 - **CI:** `.github/workflows/` (`ci.yml`, `eas-build.yml`, `supabase-deploy.yml`) — secret kullanımı,
   `supabase-deploy` main'e her `supabase/**` push'unda canlıya `db push` yapıyor.
 - **Bağımlılıklar:** `npm audit`; B4'teki 16 sürüm uyuşmazlığı.
