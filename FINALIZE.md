@@ -16,6 +16,34 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 `sb_publishable_…` anahtarını taşıyor. `tsc` temiz · lint 0 hata · `i18n:check` geçti · 211 test.
 **Mağaza adımları ayrı dosyada: `store_control.md`** (yalnızca App Store / Play işleri).
 
+### ★★ ÖNCELİK 1 — Google Maps anahtarını yenile ve kısıtla (D4, kullanıcı)
+**Neden acil:** repo **public** ve şu an kullanılan Maps anahtarı (`AIzaSyCEGo…`) git geçmişinde
+açık duruyor (eskisi `AIzaSyDzxS…` da). Kısıtsızsa herkes kendi projesinde kullanıp faturayı bize
+yazdırabilir. **Bir sonraki build'den (Android AAB, iOS build 8) ÖNCE yapılmalı**, yoksa yeni
+build'ler de açıktaki anahtarla çıkar.
+
+Kod hazır (19 Eylül): anahtar ikiye ayrıldı, çünkü profildeki statik harita düz bir HTTP isteği
+ve uygulamaya kilitli (Android paket) bir anahtarla çalışmaz. `EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY`
+yoksa eski anahtara düşer, yani adımlar bitene kadar hiçbir şey kırılmaz.
+
+Google Cloud Console → APIs & Services → Credentials:
+1. **Yeni anahtar "Android Maps SDK"** → Application restrictions: *Android apps* →
+   paket `com.odysseyjournal.app` + SHA-1'ler: Play Console → Test and release → App integrity →
+   **App signing key** SHA-1 (Play'den inen her build) ve **upload key** SHA-1 (Android Studio'da
+   imzaladığın AAB; `keytool -list -v -keystore <keystore>`). Geliştirmede Expo dev build
+   kullanıyorsan debug keystore SHA-1'ini de ekle. API restrictions: yalnız **Maps SDK for Android**.
+   (iOS'ta harita Apple Maps; bu anahtar iOS'ta kullanılmıyor.)
+2. **Yeni anahtar "Static Maps"** → Application restrictions: *None* (düz HTTP, başka türlüsü
+   çalışmaz) → API restrictions: yalnız **Maps Static API**. Sonra APIs & Services → Maps Static
+   API → **Quotas**: günlük istek sınırı (ör. 2.000). Anahtar uygulamadan çıkarılabilir; zararı
+   bu kota ile sınırlanır.
+3. Billing → Budgets & alerts: aylık küçük bir bütçe + e-posta uyarısı.
+4. `.env`: `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=<1. anahtar>`,
+   `EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY=<2. anahtar>` → oturuma haber ver, oturum doğrular
+   (statik harita isteği 200, SDK anahtarı düz HTTP'de reddediliyor mu).
+5. Yeni build'ler cihazda haritayı gösterdikten sonra **eski iki anahtarı sil** (Credentials →
+   Delete). TestFlight 7'deki haritalar o anda durur — beklenen.
+
 ### Engel: Expo (EAS) build kredileri bitti — iOS ve Android
 - **iOS build 8 şu an alınamıyor.** Windows'ta yerel iOS build mümkün değil (Mac + Xcode gerekir;
   `eas build --local` da iOS için macOS ister). Seçenekler:
@@ -57,12 +85,13 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
 | 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
 | 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
-| 8 | Kullanıcı | **Review doğrulama SQL'i** (aşağıda, tek sorgu → tek satır JSON) → çıktıyı oturuma ver. İlk deneme "No rows returned" verdi: editör yalnız son sorgunun sonucunu gösteriyordu, bu yüzden tek sorguya çevrildi |
+| 8 | ✅ Kullanıcı | Doğrulama SQL'i çalıştı (19 Eylül): 030 canlıda beklendiği gibi (guard tetikleyicileri, `k2_broken:false`, bildirim INSERT politikası 0, `push_tokens: 2`, profilde token 0, bucket sınırları). İki kalıntı çıktı → `031` (aşağıda) |
 | 9 | ✅ Kullanıcı | Redirect URLs'e `odysseyjournal://reset-password` eklendi (19 Eylül) |
-| 10 | Kullanıcı | Deploy edilmiş eski fonksiyonu sil: `! npx supabase login` sonra `! npx supabase functions delete send-push-notifications --project-ref tkamxnpayxqxymjtpnef` (ya da Dashboard → Edge Functions → send-push-notifications → Delete) |
+| 10 | ✅ Kullanıcı | `send-push-notifications` Dashboard'dan silindi (19 Eylül) |
 | 11 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
 | 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
-| 13 | Kullanıcı | Google Cloud → Maps anahtarında Android paket + SHA-1 / iOS bundle kısıtı var mı (D4) |
+| 13 | Kullanıcı — **ÖNCELİK 1** | Maps anahtarlarını yenile + kısıtla — en üstteki "ÖNCELİK 1" bölümü |
+| 15 | Kullanıcı | **031'i onayla:** GitHub → Actions → "Deploy Supabase" (031 push'u) → *Review deployments* → Approve. Onaylanmadan canlıya gitmez |
 | 14 | ✅ Oturum | D6: `production` environment (onaylayıcı: arifgultas, yalnız `main`) + `supabase-deploy.yml` ona bağlı, CLI `2.117.0`'a sabit. **Artık her `supabase/**` push'unda deploy onay bekler:** GitHub → Actions → "Deploy Supabase" çalışması → *Review deployments* → Approve |
 
 ### Sonra yapılacaklar (kullanıcı ertelendi)
@@ -72,7 +101,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
 > **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2, D3 **düzeltildi** (aşağıda "Review düzeltmeleri").
-> Açık: **O2** (site işi), **D4, D5, D7** (Google Cloud, bağımlılık, süreç). D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
+> Açık: **D4 — ÖNCELİK 1** (en üstte), **O2** (site işi), **D5, D7**. D6 ✅ (environment onayı). Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
 
 Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
 yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;
@@ -139,8 +168,8 @@ aşağıdaki SQL.
 - **D2** `send-push-notifications` hâlâ repoda; CI `supabase functions deploy` her seferinde yeniden
   deploy ediyor. Silinmeli + `supabase functions delete send-push-notifications`.
 - **D3** ✅ `moderate-content` iç hata metnini istemciye döndürüyordu; `imageUrls` serbestti. Artık hata yalnız logda, istemciye `"Moderation unavailable"`; en fazla 10 görsel, yalnız bu projenin `posts` bucket URL'leri, metin ≤ 20.000 karakter (aksi 400).
-- **D4** Google Maps anahtarı (güncel olan) git geçmişinde. Binary'de zaten var; Google Cloud'da
-  Android paket+SHA-1 / iOS bundle kısıtı olduğundan emin olun. Service-role / sb_secret **geçmişte yok** ✅.
+- **D4 — ÖNCELİK 1** Google Maps anahtarı (güncel olan) git geçmişinde ve **repo public**.
+  Kod tarafı hazır (SDK / Static ayrı anahtar); kullanıcı adımları en üstte. Service-role / sb_secret **geçmişte yok** ✅.
 - **D5** `npm audit --omit=dev`: 46 (2 critical: `tar`, `shell-quote`) — hepsi expo-cli/metro
   derleme araçlarında, uygulama paketinde değil. Yayından önce yükseltmeyin (B4).
 - **D6** ✅ `supabase-deploy.yml` onaysız canlıya `db push` + CLI `version: latest` idi. Artık
@@ -182,9 +211,14 @@ moderasyonu; kaldırılan görseller artık yalnız güncelleme başarılı olun
 `npx supabase functions delete send-push-notifications --project-ref <ref>`.
 `FULL_SETUP.sql` başına "030'u da uygula" notu. Açık kalanlar: O2 (site), D3, D4, D5, D6, D7.
 
-Testte fark edilen, 030 dışı: FULL_SETUP (`trigger_update_follow_counts`) ve 004
-(`update_follower_counts_trigger`) iki ayrı takip sayacı tetikleyicisi kuruyor; ikisi de canlıdaysa
-takipçi sayıları **çift** artar. Aşağıdaki SQL'in son satırı bunu gösterir.
+**031_follow_counter_and_covers.sql** (doğrulama SQL'inin bulduğu iki kalıntı):
+- Canlıda `follows` üstünde **iki** takip sayacı tetikleyicisi vardı (`trigger_update_follow_counts`
+  FULL_SETUP'tan, `update_follower_counts_trigger` 004'ten) → her yeni takip 2 sayılacaktı.
+  `follow_count_drift: 0` idi, yani henüz olmamıştı. 004'ünki düşürüldü; sayılar `follows`'a göre
+  yeniden eşitlendi (fark yoksa satır değişmez). Beğeni/yorum sayaçlarında tek tetikleyici var.
+- `collection-covers`'ın SELECT politikası canlıda yoktu → kullanıcı kendi kapağını
+  silemiyor/değiştiremiyordu ve hesap silmede kapaklar listelenemiyordu. Eklendi.
+PGlite'ta 030 üstünde test edildi (takip tek sayılıyor).
 
 **Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır).** Supabase SQL editörü yalnız **son**
 sorgunun sonucunu gösterir; bu yüzden tek sorgu, tek satır JSON. 030 sonrası beklenen:

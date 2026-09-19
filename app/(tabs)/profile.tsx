@@ -398,7 +398,10 @@ export default function ProfileScreen() {
                                                 const avgLng = locations.reduce((sum, loc) => sum + loc.longitude, 0) / locations.length;
                                                 // &language asks the Static Maps API for its labels in the reader's
                                                 // language; without it they come back in the map's own default.
-                                                return `https://maps.googleapis.com/maps/api/staticmap?center=${avgLat},${avgLng}&zoom=2&size=400x200&scale=2&maptype=roadmap&language=${language}&${markers}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+                                                // A key of its own: this is a plain HTTP request, so it cannot use the
+                                                // Android-app-restricted Maps SDK key. The fallback keeps older .env files working.
+                                                const staticMapsKey = process.env.EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY || process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+                                                return `https://maps.googleapis.com/maps/api/staticmap?center=${avgLat},${avgLng}&zoom=2&size=400x200&scale=2&maptype=roadmap&language=${language}&${markers}&key=${staticMapsKey}`;
                                             })()
                                         }}
                                         style={styles.mapImage}

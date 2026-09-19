@@ -6,6 +6,7 @@ const envSchema = z.object({
     EXPO_PUBLIC_SUPABASE_ANON_KEY: z.string().min(10, 'EXPO_PUBLIC_SUPABASE_ANON_KEY must be a valid API key'),
     EXPO_PUBLIC_SENTRY_DSN: z.string().url('EXPO_PUBLIC_SENTRY_DSN must be a valid URL').optional().or(z.literal('')),
     EXPO_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().min(5, 'EXPO_PUBLIC_GOOGLE_MAPS_API_KEY must be valid').optional().or(z.literal('')),
+    EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY: z.string().min(5, 'EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY must be valid').optional().or(z.literal('')),
 });
 
 export function validateEnv() {
@@ -14,6 +15,7 @@ export function validateEnv() {
         EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
         EXPO_PUBLIC_SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
         EXPO_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+        EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_STATIC_MAPS_API_KEY || '',
     };
 
     const result = envSchema.safeParse(envData);
