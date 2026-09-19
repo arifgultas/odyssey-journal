@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-19 (gece — code + security review, düzeltmeler, 12 dil mağaza metni ve görselleri)
+**Son güncelleme:** 2026-09-20 (gece boyu süren tur: code + security review ve düzeltmeleri, 12 dil
+mağaza metni ve görselleri, CI yükseltmesi — 23 commit, hepsi `main`'de)
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -10,7 +11,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ Güncel durum — 19 Eylül gecesi (BURADAN DEVAM EDİN)
+## ★ Güncel durum — 19-20 Eylül (BURADAN DEVAM EDİN)
 
 **Kod:** `main` = son commit, push edildi. iOS `buildNumber: "8"`, Android `versionCode: 2`.
 `tsc` temiz · lint 0 hata (185 uyarı) · `i18n:check` geçti · 20 suite / 211 test.
@@ -86,7 +87,7 @@ SHA-1'ler üç aşamada (Maps SDK anahtarına **+ Add**, aynı paket adıyla):
 
 Kalan: yeni build'lerde harita çalışınca eski iki anahtarı silmek (kullanıcı, `arif_todo.md` §7).
 
-### 19 Eylül'de yapılanlar (özet — ayrıntı aşağıda ve §0, §3)
+### 19-20 Eylül'de yapılanlar (özet — ayrıntı aşağıda ve §0, §3)
 | Konu | Sonuç |
 |---|---|
 | IT/DE "Follower" | Seguaci / Abonnenten; i18n kural 2 yakın eşleşmeleri de yakalıyor |

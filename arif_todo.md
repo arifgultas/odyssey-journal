@@ -1,10 +1,17 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-09-19
+**Güncelleme:** 2026-09-20
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
 oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
+
+**Sırayla gidersen:** 1 (fal anahtarı, 2 dk) → 2 (build'ler; iOS EAS kredisini bekliyor, Android
+istediğin an) → 3 (cihaz testleri) → 4-5 (mağaza formları; build beklemeden doldurulabilir) →
+6 (site metinleri) → 7 (yayından hemen önce) → 8 (acelesi yok).
+
+> Kodda ve veritabanında **bekleyen iş yok**: 19-20 Eylül'deki güvenlik düzeltmeleri canlıda
+> (`030`, `031`), istemci düzeltmeleri `main`'de ve yeni build'lerle gelecek.
 
 ---
 
