@@ -80,8 +80,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Fiyat: Free, tüm ülkeler
 - [ ] 12 dil ekle; her dile `STORE_LISTING.md`'deki Subtitle, Promotional Text, Description,
       Keywords, What's New
-- [ ] Ekran görüntüleri: EN → `mockup_feature/ios/en/`, TR → `mockup_feature/ios/tr/` (01→08 sırayla).
-      Diğer dillere görsel yükleme (EN gösterilir)
+- [ ] Her dile kendi ekran görüntüleri: `mockup_feature/ios/<dil>/` (01→08 sırayla;
+      klasörler `en tr es fr de pt it ru ja ko zh ar`)
 - [ ] Support / Marketing / Privacy URL'leri
 - [ ] App Review Information: demo hesap + iletişim + Notes (`store_control.md` §1.6)
 - [ ] Version Release: **Manually release**
@@ -94,8 +94,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Uygulamayı oluştur (varsayılan dil English (United States))
 - [ ] Set up your app: privacy policy, app access (demo hesap), ads: No, content rating
       (kullanıcılar etkileşiyor: Yes), hedef kitle 13+, data safety (silme URL'si dahil)
-- [ ] Mağaza sayfası: EN metin + ikon + feature graphic + 8 görsel; TR çevirisi + TR görseller;
-      diğer 10 dil için yalnız metin (`STORE_LISTING.md`)
+- [ ] Mağaza sayfası: EN metin + ikon + feature graphic + 8 görsel; sonra Manage translations ile
+      diğer 11 dil: metin (`STORE_LISTING.md`) + `mockup_feature/android/<dil>/` + `feature-graphic-<dil>.png`
 - [ ] Dahili test: AAB'yi yükle, Play App Signing → Continue, kendini test kullanıcısı olarak ekle
 - [ ] **İlk yüklemeden sonra:** Play Console → Test and release → App integrity → App signing →
       *App signing key certificate* SHA-1'ini Google Cloud'daki Android Maps SDK anahtarına ekle.
@@ -130,10 +130,11 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 
 ## 8. Süreç ve sonraki sürüm (acil değil)
 
+- [ ] **`mockup_feature/` klasörünü yedekle** (git'e girmiyor; 12 dilin mağaza görselleri yalnız bu
+      bilgisayarda — ~200 dosya)
 - [ ] **Veri talepleri:** privacy@ adresine "verilerimin kopyası" isteği gelirse, göndermeden önce
       talebin hesabın **kendi e-posta adresinden** geldiğini kontrol et
 - [ ] Paket güncellemeleri (`npm audit`, expo-doctor'daki 16 uyuşmazlık): **yayından önce yapma**,
       1.0'dan sonra ayrı bir build + test turuyla
 - [ ] 1.1 için: Google / Apple ile giriş (Apple Services ID + key, Google OAuth client →
       Supabase Providers; Apple kuralı: Google varsa Apple da olmalı)
-- [ ] İsteğe bağlı: diğer 10 dil için dile özel mağaza görselleri (oturum yerelde üretebilir, maliyetsiz)

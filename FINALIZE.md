@@ -89,6 +89,7 @@ Google Cloud Console → APIs & Services → Credentials:
 | **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: D4 (kısmen), D5, D7 |
 | Mağaza metinleri (C6) | `STORE_LISTING.md` **12 dil** (subtitle, kısa açıklama, promo, anahtar kelime, açıklama, what's new; sınırlar script'le doğrulandı). Yanlış "çevrimdışı yazma" iddiası ve "4+" çıkarıldı. `store_control.md` 12 dile göre güncellendi |
 | KO çeviri hatası | `컨렉션` → `컬렉션` (3 yer, `ko.ts`) |
+| Mağaza görselleri 12 dil | 192 ekran görüntüsü (12 dil × 8 × iOS/Android) + 12 feature graphic, yerelde ve maliyetsiz (`compose.js`, `feature-graphic.js`, yeni `fonts.js`: JA/KO/ZH/AR için Noto Serif / Naskh, `mockup_feature/_work/fonts/`, git dışı). Satır genişlikleri script'le ölçüldü (FR/RU 5 başlık kısaltıldı); JA, 9 dilin uzun başlıkları ve 4 feature graphic gözle kontrol edildi. Arayüz her dilde EN |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler

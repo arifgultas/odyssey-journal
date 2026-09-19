@@ -10,6 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { fontFor } = require('./fonts.js');
 const { fal } = require('@fal-ai/client');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -24,6 +25,16 @@ const TEXT = {
     // manual break: wrapping left "story." alone on the second line
     en: { tagline: 'Capture your journey.\nShare your story.' },
     tr: { tagline: 'Yolculuğunu kaydet. Hikâyeni paylaş.' },
+    es: { tagline: 'Registra tu viaje.\nComparte tu historia.' },
+    fr: { tagline: 'Racontez votre voyage.\nPartagez votre histoire.' },
+    de: { tagline: 'Halte deine Reise fest.\nTeile deine Geschichte.' },
+    pt: { tagline: 'Registre sua jornada.\nCompartilhe sua história.' },
+    it: { tagline: 'Racconta il tuo viaggio.\nCondividi la tua storia.' },
+    ru: { tagline: 'Сохраните путешествие.\nПоделитесь историей.' },
+    ja: { tagline: '旅を記録しよう。\nストーリーをシェアしよう。' },
+    ko: { tagline: '여행을 기록하세요.\n이야기를 나누세요.' },
+    zh: { tagline: '记录你的旅程。\n分享你的故事。' },
+    ar: { tagline: 'وثّق رحلتك.\nشارك قصتك.' },
 };
 
 const PROMPT =
@@ -115,10 +126,12 @@ async function main() {
             path.join(FONT_DIR, '700Bold', 'PlayfairDisplay_700Bold.ttf'),
             520
         );
+        // The app name stays in Playfair in every language; only the slogan is localized
+        const taglineFont = fontFor(lang, 'italic');
         const tagline = await text(
             `<span foreground="${GOLD}">${t.tagline}</span>`,
-            'Playfair Display Italic 28',
-            path.join(FONT_DIR, '400Regular_Italic', 'PlayfairDisplay_400Regular_Italic.ttf'),
+            `${taglineFont.font} 28`,
+            taglineFont.fontfile,
             470
         );
         const left = 64;

@@ -73,7 +73,7 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
 
 ### 1.5b Aynı sayfa — diğer 10 dil
 - [ ] Her dil için dil menüsünden seç → `STORE_LISTING.md`'deki o dilin Subtitle, Promotional Text,
-      Description, Keywords, What's New alanları. Ekran görüntüsü yüklemeyin: EN görselleri kullanılır.
+      Description, Keywords, What's New alanları + `mockup_feature/ios/<dil>/` 8 görsel (01→08).
 
 ### 1.6 App Review Information
 - [ ] **Sign-in required:** ✓ → review demo hesabının e-postası ve şifresi
@@ -144,7 +144,7 @@ play.google.com/console
 - [ ] **Phone screenshots:** `mockup_feature/android/en/` (8 görsel, sırayla)
 - [ ] **Manage translations → Turkish:** `mockup_feature/android/tr/` + `feature-graphic-tr.png` + Türkçe metin
 - [ ] **Manage translations → diğer 10 dil** (dil kodları `STORE_LISTING.md`): Short description + Full description
-      (+ release notes: What's New). Görsel yüklemeyin; varsayılan (EN) görseller gösterilir.
+      (+ release notes: What's New) + `mockup_feature/android/<dil>/` 8 görsel + `feature-graphic-<dil>.png`.
 
 ### 3.4 Dahili test (Internal testing)
 - [ ] **Test → Internal testing → Create new release**
@@ -163,9 +163,9 @@ play.google.com/console
 
 | Ne | Nerede |
 |---|---|
-| iOS ekran görüntüleri (1290×2796) | `mockup_feature/ios/en/`, `mockup_feature/ios/tr/` |
-| Android ekran görüntüleri (1080×1920) | `mockup_feature/android/en/`, `mockup_feature/android/tr/` |
-| Feature graphic (1024×500) | `mockup_feature/feature-graphic/` |
+| iOS ekran görüntüleri (1290×2796) | `mockup_feature/ios/<dil>/` — 12 dil |
+| Android ekran görüntüleri (1080×1920) | `mockup_feature/android/<dil>/` — 12 dil |
+| Feature graphic (1024×500) | `mockup_feature/feature-graphic/feature-graphic-<dil>.png` — 12 dil |
 | Play ikonu (512×512) | `mockup_feature/play-icon-512.png` |
 | Mağaza metinleri (12 dil) | `STORE_LISTING.md` |
 | Yasal metinler | `WEBSITE_LEGAL_DOCS.md`, `PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md` |

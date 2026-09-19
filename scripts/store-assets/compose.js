@@ -4,7 +4,7 @@
  * at the exact size each store asks for. Everything here is local and deterministic - no
  * model call, no cost - so a headline or layout tweak never spends fal credit.
  *
- * Usage: node scripts/store-assets/compose.js [ios|android|all] [en|tr|all]
+ * Usage: node scripts/store-assets/compose.js [ios|android|all] [<lang>|all]   (12 languages, see fonts.js)
  * Reads the finished screens listed in slogans.js from mockup_feature/_work/<job>/final.png and
  * writes mockup_feature/<platform>/<lang>/<nn>-<name>.png
  */
@@ -14,7 +14,6 @@ const sharp = require('sharp');
 
 const ROOT = path.join(__dirname, '..', '..');
 const FONT_DIR = path.join(ROOT, 'node_modules', '@expo-google-fonts', 'playfair-display');
-const FONT_BOLD = path.join(FONT_DIR, '700Bold', 'PlayfairDisplay_700Bold.ttf');
 const FONT_REGULAR = path.join(FONT_DIR, '400Regular', 'PlayfairDisplay_400Regular.ttf');
 
 // Brand palette, from constants/theme.ts (dark theme).
@@ -29,6 +28,7 @@ const CANVAS = {
 };
 
 const SLOGANS = require('./slogans.js');
+const { LANGS, fontFor } = require('./fonts.js');
 
 function escapeMarkup(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -115,10 +115,11 @@ async function compose(entry, order, platform, lang) {
         width: c.width,
         spacing: Math.round(c.headSize * 0.09),
     });
+    const headFont = fontFor(lang, 'bold');
     const head = await textImage(slogan, {
         size: c.headSize,
-        font: 'Playfair Display Bold',
-        fontfile: FONT_BOLD,
+        font: headFont.font,
+        fontfile: headFont.fontfile,
         color: CREAM,
         width: Math.round(c.width * 0.84),
     });
@@ -175,7 +176,7 @@ async function compose(entry, order, platform, lang) {
 async function main() {
     const [p = 'all', l = 'all'] = process.argv.slice(2);
     const platforms = p === 'all' ? ['ios', 'android'] : [p];
-    const langs = l === 'all' ? ['en', 'tr'] : [l];
+    const langs = l === 'all' ? LANGS : [l];
     for (const platform of platforms)
         for (const lang of langs)
             for (let i = 0; i < SLOGANS.length; i++) await compose(SLOGANS[i], i + 1, platform, lang);

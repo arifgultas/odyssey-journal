@@ -55,10 +55,13 @@ Hepsi bu sınırların içinde (script ile sayıldı; anahtar kelimeler UTF-8 ba
 PT metni Brezilya Portekizcesi (uygulamanın kendisi de öyle); Portekiz için de kullanılabilir.
 ES metni tarafsız İspanyolca; iki bölgeye de aynen girilebilir.
 
-### Ekran görüntüleri
-Yalnız EN ve TR görsel seti var (`mockup_feature/`). Diğer dillerde mağazalar varsayılan dilin
-(EN) görsellerini gösterir — ayrıca bir şey yüklemeniz gerekmez. İleride dile özel görsel
-istenirse `scripts/store-assets/compose.js` başlıkları yerelde yeniden basabilir (fal maliyeti yok).
+### Ekran görüntüleri ve feature graphic — 12 dil
+Her dilin kendi seti var (19 Eylül): `mockup_feature/ios/<dil>/` (8 × 1290×2796),
+`mockup_feature/android/<dil>/` (8 × 1080×1920), `mockup_feature/feature-graphic/feature-graphic-<dil>.png`
+(1024×500). Klasör adları bu dosyadaki bölüm kodlarının küçük harfi: `en tr es fr de pt it ru ja ko zh ar`.
+Başlıklar dile göre, **uygulama arayüzü her dilde İngilizce** (TR setinde de öyleydi).
+Yeniden üretmek: `node scripts/store-assets/compose.js all all` + `node scripts/store-assets/feature-graphic.js`
+(yerel, maliyetsiz; JA/KO/ZH/AR yazı tipleri `mockup_feature/_work/fonts/`, bkz. `scripts/store-assets/fonts.js`).
 
 ---
 
