@@ -15,6 +15,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 **Kod:** `main` = son commit. iOS `buildNumber: "8"`, Android `versionCode: 2`. `.env` yeni
 `sb_publishable_…` anahtarını taşıyor. `tsc` temiz · lint 0 hata · `i18n:check` geçti · 211 test.
 **Mağaza adımları ayrı dosyada: `store_control.md`** (yalnızca App Store / Play işleri).
+**Kullanıcının bütün işleri tek listede, kategorili: `arif_todo.md`** — kullanıcı bir işi bitirince orayı da güncelleyin.
 
 ### ★★ ÖNCELİK 1 — Google Maps anahtarını yenile ve kısıtla (D4, kullanıcı)
 > **Durum (19 Eylül):** 1–4 ✅. İki yeni anahtar `.env`'de; oturum doğruladı: Static anahtar
@@ -86,6 +87,8 @@ Google Cloud Console → APIs & Services → Credentials:
 | Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
 | Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
 | **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: D4 (kısmen), D5, D7 |
+| Mağaza metinleri (C6) | `STORE_LISTING.md` **12 dil** (subtitle, kısa açıklama, promo, anahtar kelime, açıklama, what's new; sınırlar script'le doğrulandı). Yanlış "çevrimdışı yazma" iddiası ve "4+" çıkarıldı. `store_control.md` 12 dile göre güncellendi |
+| KO çeviri hatası | `컨렉션` → `컬렉션` (3 yer, `ko.ts`) |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler
@@ -568,10 +571,10 @@ iOS'ta MapKit bunu uygulama içi seçimle değiştirmeye izin vermiyor. Pin baş
 harita URL'si düzeltildi, kıta/ülke etiketleri düzeltilemedi. Gerçekten şart olursa Android'de
 process locale'i zorlamak konuşulabilir; iOS'ta çözüm yok.
 
-**C7. Yaş derecelendirmesi.** `STORE_LISTING.md` "4+" diyor; kullanıcı gönderileri ve doğrudan
+**C7. Yaş derecelendirmesi** (`STORE_LISTING.md`'deki "4+" kaldırıldı; anket kullanıcıda, `arif_todo.md` §4). `STORE_LISTING.md` "4+" diyor; kullanıcı gönderileri ve doğrudan
 mesajlaşma olduğu için Apple'ın yeni anketinde büyük olasılıkla 12+/13+ çıkar. Anketi dürüst doldurun.
 
-**C6. Mağaza metinleri yalnızca EN + TR.** Uygulama 12 dil destekliyor. App Store /
+**C6. ✅ (19 Eylül) Mağaza metinleri yalnızca EN + TR idi** — artık 12 dil, `STORE_LISTING.md`. Uygulama 12 dil destekliyor. App Store /
 Play Store listelemesini 12 dile çevirmek yayını engellemez ama dönüşümü artırır.
 
 ---
