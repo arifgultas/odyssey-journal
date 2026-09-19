@@ -28,8 +28,8 @@ jobs:
         run: npm ci
 
       - name: Run ESLint
+        # Errors fail the job; the ~185 warnings do not (see FINALIZE C3 before bulk-fixing them)
         run: npm run lint
-        continue-on-error: true
 
   test:
     name: Test
@@ -88,8 +88,9 @@ jobs:
         run: npm ci
 
       - name: TypeScript check
-        run: npx tsc --noEmit --skipLibCheck --exclude supabase/functions
-        continue-on-error: true
+        # supabase/functions (Deno) is excluded in tsconfig.json; tsc has no --exclude flag, and
+        # passing one made this step fail on every run, hidden by continue-on-error
+        run: npx tsc --noEmit --skipLibCheck
 
   build-preview:
     name: EAS Preview Build
