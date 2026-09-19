@@ -25,6 +25,11 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | `STORE_LISTING.md` | 12 dil mağaza metni + görsel klasörleri |
 | Bu dosya | Durum, kararlar, oturum tarafında bekleyenler, teknik geçmiş |
 
+> **Yerel `tsc` ile CI farkı:** `expo-env.d.ts` git dışı ve Expo'nun **web** tip eklerini getiriyor;
+> bu yüzden yerelde `backgroundImage` gibi yalnız web'de çalışan stil özellikleri hata vermiyor,
+> CI'da (o dosya yokken) veriyor. CI'ınki cihaz gerçeğine daha yakın — bu fark bir hatayı yakaladı
+> (yukarıdaki gradyan). Yerelde temiz geçen bir şey CI'da düşerse önce buraya bakın.
+
 **Yayın önündeki tek teknik engel:** iOS build 8 için EAS kredisi (aşağıda). Geri kalanı kullanıcının
 mağaza formları ve cihaz testleri (`arif_todo.md`).
 
@@ -103,6 +108,9 @@ Kalan: yeni build'lerde harita çalışınca eski iki anahtarı silmek (kullanı
 | Mağaza görselleri | 12 dil × 8 ekran × iOS/Android (192) + 12 feature graphic, yerelde maliyetsiz (`compose.js`, `feature-graphic.js`, `fonts.js`: JA/KO/ZH/AR için Noto Serif / Naskh, `mockup_feature/_work/fonts/`, git dışı). Satır genişlikleri script'le ölçüldü; arayüz her dilde EN. İlk EN/TR seti fal ile (~$1.16, §3 A3) |
 | KO çeviri hatası | `컨렉션` → `컬렉션` (3 yer, `ko.ts`) |
 | Web sitesi metin hataları | kullanıcı düzeltiyor (`arif_todo.md` §6) |
+| CI action'ları (20 Eylül) | GitHub Node 20 action'larını Node 24'e zorluyor + uyarı veriyor → `checkout`/`setup-node`/`upload-artifact` **v7**, `supabase/setup-cli` **v3** (CLI yine 2.117.0'a sabit, artık npm'den), `expo-github-action` **v9**. İşlerin kendi Node'u 20/18 → **24** (ikisinin de desteği bitmişti). `supabase-deploy`'a `workflow_dispatch` eklendi |
+| **CI'da tip kontrolü hiç çalışmamış** | `tsc --exclude supabase/functions` — `tsc`'de böyle bir seçenek yok (TS5023), adım her seferinde düşüyordu ve `continue-on-error` bunu gizliyordu. Seçenek kaldırıldı (`tsconfig.json` zaten hariç tutuyor); lint ve tsc artık hata verirse CI kırmızı (uyarılar kırmaz) |
+| Profil günlük kartlarında gradyan | `backgroundImage: 'linear-gradient(...)'` **yalnız web CSS'i** → cihazda hiç çizilmiyordu. `expo-linear-gradient` ile gerçek gradyan (`app/user-profile/[id].tsx`, 2 yer). **Cihazda bakılmalı** |
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
 > **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2, D3 **düzeltildi** (aşağıda "Review düzeltmeleri").

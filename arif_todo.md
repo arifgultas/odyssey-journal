@@ -52,6 +52,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Bir gönderiyi paylaş → link `odysseyjournal.app/?post=…` → ana sayfa açılıyor
 - [ ] Profildeki seyahat haritası görseli yükleniyor (yeni Static Maps anahtarı)
 - [ ] Android: harita ekranı açılıyor (yeni Maps SDK anahtarı)
+- [ ] Başka bir kullanıcının profilinde günlük kartları: fotoğrafın altında yazıyı okunur kılan
+      koyulaşan gradyan görünüyor mu (20 Eylül'de düzeltildi; eskiden cihazda hiç çizilmiyordu)
 
 **Push bildirimi** (FINALIZE #2)
 - [ ] Android'de review demo hesabıyla gir → Admin'in gönderisini beğen → Admin'in iPhone'una
