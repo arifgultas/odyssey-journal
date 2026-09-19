@@ -28,11 +28,17 @@ yoksa eski anahtara düşer, yani adımlar bitene kadar hiçbir şey kırılmaz.
 
 Google Cloud Console → APIs & Services → Credentials:
 1. **Yeni anahtar "Android Maps SDK"** → Application restrictions: *Android apps* →
-   paket `com.odysseyjournal.app` + SHA-1'ler: Play Console → Test and release → App integrity →
-   **App signing key** SHA-1 (Play'den inen her build) ve **upload key** SHA-1 (Android Studio'da
-   imzaladığın AAB; `keytool -list -v -keystore <keystore>`). Geliştirmede Expo dev build
-   kullanıyorsan debug keystore SHA-1'ini de ekle. API restrictions: yalnız **Maps SDK for Android**.
-   (iOS'ta harita Apple Maps; bu anahtar iOS'ta kullanılmıyor.)
+   paket `com.odysseyjournal.app` + SHA-1'ler. API restrictions: yalnız **Maps SDK for Android**.
+   (iOS'ta harita Apple Maps; bu anahtar iOS'ta kullanılmıyor.) SHA-1'ler üç aşamada eklenir:
+   - **Şimdi — debug:** `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`
+     (`android/app/debug.keystore`; geliştirme build'leri). Bu React Native şablonunun herkeste aynı
+     olan debug anahtarı → **yayından önce kaldırılır**.
+   - **AAB alınınca — upload key:** Android Studio'da oluşturulan `odyssey-upload.jks`
+     (`store_control.md` §2). `"C:\Program Files\Android\Android Studio\jbrin\keytool.exe" -list -v -keystore <jks> -alias upload`
+     → `SHA1:` satırı. (Oturum da çıkarabilir.)
+   - **İlk Play yüklemesinden sonra — app signing key:** Play Console → Test and release →
+     App integrity → App signing → *App signing key certificate* SHA-1. Play'den (dahili test dahil)
+     inen her build bununla imzalı; **eklenmezse Play'den kurulan uygulamada harita boş gelir.**
 2. **Yeni anahtar "Static Maps"** → Application restrictions: *None* (düz HTTP, başka türlüsü
    çalışmaz) → API restrictions: yalnız **Maps Static API**. Sonra APIs & Services → Maps Static
    API → **Quotas**: günlük istek sınırı (ör. 2.000). Anahtar uygulamadan çıkarılabilir; zararı
@@ -91,7 +97,7 @@ Google Cloud Console → APIs & Services → Credentials:
 | 11 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
 | 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
 | 13 | Kullanıcı — **ÖNCELİK 1** | Maps anahtarlarını yenile + kısıtla — en üstteki "ÖNCELİK 1" bölümü |
-| 15 | Kullanıcı | **031'i onayla:** GitHub → Actions → "Deploy Supabase" (031 push'u) → *Review deployments* → Approve. Onaylanmadan canlıya gitmez |
+| 15 | ✅ Kullanıcı | 031 onaylandı, canlıya uygulandı (19 Eylül, run 35460360360) — environment onayı ilk kez sorunsuz çalıştı |
 | 14 | ✅ Oturum | D6: `production` environment (onaylayıcı: arifgultas, yalnız `main`) + `supabase-deploy.yml` ona bağlı, CLI `2.117.0`'a sabit. **Artık her `supabase/**` push'unda deploy onay bekler:** GitHub → Actions → "Deploy Supabase" çalışması → *Review deployments* → Approve |
 
 ### Sonra yapılacaklar (kullanıcı ertelendi)
