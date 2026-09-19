@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-19 (gece)
+**Son güncelleme:** 2026-09-19 (gece, code + security review sonrası)
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -44,6 +44,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | Kayıt ekranı linkleri (8e4bb2e) | Koşullar / Gizlilik artık `lib/legal-links.ts` üzerinden siteyi açıyor; Ayarlar → Yasal'a iki satır eklendi |
 | Google / Apple girişi (8e4bb2e) | Supabase'de **ikisi de kapalı** (`/auth/v1/settings` → `google:false, apple:false`). Butonlar `SOCIAL_SIGN_IN_ENABLED = false` ile gizlendi. Açmak için: Apple Services ID + key, Google OAuth client → Supabase Providers → bayrağı `true` yap. Apple 4.8: Google varsa Apple da olmalı. 1.1 için öneri |
 | Veri kopyası (kullanıcı kararı) | Uygulama içi "Verilerimi İndir" **kaldırıldı** (`lib/export-data.ts` silindi). Ayarlar → Hesap'taki satır artık "Verilerimi İste": açıklama + "E-posta Gönder" → `mailto:privacy@odysseyjournal.app`. Hesap silme onayına da "önce kopya isterseniz privacy@'ye yazın" cümlesi eklendi. 12 dil; site (`/delete-account`, `/support`) ile aynı. Anahtarlar: `settings.download/exportSuccess/exportError` silindi, `settings.sendEmail` eklendi (727 anahtar) |
+| **Code + security review** | 5 kritik/yüksek, 7 orta, 7 düşük bulgu (aşağıda "Review bulguları"). `030_security_fixes.sql` canlıda (e80f841) + istemci düzeltmeleri (e80f841, e5af2fc). Açık kalanlar: O2 (site), D3–D7 |
 | Web sitesi metin hataları | kullanıcı düzeltiyor: `/terms` "Settings > Danger Zone" → doğrusu **Settings > Account > Delete Account**; `/delete-account` "profili gizli yap" önerisi (uygulamada gizli profil yok) |
 
 ### Sıradaki işler
@@ -56,36 +57,18 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | 5 | Kullanıcı → Oturum | Build 8 + yeni AAB cihazda sorunsuzsa legacy anahtarları kapat: Supabase Dashboard → Project Settings → API Keys → Legacy API Keys → "Disable JWT-based API keys" (geri alınabilir). Oturum salt-okuma testiyle doğrular. Sonrasında eski anahtarlı build'ler (iOS ≤6, EAS AAB `324319a5`) çalışmaz |
 | 6 | Kullanıcı | fal.ai anahtarını fal panelinden iptal et (`.env.local`'dan silindi, ama sohbette açık yazılmıştı) |
 | 7 | Oturum | Play 12 test kullanıcı / 14 gün kapalı test şartı çıkarsa kurulumuna yardım |
-| 8 | ✅ Oturum | **Code review + security review yapıldı (19 Eylül)** — bulgular aşağıda "Review bulguları"; düzeltmeler bekliyor |
-| 9 | Kullanıcı | "Review bulguları" altındaki **doğrulama SQL'ini** Supabase SQL editöründe çalıştır, çıktıyı oturuma ver (salt okuma) |
-| 10 | ✅ Oturum | Düzeltmeler yapıldı ve push edildi (aşağıda "Review düzeltmeleri"). `Deploy Supabase` 030'u canlıya uyguladı (e80f841, başarılı); anon yoklaması: `push_tokens` ve `set_push_token` anon'a kapalı |
-| 11 | Kullanıcı | Supabase → Authentication → URL Configuration → **Redirect URLs**'e `odysseyjournal://reset-password` ekle (yoksa sıfırlama linki siteye düşer) |
-| 12 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
-| 13 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir, gönderi düzenle, çıkış yap → başka hesapla gir, şifre sıfırla, hesap sil (test hesabıyla) |
-
-### Sonraki oturum: code review + security review için notlar
-Kapsam önerisi ve bilinen şüpheli noktalar (henüz incelenmedi, yalnızca işaret):
-- **Supabase RLS / fonksiyonlar:** `supabase/migrations/` 30 dosya, 15'inde `SECURITY DEFINER`.
-  Özellikle `delete_user_account`, `flush_push_queue` (029, `search_path=''`, PUBLIC/anon/authenticated'dan
-  REVOKE edildi), tetikleyiciler, admin fonksiyonları (`lib/admin-service.ts`).
-- **Numarasız migration'lar:** `add_weather_captions.sql`, `FIX_AVATAR_UPLOAD.sql`,
-  `fix_function_search_path.sql`, `fix_security_definer_views.sql` — `db push` sırası/uygulanıp
-  uygulanmadığı belirsiz; canlı şemayla karşılaştırılmalı.
-- **Storage bucket politikaları** (avatar/post görselleri): kim neyi yazabiliyor/silebiliyor.
-- **Edge functions:** `moderate-content` (istekteki `apikey` + kullanıcı JWT'si),
-  `send-push-notifications` artık kullanılmıyor → deploy'dan kaldırılması düşünülmeli.
-- **Anahtarlar:** service_role (legacy) ve fal anahtarı geçmiş oturumlarda sohbette düz metin
-  paylaşıldı → legacy kapatma (#5) ve fal iptali (#6) bunu kapatır. `git ls-files` → yalnız
-  `.env.example` izleniyor; `.env`/`.env.local` git dışı. Git geçmişinde sızıntı taraması yapılmalı.
-- **İstemci:** `hooks/use-oauth.ts` (token'lar redirect hash'inden okunuyor; butonlar gizli ama kod
-  duruyor), `forgot-password.tsx` deep link `odysseyjournal://reset-password`, `lib/share.ts`,
-  mesajlaşma (realtime kanal yetkisi), şikâyet/engelleme akışı, `mailto:` veri talebi (`app/settings.tsx` `handleRequestData`).
-- **CI:** `.github/workflows/` (`ci.yml`, `eas-build.yml`, `supabase-deploy.yml`) — secret kullanımı,
-  `supabase-deploy` main'e her `supabase/**` push'unda canlıya `db push` yapıyor.
-- **Bağımlılıklar:** `npm audit`; B4'teki 16 sürüm uyuşmazlığı.
-- Review bulguları düzeltilirse yeni build gerekir → EAS kredisi durumu (yukarıdaki engel) hesaba katılmalı.
+| 8 | Kullanıcı | **Review doğrulama SQL'i** (aşağıda) → Supabase SQL editörü, çıktıyı oturuma ver. Artık asıl amacı: 030'un canlı hâlini teyit etmek + **takipçi sayacı çift mi artıyor** (son satır) |
+| 9 | Kullanıcı | Supabase → Authentication → URL Configuration → **Redirect URLs**'e `odysseyjournal://reset-password` ekle (yoksa sıfırlama linki siteye düşer) |
+| 10 | Kullanıcı | Deploy edilmiş eski fonksiyonu sil: `! npx supabase functions delete send-push-notifications --project-ref <ref>` |
+| 11 | Kullanıcı | Sitede `/post/*` için bir sayfa (mağaza linkleri) — paylaşım linkleri şu an 404 (O2) |
+| 12 | Kullanıcı | Yeni build'lerde cihazda dene: avatar değiştir (TestFlight 7'de artık düşer, beklenen), gönderi düzenle, profil sekmesinden çıkış → başka hesapla gir (önceki hesabın push'u gelmemeli), şifre sıfırla, test hesabı sil → Dashboard → Storage'da `posts/<uid>/`, `avatars/<uid>/` boş mu |
+| 13 | Kullanıcı | Google Cloud → Maps anahtarında Android paket + SHA-1 / iOS bundle kısıtı var mı (D4) |
+| 14 | Kullanıcı karar | `supabase-deploy.yml` onaysız canlıya gidiyor (D6): GitHub Environment + required reviewer eklensin mi? |
 
 ### Review bulguları — 19 Eylül (repo + canlıya salt-okuma yoklama)
+> **Durum:** K1, K2, Y1–Y5, O1, O3–O7, D1, D2 **düzeltildi** (aşağıda "Review düzeltmeleri").
+> Açık: **O2** (site işi), **D3–D7**. Aşağıdaki metin bulguların ilk hâli; satır numaraları 030 öncesine ait.
+
 Kaynak: `FULL_SETUP.sql` + `supabase/migrations/*` + istemci kodu. Canlıda yalnızca anon REST
 yoklaması yapıldı (anon `profiles`/`posts` okuyamıyor → `is_blocked_by` anon'a kapalı, iyi;
 `interactions` tablosu **yok**). Sütun yetkileri ve fonksiyon gövdeleri canlıda doğrulanmadı →
@@ -198,7 +181,10 @@ Testte fark edilen, 030 dışı: FULL_SETUP (`trigger_update_follow_counts`) ve 
 (`update_follower_counts_trigger`) iki ayrı takip sayacı tetikleyicisi kuruyor; ikisi de canlıdaysa
 takipçi sayıları **çift** artar. Aşağıdaki SQL'in son satırı bunu gösterir.
 
-**Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır):**
+**Doğrulama SQL'i (salt okuma, kullanıcı çalıştırır).** 030 sonrası beklenen: ilk satır
+`is_admin_writable` yine `true` çıkar (koruma sütun yetkisiyle değil `guard_profile_columns`
+tetikleyicisiyle; ikinci sorguda görünmeli), `k2_broken = false`, storage'da avatars/posts için
+yalnız 030'un 7 politikası, üç bucket'ta `file_size_limit = 10485760`:
 ```sql
 select has_column_privilege('authenticated','public.profiles','is_admin','UPDATE') as k1_is_admin_writable,
        has_column_privilege('authenticated','public.profiles','expo_push_token','SELECT') as y5_token_readable;
