@@ -90,12 +90,12 @@ aşağıdaki SQL.
 
 **Kritik**
 - **K1 — Kullanıcı kendini admin yapabilir / banını kaldırabilir.** `profiles` UPDATE politikası
-  yalnızca `auth.uid() = id` bakıyor (`019_…sql:132`), sütun kısıtı yok, koruyan trigger yok.
+  yalnızca `auth.uid() = id` bakıyor (`019_…sql:134`), sütun kısıtı yok, koruyan trigger yok.
   `supabase.from('profiles').update({ is_admin: true })` → admin paneli + `admin_delete_post` /
   `admin_ban_user` açılır. Aynı yolla `is_banned=false`, `followers_count`, `posts_count` de yazılır.
   Düzeltme: BEFORE UPDATE trigger (auth.uid() sahibiyse `is_admin/is_banned/banned_at/*_count`
   değişemez) ya da `REVOKE UPDATE` + yalnız izinli sütunlara `GRANT UPDATE (…)`.
-- **K2 — Hesap silme canlıda hata veriyor olabilir.** `011_delete_user_account.sql:44`
+- **K2 — Hesap silme canlıda hata veriyor olabilir.** `011_delete_user_account.sql:45`
   `DELETE FROM public.interactions` — tablo canlıda yok (PGRST205). 011 sürümü canlıdaysa RPC her
   seferinde düşer; uygulama "genel hata" gösterir (Apple 5.1.1(v) reddi). `FULL_SETUP.sql`
   sürümünde bu satır yok; hangisinin canlıda olduğu SQL #3 ile görülür. Ayrıca hiçbir sürüm
