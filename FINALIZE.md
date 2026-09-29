@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-29 (finalize taraması: 12 yeni bulgu, build 8 öncesi native düzeltmeler,
+**Son güncelleme:** 2026-09-29 akşam (finalize taraması + akşam ikinci tur: Supabase advisor S1–S5; build 8 öncesi native düzeltmeler,
 OpenAI izni, temizlik — ayrıntı hemen aşağıda "29 Eylül")
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
@@ -17,12 +17,48 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 `expo export` iOS + Android üretim paketi derleniyor. iOS `buildNumber: "8"` (henüz alınmadı; EAS'te
 son iOS build 7), Android `versionCode: 2`. `android/` 29 Eylül'de yeniden üretildi.
 
-**Yayına kadar sıra:** panel işleri ✅ (SMTP, OpenAI, Firebase, Sentry, site) → **~1 Ekim EAS kotasıyla
+**Yayına kadar sıra:** `032` (S1–S3, aşağıda "akşamı") → panel işleri ✅ (SMTP, OpenAI, Firebase, Sentry, site) → **~1 Ekim EAS kotasıyla
 iki build de EAS'ten**: iOS build 8 + Android AAB (versionCode 2; yerel Android build bu makinede mümkün
 değil, aşağıda "Android build notu") → Play dahili + kapalı test (14 gün şartı en uzun kalem, hemen
 başlamalı) → cihaz turu (`arif_todo.md` §3) → App Store gönderimi.
 
+### 29 Eylül akşamı — ek tarama ve kapanış
+
+> İlk taramada kaçan bulgular gün içinde tek tek çıktı (kullanıcı haklı olarak uyardı). Kapanıştan önce
+> sistematik ikinci tur yapıldı: Supabase Security Advisor, yedekler, auth ayarları, kullanıcı/rol
+> durumu, uygulama içi ve mağaza metinleri, repodaki eski belgeler. Aşağıdakiler o turun sonucu.
+
+**Gün içinde yapılanlar (sırayla):** finalize taraması + `acc5f32` (ikonlar, OpenAI izni, izin metinleri,
+temizlik) → `dbc038d` (Sentry org/proje; Android AAB EAS'e) → Sentry token (Chrome ile, EAS secret +
+`.env.sentry-build-plugin`) → GitHub Pages kapatıldı → site: gizlilik/silme/`/email-confirmed` 12 dil
+(site `63b67be`, deploy `187e919`) → `915d72c` (onay linki `/<dil>/email-confirmed`; Supabase Redirect
+URLs `https://odysseyjournal.app/**`) → site devir dosyası `APP_SYNC_2026-09-29.md` (site `2c6f1ab`) →
+demo hesap planı (`arif_todo.md` §3b).
+
+**Yeni bulgular — sonraki oturumda ilk iş (build'den önce, kod + onaylı deploy):**
+| # | Bulgu | Yapılacak |
+|---|---|---|
+| S1 | **Security Advisor: `avatars`, `posts`, `collection-covers` bucket'ları listelenebiliyor** — oturumsuz biri bile tüm dosya listesini (tüm kullanıcıların fotoğraf yolları) çekebilir. Herkese açık bucket'ta dosya URL'si SELECT politikası olmadan da açılır; geniş SELECT yalnız listelemeyi açıyor | `032_…sql`: üç bucket'taki geniş SELECT politikasını düşür, yerine sahibinin klasörü (`(storage.foldername(name))[1] = auth.uid()::text`). Hesap silmedeki `listAllUserImages` kendi klasörünü listelediği için çalışmaya devam eder — PGlite'ta ve cihazda test |
+| S2 | `get_popular_destinations`, `get_trending_locations` SECURITY DEFINER ve **anon çağırabiliyor** (RLS'i atlayıp gönderi konum özetini döndürüyor; anon `posts` okuyamıyor) | `032`: `REVOKE EXECUTE … FROM anon, public` (yalnız `authenticated`); uygulama bunları oturum açıkken çağırıyor mu diye önce kontrol |
+| S3 | `move_profile_push_token()` tetikleyici fonksiyonu anon/authenticated'a EXECUTE açık | `032`: `REVOKE EXECUTE … FROM anon, authenticated, public` (tetikleyici olarak çalışmaya devam eder) |
+| S4 | `pg_net` `public` şemasında | Uyarı; taşımak 029'daki `net.http_post` çağrılarını etkiler — **dokunmayın** |
+| S5 | Uyarı sayılan ama doğru olanlar: `delete_user_account`, `set_push_token`, `clear_push_token` oturum açmış kullanıcıya açık | Bilerek öyle |
+
+**Doğrulanan durumlar:** günlük yedek var, 7 gün (Pro); **PITR kapalı** → sitedeki "point-in-time recovery"
+iddiası yanlış (site `APP_SYNC` §3.4). Sızmış şifre koruması açık, captcha kapalı, e-posta onayı açık,
+yalnız Email sağlayıcı açık. **Hiçbir hesapta `is_admin` yok** → moderasyon paneli kimseye görünmüyor
+(kullanıcıya SQL verildi, `arif_todo.md` §3b). Demo hesap `review@odysseyjournal.app` boş (§3b).
+Repo kökündeki eski yasal kopyalar (`PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md`, `WEBSITE_LEGAL_DOCS.md`)
+Keychain / PITR iddialarını taşıyordu → `docs/archive/`'e; kaynak site deposu.
+
+**Hâlâ doğrulanmamış (cihaz/mağaza gerektiriyor):** iOS push için EAS'te APNs anahtarı var mı (build 7
+EAS'ten alındı; push testi söyleyecek), Sentry'ye source map yüklemesi (ilk EAS build'i), Android'e push
+(FCM), App Store Connect'te önceki TestFlight yüklemelerine ITMS-9105x (privacy manifest) uyarı e-postası
+gelmiş mi (kullanıcı e-postasına bakmalı).
+
 ### Build oturumu (~1 Ekim) — adım adım
+0. **Önce S1–S3 (`032` migration, aşağıdaki tablo)** → push → kullanıcı "Deploy Supabase"ı onaylar →
+   Security Advisor'da uyarılar düştü mü. Kod değişikliği olmadığı için build'i beklemez ama yayından önce bitmeli.
 1. expo.dev → Billing/Usage: iOS ve Android kotası yenilenmiş mi. `eas build:list --limit 3` ile son build'ler.
 2. `git status` temiz, `main` = origin. `npx tsc --noEmit --skipLibCheck`, `npm test`, `npm run i18n:check`.
 3. `eas build --platform android --profile production` → AAB (versionCode 2). `google-services.json`

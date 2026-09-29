@@ -186,7 +186,7 @@ play.google.com/console
 | Feature graphic (1024×500) | `mockup_feature/feature-graphic/feature-graphic-<dil>.png` — 12 dil |
 | Play ikonu (512×512) | `mockup_feature/play-icon-512.png` |
 | Mağaza metinleri (12 dil) | `STORE_LISTING.md` |
-| Yasal metinler | `WEBSITE_LEGAL_DOCS.md`, `PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md` |
+| Yasal metinler | **Site deposu** `odyssey-journal-website/content/legal/` (12 dil; kaynak orası). Buradaki eski kopyalar `docs/archive/`'de |
 | Genel durum, build/test, anahtarlar, sıradaki işler | `FINALIZE.md` |
 
 `mockup_feature/` git'e girmiyor (büyük görsel dosyaları); yalnızca bu bilgisayarda duruyor —

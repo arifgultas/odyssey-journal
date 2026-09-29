@@ -38,6 +38,13 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
+- [ ] **`032` deploy onayı** — sonraki oturum Supabase Security Advisor'ın bulduğu açıkları (bucket'lar
+      listelenebiliyor, iki fonksiyon oturumsuz çağrılabiliyor) `032` ile kapatacak. Push'tan sonra GitHub →
+      Actions → "Deploy Supabase" → Review deployments → **Approve** (FINALIZE "29 Eylül akşamı" S1–S3)
+- [ ] **E-postanı kontrol et:** App Store Connect'ten TestFlight build'leri için "ITMS-91053 / Missing
+      API declaration" (privacy manifest) konulu uyarı e-postası geldi mi? Geldiyse oturuma ilet
+      (build 8'den önce düzeltilmeli)
+
 - [x] ~~**fal.ai anahtarını iptal et**~~ ✅ 29 Eylül — iki anahtar da (uygulama + site) silindi
 - [x] ~~Google Maps: iki yeni kısıtlı anahtar, `.env`, günlük kota 300, bütçe uyarısı~~ ✅ 19 Eylül
 - [x] ~~Supabase Redirect URL (`odysseyjournal://reset-password`)~~ ✅ 19 Eylül
