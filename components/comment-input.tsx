@@ -26,8 +26,10 @@ export function CommentInput({
 
     const handleSubmit = async () => {
         if (comment.trim() && !loading) {
-            const posted = await onSubmit(comment.trim());
-            if (posted !== false) setComment('');
+            const submitted = comment.trim();
+            const posted = await onSubmit(submitted);
+            // Keep anything typed while it was being posted
+            if (posted !== false) setComment((current) => (current.trim() === submitted ? '' : current));
         }
     };
 

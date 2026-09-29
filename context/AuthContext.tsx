@@ -1,3 +1,4 @@
+import { markOnboardingComplete } from '@/hooks/use-onboarding';
 import { removePushToken } from '@/lib/push-notifications';
 import { clearSentryUser, setSentryUser } from '@/lib/sentry';
 import { supabase } from '@/lib/supabase';
@@ -72,7 +73,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
             // Allow staying in auth or onboarding screens
         } else {
-            // User is logged in
+            // User is logged in. Someone with a session has been through onboarding already - this
+            // covers accounts signed in before the flag existed, who never pressed its buttons.
+            markOnboardingComplete();
             if (inAuthGroup || inOnboarding) {
                 // Redirect to home if authenticated and trying to access auth/onboarding screens
                 router.replace('/(tabs)');

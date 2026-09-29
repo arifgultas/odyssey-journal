@@ -5,7 +5,7 @@ import { useTheme } from '@/context/theme-context';
 import { hasAiConsent, setAiConsent } from '@/lib/ai-consent';
 import { openLegalPage } from '@/lib/legal-links';
 import { Ionicons } from '@expo/vector-icons';
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface AiConsentContextValue {
@@ -26,29 +26,38 @@ export const useAiConsent = () => useContext(AiConsentContext);
 export function AiConsentProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
     const [visible, setVisible] = useState(false);
-    const pending = useRef<((granted: boolean) => void) | null>(null);
+    const pending = useRef<Promise<boolean> | null>(null);
+    const resolvePending = useRef<((granted: boolean) => void) | null>(null);
 
     const ensureConsent = useCallback(async () => {
         if (!user) return false;
         if (await hasAiConsent(user.id)) return true;
-        return new Promise<boolean>((resolve) => {
-            pending.current = resolve;
-            setVisible(true);
-        });
+        // A second tap while the dialog is open waits for the same answer instead of replacing it
+        if (!pending.current) {
+            pending.current = new Promise<boolean>((resolve) => {
+                resolvePending.current = resolve;
+                setVisible(true);
+            });
+        }
+        return pending.current;
     }, [user]);
 
-    const answer = (granted: boolean) => {
+    const answer = async (granted: boolean) => {
         setVisible(false);
         if (granted && user) {
-            // Failing to persist only means being asked again next time
-            setAiConsent(user.id, true).catch(() => { });
+            // Written before answering, so the moderation layer (lib/content-moderation.ts), which
+            // reads the same flag, sees it. Failing to persist only means being asked again.
+            await setAiConsent(user.id, true).catch(() => { });
         }
-        pending.current?.(granted);
+        resolvePending.current?.(granted);
+        resolvePending.current = null;
         pending.current = null;
     };
 
+    const value = useMemo(() => ({ ensureConsent }), [ensureConsent]);
+
     return (
-        <AiConsentContext.Provider value={{ ensureConsent }}>
+        <AiConsentContext.Provider value={value}>
             {children}
             <AiConsentModal visible={visible} onAnswer={answer} />
         </AiConsentContext.Provider>

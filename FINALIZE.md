@@ -51,6 +51,24 @@ yalnız Email sağlayıcı açık. **Hiçbir hesapta `is_admin` yok** → modera
 Repo kökündeki eski yasal kopyalar (`PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md`, `WEBSITE_LEGAL_DOCS.md`)
 Keychain / PITR iddialarını taşıyordu → `docs/archive/`'e; kaynak site deposu.
 
+**Code review (`/code-review high 8348967..HEAD`) — 10 bulgu, hepsi aynı akşam kapatıldı:**
+| # | Bulgu | Düzeltme |
+|---|---|---|
+| R1 | **`WRITE_EXTERNAL_STORAGE`'ı engellemek Android ≤ 12'de galeriyi bozuyordu**: expo-image-picker READ+WRITE'ı birlikte istiyor, ikisi de verilmezse "denied" (ImagePickerModule.kt:255-261, 141); Android 9'da kamera da | İzin geri eklendi; engellenenler yalnız `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW` (N9 buna göre) |
+| R2 | `await ensureConsent()` butonun kilitlenmesinden önce → çift dokunuşta gönderi/yorum iki kez; açık pencerede ikinci çağrı ilkinin Promise'ini eziyordu | Üç ekranda senkron `submitLock` ref'i; provider açık isteği paylaşıyor; izin diske yazıldıktan sonra cevap dönüyor |
+| R3 | Index onboarding bayrağını async okuyup sonra `<Redirect>` ediyordu → açılıştaki deep link üzerine yazılabilirdi | Bayrak açılışta bir kez okunup bellekte; splash (`SplashGate`) onu da bekliyor → index ilk karede yönlendiriyor |
+| R4 | Güncellemeden önce giriş yapmış kullanıcılar onboarding düğmesine hiç basmadığı için bayrak yoktu → çıkışta yine onboarding | Oturum açık görülünce `markOnboardingComplete()` (`AuthContext`) |
+| R5 | Yorum eklerken eski `comments` kopyası → izin penceresi açıkken yenilenen yorumlar kaybolurdu; kutu, gönderim sırasında yazılanı da siliyordu | Fonksiyonel `setComments`; kutu yalnız gönderilen metin duruyorsa temizleniyor |
+| R6 | Ayarlar'da ilk okuma, kullanıcının anahtarı çevirmesinin üzerine yazabiliyordu | `aiConsentTouched` ref'i |
+| R7 | İzin yalnız ekranlardaydı; moderasyonu çağıran başka yol (`updateComment` ya da ileride eklenecek bir yol) izni atlayabilirdi | `lib/content-moderation.ts` her çağrıda izni kontrol ediyor, yoksa `AiConsentRequiredError` fırlatıyor ve OpenAI'a hiçbir şey gitmiyor (yeni test) |
+| R8 | `locales` `zh-Hans`, `CFBundleLocalizations` `zh` → tutarsız | `CFBundleLocalizations` → `zh-Hans` (uygulamanın kendi dil kodu yine `zh`) |
+| R9 | `LEGAL_URLS` adresi üç kez tekrar yazıyordu | `SITE_URL`'den türetiliyor |
+| R10 | Provider value her render yeni nesne | `useMemo` |
+
+`/security-review` çalışmadı: yalnız push edilmemiş değişikliklere bakıyor, bugünkü her şey push'luydu.
+`032` (S1–S3) yazıldığında push etmeden önce onun üzerinde çalıştırılmalı.
+Kontroller: `tsc` temiz · 20 suite / **212 test** · `i18n:check` · lint 0 hata · `android/` yeniden üretildi.
+
 **Hâlâ doğrulanmamış (cihaz/mağaza gerektiriyor):** iOS push için EAS'te APNs anahtarı var mı (build 7
 EAS'ten alındı; push testi söyleyecek), Sentry'ye source map yüklemesi (ilk EAS build'i), Android'e push
 (FCM), App Store Connect'te önceki TestFlight yüklemelerine ITMS-9105x (privacy manifest) uyarı e-postası
@@ -82,7 +100,7 @@ gelmiş mi (kullanıcı e-postasına bakmalı).
 | N6 | **Apple 5.1.2(i)**: gönderi/yorum metni ve fotoğraflar OpenAI moderasyonuna gidiyor; izin ve açıklama yoktu | ✅ uygulama (aşağıda) · ✅ gizlilik politikası 12 dil (site deposu `63b67be`) |
 | N7 | Site `/delete-account` kaldırılmış "Download My Data"yı anlatıyor | ✅ 12 dil "Verilerimi İste" (site `63b67be`) |
 | N8 | GitHub Pages hâlâ yayında (`docs/*.html`, eski gizlilik politikası) | ✅ `docs/*.html` silindi · Pages kapatıldı (`gh api -X DELETE …/pages`) |
-| N9 | Gereksiz Android izinleri | ✅ `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW`, `WRITE_EXTERNAL_STORAGE` engellendi. `READ_EXTERNAL_STORAGE` **bilerek kaldı**: Android ≤ 12'de `hooks/use-image-picker.ts` galeri izni istiyor, engellenirse fotoğraf seçimi düşer |
+| N9 | Gereksiz Android izinleri | ✅ `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW` engellendi. `READ_EXTERNAL_STORAGE` **ve `WRITE_EXTERNAL_STORAGE`** (code review R1) **bilerek kaldı**: Android ≤ 12'de `hooks/use-image-picker.ts` galeri izni istiyor, engellenirse fotoğraf seçimi düşer |
 | N10 | İzin pencereleri yalnız İngilizce | ✅ `lang/<dil>.json` × 12 + `locales` (iOS; Android kendi metnini kullanır). Konum metnindeki var olmayan "yakındaki destinasyonlar" çıkarıldı |
 | N11 | Sentry'ye kaynak haritası yüklenmiyor → yayın çökmeleri okunamaz | ✅ debug ID + eklenti; org `gultas-software` / proje `odyssey-journal` (`app.config.ts`), token EAS'te (secret) ve `.env.sentry-build-plugin`'de |
 | N12 | Kayıt onay linki Supabase varsayılanına (localhost) gidiyordu | ✅ `emailRedirectTo: emailConfirmedUrl(language)` → sitenin yeni `/<dil>/email-confirmed` sayfası (süresi dolmuş linkte ayrı mesaj). Supabase: Site URL `https://odysseyjournal.app`, Redirect URLs'e `https://odysseyjournal.app/**` |

@@ -1,5 +1,24 @@
+import { hasAiConsent } from './ai-consent';
 import { supabase } from './supabase';
 import { t, hasTranslation } from './i18n';
+
+/**
+ * Thrown when content would go to OpenAI without the reader's permission (App Store 5.1.2(i)).
+ * The screens ask first (context/ai-consent-context.tsx); this is the backstop for any other path
+ * that reaches moderation, so it stops the post or comment instead of sending it.
+ */
+export class AiConsentRequiredError extends Error {
+    constructor() {
+        super('AI moderation consent required');
+        this.name = 'AiConsentRequiredError';
+    }
+}
+
+async function assertAiConsent() {
+    const { data } = await supabase.auth.getSession();
+    const userId = data.session?.user.id;
+    if (!userId || !(await hasAiConsent(userId))) throw new AiConsentRequiredError();
+}
 
 export interface ModerationResult {
     approved: boolean;
@@ -14,6 +33,8 @@ export async function moderateText(text: string): Promise<ModerationResult> {
     if (!text || text.trim().length === 0) {
         return { approved: true, flaggedCategories: [] };
     }
+
+    await assertAiConsent();
 
     try {
         const { data, error } = await supabase.functions.invoke<{
@@ -46,6 +67,8 @@ export async function moderateImages(imageUrls: string[]): Promise<ModerationRes
     if (!imageUrls || imageUrls.length === 0) {
         return { approved: true, flaggedCategories: [] };
     }
+
+    await assertAiConsent();
 
     try {
         const { data, error } = await supabase.functions.invoke<{
@@ -84,6 +107,8 @@ export async function moderatePost(
     if (!text && (!imageUrls || imageUrls.length === 0)) {
         return { approved: true, flaggedCategories: [] };
     }
+
+    await assertAiConsent();
 
     try {
         const { data, error } = await supabase.functions.invoke<{

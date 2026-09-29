@@ -13,9 +13,9 @@ export function emailConfirmedUrl(language: string) {
 
 // Legal pages live on the public site; the store listings point to the same URLs.
 export const LEGAL_URLS = {
-    terms: 'https://odysseyjournal.app/terms',
-    privacy: 'https://odysseyjournal.app/privacy-policy',
-    support: 'https://odysseyjournal.app/support',
+    terms: `${SITE_URL}/terms`,
+    privacy: `${SITE_URL}/privacy-policy`,
+    support: `${SITE_URL}/support`,
 } as const;
 
 // Same addresses as the website's /support and /delete-account pages.

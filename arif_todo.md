@@ -103,6 +103,9 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
       silueti olmalı (düz beyaz kare değil)
 
 **29 Eylül değişiklikleri**
+- [ ] **Android 12 ve altı bir telefon varsa** (yoksa geç): galeriden fotoğraf seç + kamera → izin isteniyor ve
+      çalışıyor (code review R1: bir izin yanlışlıkla engellenmişti, düzeltildi)
+- [ ] Paylaş / yorum gönder düğmesine hızlıca iki kez bas → gönderi ya da yorum **bir kez** oluşuyor
 - [ ] Android ana ekran ikonu: arkasında gri-beyaz dama deseni **yok**, krem zemin üstünde pusula
       (eski kurulumu silip yeni AAB'yi kur; ikon önbelleği eskiyi gösterebilir)
 - [ ] Telefon dili Türkçeyken: yeni gönderide kamera / galeri / konum izni soruları **Türkçe** (iOS)

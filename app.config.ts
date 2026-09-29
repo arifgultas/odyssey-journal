@@ -44,7 +44,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         "ru",
         "ja",
         "ko",
-        "zh",
+        // Simplified Chinese: must match the zh-Hans.lproj that `locales` below generates
+        "zh-Hans",
         "ar",
       ],
       ITSAppUsesNonExemptEncryption: false,
@@ -79,21 +80,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     permissions: [
       "CAMERA",
-      // Android 12 and older: the gallery permission request in hooks/use-image-picker.ts asks
-      // for this one; blocking it would make every photo pick fail there
+      // Android 12 and older: expo-image-picker's requestMediaLibraryPermissionsAsync asks for READ
+      // and WRITE together and reports "granted" only if both are (ImagePickerModule.kt), and
+      // launchCameraAsync wants WRITE below Android 10. Blocking either would make every photo pick
+      // in hooks/use-image-picker.ts and the edit-profile modal fail there.
       "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
       "ACCESS_FINE_LOCATION",
       "ACCESS_COARSE_LOCATION",
       "INTERNET",
       "ACCESS_NETWORK_STATE",
     ],
-    // Added by libraries but never used: the app records no audio, draws no overlays and writes
-    // no files to shared storage. Declaring them would mean explaining them in Play's Data
-    // safety form for nothing.
+    // Added by libraries but never used: the app records no audio and draws no overlays.
+    // Declaring them would mean explaining them in Play's Data safety form for nothing.
     blockedPermissions: [
       "android.permission.RECORD_AUDIO",
       "android.permission.SYSTEM_ALERT_WINDOW",
-      "android.permission.WRITE_EXTERNAL_STORAGE",
     ],
   },
   // Permission prompts in the app's twelve languages (iOS; Android words its own prompts)

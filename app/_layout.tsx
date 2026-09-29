@@ -5,6 +5,7 @@ import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-context';
 import { useBookFonts } from '@/hooks/use-book-fonts';
 import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
+import { useOnboardingLoaded } from '@/hooks/use-onboarding';
 import { persistOptions, queryClientConfig } from '@/lib/query-persister';
 import { initSentry, SentryErrorBoundary } from '@/lib/sentry';
 import { validateEnv } from '@/lib/env';
@@ -87,7 +88,9 @@ function RootLayoutNav() {
 function SplashGate({ children }: { children: ReactNode }) {
   const { fontsLoaded, fontError } = useBookFonts();
   const { isReady: languageReady } = useLanguage();
-  const ready = (fontsLoaded || fontError) && languageReady;
+  // app/index.tsx redirects on its first render using this flag
+  const onboardingLoaded = useOnboardingLoaded();
+  const ready = (fontsLoaded || fontError) && languageReady && onboardingLoaded;
 
   useEffect(() => {
     if (ready) {

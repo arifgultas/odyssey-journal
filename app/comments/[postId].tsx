@@ -11,13 +11,15 @@ import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { safeGoBack } from '@/lib/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mirrorIcon } from '@/lib/rtl';
 
 export default function CommentsScreen() {
     const { ensureConsent } = useAiConsent();
+    // Guards the await before isSubmitting disables the input (see create-post.tsx)
+    const submitLock = useRef(false);
     const { postId } = useLocalSearchParams<{ postId: string }>();
     const insets = useSafeAreaInsets();
     const { t } = useLanguage();
@@ -81,9 +83,13 @@ export default function CommentsScreen() {
     };
 
     const handleSubmitComment = async (content: string): Promise<boolean> => {
-        if (!postId) return false;
+        if (!postId || submitLock.current) return false;
+        submitLock.current = true;
         // Posts and comments go to OpenAI moderation; ask first (App Store 5.1.2(i))
-        if (!(await ensureConsent())) return false;
+        if (!(await ensureConsent())) {
+            submitLock.current = false;
+            return false;
+        }
 
         setIsSubmitting(true);
         try {
@@ -101,7 +107,8 @@ export default function CommentsScreen() {
             };
 
             // Add to the beginning of the list
-            setComments([commentWithUser, ...comments]);
+            // Functional: the list may have been refreshed while the consent dialog was open
+            setComments((current) => [commentWithUser, ...current]);
             return true;
         } catch (error) {
             console.error('Error adding comment:', error);
@@ -109,6 +116,7 @@ export default function CommentsScreen() {
             return false;
         } finally {
             setIsSubmitting(false);
+            submitLock.current = false;
         }
     };
 

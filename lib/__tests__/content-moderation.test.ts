@@ -7,15 +7,30 @@ jest.mock('../supabase', () => ({
         functions: {
             invoke: jest.fn(),
         },
+        auth: {
+            getSession: jest.fn(async () => ({ data: { session: { user: { id: 'user-1' } } } })),
+        },
     },
 }));
 
+jest.mock('../ai-consent', () => ({
+    hasAiConsent: jest.fn(async () => true),
+}));
+
+import { hasAiConsent } from '../ai-consent';
 import { supabase } from '../supabase';
-import { moderateText, moderateImages } from '../content-moderation';
+import { AiConsentRequiredError, moderateText, moderateImages } from '../content-moderation';
 
 describe('content-moderation', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+    });
+
+    it('sends nothing to OpenAI without consent (App Store 5.1.2(i))', async () => {
+        (hasAiConsent as jest.Mock).mockResolvedValueOnce(false);
+
+        await expect(moderateText('A post')).rejects.toBeInstanceOf(AiConsentRequiredError);
+        expect(supabase.functions.invoke).not.toHaveBeenCalled();
     });
 
     describe('moderateText', () => {

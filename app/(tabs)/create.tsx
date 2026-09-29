@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -546,6 +546,9 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
 
 export default function CreatePostScreen() {
     const { ensureConsent } = useAiConsent();
+    // Set synchronously on the first tap: isSubmitting only disables the button on the next render,
+    // and the consent check awaits storage first, so a quick second tap could post twice
+    const submitLock = useRef(false);
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -711,8 +714,14 @@ export default function CreatePostScreen() {
         // Dismiss keyboard first
         Keyboard.dismiss();
 
+        if (submitLock.current) return;
+        submitLock.current = true;
+
         // Posts and comments go to OpenAI moderation; ask first (App Store 5.1.2(i))
-        if (!(await ensureConsent())) return;
+        if (!(await ensureConsent())) {
+            submitLock.current = false;
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -731,11 +740,13 @@ export default function CreatePostScreen() {
             setTimeout(() => {
                 resetForm();
                 setIsSubmitting(false);
+                submitLock.current = false;
                 router.replace('/(tabs)');
             }, 1500);
         } catch (error) {
             console.error('Error creating post:', error);
             setIsSubmitting(false);
+            submitLock.current = false;
             Alert.alert(t('common.error'), t('create.postError'));
         }
     };

@@ -80,6 +80,8 @@ export default function SettingsScreen() {
     const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
     const [isUserAdmin, setIsUserAdmin] = useState(false);
     const [aiConsent, setAiConsentState] = useState(false);
+    // Set once the reader flips the switch, so the initial storage read cannot overwrite that choice
+    const aiConsentTouched = React.useRef(false);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
 
@@ -89,13 +91,18 @@ export default function SettingsScreen() {
     }, []);
 
     React.useEffect(() => {
-        if (user?.id) hasAiConsent(user.id).then(setAiConsentState);
+        if (!user?.id) return;
+        aiConsentTouched.current = false;
+        hasAiConsent(user.id).then((granted) => {
+            if (!aiConsentTouched.current) setAiConsentState(granted);
+        });
     }, [user?.id]);
 
     // Withdrawing only stops new posts and comments; turning it back on is the same consent
     // the create screens ask for (context/ai-consent-context.tsx)
     const handleToggleAiConsent = (granted: boolean) => {
         if (!user?.id) return;
+        aiConsentTouched.current = true;
         setAiConsentState(granted);
         setAiConsent(user.id, granted).catch(() => setAiConsentState(!granted));
     };

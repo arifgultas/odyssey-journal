@@ -3,39 +3,59 @@ import { useEffect, useState } from 'react';
 
 const ONBOARDING_COMPLETE_KEY = 'odyssey_onboarding_complete';
 
+/*
+ * Read once at startup and kept in memory. The splash screen waits for it (SplashGate in
+ * app/_layout.tsx), so app/index.tsx can redirect on its very first render, the way it did before
+ * the flag existed. Redirecting after an async read instead would replace whatever a deep link had
+ * pushed in the meantime.
+ */
+let cached: boolean | null = null;
+const loaded: Promise<boolean> = AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY)
+    .then((value) => value === 'true')
+    .catch(() => false)
+    .then((complete) => {
+        // markOnboardingComplete may have run while the read was in flight
+        cached = cached === true || complete;
+        return cached;
+    });
+
+/** Marks onboarding as seen; also used for people who were signed in before the flag existed. */
+export async function markOnboardingComplete() {
+    if (cached === true) return;
+    cached = true;
+    try {
+        await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
+    } catch (error) {
+        console.error('Error saving onboarding status:', error);
+    }
+}
+
+/** True once the stored flag has been read; the splash screen stays up until then. */
+export function useOnboardingLoaded() {
+    const [isLoaded, setIsLoaded] = useState(cached !== null);
+    useEffect(() => {
+        if (!isLoaded) loaded.then(() => setIsLoaded(true));
+    }, [isLoaded]);
+    return isLoaded;
+}
+
 export function useOnboarding() {
-    const [isOnboardingComplete, setIsOnboardingComplete] = useState<boolean | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isOnboardingComplete, setIsOnboardingComplete] = useState<boolean | null>(cached);
 
     useEffect(() => {
-        checkOnboardingStatus();
-    }, []);
-
-    const checkOnboardingStatus = async () => {
-        try {
-            const value = await AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY);
-            setIsOnboardingComplete(value === 'true');
-        } catch (error) {
-            console.error('Error checking onboarding status:', error);
-            setIsOnboardingComplete(false);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        if (isOnboardingComplete === null) loaded.then(setIsOnboardingComplete);
+    }, [isOnboardingComplete]);
 
     const completeOnboarding = async () => {
-        try {
-            await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
-            setIsOnboardingComplete(true);
-        } catch (error) {
-            console.error('Error saving onboarding status:', error);
-        }
+        setIsOnboardingComplete(true);
+        await markOnboardingComplete();
     };
 
     const resetOnboarding = async () => {
+        cached = false;
+        setIsOnboardingComplete(false);
         try {
             await AsyncStorage.removeItem(ONBOARDING_COMPLETE_KEY);
-            setIsOnboardingComplete(false);
         } catch (error) {
             console.error('Error resetting onboarding status:', error);
         }
@@ -43,7 +63,7 @@ export function useOnboarding() {
 
     return {
         isOnboardingComplete,
-        isLoading,
+        isLoading: isOnboardingComplete === null,
         completeOnboarding,
         resetOnboarding,
     };
