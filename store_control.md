@@ -81,7 +81,7 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
       Description, Keywords, What's New alanları + `mockup_feature/ios/<dil>/` 8 görsel (01→08).
 
 ### 1.6 App Review Information
-- [ ] **Sign-in required:** ✓ → review demo hesabının e-postası ve şifresi
+- [ ] **Sign-in required:** ✓ → `review@odysseyjournal.app` + şifresi (hesabı hazırlama: `arif_todo.md` §3b)
 - [ ] İletişim bilgileri (ad, telefon, e-posta)
 - [ ] **Notes** kutusuna:
 
@@ -140,7 +140,7 @@ play.google.com/console
 
 ### 3.2 Dashboard → "Set up your app" (sırayla)
 - [ ] **Privacy policy:** `https://odysseyjournal.app/privacy-policy`
-- [ ] **App access:** "All or some functionality is restricted" → demo hesap bilgileri
+- [ ] **App access:** "All or some functionality is restricted" → `review@odysseyjournal.app` + şifresi
 - [ ] **Ads:** No
 - [ ] **Content rating:** e-posta gir → kategori **Social / Communication** → kullanıcılar etkileşiyor mu:
       **Yes** → konum paylaşılıyor mu: **Yes** → şiddet, cinsellik vb.: **No**

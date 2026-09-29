@@ -78,7 +78,7 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Profil sekmesinden çıkış yap → başka hesapla gir → önceki hesabın bildirimleri **gelmiyor**
 - [ ] Giriş ekranı → Şifremi unuttum → e-postadaki linke telefonda bas → uygulama açılıp yeni
       şifre soruyor → yeni şifreyle giriş (Admin2'nin unutulan şifresi de böyle sıfırlanabilir)
-- [ ] **Test hesabıyla** hesap sil → Supabase Dashboard → Storage → `posts/<uid>/` ve
+- [ ] **Test hesabıyla** (`review@review.com` ya da "Deneme" — §3b) hesap sil → Supabase Dashboard → Storage → `posts/<uid>/` ve
       `avatars/<uid>/` klasörleri boşalmış mı
 - [ ] Bir kullanıcıyı engelle → o kullanıcı sana mesaj atamıyor
 - [ ] Bir gönderiyi paylaş → link `odysseyjournal.app/?post=…` → ana sayfa açılıyor
@@ -117,6 +117,46 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Dili Arapça yap → uygulamayı **tamamen kapatıp aç** → rozetler, + düğmesi, kapatma
       düğmeleri doğru kenarda mı, oklar doğru yöne mi bakıyor
 
+## 3b. App Review demo hesabı — `review@odysseyjournal.app` (build 8'den önce ya da hemen sonra)
+
+Apple ve Google inceleyicisi bu hesapla girip uygulamayı 5-10 dakikada gezer. Boş profil ve boş akış
+"uygulama çalışmıyor / içerik yok" (Guideline 2.1) gibi okunabilir. 29 Eylül durumu (salt-okuma):
+hesap onaylı, profil satırı var ama **ad, kullanıcı adı, fotoğraf yok; 0 gönderi, 0 takip; hiç giriş
+yapılmamış.** Uygulamadaki 14 gönderinin hepsi `Admin` (10), `Admin2` (3), `Admin3` (1) hesaplarında.
+E-postaları `review@` takma adı üzerinden hello@ kutusuna gelir.
+
+**Şifre:** hesap 6 Eylül'de panelden açılmış. Şifreyi hatırlamıyorsan build 8 gelince giriş ekranı →
+Şifremi unuttum → e-posta hello@ kutusuna gelir → yeni şifre (build 7'de sıfırlama ekranı yok). Şifreyi
+bir yere not et; App Store Connect ve Play Console'a aynısını gireceksin.
+
+Telefonda **review@ ile giriş yap** ve sırayla:
+- [ ] Profil düzenle: ad `App Review`, kullanıcı adı `appreview`, kısa bio (örn. "Demo account for
+      App Store and Google Play review"), bir profil fotoğrafı
+- [ ] **2-3 gönderi**: her birinde 2-3 fotoğraf, konum (farklı şehirler), kategori, tarih. Böylece
+      profil, biniş kartı, pasaport damgaları ve harita dolu görünür. İlk gönderide "İçerik güvenlik
+      kontrolü" izni çıkar → İzin ver (bu da test)
+- [ ] `Admin`, `Admin2`, `Admin3`'ü takip et (akış ve "takip edilenler" dolsun); Admin hesabından da
+      demo hesabı takip et
+- [ ] Admin'in bir gönderisini beğen, bir yorum yaz, bir gönderiyi kaydet + bir koleksiyon oluştur
+- [ ] Admin hesabından demo hesaba 1-2 mesaj at (Mesajlar ekranı boş kalmasın)
+- [ ] Çıkış yap
+
+**Göz önünde bulundur:** inceleyici akışta yazar adı olarak "Admin", "Admin2" görecek. Mecburi değil,
+ama istersen bu üç hesabın görünen adını gerçekçi gezgin adlarıyla değiştir (profil düzenle).
+
+**Moderasyon paneli:** hiçbir hesapta `is_admin` açık değil, yani uygulamadaki moderasyon paneli şu an
+kimseye görünmüyor. Şikâyetlere 24 saat içinde bakabilmek için (Apple 1.2) kendi hesabını yönetici yap —
+Supabase → SQL Editor'da bir kez çalıştır (Admin hesabı `admin@admin.com` ise):
+```sql
+update public.profiles set is_admin = true where id = '643ff194-f61d-4ad8-b5e5-c5e24d60c4ad';
+```
+(Uygulamadan bu sütun değiştirilemez — 030'daki koruma; SQL editörü sahibi olarak çalıştığı için geçer.)
+
+**Eski test hesapları:** `review@review.com` ("Review", 19 Eylül — büyük olasılıkla bir oturumun
+Android push testi için açtığı hesap) ve bugünkü `arifgultas93@gmail.com` ("Deneme"). §3'teki
+"**test hesabıyla hesap sil**" maddesini bunlardan biriyle yap → hem silme akışı test edilir hem hesap
+temizlenir. Diğerini de aynı yolla sil.
+
 ---
 
 ## 4. App Store Connect (`store_control.md` §1)
@@ -131,7 +171,7 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Her dile kendi ekran görüntüleri: `mockup_feature/ios/<dil>/` (01→08 sırayla;
       klasörler `en tr es fr de pt it ru ja ko zh ar`)
 - [ ] Support / Marketing / Privacy URL'leri
-- [ ] App Review Information: demo hesap + iletişim + Notes (`store_control.md` §1.6; 29 Eylül'de
+- [ ] App Review Information: demo hesap **`review@odysseyjournal.app`** (§3b) + iletişim + Notes (`store_control.md` §1.6; 29 Eylül'de
       OpenAI moderasyon satırı eklendi)
 - [ ] Version Release: **Manually release**
 - [ ] Build **8**'i seç → Add for Review → Submit (build 7'yi gönderme)
@@ -141,7 +181,7 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 ## 5. Google Play Console (`store_control.md` §3)
 
 - [ ] Uygulamayı oluştur (varsayılan dil English (United States))
-- [ ] Set up your app: privacy policy, app access (demo hesap), ads: No, content rating
+- [ ] Set up your app: privacy policy, app access (demo hesap `review@odysseyjournal.app`, §3b), ads: No, content rating
       (kullanıcılar etkileşiyor: Yes), hedef kitle 13+, data safety (silme URL'si dahil)
 - [ ] Mağaza sayfası: EN metin + ikon + feature graphic + 8 görsel; sonra Manage translations ile
       diğer 11 dil: metin (`STORE_LISTING.md`) + `mockup_feature/android/<dil>/` + `feature-graphic-<dil>.png`
