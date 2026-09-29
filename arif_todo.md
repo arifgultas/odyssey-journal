@@ -21,9 +21,11 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 - [x] ~~**0.1 Supabase SMTP** (Google Workspace)~~ ✅ 29 Eylül. Workspace'te tek kullanıcı
       `hello@odysseyjournal.app`; `support@`, `privacy@`, `noreply@`, `review@` onun takma adları.
       SMTP'de giriş hello@ + App password, gönderen `noreply@`.
-  - [ ] **Kalan tek test:** ekip üyesi olmayan bir adresle (örn. kişisel Gmail) uygulamada yeni hesap aç
-        → onay e-postası geliyor mu → linke bas → site açılıyor → uygulamada giriş. Ayrıca bir kez
-        "Şifremi unuttum" e-postası. Gelmezse oturuma söyle.
+  - [x] ~~Ekip dışı adresle kayıt + şifre sıfırlama e-postası~~ ✅ 29 Eylül (build 7 ile): ikisi de
+        noreply@'dan geldi. Build 7'de sıfırlama linki "Unmatched route" veriyor — ekran
+        (`app/reset-password.tsx`) build 7'den sonra eklendi, build 8'de gelir → §3'te tekrar dene.
+        Onay linki artık sitenin **e-posta onaylandı** sayfasına, kullanıcının dilinde gidiyor
+        (`/tr/email-confirmed` …; Supabase Redirect URLs'e `https://odysseyjournal.app/**` eklendi).
 - [x] ~~**0.2 OpenAI anahtarı**~~ ✅ — oturum doğruladı: `moderate-content` anahtar kontrolünü geçiyor.
       (Moderasyon 1 Mart 2026'da `1bdc210` "Security is done" ile eklenmişti.)
 - [x] ~~**0.3 Firebase**~~ ✅ — `google-services.json` kökte (git dışı), FCM V1 anahtarı expo.dev'de;
@@ -36,8 +38,7 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
-- [ ] **fal.ai anahtarını iptal et** — fal.ai paneli → API Keys → mağaza görsellerinde kullanılan
-      anahtarı sil. Geçmiş bir sohbette açık yazılmıştı. (`.env.local`'dan zaten silindi.)
+- [x] ~~**fal.ai anahtarını iptal et**~~ ✅ 29 Eylül — iki anahtar da (uygulama + site) silindi
 - [x] ~~Google Maps: iki yeni kısıtlı anahtar, `.env`, günlük kota 300, bütçe uyarısı~~ ✅ 19 Eylül
 - [x] ~~Supabase Redirect URL (`odysseyjournal://reset-password`)~~ ✅ 19 Eylül
 - [x] ~~Eski `send-push-notifications` fonksiyonunu sil~~ ✅ 19 Eylül
@@ -153,36 +154,17 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 
 ---
 
-## 6. Web sitesi (odysseyjournal.app — Hostinger)
+## 6. Web sitesi (odysseyjournal.app)
 
-- [x] ~~`/terms`: "Settings > Danger Zone" → Settings > Account > Delete Account~~ ✅ (29 Eylül'de sitede görüldü)
-- [x] ~~`/delete-account`: "profili gizli yap" önerisini kaldır~~ ✅
-- [ ] **`/delete-account` → "Deleting Less Than Everything" bölümü:** "A copy of your data before
-      you go" paragrafı kaldırılmış **Download My Data**'yı anlatıyor. Paragrafın yerine:
-
-```
-A copy of your data before you go: in the app, Settings > Account > Request My Data opens an email to privacy@odysseyjournal.app. Send it from the email address of your account and we will send you a copy of your profile, entries, comments, collections, connections, photographs and messages.
-```
-
-- [ ] **`/privacy-policy` → 05 Third-Party Sub-Processors** (Apple 5.1.2(i) için şart — OpenAI adıyla geçmeli):
-  - 3\. maddeyi değiştir:
-    ```
-    Google LLC (Google Maps Platform): Reverse geocoding, interactive map tiles, and the static map image of the places on your profile. Requesting that image transmits the coordinates of those places and your IP address.
-    ```
-  - 8\. maddeyi (**OpenStreetMap Foundation**) sil — yayındaki uygulama OSM kullanmıyor
-  - Yeni madde ekle:
-    ```
-    OpenAI, L.L.C.: Automated content moderation. With your permission, the text and photos of your posts and the text of your comments are sent to OpenAI's Moderation API before they are published, to check them against our Community Guidelines. OpenAI does not use data sent through its API to train its models and keeps it for up to 30 days for abuse monitoring. You give or withdraw this permission in the app under Settings > Legal & Community > AI content check; without it you can still browse, but not post or comment.
-    ```
-- [ ] **`/privacy-policy` → 04 How We Use Your Information** tablosuna satır:
-      `Automated safety check of posts and comments` | `Post text and photos, comment text (sent to OpenAI)` | `Explicit Consent`
-- [ ] **`/privacy-policy` → International Data Transfers** paragrafında parantezdeki listeye `OpenAI` ekle:
-      `(Supabase, Sentry, Google, Expo, OpenAI)`
-- [ ] **GitHub Pages'i kapat** — repo → Settings → Pages → Source: **None** (ya da oturuma "kapat" de,
-      `gh` ile kapatır). `docs/`'taki eski sayfalar silindi ama Pages açık kaldıkça eski gizlilik
-      politikasının kopyası ve arşiv notları `arifgultas.github.io/...` altında yayında kalır.
+- [x] ~~`/terms`, `/delete-account` eski düzeltmeleri~~ ✅
+- [x] ~~Gizlilik politikasında OpenAI, Google statik harita, OSM kaldırma, tablo satırı, aktarım listesi
+      (12 dil); `/delete-account` "Verilerimi İste" paragrafı (12 dil); yeni `/email-confirmed` sayfası
+      (12 dil)~~ ✅ 29 Eylül — oturum yaptı, sitenin kendi deposundan (`odyssey-journal-website`,
+      `63b67be` → `npm run deploy`), canlıda doğrulandı. Ayrıntı sitenin `WORKLOG.md`'sinde.
+- [x] ~~GitHub Pages kapat~~ ✅ 29 Eylül (`arifgultas.github.io/odyssey-journal` artık 404)
 - [ ] Uygulama yayına girince ana sayfadaki **App Store / Google Play** butonlarına gerçek mağaza
-      linklerini koy (şu an ikisi de `#download`'a gidiyor)
+      linklerini koy (şu an `#download`). Sitenin `WORKLOG.md` → "Yapacaklarımız" adımları anlatıyor;
+      oturuma linkleri vermen yeterli.
 
 ---
 

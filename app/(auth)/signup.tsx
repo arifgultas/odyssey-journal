@@ -3,7 +3,7 @@ import { useLanguage } from '@/context/language-context';
 import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
-import { openLegalPage, SITE_URL, SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
+import { emailConfirmedUrl, openLegalPage, SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
@@ -98,8 +98,8 @@ export default function SignUpScreen() {
             email,
             password,
             options: {
-                // The confirmation link lands on the site, not on Supabase's default localhost page
-                emailRedirectTo: SITE_URL,
+                // The confirmation link lands on a site page that says so (lib/legal-links.ts)
+                emailRedirectTo: emailConfirmedUrl(language),
                 data: {
                     full_name: fullName,
                     display_name: fullName.split(' ')[0],

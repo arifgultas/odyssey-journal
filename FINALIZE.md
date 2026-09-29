@@ -30,13 +30,13 @@ App Store gönderimi.
 | N3 | Android bildirim ikonu renkli/opak → durum çubuğunda beyaz kare | ✅ `assets/images/notification-icon.png` (beyaz siluet) |
 | N4 | **Android'de push hiç çalışmıyor**: FCM / `google-services.json` yok, token alınamıyor (hata yutuluyor) | ✅ `google-services.json` + FCM V1 (kullanıcı, 29 Eylül akşamı); `android/` yeniden üretildi. Cihazda uçtan uca test bekliyor |
 | N5 | Supabase'de e-posta onayı açık; varsayılan SMTP yalnız ekip üyelerine gönderir (2/saat) → yeni kullanıcı onay/şifre sıfırlama e-postası alamaz | ✅ Workspace SMTP (hello@ girişi, noreply@ gönderen). Ekip dışı adresle kayıt testi bekliyor |
-| N6 | **Apple 5.1.2(i)**: gönderi/yorum metni ve fotoğraflar OpenAI moderasyonuna gidiyor; izin ve açıklama yoktu | ✅ uygulama (aşağıda) · ⏳ gizlilik politikası (site) |
-| N7 | Site `/delete-account` kaldırılmış "Download My Data"yı anlatıyor | ⏳ kullanıcı, hazır metin `arif_todo.md` §6 |
-| N8 | GitHub Pages hâlâ yayında (`docs/*.html`, eski gizlilik politikası) | ✅ `docs/*.html` silindi · Pages kapatma: bkz. `arif_todo.md` §6 |
+| N6 | **Apple 5.1.2(i)**: gönderi/yorum metni ve fotoğraflar OpenAI moderasyonuna gidiyor; izin ve açıklama yoktu | ✅ uygulama (aşağıda) · ✅ gizlilik politikası 12 dil (site deposu `63b67be`) |
+| N7 | Site `/delete-account` kaldırılmış "Download My Data"yı anlatıyor | ✅ 12 dil "Verilerimi İste" (site `63b67be`) |
+| N8 | GitHub Pages hâlâ yayında (`docs/*.html`, eski gizlilik politikası) | ✅ `docs/*.html` silindi · Pages kapatıldı (`gh api -X DELETE …/pages`) |
 | N9 | Gereksiz Android izinleri | ✅ `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW`, `WRITE_EXTERNAL_STORAGE` engellendi. `READ_EXTERNAL_STORAGE` **bilerek kaldı**: Android ≤ 12'de `hooks/use-image-picker.ts` galeri izni istiyor, engellenirse fotoğraf seçimi düşer |
 | N10 | İzin pencereleri yalnız İngilizce | ✅ `lang/<dil>.json` × 12 + `locales` (iOS; Android kendi metnini kullanır). Konum metnindeki var olmayan "yakındaki destinasyonlar" çıkarıldı |
 | N11 | Sentry'ye kaynak haritası yüklenmiyor → yayın çökmeleri okunamaz | ✅ debug ID + eklenti; org `gultas-software` / proje `odyssey-journal` (`app.config.ts`), token EAS'te (secret) ve `.env.sentry-build-plugin`'de |
-| N12 | Kayıt onay linki Supabase varsayılanına (localhost) gidiyordu | ✅ `emailRedirectTo: SITE_URL` (`lib/legal-links.ts`) · ⏳ Site URL panelden |
+| N12 | Kayıt onay linki Supabase varsayılanına (localhost) gidiyordu | ✅ `emailRedirectTo: emailConfirmedUrl(language)` → sitenin yeni `/<dil>/email-confirmed` sayfası (süresi dolmuş linkte ayrı mesaj). Supabase: Site URL `https://odysseyjournal.app`, Redirect URLs'e `https://odysseyjournal.app/**` |
 
 **Android build notu (29 Eylül) — yerel build bu makinede mümkün değil, AAB EAS'ten alınacak.**
 `./gradlew :app:bundleRelease` iki engele takıldı:
@@ -681,6 +681,11 @@ Maestro kullanılmıyor; `.maestro/` akışları duruyor ama koşulmuyor.
 
 ## 6. Bir sonraki oturumun bilmesi gerekenler
 
+- **Web sitesi ayrı bir depo:** `C:Usersarifg.claudeprojectsodyssey-journal-website`
+  (GitHub `arifgultas/odyssey-journal-website`, private). Sayfalar üretiliyor: `content/` + `templates/`
+  düzenlenir, `npm run build` → commit → push → `npm run deploy` (`deploy` dalı; Hostinger webhook'la
+  çeker). **Hostinger dosya yöneticisinden dosya düzenlemeyin** — bir sonraki deploy üzerine yazar.
+  12 dil, bir dil denetleyicisi karışık dilli sayfayı build'de düşürür. Kararlar sitenin `WORKLOG.md`'sinde.
 - **`LanguageProvider` gövdesine `try` koymayın.** React Compiler bütün dosyadan vazgeçer ve
   `t`'nin memoizasyonu sessizce kaybolur. `i18n:check` bunu yakalar ama sebebi bilmek zaman
   kazandırır.
