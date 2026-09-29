@@ -56,15 +56,15 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
       içerir. Önce §0.4'teki Sentry değişkenlerini EAS'e gir (yoksa build yine geçer, yalnız çökme
       raporları okunmaz).
       (FINALIZE "Engel: Expo (EAS) build kredileri")
-- [ ] **Android AAB — oturum alır (EAS, ~1 Ekim kota yenilenince).** Android Studio yolu iptal: 29 Eylül'de
-      denendi, C++ derleme adımı dosya yolu 260 karakteri aştığı için düşüyor (proje `C:oj`'ye taşınsa
-      bile 269). EAS Linux'ta derliyor; mevcut EAS imza anahtarını kullanır, `.jks` yedekleme derdi yok.
-      Sen yalnız oturuma "Android build'i al" de. (Eski not, referans için:) Android Studio → `android` klasörü → Build → Generate Signed
-      App Bundle → yeni upload anahtarı `odyssey-upload.jks` (`store_control.md` §2).
-  - [ ] `.jks` dosyasını ve şifreleri **iki ayrı yere yedekle** (kaybolursa güncelleme yüklenemez)
-  - [ ] `.jks` oluşunca oturuma haber ver → oturum SHA-1'ini çıkarır → Google Cloud'da
-        "Odyssey Android Maps SDK" anahtarına **+ Add** ile ekle (paket `com.odysseyjournal.app`)
-  - [ ] EAS'ten alınmış eski AAB'yi (`324319a5`) **yükleme**
+- [ ] **Android AAB — oturum alır, EAS'ten (~1 Ekim kota yenilenince). Android Studio'ya gerek yok.**
+      Neden: 29 Eylül'de bu bilgisayarda yerel build denendi; C++ derleme adımı Windows'un 260 karakterlik
+      dosya yolu sınırına takılıyor (proje `C:\oj`'ye taşınsa bile 269). EAS Linux'ta derliyor ve EAS'te
+      duran imza (upload) anahtarını kullanıyor → `.jks` oluşturma/yedekleme derdi yok.
+      Build oturumunda oturuma "iOS ve Android build'lerini alalım" demen yeterli.
+  - [ ] İlk Play yüklemesinden sonra: Play Console → Test and release → App integrity → App signing
+        sayfasındaki **iki** SHA-1'i (App signing key + Upload key) Google Cloud'da "Odyssey Android Maps
+        SDK" anahtarına **+ Add** ile ekle (paket `com.odysseyjournal.app`) — oturum yanında yapar
+  - [ ] EAS'ten 19 Eylül'de alınmış eski AAB'yi (`324319a5`) **yükleme**
 
 ---
 
@@ -162,6 +162,10 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
       (12 dil)~~ ✅ 29 Eylül — oturum yaptı, sitenin kendi deposundan (`odyssey-journal-website`,
       `63b67be` → `npm run deploy`), canlıda doğrulandı. Ayrıntı sitenin `WORKLOG.md`'sinde.
 - [x] ~~GitHub Pages kapat~~ ✅ 29 Eylül (`arifgultas.github.io/odyssey-journal` artık 404)
+- [ ] **Site ↔ uygulama uyum turu (site projesinde, ayrı oturum):** site deposundaki
+      `APP_SYNC_2026-09-29.md` bugün yapılanları ve açık bulguları (Keychain iddiası, "prescreen" cümlesi,
+      FCM/APNs, PITR yedek iddiası …) listeliyor; en altta oturuma yapıştırılacak hazır metin var.
+      Yayından (App Store gönderiminden) önce bitmeli.
 - [ ] Uygulama yayına girince ana sayfadaki **App Store / Google Play** butonlarına gerçek mağaza
       linklerini koy (şu an `#download`). Sitenin `WORKLOG.md` → "Yapacaklarımız" adımları anlatıyor;
       oturuma linkleri vermen yeterli.

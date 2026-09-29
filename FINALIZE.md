@@ -17,10 +17,23 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 `expo export` iOS + Android üretim paketi derleniyor. iOS `buildNumber: "8"` (henüz alınmadı; EAS'te
 son iOS build 7), Android `versionCode: 2`. `android/` 29 Eylül'de yeniden üretildi.
 
-**Yayına kadar sıra:** kullanıcı işleri (`arif_todo.md` §0 yeni: SMTP, Firebase, Sentry, site metinleri)
-→ `google-services.json` gelince `npx expo prebuild --clean -p android` → Android AAB + Play dahili/kapalı
-test (14 gün şartı en uzun kalem, hemen başlamalı) → ~1 Ekim EAS kredisiyle iOS build 8 → cihaz turu →
-App Store gönderimi.
+**Yayına kadar sıra:** panel işleri ✅ (SMTP, OpenAI, Firebase, Sentry, site) → **~1 Ekim EAS kotasıyla
+iki build de EAS'ten**: iOS build 8 + Android AAB (versionCode 2; yerel Android build bu makinede mümkün
+değil, aşağıda "Android build notu") → Play dahili + kapalı test (14 gün şartı en uzun kalem, hemen
+başlamalı) → cihaz turu (`arif_todo.md` §3) → App Store gönderimi.
+
+### Build oturumu (~1 Ekim) — adım adım
+1. expo.dev → Billing/Usage: iOS ve Android kotası yenilenmiş mi. `eas build:list --limit 3` ile son build'ler.
+2. `git status` temiz, `main` = origin. `npx tsc --noEmit --skipLibCheck`, `npm test`, `npm run i18n:check`.
+3. `eas build --platform android --profile production` → AAB (versionCode 2). `google-services.json`
+   git dışı ama `.easignore` onu dışarıda bırakmıyor → EAS'e gider; `SENTRY_AUTH_TOKEN` EAS secret.
+4. iOS build 8: kullanıcı ister kendisi ister oturum alır — `eas build --platform ios --profile production`,
+   sonra TestFlight (`eas submit -p ios --profile production`, `ascAppId` `eas.json`'da).
+5. İlk build'den sonra Sentry → gultas-software → Releases'ta `com.odysseyjournal.app@1.0.0+…` ve
+   source map görünüyor mu (yerel denemede yükleme adımına sıra gelmemişti).
+6. Play Console: dahili test → AAB yükle → App integrity'deki iki SHA-1'i Maps SDK anahtarına ekle →
+   kapalı test (12 kişi / 14 gün) şartını kontrol et (`store_control.md` §3).
+7. Cihaz turu `arif_todo.md` §3 (şifre sıfırlama linki build 8'de çalışmalı).
 
 ### Taramada bulunanlar ve durumları
 | # | Bulgu | Durum |
@@ -113,8 +126,8 @@ mağaza formları ve cihaz testleri (`arif_todo.md`).
   3. Build 7'yi incelemeye göndermek — **önerilmez**: kayıt ekranındaki Koşullar/Gizlilik linkleri
      ölü, Google/Apple butonları hata veriyor (Guideline 2.1 reddi riski); 19 Eylül güvenlik
      düzeltmelerini de içermiyor.
-- **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §2) — kullanıcı
-  sonraya bıraktı. **29 Eylül düzeltmesi:** buradaki "yeniden prebuild gerekmez" yanlıştı — 19 Eylül
+- **Android:** ~~AAB Android Studio'dan yerel alınıyor~~ → **29 Eylül: AAB de EAS'ten alınacak** (yerel
+  build 260 karakter yol sınırına takılıyor). Ayrıca **29 Eylül düzeltmesi:** buradaki "yeniden prebuild gerekmez" yanlıştı — 19 Eylül
   prebuild'i yeni Maps anahtarından önce alınmıştı, manifest eski anahtarı taşıyordu. `android/` 29
   Eylül'de yeniden üretildi; `app.config.ts`'te native bir şey değişince (ya da `google-services.json`
   gelince) **yeniden** `npx expo prebuild --clean -p android` gerekir.
@@ -122,7 +135,7 @@ mağaza formları ve cihaz testleri (`arif_todo.md`).
 ### Oturum tarafında bekleyenler (kullanıcıdan haber gelince)
 | Tetikleyici | Oturum ne yapar |
 |---|---|
-| Kullanıcı `odyssey-upload.jks`'yi oluşturdu | SHA-1'ini çıkar (`keytool`, komut aşağıda "Google Maps anahtarları") → kullanıcı Maps SDK anahtarına ekler |
+| İlk Play yüklemesi yapıldı | Play Console → App integrity'deki upload + app signing SHA-1'lerini kullanıcıyla Maps SDK anahtarına ekle (upload anahtarı EAS'te; `.jks` yok) → kullanıcı Maps SDK anahtarına ekler |
 | Kullanıcı legacy Supabase anahtarlarını kapattı | Salt-okuma testi: publishable anahtarla REST 200, eski anon JWT ile 401 |
 | Push testi başarısız | `push_notification_queue` ve `push_tokens`'a bak (SQL'i kullanıcıya ver) |
 | Play "12 test kullanıcısı / 14 gün" şartı çıktı | Kapalı test kurulumuna yardım |
@@ -152,7 +165,8 @@ Repo **public** ve eski Maps anahtarı (`AIzaSyCEGo…`, daha eskisi `AIzaSyDzxS
 SHA-1'ler üç aşamada (Maps SDK anahtarına **+ Add**, aynı paket adıyla):
 - ✅ debug: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25` — RN şablonunda herkeste
   aynı, **yayından önce kaldırılır**.
-- ⏳ upload key (AAB alınınca): `"C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -list -v -keystore <jks> -alias upload` → `SHA1:`
+- ⏳ upload key: EAS'te duran anahtar (29 Eylül'den beri AAB EAS'ten). SHA-1'i ilk Play yüklemesinden sonra
+  App integrity sayfasında "Upload key certificate" altında görünür
 - ⏳ app signing key (ilk Play yüklemesinden sonra): Play Console → Test and release → App integrity →
   App signing. **Eklenmezse Play'den kurulan uygulamada harita boş gelir.**
 
@@ -475,7 +489,7 @@ yani **TestFlight build 4 bu düzeltmeyi taşıyor** ve cihazda doğrulanmayı b
 | Legal dokümanlar & KVKK | ✅ |
 | Mağaza metinleri (`STORE_LISTING.md`) | ✅ EN + TR hazır |
 | iOS TestFlight | build 7 (yeni anahtar) test ediliyor · **build 8 EAS kredisi bekliyor** |
-| Android production build | Android Studio'dan yerel AAB (versionCode 2) alınacak · EAS AAB `324319a5` kullanılmayacak |
+| Android production build | **EAS'ten** AAB (versionCode 2) alınacak (29 Eylül) · 19 Eylül EAS AAB `324319a5` kullanılmayacak |
 | Mağaza ekran görüntüleri / mockup | ✅ 32 kare + 2 Feature Graphic, `mockup_feature/` (§3 A3) |
 | **Push bildirimleri** | ⚠️ hiç gönderilmemişti — 029 ile düzeltildi, cihazda uçtan uca doğrulanmadı (§3 B2) |
 | Mağazaya gönderim | ❌ |
@@ -681,6 +695,9 @@ Maestro kullanılmıyor; `.maestro/` akışları duruyor ama koşulmuyor.
 
 ## 6. Bir sonraki oturumun bilmesi gerekenler
 
+- **Site ↔ uygulama uyumu:** site deposundaki `APP_SYNC_2026-09-29.md` açık bulguları listeliyor (gizlilik
+  §3/§13 Keychain iddiası yanlış — oturum AsyncStorage'da; şartlar §4.3 "prescreen etmiyoruz"; FCM/APNs;
+  PITR). Kullanıcı bunları site projesinde ayrı oturumla yapacak.
 - **Web sitesi ayrı bir depo:** `C:Usersarifg.claudeprojectsodyssey-journal-website`
   (GitHub `arifgultas/odyssey-journal-website`, private). Sayfalar üretiliyor: `content/` + `templates/`
   düzenlenir, `npm run build` → commit → push → `npm run deploy` (`deploy` dalı; Hostinger webhook'la
