@@ -146,8 +146,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             "@sentry/react-native/expo",
             {
               url: "https://de.sentry.io/",
-              organization: process.env.SENTRY_ORG,
-              project: process.env.SENTRY_PROJECT,
+              organization: "gultas-software",
+              project: "odyssey-journal",
             },
           ] as [string, Record<string, unknown>],
         ]

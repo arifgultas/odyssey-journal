@@ -104,9 +104,16 @@ AI content check.
 
 ## 2. Android — AAB'yi Android Studio'dan alma
 
-`android/` klasörü 19 Eylül'de güncel koddan yeniden üretildi (versionCode 2, Google Maps anahtarı içinde).
+> ⚠️ **29 Eylül: bu yol bu bilgisayarda çalışmıyor.** Yerel build C++ adımında Windows'un 260 karakterlik
+> yol sınırına takılıyor (`Filename longer than 260 characters`). AAB'yi oturum **EAS** ile alır:
+> `eas build --platform android --profile production` (mevcut EAS imza anahtarı). Aşağısı yalnız referans.
+
+`android/` klasörü 29 Eylül'de yeniden üretildi (versionCode 2, yeni Maps anahtarı, Firebase, Sentry).
+Sentry kaynak haritası build sırasında kendiliğinden yüklenir (token: proje kökündeki `.env.sentry-build-plugin`).
 
 1. [ ] Android Studio → **Open** → projedeki **`android`** klasörünü seç (proje kökünü değil).
+       **File → Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK → `jdk-17`**
+       (Android Studio'nun kendi JDK 25'i bu Gradle ile açılmaz: "Unsupported class file major version 69").
        Gradle senkronizasyonunun bitmesini bekle.
 2. [ ] **Build → Generate Signed App Bundle or APK → Android App Bundle → Next**
 3. [ ] **Create new…** (yeni anahtar dosyası):

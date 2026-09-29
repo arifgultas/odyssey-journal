@@ -28,15 +28,28 @@ App Store gönderimi.
 | N1 | `android/` manifest'inde **eski Maps anahtarı** (prebuild yeni anahtardan önce alınmıştı) | ✅ yeniden prebuild; manifest `AIzaSyB46u…` |
 | N2 | Android ikonlarına (foreground, monochrome) **sahte damalı desen gömülü**, alfa yok | ✅ `icon.png`'den yeniden üretildi (gerçek alfa, güvenli alan %59); adaptive arka plan `#F7F6F0` (iOS ikonunun kremi) |
 | N3 | Android bildirim ikonu renkli/opak → durum çubuğunda beyaz kare | ✅ `assets/images/notification-icon.png` (beyaz siluet) |
-| N4 | **Android'de push hiç çalışmıyor**: FCM / `google-services.json` yok, token alınamıyor (hata yutuluyor) | ⏳ kod hazır (`app.config.ts` dosya varsa `googleServicesFile`); dosya + FCM V1 anahtarı kullanıcıda |
-| N5 | Supabase'de e-posta onayı açık; varsayılan SMTP yalnız ekip üyelerine gönderir (2/saat) → yeni kullanıcı onay/şifre sıfırlama e-postası alamaz | ⏳ kullanıcı: Workspace SMTP (`arif_todo.md` §0) |
+| N4 | **Android'de push hiç çalışmıyor**: FCM / `google-services.json` yok, token alınamıyor (hata yutuluyor) | ✅ `google-services.json` + FCM V1 (kullanıcı, 29 Eylül akşamı); `android/` yeniden üretildi. Cihazda uçtan uca test bekliyor |
+| N5 | Supabase'de e-posta onayı açık; varsayılan SMTP yalnız ekip üyelerine gönderir (2/saat) → yeni kullanıcı onay/şifre sıfırlama e-postası alamaz | ✅ Workspace SMTP (hello@ girişi, noreply@ gönderen). Ekip dışı adresle kayıt testi bekliyor |
 | N6 | **Apple 5.1.2(i)**: gönderi/yorum metni ve fotoğraflar OpenAI moderasyonuna gidiyor; izin ve açıklama yoktu | ✅ uygulama (aşağıda) · ⏳ gizlilik politikası (site) |
 | N7 | Site `/delete-account` kaldırılmış "Download My Data"yı anlatıyor | ⏳ kullanıcı, hazır metin `arif_todo.md` §6 |
 | N8 | GitHub Pages hâlâ yayında (`docs/*.html`, eski gizlilik politikası) | ✅ `docs/*.html` silindi · Pages kapatma: bkz. `arif_todo.md` §6 |
 | N9 | Gereksiz Android izinleri | ✅ `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW`, `WRITE_EXTERNAL_STORAGE` engellendi. `READ_EXTERNAL_STORAGE` **bilerek kaldı**: Android ≤ 12'de `hooks/use-image-picker.ts` galeri izni istiyor, engellenirse fotoğraf seçimi düşer |
 | N10 | İzin pencereleri yalnız İngilizce | ✅ `lang/<dil>.json` × 12 + `locales` (iOS; Android kendi metnini kullanır). Konum metnindeki var olmayan "yakındaki destinasyonlar" çıkarıldı |
-| N11 | Sentry'ye kaynak haritası yüklenmiyor → yayın çökmeleri okunamaz | ✅ `metro.config.js` → `getSentryExpoConfig` (debug ID) · eklenti token varsa devrede · ⏳ token + org/proje kullanıcıda |
+| N11 | Sentry'ye kaynak haritası yüklenmiyor → yayın çökmeleri okunamaz | ✅ debug ID + eklenti; org `gultas-software` / proje `odyssey-journal` (`app.config.ts`), token EAS'te (secret) ve `.env.sentry-build-plugin`'de |
 | N12 | Kayıt onay linki Supabase varsayılanına (localhost) gidiyordu | ✅ `emailRedirectTo: SITE_URL` (`lib/legal-links.ts`) · ⏳ Site URL panelden |
+
+**Android build notu (29 Eylül) — yerel build bu makinede mümkün değil, AAB EAS'ten alınacak.**
+`./gradlew :app:bundleRelease` iki engele takıldı:
+1. Android Studio'nun gömülü JDK'sı 25 → Gradle 8.14.3 açılmıyor ("Unsupported class file major version 69").
+   JDK 17 ile (`C:Program FilesJavajdk-17`) bu geçiliyor.
+2. `:app:buildCMakeRelWithDebInfo[arm64-v8a]` → ninja: `Filename longer than 260 characters`. CMake nesne
+   yolu proje yolunu **iki kez** içeriyor (`.cxx/…` altında `C_/Users/…/node_modules/…`): bugünkü yolla 383
+   karakter, `C:oj`'de bile ~269. `subst` ile sürücü kökü de olmuyor (expo-modules-autolinking kökte
+   `package.json` bulamıyor). Çözüm ya Windows uzun yol desteği (`LongPathsEnabled`, yönetici) + SDK'dan
+   CMake ≥ 3.30 (ninja ≥ 1.12), ya da EAS. **EAS seçildi** (`.easignore` `/android`'i dışarıda bırakıyor →
+   EAS kendi prebuild'ini yapar; `google-services.json` yükleniyor, `SENTRY_AUTH_TOKEN` EAS secret).
+   Bu build'in düştüğü noktaya kadar Firebase (`processReleaseGoogleServices`), JS paketi ve Sentry modül
+   toplama sorunsuzdu; Sentry'ye asıl yükleme adımına sıra gelmedi → ilk EAS build'inde Sentry → Releases'a bakılacak.
 
 ### OpenAI izni (N6) — nasıl çalışıyor
 - `context/ai-consent-context.tsx` → `useAiConsent().ensureConsent()`: izin yoksa pencere açar, cevaba

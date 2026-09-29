@@ -6,67 +6,31 @@ Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
 oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
-**Sırayla gidersen:** 0 (YENİ: SMTP, Firebase, Sentry — build 8'den önce) → 1 (fal anahtarı, 2 dk)
-→ 2 (build'ler; iOS ~1 Ekim EAS kredisi, Android Firebase'den sonra) → 3 (cihaz testleri) → 4-5
+**Sırayla gidersen:** 0 (✅, yalnız e-posta testi kaldı) → 1 (fal anahtarı, 2 dk)
+→ 2 (build'ler; iOS ~1 Ekim EAS kredisi, Android hazır) → 3 (cihaz testleri) → 4-5
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
-> Kodda bekleyen iş yok (29 Eylül turu `main`'de). Oturumun tek kalan adımı: §0.3 (Firebase dosyası) ve
-> §0.4 (Sentry dosyası) hazır olunca `android/`'i yeniden üretmek.
+> Kodda bekleyen iş yok. **Android AAB'yi artık oturum EAS ile alacak** (29 Eylül: bu bilgisayarda yerel
+> Android build Windows'un 260 karakter yol sınırına takılıyor — aşağıda §2).
 
 ---
 
-## 0. YENİ (29 Eylül) — build 8'den ÖNCE
+## 0. 29 Eylül — build 8 öncesi panel işleri ✅
 
-29 Eylül taramasında bulunanlar (`FINALIZE.md` "29 Eylül"). Kod tarafı bitti; bunlar yalnız senin
-erişebildiğin panellerde. Bitince oturuma haber ver.
-
-**0.1 Supabase e-postası — KRİTİK.** Kayıtta e-posta onayı açık, ama Supabase'in kendi e-posta
-servisi yalnız ekip üyelerinin adreslerine gönderiyor (saatte 2). Özel SMTP yoksa yayından sonra
-kimse hesabını onaylayamaz, şifre sıfırlama e-postası da gitmez.
-- [ ] Supabase → Authentication → **Emails → SMTP Settings**: "Enable Custom SMTP" açık mı bak.
-      Açık ve çalışıyorsa bu maddeyi geç (yalnız en alttaki testi yap).
-- [ ] Değilse Google Workspace'te gönderici hesabı seç (örn. `hello@odysseyjournal.app`) → o hesapla
-      myaccount.google.com → Security → **2-Step Verification** açık olmalı → **App passwords** →
-      "Supabase" adıyla oluştur → 16 haneli şifreyi kopyala
-- [ ] Supabase SMTP formu: Sender email = o adres, Sender name = `Odyssey Journal`,
-      Host = `smtp.gmail.com`, Port = `465`, Username = o adres, Password = App password → Save
-- [ ] Authentication → **Rate Limits** → "Rate limit for sending emails" → **30** (ya da daha fazla)
-- [ ] Authentication → **URL Configuration** → Site URL = `https://odysseyjournal.app`
-      (Redirect URLs'deki `odysseyjournal://reset-password` kalsın)
-- [ ] **Test:** ekip üyesi olmayan bir adresle (örn. kişisel Gmail) uygulamada yeni hesap aç → onay
-      e-postası geliyor mu → linke bas → site açılıyor → uygulamada giriş
-
-**0.2 Moderasyon anahtarı.** Supabase → Edge Functions → **Secrets**: `OPENAI_API_KEY` var mı?
-- [ ] Yoksa moderasyon sessizce "her şeyi geçir" moduna düşüyor. platform.openai.com → API keys →
-      yeni anahtar → Supabase Secrets'a `OPENAI_API_KEY` adıyla ekle. (Moderation API ücretsiz.)
-
-**0.3 Android push — Firebase.** Şu an Android'e hiç bildirim gitmiyor (Firebase kurulumu yok).
-- [ ] console.firebase.google.com → **Add project** → ad: `Odyssey Journal` (Analytics gerekmez)
-- [ ] Proje → **Add app → Android** → package name: `com.odysseyjournal.app` → Register →
-      **`google-services.json`'u indir** → proje köküne koy
-      (`C:\Users\arifg\.gemini\antigravity-ide\scratch\odyssey-journal\google-services.json`; git'e girmez)
-- [ ] Firebase → ⚙ Project settings → **Service accounts** → **Generate new private key** → JSON iner
-- [ ] expo.dev → odyssey-journal → **Credentials** → Android → `com.odysseyjournal.app` →
-      **FCM V1 service account key → Add** → o JSON'u yükle. (JSON'u sonra güvenli bir yere kaldır,
-      repoya koyma.)
-- [ ] Oturuma haber ver → oturum `android/`'i yeniden üretir; ardından AAB'yi al (§2)
-
-**0.4 Sentry — okunabilir çökme raporları.**
-- [ ] sentry.io → sol altta org adı → **Organization Settings**: *Organization Slug*'ı ve
-      Projects'teki projenin *slug*'ını not et (aşağıda iki yerde lazım)
-- [ ] Settings → **Auth Tokens** (Organization Tokens) → **Create New Token** → token'ı kopyala
-- [ ] expo.dev → odyssey-journal → **Environment variables** → production'a üç değişken:
-      `SENTRY_AUTH_TOKEN` (Visibility: **Secret**), `SENTRY_ORG`, `SENTRY_PROJECT`
-- [ ] Android Studio build'i için proje köküne `.env.sentry-build-plugin` adlı dosya aç (git'e ve
-      EAS'e girmez; token'ı oturuma yazma), içine üç satır:
-      ```
-      SENTRY_AUTH_TOKEN=<token>
-      SENTRY_ORG=<org slug>
-      SENTRY_PROJECT=<proje slug>
-      ```
-      Token satırı doluysa eklenti devreye girer; boşsa build yüklemesiz, sorunsuz geçer. Dosyayı
-      koyduktan sonra `android/` yeniden üretilmeli (§0.3 ile aynı adımda oturum yapar).
+- [x] ~~**0.1 Supabase SMTP** (Google Workspace)~~ ✅ 29 Eylül. Workspace'te tek kullanıcı
+      `hello@odysseyjournal.app`; `support@`, `privacy@`, `noreply@`, `review@` onun takma adları.
+      SMTP'de giriş hello@ + App password, gönderen `noreply@`.
+  - [ ] **Kalan tek test:** ekip üyesi olmayan bir adresle (örn. kişisel Gmail) uygulamada yeni hesap aç
+        → onay e-postası geliyor mu → linke bas → site açılıyor → uygulamada giriş. Ayrıca bir kez
+        "Şifremi unuttum" e-postası. Gelmezse oturuma söyle.
+- [x] ~~**0.2 OpenAI anahtarı**~~ ✅ — oturum doğruladı: `moderate-content` anahtar kontrolünü geçiyor.
+      (Moderasyon 1 Mart 2026'da `1bdc210` "Security is done" ile eklenmişti.)
+- [x] ~~**0.3 Firebase**~~ ✅ — `google-services.json` kökte (git dışı), FCM V1 anahtarı expo.dev'de;
+      oturum `android/`'i yeniden üretti.
+- [x] ~~**0.4 Sentry**~~ ✅ — oturum yaptı: org `gultas-software`, proje `odyssey-journal`
+      (`app.config.ts`'te sabit), Organization Token "EAS build (source maps)" → EAS production'da
+      `SENTRY_AUTH_TOKEN` (secret) + yerelde `.env.sentry-build-plugin` (git/EAS dışı).
 
 ---
 
@@ -91,8 +55,10 @@ kimse hesabını onaylayamaz, şifre sıfırlama e-postası da gitmez.
       içerir. Önce §0.4'teki Sentry değişkenlerini EAS'e gir (yoksa build yine geçer, yalnız çökme
       raporları okunmaz).
       (FINALIZE "Engel: Expo (EAS) build kredileri")
-- [ ] **Android AAB** — §0.3 (Firebase) bitip oturum `android/`'i yeniden ürettikten **sonra**. Android
-      Studio → `android` klasörü → Build → Generate Signed
+- [ ] **Android AAB — oturum alır (EAS, ~1 Ekim kota yenilenince).** Android Studio yolu iptal: 29 Eylül'de
+      denendi, C++ derleme adımı dosya yolu 260 karakteri aştığı için düşüyor (proje `C:oj`'ye taşınsa
+      bile 269). EAS Linux'ta derliyor; mevcut EAS imza anahtarını kullanır, `.jks` yedekleme derdi yok.
+      Sen yalnız oturuma "Android build'i al" de. (Eski not, referans için:) Android Studio → `android` klasörü → Build → Generate Signed
       App Bundle → yeni upload anahtarı `odyssey-upload.jks` (`store_control.md` §2).
   - [ ] `.jks` dosyasını ve şifreleri **iki ayrı yere yedekle** (kaybolursa güncelleme yüklenemez)
   - [ ] `.jks` oluşunca oturuma haber ver → oturum SHA-1'ini çıkarır → Google Cloud'da
