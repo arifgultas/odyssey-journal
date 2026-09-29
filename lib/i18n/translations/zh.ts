@@ -815,10 +815,16 @@ export default {
         noMatchingReports: '没有符合此筛选条件的举报。',
     },
 
-    // Modal screen
-    modal: {
-        title: '模态框',
-        heading: '这是一个模态框',
-        goHome: '前往主屏幕',
+
+    // OpenAI moderation consent (App Store 5.1.2(i))
+    aiConsent: {
+        title: '内容安全检查',
+        body: '在发布你的帖子和评论之前，其文字和照片会被发送到 OpenAI 的审核服务，以检查是否符合我们的社区准则。',
+        detail: 'OpenAI 仅将其用于此项检查，不会用来训练模型。你可以在设置中撤回此许可，但发帖和评论需要它。',
+        allow: '允许',
+        notNow: '暂不',
+        settingLabel: 'AI 内容检查',
+        settingDesc: '帖子和评论在发布前由 OpenAI 检查。发帖和评论需要此项。',
+        signupNotice: '帖子和评论在发布前会由 OpenAI 进行安全检查。我们会先征求你的许可。',
     },
 };

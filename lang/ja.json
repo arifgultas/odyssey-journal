@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal は旅の投稿用の写真を撮るためにカメラを使用します。",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal は旅の投稿やプロフィールに写真を追加するために写真ライブラリを使用します。",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal は、あなたが指示したときにだけ写真をライブラリに保存します。",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal は旅の投稿に場所を付けたり、ホームの都市を設定したりするために位置情報を使用します。"
+  }
+}

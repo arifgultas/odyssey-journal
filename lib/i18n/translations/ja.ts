@@ -815,10 +815,16 @@ export default {
         noMatchingReports: 'このフィルターに一致する報告はありません。',
     },
 
-    // Modal screen
-    modal: {
-        title: 'モーダル',
-        heading: 'これはモーダルです',
-        goHome: 'ホーム画面に移動',
+
+    // OpenAI moderation consent (App Store 5.1.2(i))
+    aiConsent: {
+        title: 'コンテンツの安全チェック',
+        body: '投稿やコメントが公開される前に、そのテキストと写真はコミュニティガイドラインに沿っているか確認するため、OpenAI のモデレーションサービスに送信されます。',
+        detail: 'OpenAI はこの確認のためだけに使用し、モデルのトレーニングには使用しません。この許可は設定で取り消せますが、投稿とコメントには必要です。',
+        allow: '許可する',
+        notNow: '今はしない',
+        settingLabel: 'AI によるコンテンツチェック',
+        settingDesc: '投稿とコメントは公開前に OpenAI によってチェックされます。投稿とコメントに必要です。',
+        signupNotice: '投稿とコメントは公開前に安全のため OpenAI によってチェックされます。事前に許可をお願いします。',
     },
 };

@@ -11,7 +11,7 @@ takıldığınız ekranın adını yazmanız yeterli. Build, test, anahtar ve ge
 Web sitesi: **https://odysseyjournal.app** (GitHub Pages kullanılmıyor.)
 
 Mağaza formlarında kullanılacak adresler (projede zaten bu adresler geçiyor —
-`STORE_LISTING.md`, `DEPLOYMENT_GUIDE.md`):
+`STORE_LISTING.md`):
 
 | Ne için | Adres |
 |---|---|
@@ -57,6 +57,11 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
 
 - [ ] **Privacy Policy URL:** `https://odysseyjournal.app/privacy-policy`
 
+> Gönderi/yorum metni ve fotoğraflar moderasyon için OpenAI'a gidiyor. OpenAI bizim adımıza işleyen bir
+> hizmet sağlayıcı: tabloda ayrı bir satır gerekmez (Photos, Other User Content zaten var), "tracking"
+> değil. Uygulama izni ilk paylaşımdan önce soruyor (5.1.2(i)); gizlilik politikasında OpenAI adıyla
+> geçmeli (`arif_todo.md` §6) — **gönderimden önce sitede olsun.**
+
 ### 1.3 Pricing and Availability
 - [ ] **Free**, tüm ülkeler
 
@@ -84,6 +89,9 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
 Users can report posts and block users (post menu → Report / Block).
 Community Guidelines: Settings → Legal & Community.
 Account deletion: Settings → Account → Delete Account.
+Posts and comments are checked by OpenAI's Moderation API before publishing. The app asks for
+permission first (App Store 5.1.2(i)); it can be withdrawn in Settings → Legal & Community →
+AI content check.
 ```
 
 ### 1.7 Version Release
@@ -132,9 +140,12 @@ play.google.com/console
 - [ ] **Target audience:** 13+ (çocuklara yönelik değil)
 - [ ] **News app:** No
 - [ ] **Data safety:**
-  - Toplanan: e-posta, ad, kullanıcı ID, fotoğraflar, hassas konum, mesajlar, diğer kullanıcı içeriği, çökme kayıtları
+  - Toplanan: e-posta, ad, kullanıcı ID, fotoğraflar, hassas konum, mesajlar, diğer kullanıcı içeriği, çökme kayıtları.
+    Mikrofon/ses **yok** (29 Eylül'de `RECORD_AUDIO` izni kaldırıldı)
   - Aktarımda şifreli: **Yes**
   - Kullanıcı silme isteyebilir: **Yes** → URL: `https://odysseyjournal.app/delete-account`
+  - Paylaşılan (shared): **No** — OpenAI (moderasyon), Sentry, Expo bizim adımıza işleyen hizmet
+    sağlayıcılar; Play'in tanımında bu "sharing" sayılmaz
 - [ ] **Government / Financial / Health:** hepsi No
 
 ### 3.3 Mağaza sayfası — Grow → Store presence → Main store listing

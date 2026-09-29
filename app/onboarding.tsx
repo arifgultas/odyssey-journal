@@ -1,6 +1,7 @@
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useOnboarding } from '@/hooks/use-onboarding';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,6 +27,7 @@ export default function OnboardingScreen() {
     const theme = isDark ? Colors.dark : Colors.light;
     const insets = useSafeAreaInsets();
     const router = useRouter();
+    const { completeOnboarding } = useOnboarding();
     const { t } = useLanguage();
 
     const onboardingData = [
@@ -79,6 +81,8 @@ export default function OnboardingScreen() {
     }, [currentIndex]);
 
     const navigateToAuth = () => {
+        // Seen once is enough: app/index.tsx sends later launches straight to sign-in
+        completeOnboarding();
         router.replace('/(auth)/login');
     };
 

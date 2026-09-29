@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal usa la fotocamera per scattare foto per i tuoi post di viaggio.",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal usa la libreria foto per aggiungere foto ai tuoi post di viaggio e al tuo profilo.",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal salva le foto nella tua libreria solo quando lo chiedi tu.",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal usa la tua posizione per localizzare i tuoi post di viaggio e impostare la tua città."
+  }
+}

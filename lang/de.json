@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal verwendet deine Kamera, um Fotos für deine Reisebeiträge aufzunehmen.",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal verwendet deine Fotomediathek, um Fotos zu deinen Reisebeiträgen und deinem Profil hinzuzufügen.",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal speichert Fotos nur dann in deiner Mediathek, wenn du es möchtest.",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal verwendet deinen Standort, um deine Reisebeiträge zu verorten und deine Heimatstadt festzulegen."
+  }
+}

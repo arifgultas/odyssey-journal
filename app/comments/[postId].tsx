@@ -3,6 +3,7 @@ import { CommentsList } from '@/components/comments-list';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useAiConsent } from '@/context/ai-consent-context';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { addComment, Comment, deleteComment, getComments } from '@/lib/comments';
@@ -16,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mirrorIcon } from '@/lib/rtl';
 
 export default function CommentsScreen() {
+    const { ensureConsent } = useAiConsent();
     const { postId } = useLocalSearchParams<{ postId: string }>();
     const insets = useSafeAreaInsets();
     const { t } = useLanguage();
@@ -78,8 +80,10 @@ export default function CommentsScreen() {
         }
     };
 
-    const handleSubmitComment = async (content: string) => {
-        if (!postId) return;
+    const handleSubmitComment = async (content: string): Promise<boolean> => {
+        if (!postId) return false;
+        // Posts and comments go to OpenAI moderation; ask first (App Store 5.1.2(i))
+        if (!(await ensureConsent())) return false;
 
         setIsSubmitting(true);
         try {
@@ -98,9 +102,11 @@ export default function CommentsScreen() {
 
             // Add to the beginning of the list
             setComments([commentWithUser, ...comments]);
+            return true;
         } catch (error) {
             console.error('Error adding comment:', error);
             Alert.alert(t('common.error'), t('comments.addError'));
+            return false;
         } finally {
             setIsSubmitting(false);
         }

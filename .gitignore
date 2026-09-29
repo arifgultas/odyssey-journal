@@ -52,3 +52,11 @@ scratch/
 # store screenshots and generated store art (large binaries)
 SS/
 mockup_feature/
+
+# Firebase config for Android push, and the Sentry upload token (see app.config.ts)
+google-services.json
+.env.sentry-build-plugin
+
+# supabase CLI cache and IDE settings
+supabase/.temp/
+.idea/

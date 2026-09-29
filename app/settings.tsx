@@ -11,6 +11,7 @@ import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import { useCurrentProfile } from '@/hooks/use-profile';
 import { isAdmin } from '@/lib/admin-service';
+import { hasAiConsent, setAiConsent } from '@/lib/ai-consent';
 import { listAllUserImages, removeUserImages } from '@/lib/image-upload';
 import { LEGAL_EMAILS, openLegalPage } from '@/lib/legal-links';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n';
@@ -78,6 +79,7 @@ export default function SettingsScreen() {
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
     const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
     const [isUserAdmin, setIsUserAdmin] = useState(false);
+    const [aiConsent, setAiConsentState] = useState(false);
 
     const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useCurrentProfile();
 
@@ -85,6 +87,18 @@ export default function SettingsScreen() {
     React.useEffect(() => {
         isAdmin().then(setIsUserAdmin);
     }, []);
+
+    React.useEffect(() => {
+        if (user?.id) hasAiConsent(user.id).then(setAiConsentState);
+    }, [user?.id]);
+
+    // Withdrawing only stops new posts and comments; turning it back on is the same consent
+    // the create screens ask for (context/ai-consent-context.tsx)
+    const handleToggleAiConsent = (granted: boolean) => {
+        if (!user?.id) return;
+        setAiConsentState(granted);
+        setAiConsent(user.id, granted).catch(() => setAiConsentState(!granted));
+    };
 
     const handleLogout = () => {
         Alert.alert(
@@ -451,6 +465,21 @@ export default function SettingsScreen() {
                             onPress={() => openLegalPage('privacy')}
                             colors={colors}
 
+                        />
+                        <SettingsRow
+                            icon="sparkles-outline"
+                            label={t('aiConsent.settingLabel')}
+                            description={t('aiConsent.settingDesc')}
+                            colors={colors}
+                            rightElement={
+                                <Switch
+                                    value={aiConsent}
+                                    onValueChange={handleToggleAiConsent}
+                                    trackColor={{ false: `${colors.accentDark}30`, true: `${colors.accent}30` }}
+                                    thumbColor={aiConsent ? colors.accent : colors.accentDark}
+                                    ios_backgroundColor={`${colors.accentDark}30`}
+                                />
+                            }
                         />
                     </View>
                 </Animated.View>

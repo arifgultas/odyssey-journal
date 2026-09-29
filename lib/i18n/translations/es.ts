@@ -824,10 +824,16 @@ export default {
         noMatchingReports: 'Ninguna denuncia coincide con este filtro.',
     },
 
-    // Modal screen
-    modal: {
-        title: 'Modal',
-        heading: 'Esta es una ventana modal',
-        goHome: 'Ir a la pantalla de inicio',
+
+    // OpenAI moderation consent (App Store 5.1.2(i))
+    aiConsent: {
+        title: 'Control de seguridad del contenido',
+        body: 'Antes de publicar tus publicaciones y comentarios, su texto y sus fotos se envían al servicio de moderación de OpenAI para comprobar que cumplen nuestras normas de la comunidad.',
+        detail: 'OpenAI los usa solo para esta comprobación y no entrena sus modelos con ellos. Puedes retirar este permiso en Ajustes, pero es necesario para publicar y comentar.',
+        allow: 'Permitir',
+        notNow: 'Ahora no',
+        settingLabel: 'Control de contenido con IA',
+        settingDesc: 'OpenAI revisa las publicaciones y los comentarios antes de publicarlos. Necesario para publicar y comentar.',
+        signupNotice: 'Antes de publicarse, OpenAI revisa las publicaciones y los comentarios por seguridad. Primero te pediremos permiso.',
     },
 };

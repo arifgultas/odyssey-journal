@@ -1,17 +1,72 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-09-20
+**Güncelleme:** 2026-09-29
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
 oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
-**Sırayla gidersen:** 1 (fal anahtarı, 2 dk) → 2 (build'ler; iOS EAS kredisini bekliyor, Android
-istediğin an) → 3 (cihaz testleri) → 4-5 (mağaza formları; build beklemeden doldurulabilir) →
-6 (site metinleri) → 7 (yayından hemen önce) → 8 (acelesi yok).
+**Sırayla gidersen:** 0 (YENİ: SMTP, Firebase, Sentry — build 8'den önce) → 1 (fal anahtarı, 2 dk)
+→ 2 (build'ler; iOS ~1 Ekim EAS kredisi, Android Firebase'den sonra) → 3 (cihaz testleri) → 4-5
+(mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
+8 (acelesi yok).
 
-> Kodda ve veritabanında **bekleyen iş yok**: 19-20 Eylül'deki güvenlik düzeltmeleri canlıda
-> (`030`, `031`), istemci düzeltmeleri `main`'de ve yeni build'lerle gelecek.
+> Kodda bekleyen iş yok (29 Eylül turu `main`'de). Oturumun tek kalan adımı: §0.3 (Firebase dosyası) ve
+> §0.4 (Sentry dosyası) hazır olunca `android/`'i yeniden üretmek.
+
+---
+
+## 0. YENİ (29 Eylül) — build 8'den ÖNCE
+
+29 Eylül taramasında bulunanlar (`FINALIZE.md` "29 Eylül"). Kod tarafı bitti; bunlar yalnız senin
+erişebildiğin panellerde. Bitince oturuma haber ver.
+
+**0.1 Supabase e-postası — KRİTİK.** Kayıtta e-posta onayı açık, ama Supabase'in kendi e-posta
+servisi yalnız ekip üyelerinin adreslerine gönderiyor (saatte 2). Özel SMTP yoksa yayından sonra
+kimse hesabını onaylayamaz, şifre sıfırlama e-postası da gitmez.
+- [ ] Supabase → Authentication → **Emails → SMTP Settings**: "Enable Custom SMTP" açık mı bak.
+      Açık ve çalışıyorsa bu maddeyi geç (yalnız en alttaki testi yap).
+- [ ] Değilse Google Workspace'te gönderici hesabı seç (örn. `hello@odysseyjournal.app`) → o hesapla
+      myaccount.google.com → Security → **2-Step Verification** açık olmalı → **App passwords** →
+      "Supabase" adıyla oluştur → 16 haneli şifreyi kopyala
+- [ ] Supabase SMTP formu: Sender email = o adres, Sender name = `Odyssey Journal`,
+      Host = `smtp.gmail.com`, Port = `465`, Username = o adres, Password = App password → Save
+- [ ] Authentication → **Rate Limits** → "Rate limit for sending emails" → **30** (ya da daha fazla)
+- [ ] Authentication → **URL Configuration** → Site URL = `https://odysseyjournal.app`
+      (Redirect URLs'deki `odysseyjournal://reset-password` kalsın)
+- [ ] **Test:** ekip üyesi olmayan bir adresle (örn. kişisel Gmail) uygulamada yeni hesap aç → onay
+      e-postası geliyor mu → linke bas → site açılıyor → uygulamada giriş
+
+**0.2 Moderasyon anahtarı.** Supabase → Edge Functions → **Secrets**: `OPENAI_API_KEY` var mı?
+- [ ] Yoksa moderasyon sessizce "her şeyi geçir" moduna düşüyor. platform.openai.com → API keys →
+      yeni anahtar → Supabase Secrets'a `OPENAI_API_KEY` adıyla ekle. (Moderation API ücretsiz.)
+
+**0.3 Android push — Firebase.** Şu an Android'e hiç bildirim gitmiyor (Firebase kurulumu yok).
+- [ ] console.firebase.google.com → **Add project** → ad: `Odyssey Journal` (Analytics gerekmez)
+- [ ] Proje → **Add app → Android** → package name: `com.odysseyjournal.app` → Register →
+      **`google-services.json`'u indir** → proje köküne koy
+      (`C:\Users\arifg\.gemini\antigravity-ide\scratch\odyssey-journal\google-services.json`; git'e girmez)
+- [ ] Firebase → ⚙ Project settings → **Service accounts** → **Generate new private key** → JSON iner
+- [ ] expo.dev → odyssey-journal → **Credentials** → Android → `com.odysseyjournal.app` →
+      **FCM V1 service account key → Add** → o JSON'u yükle. (JSON'u sonra güvenli bir yere kaldır,
+      repoya koyma.)
+- [ ] Oturuma haber ver → oturum `android/`'i yeniden üretir; ardından AAB'yi al (§2)
+
+**0.4 Sentry — okunabilir çökme raporları.**
+- [ ] sentry.io → sol altta org adı → **Organization Settings**: *Organization Slug*'ı ve
+      Projects'teki projenin *slug*'ını not et (aşağıda iki yerde lazım)
+- [ ] Settings → **Auth Tokens** (Organization Tokens) → **Create New Token** → token'ı kopyala
+- [ ] expo.dev → odyssey-journal → **Environment variables** → production'a üç değişken:
+      `SENTRY_AUTH_TOKEN` (Visibility: **Secret**), `SENTRY_ORG`, `SENTRY_PROJECT`
+- [ ] Android Studio build'i için proje köküne `.env.sentry-build-plugin` adlı dosya aç (git'e ve
+      EAS'e girmez; token'ı oturuma yazma), içine üç satır:
+      ```
+      SENTRY_AUTH_TOKEN=<token>
+      SENTRY_ORG=<org slug>
+      SENTRY_PROJECT=<proje slug>
+      ```
+      Token satırı doluysa eklenti devreye girer; boşsa build yüklemesiz, sorunsuz geçer. Dosyayı
+      koyduktan sonra `android/` yeniden üretilmeli (§0.3 ile aynı adımda oturum yapar).
 
 ---
 
@@ -32,9 +87,12 @@ istediğin an) → 3 (cihaz testleri) → 4-5 (mağaza formları; build beklemed
 ## 2. Build'ler
 
 - [ ] **iOS build 8** — EAS kredisi yenilenince (expo.dev → Billing/Usage'dan tarihi kontrol et)
-      `eas build --platform ios --profile production` → TestFlight. Bugünkü tüm düzeltmeleri içerir.
+      `eas build --platform ios --profile production` → TestFlight. 29 Eylül dahil tüm düzeltmeleri
+      içerir. Önce §0.4'teki Sentry değişkenlerini EAS'e gir (yoksa build yine geçer, yalnız çökme
+      raporları okunmaz).
       (FINALIZE "Engel: Expo (EAS) build kredileri")
-- [ ] **Android AAB** — *ertelendi.* Android Studio → `android` klasörü → Build → Generate Signed
+- [ ] **Android AAB** — §0.3 (Firebase) bitip oturum `android/`'i yeniden ürettikten **sonra**. Android
+      Studio → `android` klasörü → Build → Generate Signed
       App Bundle → yeni upload anahtarı `odyssey-upload.jks` (`store_control.md` §2).
   - [ ] `.jks` dosyasını ve şifreleri **iki ayrı yere yedekle** (kaybolursa güncelleme yüklenemez)
   - [ ] `.jks` oluşunca oturuma haber ver → oturum SHA-1'ini çıkarır → Google Cloud'da
@@ -66,6 +124,20 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Android'de review demo hesabıyla gir → Admin'in gönderisini beğen → Admin'in iPhone'una
       1 dakika içinde bildirim gelmeli. Gelmezse oturuma söyle (`push_notification_queue`'ya bakar).
       Kendi gönderini beğenmek bilerek bildirim üretmez.
+- [ ] **Ters yön (29 Eylül, Firebase sonrası yeni AAB ile):** iPhone'dan Admin olarak demo hesabın
+      gönderisini beğen → Android telefona bildirim gelmeli; durum çubuğundaki ikon beyaz pusula
+      silueti olmalı (düz beyaz kare değil)
+
+**29 Eylül değişiklikleri**
+- [ ] Android ana ekran ikonu: arkasında gri-beyaz dama deseni **yok**, krem zemin üstünde pusula
+      (eski kurulumu silip yeni AAB'yi kur; ikon önbelleği eskiyi gösterebilir)
+- [ ] Telefon dili Türkçeyken: yeni gönderide kamera / galeri / konum izni soruları **Türkçe** (iOS)
+- [ ] İlk gönderi ya da yorumda "İçerik güvenlik kontrolü" penceresi çıkıyor → "Şimdi değil" →
+      gönderi/yorum paylaşılmıyor, yazdığın yorum kutuda duruyor → tekrar dene → "İzin ver" → paylaşılıyor
+- [ ] Ayarlar → Yasal ve Topluluk → "Yapay zekâ içerik kontrolü" anahtarı açık; kapat → yeni
+      gönderide pencere yeniden çıkıyor
+- [ ] Çıkış yap, uygulamayı tamamen kapatıp aç → tanıtım ekranları değil doğrudan giriş ekranı
+- [ ] §0.1'deki ekip dışı adresle kayıt + şifre sıfırlama testi
 
 **Dil turu** (FINALIZE A4 — uygulamayı **kapatmadan** dil değiştirerek)
 - [ ] Şu ekranlar açıkken dili değiştir; metin anında yeni dile geçmeli: Topluluk Kuralları,
@@ -92,7 +164,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Her dile kendi ekran görüntüleri: `mockup_feature/ios/<dil>/` (01→08 sırayla;
       klasörler `en tr es fr de pt it ru ja ko zh ar`)
 - [ ] Support / Marketing / Privacy URL'leri
-- [ ] App Review Information: demo hesap + iletişim + Notes (`store_control.md` §1.6)
+- [ ] App Review Information: demo hesap + iletişim + Notes (`store_control.md` §1.6; 29 Eylül'de
+      OpenAI moderasyon satırı eklendi)
 - [ ] Version Release: **Manually release**
 - [ ] Build **8**'i seç → Add for Review → Submit (build 7'yi gönderme)
 
@@ -116,10 +189,34 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 
 ## 6. Web sitesi (odysseyjournal.app — Hostinger)
 
-- [ ] `/terms`: "Settings > Danger Zone" → **Settings > Account > Delete Account**
-- [ ] `/delete-account`: "profili gizli yap" önerisini kaldır (uygulamada gizli profil yok)
+- [x] ~~`/terms`: "Settings > Danger Zone" → Settings > Account > Delete Account~~ ✅ (29 Eylül'de sitede görüldü)
+- [x] ~~`/delete-account`: "profili gizli yap" önerisini kaldır~~ ✅
+- [ ] **`/delete-account` → "Deleting Less Than Everything" bölümü:** "A copy of your data before
+      you go" paragrafı kaldırılmış **Download My Data**'yı anlatıyor. Paragrafın yerine:
+
+```
+A copy of your data before you go: in the app, Settings > Account > Request My Data opens an email to privacy@odysseyjournal.app. Send it from the email address of your account and we will send you a copy of your profile, entries, comments, collections, connections, photographs and messages.
+```
+
+- [ ] **`/privacy-policy` → 05 Third-Party Sub-Processors** (Apple 5.1.2(i) için şart — OpenAI adıyla geçmeli):
+  - 3\. maddeyi değiştir:
+    ```
+    Google LLC (Google Maps Platform): Reverse geocoding, interactive map tiles, and the static map image of the places on your profile. Requesting that image transmits the coordinates of those places and your IP address.
+    ```
+  - 8\. maddeyi (**OpenStreetMap Foundation**) sil — yayındaki uygulama OSM kullanmıyor
+  - Yeni madde ekle:
+    ```
+    OpenAI, L.L.C.: Automated content moderation. With your permission, the text and photos of your posts and the text of your comments are sent to OpenAI's Moderation API before they are published, to check them against our Community Guidelines. OpenAI does not use data sent through its API to train its models and keeps it for up to 30 days for abuse monitoring. You give or withdraw this permission in the app under Settings > Legal & Community > AI content check; without it you can still browse, but not post or comment.
+    ```
+- [ ] **`/privacy-policy` → 04 How We Use Your Information** tablosuna satır:
+      `Automated safety check of posts and comments` | `Post text and photos, comment text (sent to OpenAI)` | `Explicit Consent`
+- [ ] **`/privacy-policy` → International Data Transfers** paragrafında parantezdeki listeye `OpenAI` ekle:
+      `(Supabase, Sentry, Google, Expo, OpenAI)`
+- [ ] **GitHub Pages'i kapat** — repo → Settings → Pages → Source: **None** (ya da oturuma "kapat" de,
+      `gh` ile kapatır). `docs/`'taki eski sayfalar silindi ama Pages açık kaldıkça eski gizlilik
+      politikasının kopyası ve arşiv notları `arifgultas.github.io/...` altında yayında kalır.
 - [ ] Uygulama yayına girince ana sayfadaki **App Store / Google Play** butonlarına gerçek mağaza
-      linklerini koy (paylaşılan gönderi linkleri artık ana sayfaya geliyor)
+      linklerini koy (şu an ikisi de `#download`'a gidiyor)
 
 ---
 

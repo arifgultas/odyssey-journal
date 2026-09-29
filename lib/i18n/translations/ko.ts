@@ -815,10 +815,16 @@ export default {
         noMatchingReports: '이 필터에 해당하는 신고가 없습니다.',
     },
 
-    // Modal screen
-    modal: {
-        title: '모달',
-        heading: '이것은 모달입니다',
-        goHome: '홈 화면으로 이동',
+
+    // OpenAI moderation consent (App Store 5.1.2(i))
+    aiConsent: {
+        title: '콘텐츠 안전 검사',
+        body: '게시물과 댓글이 게시되기 전에 텍스트와 사진이 커뮤니티 가이드라인에 맞는지 확인하기 위해 OpenAI의 모더레이션 서비스로 전송됩니다.',
+        detail: 'OpenAI는 이 검사에만 사용하며 모델 학습에는 사용하지 않습니다. 이 권한은 설정에서 철회할 수 있지만 게시물과 댓글 작성에 필요합니다.',
+        allow: '허용',
+        notNow: '나중에',
+        settingLabel: 'AI 콘텐츠 검사',
+        settingDesc: '게시물과 댓글은 게시 전에 OpenAI가 검사합니다. 게시물과 댓글 작성에 필요합니다.',
+        signupNotice: '게시물과 댓글은 게시 전에 안전을 위해 OpenAI가 검사합니다. 먼저 권한을 요청합니다.',
     },
 };

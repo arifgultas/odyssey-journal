@@ -3,7 +3,7 @@ import { useLanguage } from '@/context/language-context';
 import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
-import { openLegalPage, SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
+import { openLegalPage, SITE_URL, SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
@@ -98,6 +98,8 @@ export default function SignUpScreen() {
             email,
             password,
             options: {
+                // The confirmation link lands on the site, not on Supabase's default localhost page
+                emailRedirectTo: SITE_URL,
                 data: {
                     full_name: fullName,
                     display_name: fullName.split(' ')[0],
@@ -359,6 +361,11 @@ export default function SignUpScreen() {
                             </Text>
                         </TouchableOpacity>
 
+                        {/* OpenAI moderation is disclosed up front; the permission itself is asked before the first post */}
+                        <Text style={[styles.aiNotice, { color: theme.textMuted }]}>
+                            {t('aiConsent.signupNotice')}
+                        </Text>
+
                         {/* Primary Sign Up Button */}
                         <TouchableOpacity
                             style={{
@@ -582,6 +589,13 @@ const styles = StyleSheet.create({
         fontFamily: Typography.fonts.body,
         fontSize: 13,
         lineHeight: 20,
+    },
+    aiNotice: {
+        fontFamily: Typography.fonts.body,
+        fontSize: 12,
+        lineHeight: 18,
+        marginStart: 34,
+        marginTop: 4,
     },
     dividerContainer: {
         flexDirection: 'row',

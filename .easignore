@@ -53,3 +53,6 @@ tsc_output.txt
 # Store screenshots and generated store art: large, and not part of the app.
 SS/
 mockup_feature/
+
+# Sentry source map upload token - local builds only; EAS gets SENTRY_AUTH_TOKEN as a secret
+.env.sentry-build-plugin

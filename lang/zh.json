@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal 使用你的相机为旅行帖子拍摄照片。",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal 使用你的照片图库，为旅行帖子和个人资料添加照片。",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal 仅在你要求时才将照片保存到图库。",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal 使用你的位置为旅行帖子标记地点，并设置你的所在城市。"
+  }
+}

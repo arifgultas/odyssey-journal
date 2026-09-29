@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal uses your camera to take photos for your travel posts.",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal uses your photo library to add photos to your travel posts and profile.",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal saves photos to your library only when you ask it to.",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal uses your location to tag your travel posts and set your home city."
+  }
+}

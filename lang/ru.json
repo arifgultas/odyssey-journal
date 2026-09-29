@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal использует камеру, чтобы вы могли снимать фото для своих публикаций о путешествиях.",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal использует медиатеку, чтобы вы могли добавлять фото в публикации о путешествиях и в профиль.",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal сохраняет фото в медиатеку только по вашему запросу.",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal использует геопозицию, чтобы отмечать место в публикациях о путешествиях и указывать ваш родной город."
+  }
+}

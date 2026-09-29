@@ -66,8 +66,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!session) {
             // User is not logged in
             if (inTabs) {
-                // Only redirect to onboarding if trying to access protected tabs
-                router.replace('/onboarding');
+                // Only when trying to reach the protected tabs; the index route picks onboarding
+                // (first run) or sign-in
+                router.replace('/');
             }
             // Allow staying in auth or onboarding screens
         } else {

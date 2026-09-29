@@ -869,10 +869,16 @@ export default {
         noMatchingReports: 'Bu filtreye uyan şikayet yok.',
     },
 
-    // Modal screen
-    modal: {
-        title: 'Modal',
-        heading: 'Bu bir modal penceredir',
-        goHome: 'Ana ekrana git',
+
+    // OpenAI moderation consent (App Store 5.1.2(i))
+    aiConsent: {
+        title: 'İçerik güvenlik kontrolü',
+        body: 'Gönderilerin ve yorumların yayımlanmadan önce metinleri ve fotoğrafları, topluluk kurallarına uygunluk için OpenAI\'ın moderasyon hizmetine gönderilir.',
+        detail: 'OpenAI bunları yalnızca bu kontrol için kullanır, modellerini eğitmek için kullanmaz. Bu izni Ayarlar\'dan geri alabilirsin, ancak gönderi ve yorum paylaşmak için gereklidir.',
+        allow: 'İzin ver',
+        notNow: 'Şimdi değil',
+        settingLabel: 'Yapay zekâ içerik kontrolü',
+        settingDesc: 'Gönderi ve yorumlar yayımlanmadan önce OpenAI ile kontrol edilir. Paylaşım yapmak için gereklidir.',
+        signupNotice: 'Gönderi ve yorumlar yayımlanmadan önce güvenlik için OpenAI ile kontrol edilir. Bunun için önce iznin istenir.',
     },
 };

@@ -1,5 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 
+export const SITE_URL = 'https://odysseyjournal.app';
+
 // Legal pages live on the public site; the store listings point to the same URLs.
 export const LEGAL_URLS = {
     terms: 'https://odysseyjournal.app/terms',

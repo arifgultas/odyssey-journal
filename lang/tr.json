@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Odyssey Journal, seyahat gönderilerin için fotoğraf çekebilmek amacıyla kameranı kullanır.",
+    "NSPhotoLibraryUsageDescription": "Odyssey Journal, seyahat gönderilerine ve profiline fotoğraf ekleyebilmek için fotoğraf arşivini kullanır.",
+    "NSPhotoLibraryAddUsageDescription": "Odyssey Journal, fotoğrafları arşivine yalnızca sen istediğinde kaydeder.",
+    "NSLocationWhenInUseUsageDescription": "Odyssey Journal, seyahat gönderilerini etiketlemek ve yaşadığın şehri belirlemek için konumunu kullanır."
+  }
+}

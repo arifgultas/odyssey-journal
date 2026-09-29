@@ -7,7 +7,8 @@ import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface CommentInputProps {
-    onSubmit: (content: string) => void;
+    /** Resolve false when the comment was not posted, so the text stays in the box */
+    onSubmit: (content: string) => void | Promise<boolean>;
     loading?: boolean;
     placeholder?: string;
 }
@@ -23,10 +24,10 @@ export function CommentInput({
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme ?? 'light'];
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (comment.trim() && !loading) {
-            onSubmit(comment.trim());
-            setComment('');
+            const posted = await onSubmit(comment.trim());
+            if (posted !== false) setComment('');
         }
     };
 

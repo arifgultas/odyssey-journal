@@ -1,7 +1,9 @@
-const { getDefaultConfig } = require('expo/metro-config');
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
+// Expo's default config plus Sentry's debug IDs, which tie each release bundle to the source
+// map uploaded during the native build (app.config.ts adds that upload when a token exists)
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 // Add SVG transformer
 config.transformer = {

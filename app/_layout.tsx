@@ -1,4 +1,5 @@
 import { OfflineIndicator } from '@/components/offline-indicator';
+import { AiConsentProvider } from '@/context/ai-consent-context';
 import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-context';
@@ -43,7 +44,6 @@ export const unstable_settings = {
 
 // Inner layout that uses theme context
 function RootLayoutNav() {
-  const { t } = useLanguage();
   const { colorScheme, isDark } = useTheme();
   useDeepLinkHandler();
 
@@ -54,7 +54,6 @@ function RootLayoutNav() {
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: t('modal.title') }} />
         <Stack.Screen name="comments/[postId]" options={{ headerShown: false }} />
         <Stack.Screen name="post-detail/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="user-profile/[id]" options={{ headerShown: false }} />
@@ -110,7 +109,9 @@ const GuardedApp = SentryErrorBoundary(function GuardedApp() {
     <SplashGate>
       <AuthProvider>
         <AppThemeProvider>
-          <RootLayoutNav />
+          <AiConsentProvider>
+            <RootLayoutNav />
+          </AiConsentProvider>
         </AppThemeProvider>
       </AuthProvider>
     </SplashGate>

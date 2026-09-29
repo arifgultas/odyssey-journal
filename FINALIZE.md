@@ -1,7 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-20 (gece boyu süren tur: code + security review ve düzeltmeleri, 12 dil
-mağaza metni ve görselleri, CI yükseltmesi — 23 commit, hepsi `main`'de)
+**Son güncelleme:** 2026-09-29 (finalize taraması: 12 yeni bulgu, build 8 öncesi native düzeltmeler,
+OpenAI izni, temizlik — ayrıntı hemen aşağıda "29 Eylül")
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -11,7 +11,64 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ Güncel durum — 19-20 Eylül (BURADAN DEVAM EDİN)
+## ★ 29 Eylül — finalize taraması (BURADAN DEVAM EDİN)
+
+**Kod:** `tsc` temiz · lint 0 hata (176 uyarı) · `i18n:check` geçti (12 × 732) · 20 suite / 211 test ·
+`expo export` iOS + Android üretim paketi derleniyor. iOS `buildNumber: "8"` (henüz alınmadı; EAS'te
+son iOS build 7), Android `versionCode: 2`. `android/` 29 Eylül'de yeniden üretildi.
+
+**Yayına kadar sıra:** kullanıcı işleri (`arif_todo.md` §0 yeni: SMTP, Firebase, Sentry, site metinleri)
+→ `google-services.json` gelince `npx expo prebuild --clean -p android` → Android AAB + Play dahili/kapalı
+test (14 gün şartı en uzun kalem, hemen başlamalı) → ~1 Ekim EAS kredisiyle iOS build 8 → cihaz turu →
+App Store gönderimi.
+
+### Taramada bulunanlar ve durumları
+| # | Bulgu | Durum |
+|---|---|---|
+| N1 | `android/` manifest'inde **eski Maps anahtarı** (prebuild yeni anahtardan önce alınmıştı) | ✅ yeniden prebuild; manifest `AIzaSyB46u…` |
+| N2 | Android ikonlarına (foreground, monochrome) **sahte damalı desen gömülü**, alfa yok | ✅ `icon.png`'den yeniden üretildi (gerçek alfa, güvenli alan %59); adaptive arka plan `#F7F6F0` (iOS ikonunun kremi) |
+| N3 | Android bildirim ikonu renkli/opak → durum çubuğunda beyaz kare | ✅ `assets/images/notification-icon.png` (beyaz siluet) |
+| N4 | **Android'de push hiç çalışmıyor**: FCM / `google-services.json` yok, token alınamıyor (hata yutuluyor) | ⏳ kod hazır (`app.config.ts` dosya varsa `googleServicesFile`); dosya + FCM V1 anahtarı kullanıcıda |
+| N5 | Supabase'de e-posta onayı açık; varsayılan SMTP yalnız ekip üyelerine gönderir (2/saat) → yeni kullanıcı onay/şifre sıfırlama e-postası alamaz | ⏳ kullanıcı: Workspace SMTP (`arif_todo.md` §0) |
+| N6 | **Apple 5.1.2(i)**: gönderi/yorum metni ve fotoğraflar OpenAI moderasyonuna gidiyor; izin ve açıklama yoktu | ✅ uygulama (aşağıda) · ⏳ gizlilik politikası (site) |
+| N7 | Site `/delete-account` kaldırılmış "Download My Data"yı anlatıyor | ⏳ kullanıcı, hazır metin `arif_todo.md` §6 |
+| N8 | GitHub Pages hâlâ yayında (`docs/*.html`, eski gizlilik politikası) | ✅ `docs/*.html` silindi · Pages kapatma: bkz. `arif_todo.md` §6 |
+| N9 | Gereksiz Android izinleri | ✅ `RECORD_AUDIO`, `SYSTEM_ALERT_WINDOW`, `WRITE_EXTERNAL_STORAGE` engellendi. `READ_EXTERNAL_STORAGE` **bilerek kaldı**: Android ≤ 12'de `hooks/use-image-picker.ts` galeri izni istiyor, engellenirse fotoğraf seçimi düşer |
+| N10 | İzin pencereleri yalnız İngilizce | ✅ `lang/<dil>.json` × 12 + `locales` (iOS; Android kendi metnini kullanır). Konum metnindeki var olmayan "yakındaki destinasyonlar" çıkarıldı |
+| N11 | Sentry'ye kaynak haritası yüklenmiyor → yayın çökmeleri okunamaz | ✅ `metro.config.js` → `getSentryExpoConfig` (debug ID) · eklenti token varsa devrede · ⏳ token + org/proje kullanıcıda |
+| N12 | Kayıt onay linki Supabase varsayılanına (localhost) gidiyordu | ✅ `emailRedirectTo: SITE_URL` (`lib/legal-links.ts`) · ⏳ Site URL panelden |
+
+### OpenAI izni (N6) — nasıl çalışıyor
+- `context/ai-consent-context.tsx` → `useAiConsent().ensureConsent()`: izin yoksa pencere açar, cevaba
+  göre `true/false`. Çağrılan yerler: `app/create-post.tsx` (oluştur + düzenle), `app/(tabs)/create.tsx`,
+  `app/comments/[postId].tsx`. Reddedilirse hiçbir şey gönderilmez; yorum metni kutuda kalır
+  (`CommentInput.onSubmit` artık `false` dönünce temizlemiyor).
+- Kayıt: `lib/ai-consent.ts`, AsyncStorage, hesap + cihaz başına (yeni cihaz yeniden sorar).
+- Geri alma: Ayarlar → Yasal ve Topluluk → "Yapay zekâ içerik kontrolü" anahtarı.
+- Kayıt ekranında onay kutusunun altında bilgi satırı (`aiConsent.signupNotice`).
+- Tasarım notu: izin kayıtta değil **ilk paylaşımda** isteniyor — mevcut kullanıcıları da aynı yol
+  kapsıyor ve kaydı uzatmıyor; Apple'ın istediği "ilk veri gönderiminden önce açık izin".
+
+### Diğer değişiklikler
+- **Onboarding bir kez:** `app/index.tsx` hazır `hooks/use-onboarding.ts`'i kullanıyor; görülünce doğrudan
+  girişe. Oturumu düşen kullanıcı sekmelerden `/`'e yönlenir (index karar verir). Mevcut kurulumlar
+  onboarding'i bir kez daha görür (bayrak yeni).
+- **Temizlik:** şablon `modal` rotası + anahtarları, `reset-project`; hiçbir yerden import edilmeyen
+  25 modül ve 23 varlık (`custom-icon`'un SVG'leri, şablon `splash-icon.png`) silindi — Metro onları
+  zaten paketlemiyordu. `supabase/` kökündeki eski SQL'ler ve rehberler `supabase/archive/`'e (README:
+  `storage-policies*.sql` 030'un kapattığı izinleri geri açar), kökteki 9 eski rehber `docs/archive/`'e.
+  `.idea/`, `supabase/.temp/` git dışı.
+- `supabase/**` değiştiği için bu push **"Deploy Supabase" onayı** ister; yeni migration yok, `db push`
+  boş geçer — onaylamak zararsız.
+
+### Kapsam dışı bırakılanlar (1.0 sonrası)
+Paket yükseltmeleri (B4), 176 lint uyarısı (C3), iki kopya oluşturma ekranının birleştirilmesi
+(`app/create-post.tsx` ~1900 satır / `app/(tabs)/create.tsx` ~1970 satır; ikisi de `lib/posts.ts` üzerinden
+moderasyonlu), Google/Apple girişi, universal link.
+
+---
+
+## 19-20 Eylül durumu (29 Eylül'de güncellenen yerler işaretli)
 
 **Kod:** `main` = son commit, push edildi. iOS `buildNumber: "8"`, Android `versionCode: 2`.
 `tsc` temiz · lint 0 hata (185 uyarı) · `i18n:check` geçti · 20 suite / 211 test.
@@ -44,9 +101,10 @@ mağaza formları ve cihaz testleri (`arif_todo.md`).
      ölü, Google/Apple butonları hata veriyor (Guideline 2.1 reddi riski); 19 Eylül güvenlik
      düzeltmelerini de içermiyor.
 - **Android etkilenmiyor:** AAB Android Studio'dan yerel alınıyor (`store_control.md` §2) — kullanıcı
-  sonraya bıraktı. Güncel kodla alınacağı için bütün düzeltmeleri içerir. `android/` 19 Eylül'de
-  `expo prebuild --clean` ile üretildi; o tarihten sonra `app.config.ts`'te native bir değişiklik
-  yok, yeniden prebuild gerekmez. JS değişiklikleri Gradle build'inde bundle'a otomatik girer.
+  sonraya bıraktı. **29 Eylül düzeltmesi:** buradaki "yeniden prebuild gerekmez" yanlıştı — 19 Eylül
+  prebuild'i yeni Maps anahtarından önce alınmıştı, manifest eski anahtarı taşıyordu. `android/` 29
+  Eylül'de yeniden üretildi; `app.config.ts`'te native bir şey değişince (ya da `google-services.json`
+  gelince) **yeniden** `npx expo prebuild --clean -p android` gerekir.
 
 ### Oturum tarafında bekleyenler (kullanıcıdan haber gelince)
 | Tetikleyici | Oturum ne yapar |

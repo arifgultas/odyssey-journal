@@ -1,4 +1,5 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { useAiConsent } from '@/context/ai-consent-context';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SelectedImage, useImagePicker } from '@/hooks/use-image-picker';
@@ -466,6 +467,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
 };
 
 export default function CreatePostScreen() {
+    const { ensureConsent } = useAiConsent();
     const insets = useSafeAreaInsets();
     const colorScheme = useColorScheme();
     const { t, language } = useLanguage();
@@ -589,6 +591,9 @@ export default function CreatePostScreen() {
             Alert.alert(t('createPost.errorTitle'), t('createPost.enterStory'));
             return;
         }
+
+        // Posts and comments go to OpenAI moderation; ask first (App Store 5.1.2(i))
+        if (!(await ensureConsent())) return;
 
         setIsSubmitting(true);
         try {
