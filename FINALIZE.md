@@ -37,6 +37,16 @@ ziyaretçisine `odysseyjournal://post/<id>` ile "Uygulamada aç" şeridi çıkı
 | W10 | Paylaşım linki `/?post=` İngilizce köke gidiyor | İstenirse `/<dil>/?post=` |
 
 W1, W2, W4 kod/SQL değişikliği → build 8'e girmeli; W1 ve W3 `032` migration'ına (S1–S3 ile birlikte).
+
+**Uygulama oturumunun notu (30 Eylül):** W1–W10 okundu, W2 doğrulandı (`hooks/use-image-picker.ts:104`
+`slice(0, maxImages)`). **W1 dikkat:** `home_location` sütunu `supabase/migrations/` ve `FULL_SETUP.sql`'te
+**hiç yok** — canlıya elle eklenmiş; yalnız `lib/profile-service.ts`, `lib/types/profile.ts`,
+`app/(tabs)/index.tsx` kullanıyor. `032`'yi yazmadan önce canlı şemayı salt-okuma kontrol et (sütun tipi,
+profiles SELECT politikaları, istemcide `select('*')` kullanan sorgular). Kullanıcı bu turu bir sonraki
+oturuma bıraktı. **Sonraki oturumun planı (tek tur):** (1) `032` = S1–S3 + W1 + W3 → PGlite'ta test →
+**push etmeden önce `/security-review`** → push → kullanıcı onayı → Security Advisor tekrar; (2) istemci:
+W2, W4, W7, W8, W9 (W5, W6, W10 1.0 sonrası); (3) site deposuna `APP_SYNC_2026-09-30.md` (değişen davranış:
+fotoğraf sınırı, ev konumu, kuyruk saklama süresi → site metni); (4) `arif_todo.md` + bu dosya.
 Değişen her şey site oturumuna geri bildirilmeli (site deposunda `APP_SYNC` dosyası ya da yeni bir `APP_SYNC_<tarih>.md`).
 
 ---

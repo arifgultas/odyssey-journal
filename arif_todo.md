@@ -38,7 +38,9 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
-- [ ] **`032` deploy onayı** — sonraki oturum Supabase Security Advisor'ın bulduğu açıkları (bucket'lar
+- [ ] **`032` deploy onayı** — (30 Eylül: kapsam büyüdü → S1–S3 + siteden gelen W1 ev konumu gizliliği + W3
+      bildirim kuyruğu temizliği; ayrıca W2/W4 istemci düzeltmeleri — hepsi build 8'den önce, sonraki oturum)
+      Sonraki oturum Supabase Security Advisor'ın bulduğu açıkları (bucket'lar
       listelenebiliyor, iki fonksiyon oturumsuz çağrılabiliyor) `032` ile kapatacak. Push'tan sonra GitHub →
       Actions → "Deploy Supabase" → Review deployments → **Approve** (FINALIZE "29 Eylül akşamı" S1–S3)
 - [ ] **E-postanı kontrol et:** App Store Connect'ten TestFlight build'leri için "ITMS-91053 / Missing
