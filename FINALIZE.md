@@ -138,10 +138,10 @@ gelmiş mi (kullanıcı e-postasına bakmalı).
 **Android build notu (29 Eylül) — yerel build bu makinede mümkün değil, AAB EAS'ten alınacak.**
 `./gradlew :app:bundleRelease` iki engele takıldı:
 1. Android Studio'nun gömülü JDK'sı 25 → Gradle 8.14.3 açılmıyor ("Unsupported class file major version 69").
-   JDK 17 ile (`C:Program FilesJavajdk-17`) bu geçiliyor.
+   JDK 17 ile (`C:\Program Files\Java\jdk-17`) bu geçiliyor.
 2. `:app:buildCMakeRelWithDebInfo[arm64-v8a]` → ninja: `Filename longer than 260 characters`. CMake nesne
    yolu proje yolunu **iki kez** içeriyor (`.cxx/…` altında `C_/Users/…/node_modules/…`): bugünkü yolla 383
-   karakter, `C:oj`'de bile ~269. `subst` ile sürücü kökü de olmuyor (expo-modules-autolinking kökte
+   karakter, `C:\oj`'de bile ~269. `subst` ile sürücü kökü de olmuyor (expo-modules-autolinking kökte
    `package.json` bulamıyor). Çözüm ya Windows uzun yol desteği (`LongPathsEnabled`, yönetici) + SDK'dan
    CMake ≥ 3.30 (ninja ≥ 1.12), ya da EAS. **EAS seçildi** (`.easignore` `/android`'i dışarıda bırakıyor →
    EAS kendi prebuild'ini yapar; `google-services.json` yükleniyor, `SENTRY_AUTH_TOKEN` EAS secret).
