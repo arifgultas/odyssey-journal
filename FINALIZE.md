@@ -1,7 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-29 akşam (finalize taraması + akşam ikinci tur: Supabase advisor S1–S5; build 8 öncesi native düzeltmeler,
-OpenAI izni, temizlik — ayrıntı hemen aşağıda "29 Eylül")
+**Son güncelleme:** 2026-09-30 (site ↔ uygulama uyum turu site deposunda bitti; siteden uygulamaya dönen 10 madde hemen
+aşağıda "30 Eylül"). Önceki: 2026-09-29 akşam (finalize taraması, Supabase advisor S1–S5, build 8 öncesi düzeltmeler).
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -11,7 +11,37 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 29 Eylül — finalize taraması (BURADAN DEVAM EDİN)
+## ★ 30 Eylül — siteden gelenler (BURADAN DEVAM EDİN)
+
+Site oturumu (`odyssey-journal-website`) siteyi bu deponun build 8 hâline göre baştan düzeltti ve yayına aldı
+(site `e89f542` hukuk 12 dil, `af1d965` ana sayfa, `79b9d8e` belgeler; deploy `492cc01`, canlıda doğrulandı).
+Tam liste sitenin `APP_SYNC_2026-09-29.md` §5'inde ve `WORKLOG.md` "2026-09-30"de. Kısaca site artık şunu diyor:
+oturum AsyncStorage'da (Keychain yok), yedek günlük/7 gün (PITR yok), gönderiler herkese açık, ev konumu
+"diğer kullanıcılara gösterilmez", fotoğraflar OpenAI'da **yayından hemen sonra** kontrol edilir ve kontrol çalışmazsa
+içerik kontrolsüz yayımlanabilir, silme anında + yedekte ≤ 7 gün, **kayıt başına 5 fotoğraf**, Apple ve FCM/APNs
+alt işleyen, Sentry EU. Ana sayfaya topluluk bölümü eklendi; mağaza düğmeleri "Çok yakında"; `/?post=<uuid>`
+ziyaretçisine `odysseyjournal://post/<id>` ile "Uygulamada aç" şeridi çıkıyor.
+
+**Uygulamada yapılacaklar — build 8'den önce (site bunları bugünkü davranışa göre anlatıyor):**
+| # | Bulgu | Yapılacak |
+|---|---|---|
+| W1 | **Ev konumu koordinatları başka kullanıcılara okunabilir görünüyor** — `profiles.home_location` için sütun kısıtı yok, SELECT yalnız engeli dışlıyor (`014`, `030:333`). Uygulama göstermiyor ama API ile okunur; site "gösterilmez" diyor | Canlı politikayı doğrula; `032`'ye ekle: koordinatları sahibine kısıtla (sütun REVOKE — önce istemcide `select('*')` taraması — ya da ayrı tablo). Mesafe hesabı başka profilde de ev konumunu okuyor (`profile-service.ts:181-260`) → sunucu tarafı hesap ya da yalnız sayı döndüren RPC |
+| W2 | **Galeri seçici listeyi 5'e kesiyor, önce kameradan eklenenleri sessizce siliyor** (`hooks/use-image-picker.ts:104` `slice(0, maxImages)`); kamera sınırsız ekliyor, yükleme 10'da reddediyor | Kullanıcı kararı: **5** (site 5 diyor). Galeri `selectionLimit: 5 - images.length`, mevcutları silmesin; kamera 5'te dursun (iki oluşturma ekranı) |
+| W3 | `push_notification_queue` satırları hiç silinmiyor (token, aktör adı, ID'ler) | `pg_cron`: gönderilmiş satırları 30 gün sonra sil. Eklenince sitede `/delete-account` §4'e süre yazılır |
+| W4 | Çıkışta `REACT_QUERY_OFFLINE_CACHE` temizlenmiyor (`lib/query-persister.ts`) → aynı cihazdaki sonraki hesap öncekinin önbelleğini 24 saat görebilir | `AuthContext.signOut` içinde temizle |
+| W5 | Fotoğraf moderasyonu yayından sonra ve fail-open (`lib/posts.ts:130-189`, `lib/content-moderation.ts:48-60`) | Bilinen tasarım; değişirse (önce kontrol, sonra insert) site gizlilik §5 madde 8 güncellenir |
+| W6 | Admin'in sildiği gönderinin görselleri storage'da kalıyor (`admin_delete_post`) | 1.0 sonrası olabilir |
+| W7 | Gurme rozeti hiç açılamıyor (`lib/badge-service.ts:62`) | Düzelt ya da çıkar (site rozet adı saymıyor) |
+| W8 | Hukuk sayfaları hep İngilizce açılıyor (`lib/legal-links.ts`); sitede `/<dil>/…` var | `emailConfirmedUrl` gibi dile göre aç |
+| W9 | Hava durumu paylaşım anının (`lib/weather.ts` `current=`), kaydın tarihinin değil | `STORE_LISTING.md`'deki "weather of that day" (12 dil) düzelt |
+| W10 | Paylaşım linki `/?post=` İngilizce köke gidiyor | İstenirse `/<dil>/?post=` |
+
+W1, W2, W4 kod/SQL değişikliği → build 8'e girmeli; W1 ve W3 `032` migration'ına (S1–S3 ile birlikte).
+Değişen her şey site oturumuna geri bildirilmeli (site deposunda `APP_SYNC` dosyası ya da yeni bir `APP_SYNC_<tarih>.md`).
+
+---
+
+## 29 Eylül — finalize taraması
 
 **Kod:** `tsc` temiz · lint 0 hata (176 uyarı) · `i18n:check` geçti (12 × 732) · 20 suite / 211 test ·
 `expo export` iOS + Android üretim paketi derleniyor. iOS `buildNumber: "8"` (henüz alınmadı; EAS'te
@@ -75,7 +105,7 @@ EAS'ten alındı; push testi söyleyecek), Sentry'ye source map yüklemesi (ilk 
 gelmiş mi (kullanıcı e-postasına bakmalı).
 
 ### Build oturumu (~1 Ekim) — adım adım
-0. **Önce S1–S3 (`032` migration, aşağıdaki tablo)** → push → kullanıcı "Deploy Supabase"ı onaylar →
+0. **Önce S1–S3 + W1/W3 (`032` migration)** ve **W2, W4** (istemci; "30 Eylül" tablosu) → push → kullanıcı "Deploy Supabase"ı onaylar →
    Security Advisor'da uyarılar düştü mü. Kod değişikliği olmadığı için build'i beklemez ama yayından önce bitmeli.
 1. expo.dev → Billing/Usage: iOS ve Android kotası yenilenmiş mi. `eas build:list --limit 3` ile son build'ler.
 2. `git status` temiz, `main` = origin. `npx tsc --noEmit --skipLibCheck`, `npm test`, `npm run i18n:check`.

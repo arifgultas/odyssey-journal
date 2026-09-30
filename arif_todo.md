@@ -212,10 +212,13 @@ temizlenir. Diğerini de aynı yolla sil.
       (12 dil)~~ ✅ 29 Eylül — oturum yaptı, sitenin kendi deposundan (`odyssey-journal-website`,
       `63b67be` → `npm run deploy`), canlıda doğrulandı. Ayrıntı sitenin `WORKLOG.md`'sinde.
 - [x] ~~GitHub Pages kapat~~ ✅ 29 Eylül (`arifgultas.github.io/odyssey-journal` artık 404)
-- [ ] **Site ↔ uygulama uyum turu (site projesinde, ayrı oturum):** site deposundaki
-      `APP_SYNC_2026-09-29.md` bugün yapılanları ve açık bulguları (Keychain iddiası, "prescreen" cümlesi,
-      FCM/APNs, PITR yedek iddiası …) listeliyor; en altta oturuma yapıştırılacak hazır metin var.
-      Yayından (App Store gönderiminden) önce bitmeli.
+- [x] ~~**Site ↔ uygulama uyum turu**~~ ✅ 30 Eylül — site oturumu yaptı ve yayına aldı: hukuk sayfaları 12 dil
+      (Keychain, PITR, prescreen, FCM/APNs, Apple, ev konumu, anında silme …), ana sayfa (olmayan özellikler
+      çıktı, topluluk bölümü, 5 fotoğraf, "Çok yakında"). Ayrıntı sitenin `WORKLOG.md` "2026-09-30".
+- [ ] **Siteden uygulamaya dönen 10 madde** (`FINALIZE.md` "30 Eylül", W1–W10) — oturum yapar; senin kararın
+      gereken: **W1** (ev konumunun gizlenmesi — öncelikli) için yöntem onayı, **W3** (push kayıtlarının 30 gün
+      sonra silinmesi) için onay. W2 kararı verildi: kayıt başına 5 fotoğraf.
+- [ ] **Hukuk metinlerini avukata göster** (özellikle `tr`): sitede `npm run legal:package` EN/TR yan yana üretir.
 - [ ] Uygulama yayına girince ana sayfadaki **App Store / Google Play** butonlarına gerçek mağaza
       linklerini koy (şu an `#download`). Sitenin `WORKLOG.md` → "Yapacaklarımız" adımları anlatıyor;
       oturuma linkleri vermen yeterli.
