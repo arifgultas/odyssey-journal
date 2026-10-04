@@ -40,7 +40,8 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
 - [x] ~~**`032` deploy onayı**~~ ✅ 4 Ekim — canlıda; Security Advisor 0 hata (kalan 7 uyarı bilerek)
-- [ ] **Moderatör hesabı aç ve yönetici yap** — adım adım aşağıda **§1b** (4 Ekim sorgusu: `admins: null` →
+- [x] ~~**Moderatör hesabı aç ve yönetici yap**~~ ✅ 4 Ekim — `moderation@odysseyjournal.app` onaylı, `is_admin = true`
+      (kalan: §1b Adım 4 uygulamada kontrol, kullanıcı adı; Adım 6 isteğe bağlı) — adım adım **§1b** (4 Ekim sorgusu: `admins: null` →
       moderasyon paneli kimseye görünmüyor; mağazaya göndermeden önce şart, Apple 1.2)
 - [x] ~~**Tek salt-okuma sorgusu**~~ ✅ 4 Ekim sonucu: admin yok (yukarıdaki madde) · purge_job `17 3 * * *` ✓ ·
       6 ev konumu tabloya taşındı, sütunda 0 kaldı ✓ · maestro test hesabı yok ✓ · **demo hesap boş** (0 gönderi,
@@ -80,7 +81,7 @@ select jsonb_pretty(jsonb_build_object(
 
 ---
 
-## 1b. Moderatör hesabı — `moderation@odysseyjournal.app` (build beklemez, şimdi yapılabilir)
+## 1b. Moderatör hesabı — `moderation@odysseyjournal.app` (✅ 4 Ekim: Adım 1-3 bitti; onay e-postası gelmedi, SQL ile onaylandı)
 
 **Neden ayrı hesap:** şimdiki "Admin" hesabının e-postası notlarda `admin@admin.com` — `admin.com` başkasına ait
 gerçek bir alan adı, şifre sıfırlama oraya gider (hesap kurtarılamaz). Ayrıca 10 gönderisi olan, akışta görünen bir
