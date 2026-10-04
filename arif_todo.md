@@ -151,16 +151,24 @@ Hesap **silinmeyecek**: 10 gönderisi demo akışı dolduruyor. Yalnız yönetic
 - [ ] Supabase → **Authentication → Users** → listede "Admin" hesabının e-postasına bak. Gerçekten `admin@admin.com`
       gibi senin olmayan bir adresse **şifresini şifre yöneticine kaydet** (unutursan kurtarılamaz)
 - [x] ~~Admin → "Elif Demir" / `elifdemir`~~ ✅ 4 Ekim (uygulamadan)
-- [ ] **Admin2, Admin3** — şifreleri hatırlanmıyor; giriş gerekmez, yalnız gönderileri akışta duruyor. Adlarını
-      SQL Editor'dan değiştir (030'daki koruma yalnız yetki/sayaç sütunlarını kapsıyor, ad/kullanıcı adı serbest):
+- [x] ~~**Admin2, Admin3** yeniden adlandır~~ ✅ 4 Ekim (SQL): **Can Yılmaz / `canyilmaz`** (3 gönderi),
+      **Sofia Rossi / `sofiarossi`** (1 gönderi); Elif Demir 10 gönderi
+- [ ] **Bu üç hesabın girişlerini not et** — e-postaları gerçek adres değil, "Şifremi unuttum" çalışmaz:
+  1. Giriş e-postalarını öğren (salt okuma) → şifre yöneticine yaz:
 ```sql
-update public.profiles set full_name = 'Can Yılmaz', username = 'canyilmaz' where full_name = 'Admin2';
-update public.profiles set full_name = 'Sofia Rossi', username = 'sofiarossi' where full_name = 'Admin3';
-select full_name, username, posts_count from public.profiles
-where username in ('elifdemir', 'canyilmaz', 'sofiarossi');
+select p.username, u.email from auth.users u join public.profiles p on p.id = u.id
+where p.username in ('elifdemir', 'canyilmaz', 'sofiarossi');
 ```
-      Son sorgu **3 satır** göstermeli. Eksik satır varsa o hesabın adı tam "Admin2"/"Admin3" değil → sonucu oturuma ilet.
-      İleride bu hesaplara girmek gerekirse oturum şifre için ayrı SQL hazırlar (e-postaları büyük olasılıkla gerçek değil)
+  2. Can ve Sofia'ya yeni şifre (şifre yöneticinde üret; `SIFRE_1`/`SIFRE_2` yerine yaz, tırnaklar kalsın). Sonuç
+     "Success. No rows returned" — normal. Çalıştırdıktan sonra sorguyu **kaydetme**, Snippets'e düştüyse sil:
+```sql
+update auth.users set encrypted_password = extensions.crypt('SIFRE_1', extensions.gen_salt('bf'))
+where id = (select id from public.profiles where username = 'canyilmaz');
+update auth.users set encrypted_password = extensions.crypt('SIFRE_2', extensions.gen_salt('bf'))
+where id = (select id from public.profiles where username = 'sofiarossi');
+```
+  3. Uygulamada Can Yılmaz ile gir → profil yerinde → çık
+  (Elif Demir'in şifresi biliniyor. Bu hesaplar yönetici değil; yönetici yalnız `moderation@`.)
 - [ ] E-postasını kendi alan adına (örn. `travel@odysseyjournal.app` takma adı) taşımak istersen oturuma söyle;
       panelden doğrudan değiştirilemiyor, oturum SQL'ini hazırlar
 
