@@ -284,7 +284,9 @@ export default function SettingsScreen() {
                     displayProfile={displayProfile}
                     user={user}
                     t={t}
-                    onEditPress={() => setEditModalVisible(true)}
+                    // Not before the real profile has loaded: the placeholder above is built from the
+                    // email, and saving it would overwrite the name and username
+                    onEditPress={() => { if (profile) setEditModalVisible(true); }}
                 />
 
                 {/* Appearance Section */}

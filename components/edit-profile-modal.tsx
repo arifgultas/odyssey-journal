@@ -6,7 +6,7 @@ import type { Profile } from '@/lib/types/profile';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -37,6 +37,19 @@ export function EditProfileModal({
     const [bio, setBio] = useState(profile.bio || '');
     const [website, setWebsite] = useState(profile.website || '');
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
+
+    // The modal stays mounted inside Settings, so useState's initial values were whatever profile
+    // Settings had on its first render: a placeholder built from the email while the profile was
+    // still loading, or the previous account's cached profile. Saving then wrote those values to
+    // the signed-in account. Refill the form each time it opens and when the real profile arrives.
+    useEffect(() => {
+        if (!visible) return;
+        setFullName(profile.full_name || '');
+        setUsername(profile.username || '');
+        setBio(profile.bio || '');
+        setWebsite(profile.website || '');
+        setAvatarUri(null);
+    }, [visible, profile.id, profile.full_name, profile.username, profile.bio, profile.website]);
 
     const { t } = useLanguage();
     const updateProfile = useUpdateProfile();
