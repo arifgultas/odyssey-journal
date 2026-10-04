@@ -23,6 +23,8 @@ import { formatTime } from '@/lib/date-formatter';
 import { Colors, Spacing, Typography, Shadows } from '@/constants/theme';
 import { getMessages, sendMessage, subscribeToMessages, Message, checkChatApproval, approveConversation, declineConversation } from '@/lib/chat';
 import { useProfile } from '@/hooks/use-profile';
+import { ReportModal } from '@/components/report-modal';
+import { useConfirmBlockUser } from '@/hooks/use-block-user';
 import { supabase } from '@/lib/supabase';
 import { mirrorIcon } from '@/lib/rtl';
 
@@ -74,6 +76,22 @@ export default function ChatRoomScreen() {
     const isTypingRef = useRef(false);
     const typingChannelRef = useRef<any>(null);
     const { data: profile } = useProfile(chatUserId);
+    const confirmBlockUser = useConfirmBlockUser();
+    const [showReportModal, setShowReportModal] = useState(false);
+
+    // Report and Block in the conversation itself (App Store 1.2)
+    const handleSafetyOptions = () => {
+        if (!chatUserId) return;
+        Alert.alert(profile?.full_name || profile?.username || t('common.unknownUser'), undefined, [
+            { text: t('post.report'), onPress: () => setShowReportModal(true) },
+            {
+                text: t('post.blockUser'),
+                style: 'destructive',
+                onPress: () => confirmBlockUser(chatUserId, () => safeGoBack('/chat')),
+            },
+            { text: t('common.cancel'), style: 'cancel' },
+        ]);
+    };
 
     useEffect(() => {
         loadCurrentUser();
@@ -265,9 +283,9 @@ export default function ChatRoomScreen() {
         setInputText('');
         setIsSending(true);
 
+        // Optimistic update
+        const tempId = `temp-${Date.now()}`;
         try {
-            // Optimistic update
-            const tempId = `temp-${Date.now()}`;
             const tempMsg: Message = {
                 id: tempId,
                 sender_id: currentUserId || '',
@@ -293,8 +311,11 @@ export default function ChatRoomScreen() {
             });
         } catch (error) {
             console.error('Error sending message:', error);
-            // Put text back in input on error
+            // Take the unsent message off the screen, put the text back and say so (for example
+            // the other person has blocked you: the database refuses the message)
+            setMessages((prev) => prev.filter((m) => m.id !== tempId));
             setInputText(content);
+            Alert.alert(t('common.error'), t('chat.sendError'));
         } finally {
             setIsSending(false);
         }
@@ -366,11 +387,13 @@ export default function ChatRoomScreen() {
                     </View>
                     <View style={styles.headerUserText}>
                         <Text style={[styles.userNameText, { color: theme.textMain }]} numberOfLines={1}>
-                            {profile?.full_name || profile?.username || 'Traveler'}
+                            {profile?.full_name || profile?.username || t('common.unknownUser')}
                         </Text>
-                        <Text style={[styles.userHandleText, { color: theme.textMuted }]} numberOfLines={1}>
-                            @{profile?.username || 'traveler'}
-                        </Text>
+                        {!!profile?.username && (
+                            <Text style={[styles.userHandleText, { color: theme.textMuted }]} numberOfLines={1}>
+                                @{profile.username}
+                            </Text>
+                        )}
                     </View>
                 </TouchableOpacity>
 
@@ -382,6 +405,9 @@ export default function ChatRoomScreen() {
                     )}
                     <TouchableOpacity onPress={handleProfilePress} style={styles.headerButton}>
                         <Ionicons name="card-outline" size={26} color={theme.primary} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSafetyOptions} style={styles.headerButton}>
+                        <Ionicons name="ellipsis-vertical" size={22} color={theme.primary} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -489,6 +515,13 @@ export default function ChatRoomScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
+            )}
+            {chatUserId && (
+                <ReportModal
+                    visible={showReportModal}
+                    target={{ type: 'user', id: chatUserId }}
+                    onClose={() => setShowReportModal(false)}
+                />
             )}
         </KeyboardAvoidingView>
     );

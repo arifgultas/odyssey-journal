@@ -1,6 +1,6 @@
 import { BorderRadius, Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
-import { REPORT_REASON_KEYS, reportPost, ReportReason } from '@/lib/reports';
+import { REPORT_REASON_KEYS, ReportReason, ReportTarget, submitReport } from '@/lib/reports';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -17,27 +17,29 @@ import {
 
 interface ReportModalProps {
     visible: boolean;
-    postId: string;
+    /** A post, for the existing callers; or pass target for a comment or a user */
+    postId?: string;
+    target?: ReportTarget | null;
     onClose: () => void;
     onReported?: () => void;
 }
 
-export function ReportModal({ visible, postId, onClose, onReported }: ReportModalProps) {
+const TITLE_KEYS = { post: 'report.title', comment: 'report.titleComment', user: 'report.titleUser' } as const;
+const WHY_KEYS = { post: 'report.whyReporting', comment: 'report.whyReportingComment', user: 'report.whyReportingUser' } as const;
+
+export function ReportModal({ visible, postId, target, onClose, onReported }: ReportModalProps) {
+    const reportTarget: ReportTarget | null = target ?? (postId ? { type: 'post', id: postId } : null);
     const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
     const [description, setDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { t } = useLanguage();
 
     const handleSubmit = async () => {
-        if (!selectedReason) return;
+        if (!selectedReason || !reportTarget) return;
 
         setIsSubmitting(true);
         try {
-            await reportPost({
-                post_id: postId,
-                reason: selectedReason,
-                description: description.trim() || undefined,
-            });
+            await submitReport(reportTarget, selectedReason, description.trim() || undefined);
 
             onReported?.();
             handleClose();
@@ -65,7 +67,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
                 <View style={styles.container}>
                     {/* Header */}
                     <View style={styles.header}>
-                        <Text style={styles.title}>{t('report.title')}</Text>
+                        <Text style={styles.title}>{t(TITLE_KEYS[reportTarget?.type ?? 'post'])}</Text>
                         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                             <Ionicons name="close" size={24} color={Colors.light.text} />
                         </TouchableOpacity>
@@ -73,7 +75,7 @@ export function ReportModal({ visible, postId, onClose, onReported }: ReportModa
 
                     {/* Content */}
                     <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-                        <Text style={styles.subtitle}>{t('report.whyReporting')}</Text>
+                        <Text style={styles.subtitle}>{t(WHY_KEYS[reportTarget?.type ?? 'post'])}</Text>
 
                         {/* Reason Options */}
                         <View style={styles.reasonsContainer}>

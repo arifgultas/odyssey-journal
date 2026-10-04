@@ -2,13 +2,17 @@ import { Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { useTheme } from '@/context/theme-context';
 import {
+    adminDeleteComment,
     adminDeletePost,
     banUser,
     getAdminStats,
+    getBannedUsers,
     getReports,
     isAdmin,
+    unbanUser,
     updateReportStatus,
     type AdminStats,
+    type BannedUser,
     type ReportWithDetails
 } from '@/lib/admin-service';
 import { Ionicons } from '@expo/vector-icons';
@@ -77,6 +81,8 @@ export default function AdminScreen() {
     const [filter, setFilter] = useState<StatusFilter>('pending');
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [showBanned, setShowBanned] = useState(false);
+    const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
 
     // Check admin status on mount
     useEffect(() => {
@@ -100,12 +106,13 @@ export default function AdminScreen() {
             ]);
             setReports(reportsData);
             setStats(statsData);
+            if (showBanned) setBannedUsers(await getBannedUsers());
         } catch (error) {
             console.error('Error loading admin data:', error);
         } finally {
             setLoading(false);
         }
-    }, [filter]);
+    }, [filter, showBanned]);
 
     useEffect(() => {
         if (authorized) {
@@ -129,6 +136,7 @@ export default function AdminScreen() {
                     text: t('common.delete'),
                     style: 'destructive',
                     onPress: async () => {
+                        if (!report.post_id) return;
                         try {
                             await adminDeletePost(report.post_id);
                             await updateReportStatus(report.id, 'resolved');
@@ -143,10 +151,58 @@ export default function AdminScreen() {
         );
     };
 
+    const handleDeleteComment = (report: ReportWithDetails) => {
+        const commentId = report.comment_id;
+        if (!commentId) return;
+        Alert.alert(t('admin.deleteComment'), t('admin.deleteCommentConfirm'), [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+                text: t('common.delete'),
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        // The report row goes with the comment (ON DELETE CASCADE)
+                        await adminDeleteComment(commentId);
+                        await loadData();
+                        Alert.alert(t('common.done'), t('admin.deleteCommentDone'));
+                    } catch {
+                        Alert.alert(t('common.error'), t('admin.deleteCommentFailed'));
+                    }
+                },
+            },
+        ]);
+    };
+
+    const handleUnban = (user: BannedUser) => {
+        const username = user.username || user.full_name || t('admin.unknownUser');
+        Alert.alert(t('admin.unban'), t('admin.unbanConfirm', { username }), [
+            { text: t('common.cancel'), style: 'cancel' },
+            {
+                text: t('admin.unban'),
+                onPress: async () => {
+                    try {
+                        await unbanUser(user.id);
+                        await loadData();
+                        Alert.alert(t('common.done'), t('admin.unbanDone', { username }));
+                    } catch {
+                        Alert.alert(t('common.error'), t('admin.unbanFailed'));
+                    }
+                },
+            },
+        ]);
+    };
+
     const handleBanUser = (report: ReportWithDetails) => {
-        const userId = report.post?.user_id;
+        // The server records the author on every report (033), so this works even when the post
+        // itself is hidden from the moderator (author already banned, or a block between them)
+        const userId = report.reported_user_id || report.post?.user_id;
         if (!userId) return;
-        const username = report.post?.profiles?.username || report.post?.profiles?.full_name || t('admin.unknownUser');
+        const username =
+            report.reported_user?.username ||
+            report.reported_user?.full_name ||
+            report.post?.profiles?.username ||
+            report.post?.profiles?.full_name ||
+            t('admin.unknownUser');
 
         Alert.alert(
             t('admin.banUser'),
@@ -290,6 +346,35 @@ export default function AdminScreen() {
                 </View>
             )}
 
+            {/* Reported Comment */}
+            {item.comment && (
+                <View style={[styles.postPreview, { backgroundColor: colors.sectionBg }]}>
+                    <Text style={[styles.descriptionLabel, { color: colors.textSecondary }]}>{t('admin.reportedComment')}</Text>
+                    <View style={styles.postAuthor}>
+                        <Ionicons name="person-circle" size={20} color={colors.accent} />
+                        <Text style={[styles.postAuthorName, { color: colors.textPrimary }]}>
+                            {item.reported_user?.username || item.reported_user?.full_name || t('admin.unknownUser')}
+                        </Text>
+                    </View>
+                    <Text style={[styles.postContent, { color: colors.textPrimary }]} numberOfLines={4}>
+                        {item.comment.content}
+                    </Text>
+                </View>
+            )}
+
+            {/* Reported User (profile or conversation) */}
+            {!item.post_id && !item.comment_id && (
+                <View style={[styles.postPreview, { backgroundColor: colors.sectionBg }]}>
+                    <Text style={[styles.descriptionLabel, { color: colors.textSecondary }]}>{t('admin.reportedUser')}</Text>
+                    <View style={styles.postAuthor}>
+                        <Ionicons name="person-circle" size={20} color={colors.accent} />
+                        <Text style={[styles.postAuthorName, { color: colors.textPrimary }]}>
+                            {item.reported_user?.username || item.reported_user?.full_name || t('admin.unknownUser')}
+                        </Text>
+                    </View>
+                </View>
+            )}
+
             {/* Report Description */}
             {item.description && (
                 <View style={styles.descriptionContainer}>
@@ -325,13 +410,17 @@ export default function AdminScreen() {
                         <Text style={[styles.actionButtonText, { color: colors.dismissed }]}>{t('admin.dismiss')}</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.deleteButton, { borderColor: colors.danger }]}
-                        onPress={() => handleDeletePost(item)}
-                    >
-                        <Ionicons name="trash-outline" size={16} color={colors.danger} />
-                        <Text style={[styles.actionButtonText, { color: colors.danger }]}>{t('admin.deletePost')}</Text>
-                    </TouchableOpacity>
+                    {(item.post_id || item.comment_id) && (
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.deleteButton, { borderColor: colors.danger }]}
+                            onPress={() => (item.comment_id ? handleDeleteComment(item) : handleDeletePost(item))}
+                        >
+                            <Ionicons name="trash-outline" size={16} color={colors.danger} />
+                            <Text style={[styles.actionButtonText, { color: colors.danger }]}>
+                                {item.comment_id ? t('admin.deleteComment') : t('admin.deletePost')}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
 
                     <TouchableOpacity
                         style={[styles.actionButton, styles.banButton, { backgroundColor: colors.dangerBg, borderColor: colors.danger }]}
@@ -387,10 +476,11 @@ export default function AdminScreen() {
                         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('admin.total')}</Text>
                     </View>
                     <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-                    <View style={styles.statItem}>
+                    {/* Tap to list banned users and lift a ban */}
+                    <TouchableOpacity style={styles.statItem} onPress={() => setShowBanned((v) => !v)} accessibilityRole="button">
                         <Text style={[styles.statNumber, { color: colors.danger }]}>{stats.bannedUsers}</Text>
-                        <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('admin.banned')}</Text>
-                    </View>
+                        <Text style={[styles.statLabel, { color: showBanned ? colors.accent : colors.textSecondary }]}>{t('admin.banned')}</Text>
+                    </TouchableOpacity>
                 </Animated.View>
             )}
 
@@ -430,6 +520,29 @@ export default function AdminScreen() {
                     contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 24 }]}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
+                    }
+                    ListHeaderComponent={
+                        showBanned ? (
+                            <View style={[styles.reportCard, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+                                <Text style={[styles.reasonText, { color: colors.textPrimary, padding: Spacing.md }]}>{t('admin.bannedUsers')}</Text>
+                                {bannedUsers.length === 0 ? (
+                                    <Text style={[styles.emptySubtext, { color: colors.textSecondary, paddingHorizontal: Spacing.md, paddingBottom: Spacing.md }]}>
+                                        {t('admin.noBannedUsers')}
+                                    </Text>
+                                ) : (
+                                    bannedUsers.map((u) => (
+                                        <View key={u.id} style={[styles.reporterRow, { borderTopColor: colors.border, justifyContent: 'space-between' }]}>
+                                            <Text style={[styles.postAuthorName, { color: colors.textPrimary }]}>
+                                                {u.username || u.full_name || t('admin.unknownUser')}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => handleUnban(u)} accessibilityRole="button">
+                                                <Text style={[styles.actionButtonText, { color: colors.accent }]}>{t('admin.unban')}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    ))
+                                )}
+                            </View>
+                        ) : null
                     }
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>

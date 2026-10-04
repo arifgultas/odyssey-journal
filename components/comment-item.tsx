@@ -11,10 +11,18 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 interface CommentItemProps {
     comment: Comment;
     onDelete?: (commentId: string) => void;
+    /** The signed-in user wrote this comment */
     isOwner?: boolean;
+    /** The comment's author, or the owner of the post it is on */
+    canDelete?: boolean;
+    onReport?: (comment: Comment) => void;
+    onBlock?: (userId: string) => void;
 }
 
-export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemProps) {
+export function CommentItem({ comment, onDelete, isOwner = false, canDelete = isOwner, onReport, onBlock }: CommentItemProps) {
+    // Other people's comments can be reported and their authors blocked (App Store 1.2)
+    const canModerate = !isOwner && (!!onReport || !!onBlock);
+    const hasActions = canDelete || canModerate;
     const [showActions, setShowActions] = useState(false);
     const { t, language } = useLanguage();
     const colorScheme = useColorScheme();
@@ -60,7 +68,7 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
                 <View style={styles.commentContent}>
                     <View style={styles.header}>
                         <Text style={[styles.username, { color: theme.text }]}>
-                            {comment.full_name || comment.username || 'Unknown User'}
+                            {comment.full_name || comment.username || t('common.unknownUser')}
                         </Text>
                         <Text style={[styles.timestamp, { color: theme.textMuted }]}>{formatDate(comment.created_at)}</Text>
                     </View>
@@ -68,7 +76,7 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
                 </View>
 
                 {/* Actions */}
-                {isOwner && (
+                {hasActions && (
                     <TouchableOpacity
                         style={styles.moreButton}
                         onPress={() => setShowActions(!showActions)}
@@ -79,12 +87,38 @@ export function CommentItem({ comment, onDelete, isOwner = false }: CommentItemP
             </View>
 
             {/* Action Menu */}
-            {showActions && isOwner && (
+            {showActions && hasActions && (
                 <View style={[styles.actionsMenu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                    <TouchableOpacity style={styles.actionItem} onPress={handleDelete}>
-                        <Ionicons name="trash-outline" size={16} color={theme.error} />
-                        <Text style={[styles.deleteText, { color: theme.error }]}>{t('common.delete')}</Text>
-                    </TouchableOpacity>
+                    {canDelete && (
+                        <TouchableOpacity style={styles.actionItem} onPress={handleDelete}>
+                            <Ionicons name="trash-outline" size={16} color={theme.error} />
+                            <Text style={[styles.deleteText, { color: theme.error }]}>{t('common.delete')}</Text>
+                        </TouchableOpacity>
+                    )}
+                    {canModerate && onReport && (
+                        <TouchableOpacity
+                            style={styles.actionItem}
+                            onPress={() => {
+                                setShowActions(false);
+                                onReport(comment);
+                            }}
+                        >
+                            <Ionicons name="flag-outline" size={16} color={theme.text} />
+                            <Text style={[styles.deleteText, { color: theme.text }]}>{t('post.report')}</Text>
+                        </TouchableOpacity>
+                    )}
+                    {canModerate && onBlock && (
+                        <TouchableOpacity
+                            style={styles.actionItem}
+                            onPress={() => {
+                                setShowActions(false);
+                                onBlock(comment.user_id);
+                            }}
+                        >
+                            <Ionicons name="ban-outline" size={16} color={theme.error} />
+                            <Text style={[styles.deleteText, { color: theme.error }]}>{t('post.blockUser')}</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             )}
         </View>

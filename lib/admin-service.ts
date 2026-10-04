@@ -9,7 +9,10 @@ import { supabase } from './supabase';
 export interface ReportWithDetails {
     id: string;
     reporter_id: string;
-    post_id: string;
+    /** One of these three is the target (033); reported_user_id is always the author */
+    post_id: string | null;
+    comment_id: string | null;
+    reported_user_id: string | null;
     reason: string;
     description: string | null;
     status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
@@ -21,6 +24,15 @@ export interface ReportWithDetails {
         full_name: string | null;
         avatar_url: string | null;
     };
+    reported_user?: {
+        username: string | null;
+        full_name: string | null;
+    } | null;
+    comment?: {
+        id: string;
+        content: string;
+        user_id: string;
+    } | null;
     post?: {
         title: string;
         content: string;
@@ -80,6 +92,15 @@ export async function getReports(
                     username,
                     full_name,
                     avatar_url
+                ),
+                reported_user:reported_user_id (
+                    username,
+                    full_name
+                ),
+                comment:comment_id (
+                    id,
+                    content,
+                    user_id
                 ),
                 post:post_id (
                     title,
@@ -143,6 +164,37 @@ export async function adminDeletePost(postId: string): Promise<void> {
         console.error('Error deleting post:', error);
         throw error;
     }
+}
+
+/**
+ * Delete a reported comment (admin only — SECURITY DEFINER function, 033)
+ */
+export async function adminDeleteComment(commentId: string): Promise<void> {
+    const { error } = await supabase.rpc('admin_delete_comment', { target_comment_id: commentId });
+    if (error) {
+        console.error('Error deleting comment:', error);
+        throw error;
+    }
+}
+
+export interface BannedUser {
+    id: string;
+    username: string | null;
+    full_name: string | null;
+    banned_at: string | null;
+}
+
+/**
+ * Banned users, newest ban first, so a ban can be lifted from the panel
+ */
+export async function getBannedUsers(): Promise<BannedUser[]> {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, banned_at')
+        .eq('is_banned', true)
+        .order('banned_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
 }
 
 /**

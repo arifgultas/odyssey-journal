@@ -6,7 +6,12 @@ import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useAiConsent } from '@/context/ai-consent-context';
 import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ReportModal } from '@/components/report-modal';
+import { useConfirmBlockUser } from '@/hooks/use-block-user';
+import { useCurrentProfile } from '@/hooks/use-profile';
+import { postErrorMessage } from '@/lib/auth-errors';
 import { addComment, Comment, deleteComment, getComments } from '@/lib/comments';
+import type { ReportTarget } from '@/lib/reports';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -32,11 +37,23 @@ export default function CommentsScreen() {
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [postOwnerId, setPostOwnerId] = useState<string | undefined>(undefined);
+    const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
+    const { data: myProfile } = useCurrentProfile();
+    const confirmBlockUser = useConfirmBlockUser();
 
     useEffect(() => {
         loadCurrentUser();
         loadComments(0);
+        loadPostOwner();
     }, [postId]);
+
+    // The post's owner may remove any comment on it (033)
+    const loadPostOwner = async () => {
+        if (!postId) return;
+        const { data } = await supabase.from('posts').select('user_id').eq('id', postId).maybeSingle();
+        setPostOwnerId(data?.user_id ?? undefined);
+    };
 
     const loadCurrentUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -101,9 +118,9 @@ export default function CommentsScreen() {
             // Add user info to the new comment
             const commentWithUser = {
                 ...newComment,
-                username: currentUserId ? 'You' : null,
-                full_name: 'You',
-                avatar_url: null,
+                username: myProfile?.username ?? null,
+                full_name: myProfile?.full_name ?? null,
+                avatar_url: myProfile?.avatar_url ?? null,
             };
 
             // Add to the beginning of the list
@@ -112,7 +129,8 @@ export default function CommentsScreen() {
             return true;
         } catch (error) {
             console.error('Error adding comment:', error);
-            Alert.alert(t('common.error'), t('comments.addError'));
+            // A moderation rejection or the hourly limit says why; anything else stays generic
+            Alert.alert(t('common.error'), postErrorMessage(error, 'comments.addError'));
             return false;
         } finally {
             setIsSubmitting(false);
@@ -123,7 +141,7 @@ export default function CommentsScreen() {
     const handleDeleteComment = async (commentId: string) => {
         try {
             await deleteComment(commentId);
-            setComments(comments.filter(c => c.id !== commentId));
+            setComments(prev => prev.filter(c => c.id !== commentId));
         } catch (error) {
             console.error('Error deleting comment:', error);
             Alert.alert(t('common.error'), t('comments.deleteError'));
@@ -169,7 +187,12 @@ export default function CommentsScreen() {
                 <CommentsList
                     comments={comments}
                     currentUserId={currentUserId || undefined}
+                    postOwnerId={postOwnerId}
                     onDelete={handleDeleteComment}
+                    onReport={(comment) => setReportTarget({ type: 'comment', id: comment.id })}
+                    onBlock={(userId) =>
+                        confirmBlockUser(userId, () => setComments(prev => prev.filter(c => c.user_id !== userId)))
+                    }
                     onLoadMore={handleLoadMore}
                     onRefresh={handleRefresh}
                     loading={isLoading}
@@ -180,6 +203,12 @@ export default function CommentsScreen() {
                 <CommentInput
                     onSubmit={handleSubmitComment}
                     loading={isSubmitting}
+                />
+
+                <ReportModal
+                    visible={!!reportTarget}
+                    target={reportTarget}
+                    onClose={() => setReportTarget(null)}
                 />
             </ThemedView>
         </KeyboardAvoidingView>

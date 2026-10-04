@@ -105,17 +105,19 @@ describe('AnimatedPostCard Component', () => {
         expect(mockLike).toHaveBeenCalledWith('post-1', true);
     });
 
-    it('triggers callback and updates state on Bookmark click', () => {
+    it('asks to save on Bookmark click and fills the icon only once the post is saved', () => {
         const mockBookmark = jest.fn();
-        const { getByText } = render(
+        const { getByText, rerender } = render(
             <AnimatedPostCard post={mockPost} onBookmark={mockBookmark} />
         );
 
-        const bookmarkBtn = getByText('Bookmark');
-        fireEvent.press(bookmarkBtn);
-
-        expect(getByText('Bookmarked')).toBeTruthy();
+        fireEvent.press(getByText('Bookmark'));
         expect(mockBookmark).toHaveBeenCalledWith('post-1', true);
+        // The collection picker can still be closed without saving
+        expect(getByText('Bookmark')).toBeTruthy();
+
+        rerender(<AnimatedPostCard post={{ ...mockPost, isBookmarked: true }} onBookmark={mockBookmark} />);
+        expect(getByText('Bookmarked')).toBeTruthy();
     });
 
     it('triggers callback on Comment click', () => {

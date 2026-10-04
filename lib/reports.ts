@@ -28,6 +28,18 @@ export interface CreateReportData {
     description?: string;
 }
 
+/** What is being reported. The server (033) records the author of a post or comment itself. */
+export type ReportTarget =
+    | { type: 'post'; id: string }
+    | { type: 'comment'; id: string }
+    | { type: 'user'; id: string };
+
+const TARGET_COLUMN: Record<ReportTarget['type'], 'post_id' | 'comment_id' | 'reported_user_id'> = {
+    post: 'post_id',
+    comment: 'comment_id',
+    user: 'reported_user_id',
+};
+
 /**
  * Report reason keys — labels come from translations (report namespace)
  */
@@ -45,6 +57,17 @@ export const REPORT_REASON_KEYS: ReportReason[] = [
  * Report a post
  */
 export async function reportPost(data: CreateReportData): Promise<Report | null> {
+    return submitReport({ type: 'post', id: data.post_id }, data.reason, data.description);
+}
+
+/**
+ * Report a post, a comment or a user (App Store 1.2: users can flag content and abusive users)
+ */
+export async function submitReport(
+    target: ReportTarget,
+    reason: ReportReason,
+    description?: string
+): Promise<Report | null> {
     try {
         const {
             data: { user },
@@ -59,9 +82,9 @@ export async function reportPost(data: CreateReportData): Promise<Report | null>
             .from('reports')
             .insert({
                 reporter_id: user.id,
-                post_id: data.post_id,
-                reason: data.reason,
-                description: data.description || null,
+                [TARGET_COLUMN[target.type]]: target.id,
+                reason,
+                description: description || null,
             })
             .select()
             .single();

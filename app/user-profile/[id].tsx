@@ -5,14 +5,14 @@ import { useLanguage } from '@/context/language-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useFollowUser } from '@/hooks/use-follow';
 import { useCommonDestinations, useProfile, useUserPosts } from '@/hooks/use-profile';
-import { blockUser } from '@/lib/block';
+import { ReportModal } from '@/components/report-modal';
+import { useConfirmBlockUser } from '@/hooks/use-block-user';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeGoBack } from '@/lib/navigation';
-import React from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -58,7 +58,6 @@ export default function UserProfileScreen() {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
     const theme = isDark ? DesignColors.dark : DesignColors.light;
-    const queryClient = useQueryClient();
 
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user: currentUser } = useAuth();
@@ -106,34 +105,21 @@ export default function UserProfileScreen() {
         router.push(`/post-detail/${postId}`);
     };
 
+    const confirmBlockUser = useConfirmBlockUser();
+    const [showReportModal, setShowReportModal] = useState(false);
+
+    // Report and Block next to each other (App Store 1.2)
     const handleBlockOptions = () => {
-        Alert.alert(
-            t('profile.blockUserTitle'),
-            t('profile.blockUserDesc'),
-            [
-                { text: t('common.cancel'), style: 'cancel' },
-                {
-                    text: t('profile.block'),
-                    style: 'destructive',
-                    onPress: async () => {
-                        if (!id) return;
-                        try {
-                            await blockUser(id);
-                            
-                            // Invalidate search and profile query caches to immediately reflect changes
-                            queryClient.invalidateQueries({ queryKey: ['search'] });
-                            queryClient.invalidateQueries({ queryKey: ['profile'] });
-                            queryClient.invalidateQueries({ queryKey: ['suggested-users'] });
-                            
-                            Alert.alert(t('common.success'), t('profile.blockSuccess'));
-                            safeGoBack('/(tabs)');
-                        } catch (error) {
-                            Alert.alert(t('common.error'), t('profile.blockError'));
-                        }
-                    }
-                }
-            ]
-        );
+        if (!id) return;
+        Alert.alert(profileData?.full_name || profileData?.username || t('common.unknownUser'), undefined, [
+            { text: t('post.report'), onPress: () => setShowReportModal(true) },
+            {
+                text: t('post.blockUser'),
+                style: 'destructive',
+                onPress: () => confirmBlockUser(id, () => safeGoBack('/(tabs)')),
+            },
+            { text: t('common.cancel'), style: 'cancel' },
+        ]);
     };
 
     // Format large numbers
@@ -554,6 +540,14 @@ export default function UserProfileScreen() {
                     <Ionicons name="airplane" size={36} color={`${theme.primary}50`} />
                 </View>
             </ScrollView>
+
+            {id && (
+                <ReportModal
+                    visible={showReportModal}
+                    target={{ type: 'user', id }}
+                    onClose={() => setShowReportModal(false)}
+                />
+            )}
         </View>
     );
 }

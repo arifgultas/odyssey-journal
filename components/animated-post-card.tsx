@@ -45,6 +45,8 @@ interface AnimatedPostCardProps {
     onShare?: () => void;
     onDelete?: () => void;
     onReport?: () => void;
+    /** Block the post's author (App Store 1.2); hidden when not given */
+    onBlockAuthor?: () => void;
     isOwnPost?: boolean;
 }
 
@@ -58,6 +60,7 @@ const _AnimatedPostCard = function AnimatedPostCard({
     onShare,
     onDelete,
     onReport,
+    onBlockAuthor,
     isOwnPost = false,
 }: AnimatedPostCardProps) {
     const router = useRouter();
@@ -138,7 +141,9 @@ const _AnimatedPostCard = function AnimatedPostCard({
 
     const handleBookmark = () => {
         const newIsBookmarked = !isBookmarked;
-        setIsBookmarked(newIsBookmarked);
+        // Saving opens the collection picker, which can be closed without saving: the filled icon
+        // comes from the post once it really is saved. Removing is immediate.
+        if (!newIsBookmarked || !onBookmark) setIsBookmarked(newIsBookmarked);
         onBookmark?.(post.id, newIsBookmarked);
     };
 
@@ -346,18 +351,34 @@ const _AnimatedPostCard = function AnimatedPostCard({
                                 </View>
                             </TouchableWithoutFeedback>
                         ) : (
-                            <TouchableWithoutFeedback
-                                onPress={(e) => {
-                                    e?.stopPropagation?.();
-                                    setShowMenu(false);
-                                    onReport?.();
-                                }}
-                            >
-                                <View style={styles.menuItem}>
-                                    <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
-                                    <Text style={[styles.menuText, { color: Colors.light.error }]}>{t('post.reportPost')}</Text>
-                                </View>
-                            </TouchableWithoutFeedback>
+                            <>
+                                <TouchableWithoutFeedback
+                                    onPress={(e) => {
+                                        e?.stopPropagation?.();
+                                        setShowMenu(false);
+                                        onReport?.();
+                                    }}
+                                >
+                                    <View style={styles.menuItem}>
+                                        <Ionicons name="flag-outline" size={18} color={Colors.light.error} />
+                                        <Text style={[styles.menuText, { color: Colors.light.error }]}>{t('post.reportPost')}</Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                                {onBlockAuthor && (
+                                    <TouchableWithoutFeedback
+                                        onPress={(e) => {
+                                            e?.stopPropagation?.();
+                                            setShowMenu(false);
+                                            onBlockAuthor();
+                                        }}
+                                    >
+                                        <View style={styles.menuItem}>
+                                            <Ionicons name="ban-outline" size={18} color={Colors.light.error} />
+                                            <Text style={[styles.menuText, { color: Colors.light.error }]}>{t('post.blockUser')}</Text>
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                )}
+                            </>
                         )}
                     </Animated.View>
                 )}

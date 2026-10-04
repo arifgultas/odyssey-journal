@@ -11,7 +11,11 @@ import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'r
 interface CommentsListProps {
     comments: Comment[];
     currentUserId?: string;
+    /** Owner of the post: may remove any comment on it */
+    postOwnerId?: string;
     onDelete?: (commentId: string) => void;
+    onReport?: (comment: Comment) => void;
+    onBlock?: (userId: string) => void;
     onLoadMore?: () => void;
     onRefresh?: () => void;
     loading?: boolean;
@@ -22,7 +26,10 @@ interface CommentsListProps {
 export function CommentsList({
     comments,
     currentUserId,
+    postOwnerId,
     onDelete,
+    onReport,
+    onBlock,
     onLoadMore,
     onRefresh,
     loading = false,
@@ -64,6 +71,9 @@ export function CommentsList({
                     comment={item}
                     onDelete={onDelete}
                     isOwner={currentUserId === item.user_id}
+                    canDelete={!!currentUserId && (currentUserId === item.user_id || currentUserId === postOwnerId)}
+                    onReport={onReport}
+                    onBlock={onBlock}
                 />
             )}
             contentContainerStyle={styles.listContent}

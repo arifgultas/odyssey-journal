@@ -1,4 +1,4 @@
-import { getModerationMessage, moderateText } from './content-moderation';
+import { getModerationMessage, ModerationRejectedError, moderateText } from './content-moderation';
 import { sanitizeComment } from './sanitize';
 import { supabase } from './supabase';
 
@@ -41,7 +41,7 @@ export async function addComment(data: CreateCommentData): Promise<Comment> {
         // AI Content Moderation — check comment text
         const moderation = await moderateText(sanitizedContent);
         if (!moderation.approved) {
-            throw new Error(getModerationMessage(moderation.flaggedCategories));
+            throw new ModerationRejectedError(getModerationMessage(moderation.flaggedCategories));
         }
 
         const { data: comment, error } = await supabase
@@ -133,8 +133,8 @@ export async function deleteComment(commentId: string): Promise<boolean> {
         const { error } = await supabase
             .from('comments')
             .delete()
-            .eq('id', commentId)
-            .eq('user_id', user.id);
+            .eq('id', commentId);
+        // RLS decides who may delete: the comment's author or the post's owner (033)
 
         if (error) {
             throw error;
@@ -172,7 +172,7 @@ export async function updateComment(
         // AI Content Moderation — check updated comment text
         const moderation = await moderateText(sanitizedContent);
         if (!moderation.approved) {
-            throw new Error(getModerationMessage(moderation.flaggedCategories));
+            throw new ModerationRejectedError(getModerationMessage(moderation.flaggedCategories));
         }
 
         const { data: comment, error } = await supabase
