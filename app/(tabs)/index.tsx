@@ -40,12 +40,17 @@ import {
   View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { consumeFeedStale, invalidatePostQueries } from '@/lib/query-invalidation';
+import { useConfirmBlockUser } from '@/hooks/use-block-user';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
   const { t, language } = useLanguage();
+  const queryClient = useQueryClient();
+  const confirmBlockUser = useConfirmBlockUser();
   const { contentContainerStyle } = useResponsive();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -252,9 +257,11 @@ export default function HomeScreen() {
         }
       };
       refreshOnFocus();
-      // Refresh posts feed silently
-      loadPosts(0, true);
-    }, [sortBy, feedType])
+      // Refresh the feed silently when a post changed, or when only the first page is loaded anyway
+      if (consumeFeedStale() || posts.length <= 10) {
+        loadPosts(0, true);
+      }
+    }, [sortBy, feedType, posts.length])
   );
 
   const loadPosts = async (pageNum: number = 0, refresh: boolean = false) => {
@@ -415,7 +422,8 @@ export default function HomeScreen() {
           onPress: async () => {
             try {
               await deletePost(postId);
-              setPosts(posts.filter(p => p.id !== postId));
+              setPosts(prev => prev.filter(p => p.id !== postId));
+              invalidatePostQueries(queryClient);
               Alert.alert(t('common.success'), t('post.deleteSuccess'));
             } catch (error) {
               console.error('Error deleting post:', error);
@@ -716,6 +724,9 @@ export default function HomeScreen() {
             onShare={() => handleShare(item)}
             onDelete={() => handleDelete(item.id)}
             onReport={() => handleReport(item.id)}
+            onBlockAuthor={() =>
+              confirmBlockUser(item.user_id, () => setPosts(prev => prev.filter(p => p.user_id !== item.user_id)))
+            }
             isOwnPost={currentUserId === item.user_id}
           />
         )}

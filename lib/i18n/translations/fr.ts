@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: 'Relâchez pour actualiser',
         percentValue: '{{value}} %',
         ok: 'OK',
+        unknownUser: 'Voyageur',
     },
     auth: {
         login: 'Connexion',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Entrez à nouveau votre nouveau mot de passe',
         passwordLengthError: 'Le mot de passe doit comporter au moins 6 caractères.',
         passwordMatchError: 'Les mots de passe ne correspondent pas.',
+        resendConfirmation: 'Renvoyer l\'e-mail',
+        confirmationResent: 'Nous avons envoyé un nouvel e-mail de confirmation. Vérifiez votre boîte de réception et vos spams.',
     },
     onboarding: {
         step1Title: 'Commencez à Explorer',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: 'Nouveaux Itinéraires à Explorer',
         featuredDefaultDescription: 'Découvrez les plus beaux itinéraires et partez à l\'aventure.',
         postCount: '{{count}} publications',
+        postResults: 'Publications',
+        clearHistory: 'Tout effacer',
     },
     create: {
         title: 'Nouvelle Publication',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: 'Ouvrir les lettres et discussions',
         typing: 'est en train d\'écrire...',
         yesterday: 'Hier',
+        sendError: 'Votre message n\'a pas pu être envoyé.',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: 'Impossible de supprimer la publication',
         location: 'Lieu',
         boardingPass: 'Carte d\'embarquement',
+        blockUser: 'Bloquer l\'utilisateur',
     },
     report: {
         title: 'Signaler la publication',
@@ -451,10 +458,14 @@ export default {
             other: { label: 'Autre', desc: 'Autre chose' },
         },
         alreadyReportedTitle: 'Déjà signalé',
-        alreadyReportedDesc: 'Vous avez déjà signalé cette publication. Nous l\'examinerons bientôt.',
+        alreadyReportedDesc: 'Vous l\'avez déjà signalé. Nous l\'examinerons bientôt.',
         submittedTitle: 'Signalement envoyé',
         submittedDesc: 'Merci pour votre signalement. Nous l\'examinerons et prendrons les mesures nécessaires.',
         submitFailed: 'Impossible d\'envoyer le signalement. Veuillez réessayer.',
+        titleComment: 'Signaler le commentaire',
+        titleUser: 'Signaler l\'utilisateur',
+        whyReportingComment: 'Pourquoi signalez-vous ce commentaire ?',
+        whyReportingUser: 'Pourquoi signalez-vous cet utilisateur ?',
     },
     follow: {
         follow: 'S\'abonner',
@@ -556,6 +567,7 @@ export default {
         userNotFound: 'Aucun compte n\'a été trouvé pour cette adresse e-mail',
         signupDisabled: 'Les nouvelles inscriptions sont actuellement fermées',
         usernameTaken: 'Ce nom d\'utilisateur est déjà pris',
+        accountSuspended: 'Votre compte a été suspendu. Vous ne pouvez ni publier ni commenter.',
     },
     time: {
         now: 'Maintenant',
@@ -818,6 +830,18 @@ export default {
         noReports: 'Aucun signalement trouvé',
         allCaughtUp: 'Tout est à jour ! Aucun signalement en attente.',
         noMatchingReports: 'Aucun signalement ne correspond à ce filtre.',
+        deleteComment: 'Supprimer le commentaire',
+        deleteCommentConfirm: 'Ce commentaire sera supprimé définitivement. Êtes-vous sûr ?',
+        deleteCommentDone: 'Commentaire supprimé et signalement traité.',
+        deleteCommentFailed: 'Impossible de supprimer le commentaire.',
+        reportedComment: 'Commentaire signalé :',
+        reportedUser: 'Utilisateur signalé :',
+        unban: 'Lever la suspension',
+        unbanConfirm: 'Lever la suspension de {{username}} ?',
+        unbanDone: '{{username}} peut de nouveau publier.',
+        unbanFailed: 'Impossible de lever la suspension.',
+        bannedUsers: 'Utilisateurs suspendus',
+        noBannedUsers: 'Aucun utilisateur suspendu.',
     },
 
 

@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: 'Solte para atualizar',
         percentValue: '{{value}}%',
         ok: 'OK',
+        unknownUser: 'Viajante',
     },
     auth: {
         login: 'Entrar',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Digite sua nova senha novamente',
         passwordLengthError: 'A senha deve ter pelo menos 6 caracteres.',
         passwordMatchError: 'As senhas não coincidem.',
+        resendConfirmation: 'Reenviar e-mail',
+        confirmationResent: 'Enviamos um novo e-mail de confirmação. Verifique sua caixa de entrada e a pasta de spam.',
     },
     onboarding: {
         step1Title: 'Comece a Explorar',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: 'Novas Rotas para Explorar',
         featuredDefaultDescription: 'Descubra as rotas mais bonitas e embarque em aventuras.',
         postCount: '{{count}} publicações',
+        postResults: 'Publicações',
+        clearHistory: 'Limpar tudo',
     },
     create: {
         title: 'Nova Publicação',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: 'Abrir cartas e conversas',
         typing: 'está digitando...',
         yesterday: 'Ontem',
+        sendError: 'Não foi possível enviar sua mensagem.',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: 'Falha ao excluir a publicação',
         location: 'Local',
         boardingPass: 'Cartão de embarque',
+        blockUser: 'Bloquear usuário',
     },
     report: {
         title: 'Denunciar publicação',
@@ -451,10 +458,14 @@ export default {
             other: { label: 'Outro', desc: 'Outra coisa' },
         },
         alreadyReportedTitle: 'Já denunciado',
-        alreadyReportedDesc: 'Você já denunciou esta publicação. Vamos analisá-la em breve.',
+        alreadyReportedDesc: 'Você já denunciou isso. Vamos analisar em breve.',
         submittedTitle: 'Denúncia enviada',
         submittedDesc: 'Obrigado pela sua denúncia. Vamos analisá-la e tomar as medidas necessárias.',
         submitFailed: 'Não foi possível enviar a denúncia. Tente novamente.',
+        titleComment: 'Denunciar comentário',
+        titleUser: 'Denunciar usuário',
+        whyReportingComment: 'Por que você está denunciando este comentário?',
+        whyReportingUser: 'Por que você está denunciando este usuário?',
     },
     follow: {
         follow: 'Seguir',
@@ -556,6 +567,7 @@ export default {
         userNotFound: 'Nenhuma conta foi encontrada para este e-mail',
         signupDisabled: 'Novos cadastros estão fechados no momento',
         usernameTaken: 'Este nome de usuário já está em uso',
+        accountSuspended: 'Sua conta foi suspensa. Você não pode publicar nem comentar.',
     },
     time: {
         now: 'Agora',
@@ -813,6 +825,18 @@ export default {
         noReports: 'Nenhuma denúncia encontrada',
         allCaughtUp: 'Tudo em ordem! Nenhuma denúncia pendente.',
         noMatchingReports: 'Nenhuma denúncia corresponde a este filtro.',
+        deleteComment: 'Excluir comentário',
+        deleteCommentConfirm: 'Este comentário será excluído permanentemente. Tem certeza?',
+        deleteCommentDone: 'Comentário excluído e denúncia resolvida.',
+        deleteCommentFailed: 'Não foi possível excluir o comentário.',
+        reportedComment: 'Comentário denunciado:',
+        reportedUser: 'Usuário denunciado:',
+        unban: 'Remover suspensão',
+        unbanConfirm: 'Remover a suspensão de {{username}}?',
+        unbanDone: '{{username}} pode publicar novamente.',
+        unbanFailed: 'Não foi possível remover a suspensão.',
+        bannedUsers: 'Usuários suspensos',
+        noBannedUsers: 'Nenhum usuário suspenso.',
     },
 
 

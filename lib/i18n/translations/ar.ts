@@ -36,6 +36,7 @@ export default {
         releaseToRefresh: 'أفلت للتحديث',
         percentValue: '{{value}}%',
         ok: 'حسنًا',
+        unknownUser: 'مسافر',
     },
     auth: {
         login: 'تسجيل الدخول',
@@ -101,6 +102,8 @@ export default {
         confirmNewPasswordPlaceholder: 'أعد إدخال كلمة المرور الجديدة',
         passwordLengthError: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.',
         passwordMatchError: 'كلمات المرور غير متطابقة.',
+        resendConfirmation: 'إعادة إرسال البريد',
+        confirmationResent: 'أرسلنا رسالة تأكيد جديدة. تحقق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.',
     },
     onboarding: {
         step1Title: 'ابدأ الاستكشاف',
@@ -170,6 +173,8 @@ export default {
         featuredDefaultTitle: 'مسارات جديدة للاستكشاف',
         featuredDefaultDescription: 'اكتشف أجمل المسارات وانطلق في مغامرة جديدة.',
         postCount: '{{count}} منشور',
+        postResults: 'المنشورات',
+        clearHistory: 'مسح الكل',
     },
     create: {
         title: 'منشور جديد',
@@ -283,6 +288,7 @@ export default {
         openLettersAndChats: 'فتح الرسائل والمحادثات',
         typing: 'يكتب...',
         yesterday: 'أمس',
+        sendError: 'تعذّر إرسال رسالتك.',
     },
 
     saved: {
@@ -434,6 +440,7 @@ export default {
         deleteError: 'فشل حذف المنشور',
         location: 'الموقع',
         boardingPass: 'بطاقة الصعود',
+        blockUser: 'حظر المستخدم',
     },
     report: {
         title: 'الإبلاغ عن المنشور',
@@ -452,10 +459,14 @@ export default {
             other: { label: 'أخرى', desc: 'شيء آخر' },
         },
         alreadyReportedTitle: 'تم الإبلاغ مسبقًا',
-        alreadyReportedDesc: 'لقد أبلغت عن هذا المنشور مسبقًا. سنراجعه قريبًا.',
+        alreadyReportedDesc: 'لقد أبلغت عن ذلك بالفعل. سنراجعه قريبًا.',
         submittedTitle: 'تم إرسال البلاغ',
         submittedDesc: 'شكرًا لبلاغك. سنراجعه ونتخذ الإجراء المناسب.',
         submitFailed: 'فشل إرسال البلاغ. يرجى المحاولة مرة أخرى.',
+        titleComment: 'الإبلاغ عن التعليق',
+        titleUser: 'الإبلاغ عن المستخدم',
+        whyReportingComment: 'لماذا تبلغ عن هذا التعليق؟',
+        whyReportingUser: 'لماذا تبلغ عن هذا المستخدم؟',
     },
     follow: {
         follow: 'متابعة',
@@ -557,6 +568,7 @@ export default {
         userNotFound: 'لم يتم العثور على حساب بهذا البريد الإلكتروني',
         signupDisabled: 'التسجيلات الجديدة مغلقة حاليًا',
         usernameTaken: 'اسم المستخدم هذا مستخدم بالفعل',
+        accountSuspended: 'تم تعليق حسابك. لا يمكنك النشر أو التعليق.',
     },
     time: {
         now: 'الآن',
@@ -814,6 +826,18 @@ export default {
         noReports: 'لم يتم العثور على بلاغات',
         allCaughtUp: 'كل شيء منجز! لا توجد بلاغات قيد الانتظار.',
         noMatchingReports: 'لا توجد بلاغات تطابق هذا التصفية.',
+        deleteComment: 'حذف التعليق',
+        deleteCommentConfirm: 'سيتم حذف هذا التعليق نهائيًا. هل أنت متأكد؟',
+        deleteCommentDone: 'تم حذف التعليق وإغلاق البلاغ.',
+        deleteCommentFailed: 'تعذّر حذف التعليق.',
+        reportedComment: 'التعليق المُبلَّغ عنه:',
+        reportedUser: 'المستخدم المُبلَّغ عنه:',
+        unban: 'رفع الحظر',
+        unbanConfirm: 'رفع الحظر عن {{username}}؟',
+        unbanDone: 'يمكن لـ {{username}} النشر مجددًا.',
+        unbanFailed: 'تعذّر رفع الحظر.',
+        bannedUsers: 'المستخدمون المحظورون',
+        noBannedUsers: 'لا يوجد مستخدمون محظورون.',
     },
 
 

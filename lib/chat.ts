@@ -64,7 +64,7 @@ export async function sendMessage(receiverId: string, content: string): Promise<
 /**
  * Fetch chat history with a specific user
  */
-export async function getMessages(chatUserId: string, limit: number = 50): Promise<Message[]> {
+export async function getMessages(chatUserId: string, limit: number = 100): Promise<Message[]> {
     try {
         const {
             data: { user },
@@ -80,15 +80,19 @@ export async function getMessages(chatUserId: string, limit: number = 50): Promi
             .from('messages')
             .select('*')
             .or(`and(sender_id.eq.${user.id},receiver_id.eq.${chatUserId}),and(sender_id.eq.${chatUserId},receiver_id.eq.${user.id})`)
-            .order('created_at', { ascending: true })
+            // The newest ones: oldest-first with a limit showed the first messages of a long
+            // conversation and never the latest
+            .order('created_at', { ascending: false })
             .limit(limit);
 
         if (error) {
             throw error;
         }
 
-        // Filter out messages deleted by the current user
-        const messages = (data || []).filter((msg: any) => !msg.deleted_by?.includes(user.id));
+        // Back to oldest-first for the screen, without messages deleted by the current user
+        const messages = (data || [])
+            .reverse()
+            .filter((msg: any) => !msg.deleted_by?.includes(user.id));
 
         // Mark incoming messages as read and await the database update
         const unreadIds = messages
@@ -128,13 +132,14 @@ export async function getConversations(): Promise<Conversation[]> {
             throw new Error('User not authenticated');
         }
 
-        // 1. Fetch latest 200 messages for this user to identify active conversations
+        // 1. Fetch the latest messages for this user to identify active conversations (a window
+        // large enough that older conversations stay in the list)
         const { data: rawMessages, error: msgError } = await supabase
             .from('messages')
             .select('*')
             .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
             .order('created_at', { ascending: false })
-            .limit(200);
+            .limit(1000);
 
         if (msgError) {
             throw msgError;
@@ -288,17 +293,29 @@ export async function getUnreadMessageCount(): Promise<number> {
             return 0;
         }
 
-        const { count, error } = await supabase
+        const { data: unread, error } = await supabase
             .from('messages')
-            .select('*', { count: 'exact', head: true })
+            .select('sender_id')
             .eq('receiver_id', user.id)
             .eq('is_read', false);
 
         if (error) {
             throw error;
         }
+        if (!unread || unread.length === 0) return 0;
 
-        return count || 0;
+        // Only senders whose profile is visible: a block in either direction hides the
+        // conversation (profiles RLS), so its unread messages could never be read and the
+        // badge would never clear
+        const senderIds = [...new Set(unread.map((m) => m.sender_id))];
+        const { data: visible, error: profilesError } = await supabase
+            .from('profiles')
+            .select('id')
+            .in('id', senderIds);
+        if (profilesError) throw profilesError;
+
+        const visibleIds = new Set((visible || []).map((p) => p.id));
+        return unread.filter((m) => visibleIds.has(m.sender_id)).length;
     } catch (error) {
         console.error('Error getting unread message count:', error);
         return 0;

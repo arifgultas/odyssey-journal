@@ -133,7 +133,7 @@ export default function ChatListScreen() {
             <View style={styles.itemContent}>
                 <View style={styles.itemHeader}>
                     <Text style={[styles.fullName, { color: theme.textMain }]} numberOfLines={1}>
-                        {item.fullName || item.username || 'Traveler'}
+                        {item.fullName || item.username || t('common.unknownUser')}
                     </Text>
                     <Text style={[styles.timeText, { color: theme.textMuted }]}>
                         {formatMessageTime(item.lastMessageAt)}

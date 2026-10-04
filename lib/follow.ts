@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { Post } from './posts';
+import { populateInteractions } from './post-interactions';
 import { captureError } from './sentry';
 
 export interface UserProfile {
@@ -156,7 +157,8 @@ export async function getFollowers(
             throw error;
         }
 
-        return data?.map((follow: any) => follow.profiles) || [];
+        // A profile hidden by RLS (a block either way) comes back as null
+        return (data?.map((follow: any) => follow.profiles) || []).filter(Boolean);
     } catch (error) {
         console.error('Error fetching followers:', error);
         captureError(error as Error, { context: 'getFollowers', userId });
@@ -198,7 +200,7 @@ export async function getFollowing(
             throw error;
         }
 
-        return data?.map((follow: any) => follow.profiles) || [];
+        return (data?.map((follow: any) => follow.profiles) || []).filter(Boolean);
     } catch (error) {
         console.error('Error fetching following:', error);
         captureError(error as Error, { context: 'getFollowing', userId });
@@ -386,7 +388,7 @@ export async function getFollowingFeed(
             throw error;
         }
 
-        return (data as unknown as Post[]) || [];
+        return populateInteractions(data || []);
     } catch (error) {
         console.error('Error fetching following feed:', error);
         captureError(error as Error, { context: 'getFollowingFeed' });

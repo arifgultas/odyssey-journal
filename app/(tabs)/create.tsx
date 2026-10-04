@@ -44,6 +44,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import { invalidatePostQueries } from '@/lib/query-invalidation';
+import { useQueryClient } from '@tanstack/react-query';
+import { postErrorMessage } from '@/lib/auth-errors';
 
 const { width } = Dimensions.get('window');
 
@@ -546,6 +549,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
 
 export default function CreatePostScreen() {
     const { ensureConsent } = useAiConsent();
+    const queryClient = useQueryClient();
     // Set synchronously on the first tap: isSubmitting only disables the button on the next render,
     // and the consent check awaits storage first, so a quick second tap could post twice
     const submitLock = useRef(false);
@@ -735,6 +739,7 @@ export default function CreatePostScreen() {
                 categories: selectedCategories,
                 createdAt: selectedDate.toISOString(),
             });
+            invalidatePostQueries(queryClient);
 
             // Let the sealing animation play for a moment, then navigate
             setTimeout(() => {
@@ -747,7 +752,8 @@ export default function CreatePostScreen() {
             console.error('Error creating post:', error);
             setIsSubmitting(false);
             submitLock.current = false;
-            Alert.alert(t('common.error'), t('create.postError'));
+            // A moderation rejection, the hourly limit or a suspension says why; anything else stays generic
+            Alert.alert(t('common.error'), postErrorMessage(error, 'create.postError'));
         }
     };
 

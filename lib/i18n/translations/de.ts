@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: 'Loslassen zum Aktualisieren',
         percentValue: '{{value}} %',
         ok: 'OK',
+        unknownUser: 'Reisende(r)',
     },
     auth: {
         login: 'Anmelden',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Geben Sie Ihr neues Passwort erneut ein',
         passwordLengthError: 'Das Passwort muss mindestens 6 Zeichen lang sein.',
         passwordMatchError: 'Passwörter stimmen nicht überein.',
+        resendConfirmation: 'E-Mail erneut senden',
+        confirmationResent: 'Wir haben eine neue Bestätigungs-E-Mail gesendet. Sieh in deinem Posteingang und im Spam-Ordner nach.',
     },
     onboarding: {
         step1Title: 'Entdecken Starten',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: 'Neue Routen zum Erkunden',
         featuredDefaultDescription: 'Entdecken Sie die schönsten Routen und erleben Sie Abenteuer.',
         postCount: '{{count}} Beiträge',
+        postResults: 'Beiträge',
+        clearHistory: 'Alle löschen',
     },
     create: {
         title: 'Neuer Beitrag',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: 'Briefe und Chats öffnen',
         typing: 'schreibt...',
         yesterday: 'Gestern',
+        sendError: 'Deine Nachricht konnte nicht gesendet werden.',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: 'Beitrag konnte nicht gelöscht werden',
         location: 'Ort',
         boardingPass: 'Bordkarte',
+        blockUser: 'Nutzer blockieren',
     },
     report: {
         title: 'Beitrag melden',
@@ -451,10 +458,14 @@ export default {
             other: { label: 'Sonstiges', desc: 'Etwas anderes' },
         },
         alreadyReportedTitle: 'Bereits gemeldet',
-        alreadyReportedDesc: 'Sie haben diesen Beitrag bereits gemeldet. Wir prüfen ihn in Kürze.',
+        alreadyReportedDesc: 'Du hast das bereits gemeldet. Wir prüfen es bald.',
         submittedTitle: 'Meldung gesendet',
         submittedDesc: 'Danke für Ihre Meldung. Wir prüfen sie und ergreifen die nötigen Maßnahmen.',
         submitFailed: 'Meldung konnte nicht gesendet werden. Bitte erneut versuchen.',
+        titleComment: 'Kommentar melden',
+        titleUser: 'Nutzer melden',
+        whyReportingComment: 'Warum meldest du diesen Kommentar?',
+        whyReportingUser: 'Warum meldest du diesen Nutzer?',
     },
     follow: {
         follow: 'Folgen',
@@ -556,6 +567,7 @@ export default {
         userNotFound: 'Zu dieser E-Mail-Adresse wurde kein Konto gefunden',
         signupDisabled: 'Neue Registrierungen sind derzeit geschlossen',
         usernameTaken: 'Dieser Benutzername ist bereits vergeben',
+        accountSuspended: 'Dein Konto wurde gesperrt. Du kannst nichts posten oder kommentieren.',
     },
     time: {
         now: 'Jetzt',
@@ -818,6 +830,18 @@ export default {
         noReports: 'Keine Meldungen gefunden',
         allCaughtUp: 'Alles erledigt! Keine offenen Meldungen.',
         noMatchingReports: 'Keine Meldungen entsprechen diesem Filter.',
+        deleteComment: 'Kommentar löschen',
+        deleteCommentConfirm: 'Dieser Kommentar wird dauerhaft gelöscht. Bist du sicher?',
+        deleteCommentDone: 'Kommentar gelöscht und Meldung erledigt.',
+        deleteCommentFailed: 'Kommentar konnte nicht gelöscht werden.',
+        reportedComment: 'Gemeldeter Kommentar:',
+        reportedUser: 'Gemeldeter Nutzer:',
+        unban: 'Sperre aufheben',
+        unbanConfirm: 'Sperre von {{username}} aufheben?',
+        unbanDone: '{{username}} kann wieder posten.',
+        unbanFailed: 'Sperre konnte nicht aufgehoben werden.',
+        bannedUsers: 'Gesperrte Nutzer',
+        noBannedUsers: 'Keine gesperrten Nutzer.',
     },
 
 

@@ -3,6 +3,7 @@ import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from './supabase';
 import { Post } from './posts';
+import { populateInteractions } from './post-interactions';
 import { captureError } from './sentry';
 
 // Collection type
@@ -252,9 +253,11 @@ export async function getCollectionPosts(
             posts: Post | null;
         };
 
-        return (data as unknown as BookmarkedPostRow[])
-            ?.map((bookmark) => bookmark.posts)
-            .filter((post): post is Post => post !== null) || [];
+        return populateInteractions(
+            (data as unknown as BookmarkedPostRow[])
+                ?.map((bookmark) => bookmark.posts)
+                .filter((post): post is Post => post !== null) || []
+        );
     } catch (error) {
         console.error('Error fetching collection posts:', error);
         captureError(error as Error, { context: 'getCollectionPosts', collectionId });

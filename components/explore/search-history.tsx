@@ -8,6 +8,7 @@ interface SearchHistoryProps {
     t: (key: string) => string;
     onItemPress: (query: string) => void;
     onDeleteItem: (id: string) => void;
+    onClearAll?: () => void;
 }
 
 export function SearchHistory({
@@ -16,12 +17,20 @@ export function SearchHistory({
     t,
     onItemPress,
     onDeleteItem,
+    onClearAll,
 }: SearchHistoryProps) {
     if (!searchHistory || searchHistory.length === 0) return null;
 
     return (
         <View style={[styles.historyContainer, { backgroundColor: vintageTheme.background }]}>
-            <Text style={[styles.historyTitle, { color: vintageTheme.text }]}>{t('explore.recentSearches')}</Text>
+            <View style={styles.historyHeader}>
+                <Text style={[styles.historyTitle, { color: vintageTheme.text }]}>{t('explore.recentSearches')}</Text>
+                {onClearAll && (
+                    <TouchableOpacity onPress={onClearAll} accessibilityRole="button" hitSlop={8}>
+                        <Text style={[styles.clearAll, { color: vintageTheme.textMuted }]}>{t('explore.clearHistory')}</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
             {searchHistory.map((item) => (
                 <TouchableOpacity
                     key={item.id}
@@ -49,10 +58,19 @@ const styles = StyleSheet.create({
     historyContainer: {
         padding: 20,
     },
+    historyHeader: {
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+    },
     historyTitle: {
         fontSize: 16,
         fontWeight: '700',
-        marginBottom: 16,
+    },
+    clearAll: {
+        fontSize: 14,
+        fontWeight: '600',
     },
     historyItem: {
         flexDirection: 'row',

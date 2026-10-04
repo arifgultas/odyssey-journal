@@ -111,21 +111,20 @@ describe('chat service', () => {
     });
 
     describe('getMessages', () => {
-        it('fetches chat history successfully', async () => {
-            const mockHistory = [
-                { id: '1', sender_id: 'user-111', receiver_id: 'user-222', content: 'Hi', is_read: true, created_at: '2026-06-28T12:00:00Z' },
-                { id: '2', sender_id: 'user-222', receiver_id: 'user-111', content: 'Hello', is_read: false, created_at: '2026-06-28T12:01:00Z' },
-            ];
-
-            queryBuilder.limit.mockResolvedValue({ data: mockHistory, error: null });
+        it('fetches the newest messages and returns them oldest first', async () => {
+            const first = { id: '1', sender_id: 'user-111', receiver_id: 'user-222', content: 'Hi', is_read: true, created_at: '2026-06-28T12:00:00Z' };
+            const second = { id: '2', sender_id: 'user-222', receiver_id: 'user-111', content: 'Hello', is_read: false, created_at: '2026-06-28T12:01:00Z' };
+            // The database answers newest first (a long conversation must show its latest messages)
+            queryBuilder.limit.mockResolvedValue({ data: [second, first], error: null });
 
             const result = await getMessages('user-222', 20);
 
             expect(queryBuilder.or).toHaveBeenCalledWith(
                 'and(sender_id.eq.user-111,receiver_id.eq.user-222),and(sender_id.eq.user-222,receiver_id.eq.user-111)'
             );
+            expect(queryBuilder.order).toHaveBeenCalledWith('created_at', { ascending: false });
             expect(queryBuilder.limit).toHaveBeenCalledWith(20);
-            expect(result).toEqual(mockHistory);
+            expect(result.map((m) => m.id)).toEqual(['1', '2']);
         });
     });
 

@@ -84,7 +84,7 @@ Your travel journal with a passport-style profile, a map of every place you've b
 
 **Keywords** (App Store)
 ```
-travel,trip,diary,photo,memories,vacation,map,passport,explore,wanderlust,backpacking,itinerary
+travel,trip,diary,photo,memories,vacation,map,passport,explore,wanderlust,backpacking,travelogue
 ```
 
 **Description** (App Store + Play full description)
@@ -306,7 +306,7 @@ Votre carnet de voyage, avec un profil façon passeport, une carte de tous les l
 
 **Keywords**
 ```
-voyage,carnet,journal,photo,souvenirs,vacances,carte,passeport,explorer,routard,itinéraire
+voyage,carnet,journal,photo,souvenirs,vacances,carte,passeport,explorer,routard,récits
 ```
 
 **Description**
@@ -454,7 +454,7 @@ Seu diário de viagem com um perfil estilo passaporte, um mapa de todos os lugar
 
 **Keywords**
 ```
-viagem,viagens,diário,fotos,memórias,férias,mapa,passaporte,explorar,mochilão,roteiro
+viagem,viagens,diário,fotos,memórias,férias,mapa,passaporte,explorar,mochilão,relatos
 ```
 
 **Description**
@@ -528,7 +528,7 @@ Il tuo diario di viaggio con un profilo in stile passaporto, una mappa di tutti 
 
 **Keywords**
 ```
-viaggio,viaggi,diario,foto,ricordi,vacanze,mappa,passaporto,esplorare,zaino,itinerario
+viaggio,viaggi,diario,foto,ricordi,vacanze,mappa,passaporto,esplorare,zaino,racconti
 ```
 
 **Description**

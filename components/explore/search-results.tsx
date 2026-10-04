@@ -10,6 +10,7 @@ interface SearchResultsProps {
     t: (key: string) => string;
     onLocationPress: (locationName: string, latitude?: number, longitude?: number) => void;
     onUserPress: (userId: string) => void;
+    onPostPress?: (postId: string) => void;
 }
 
 export function SearchResults({
@@ -19,6 +20,7 @@ export function SearchResults({
     t,
     onLocationPress,
     onUserPress,
+    onPostPress,
 }: SearchResultsProps) {
     if (searchLoading) {
         return (
@@ -30,7 +32,9 @@ export function SearchResults({
 
     if (!searchResults) return null;
 
-    const hasResults = searchResults.locations.length > 0 || searchResults.users.length > 0;
+    // Posts matched by title or text are results too; leaving them out showed "no results"
+    const posts: any[] = searchResults.posts || [];
+    const hasResults = searchResults.locations.length > 0 || searchResults.users.length > 0 || posts.length > 0;
 
     if (!hasResults) {
         return (
@@ -61,6 +65,33 @@ export function SearchResults({
                             <View style={styles.resultInfo}>
                                 <Text style={[styles.resultName, { color: vintageTheme.text }]}>{loc.name}</Text>
                                 <Text style={[styles.resultMeta, { color: vintageTheme.textMuted }]}>{loc.postCount} {t('explore.posts')}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
+
+            {posts.length > 0 && (
+                <View style={styles.resultSection}>
+                    <Text style={[styles.resultTitle, { color: vintageTheme.text }]}>{t('explore.postResults')}</Text>
+                    {posts.slice(0, 20).map((post: any) => (
+                        <TouchableOpacity
+                            key={post.id}
+                            style={[styles.resultItem, { backgroundColor: vintageTheme.surface, borderColor: vintageTheme.border }]}
+                            onPress={() => onPostPress?.(post.id)}
+                            accessibilityRole="button"
+                            accessibilityLabel={post.title}
+                        >
+                            <View style={[styles.resultIcon, { backgroundColor: vintageTheme.parchment }]}>
+                                <Ionicons name="book-outline" size={20} color={vintageTheme.compassBlue} />
+                            </View>
+                            <View style={styles.resultInfo}>
+                                <Text style={[styles.resultName, { color: vintageTheme.text }]} numberOfLines={1}>{post.title}</Text>
+                                {!!(post.location_name || post.profiles?.full_name || post.profiles?.username) && (
+                                    <Text style={[styles.resultMeta, { color: vintageTheme.textMuted }]} numberOfLines={1}>
+                                        {post.location_name || post.profiles?.full_name || post.profiles?.username}
+                                    </Text>
+                                )}
                             </View>
                         </TouchableOpacity>
                     ))}

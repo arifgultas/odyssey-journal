@@ -108,14 +108,21 @@ export function CollectionPickerSheet({
         });
     };
 
-    const handleSave = async () => {
+    // collectionId as an argument: "save without collection" must not read the selection state,
+    // which still holds the previously tapped collection in this render
+    const handleSave = async (collectionId: string | null = selectedCollectionId) => {
         setIsSaving(true);
         try {
             // First, bookmark the post (with optional collection)
             const { bookmarkPost } = await import('@/lib/interactions');
-            await bookmarkPost(postId, selectedCollectionId || undefined);
+            const created = await bookmarkPost(postId, collectionId || undefined);
+            if (!created && collectionId) {
+                // Already saved: move the existing bookmark into the chosen collection
+                const { addPostToCollection } = await import('@/lib/collections');
+                await addPostToCollection(postId, collectionId);
+            }
 
-            onSuccess?.(selectedCollectionId);
+            onSuccess?.(collectionId);
             handleClose();
         } catch (error) {
             console.error('Error saving to collection:', error);
@@ -219,7 +226,7 @@ export function CollectionPickerSheet({
             <TouchableOpacity
                 onPress={() => {
                     setSelectedCollectionId(null);
-                    handleSave();
+                    handleSave(null);
                 }}
                 style={[styles.skipButton, { borderColor: borderColor }]}
                 activeOpacity={0.8}
@@ -357,7 +364,7 @@ export function CollectionPickerSheet({
                 {selectedCollectionId && (
                     <View style={[styles.footer, { borderTopColor: borderColor }]}>
                         <TouchableOpacity
-                            onPress={handleSave}
+                            onPress={() => handleSave()}
                             disabled={isSaving}
                             style={[styles.saveButton, isSaving && styles.buttonDisabled]}
                         >

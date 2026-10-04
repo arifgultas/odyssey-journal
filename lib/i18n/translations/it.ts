@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: 'Rilascia per aggiornare',
         percentValue: '{{value}}%',
         ok: 'OK',
+        unknownUser: 'Viaggiatore',
     },
     auth: {
         login: 'Accedi',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Reinserisci la tua nuova password',
         passwordLengthError: 'La password deve contenere almeno 6 caratteri.',
         passwordMatchError: 'Le password non corrispondono.',
+        resendConfirmation: 'Invia di nuovo l\'email',
+        confirmationResent: 'Abbiamo inviato una nuova email di conferma. Controlla la posta in arrivo e la cartella spam.',
     },
     onboarding: {
         step1Title: 'Inizia ad Esplorare',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: 'Nuovi Itinerari da Esplorare',
         featuredDefaultDescription: 'Scopri i percorsi più belli e parti per nuove avventure.',
         postCount: '{{count}} post',
+        postResults: 'Post',
+        clearHistory: 'Cancella tutto',
     },
     create: {
         title: 'Nuovo Post',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: 'Apri lettere e chat',
         typing: 'sta scrivendo...',
         yesterday: 'Ieri',
+        sendError: 'Impossibile inviare il messaggio.',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         address: 'Indirizzo',
         editTitle: 'Modifica Post',
         boardingPass: 'Carta d\'imbarco',
+        blockUser: 'Blocca utente',
     },
     report: {
         title: 'Segnala post',
@@ -451,10 +458,14 @@ export default {
             other: { label: 'Altro', desc: 'Qualcos\'altro' },
         },
         alreadyReportedTitle: 'Già segnalato',
-        alreadyReportedDesc: 'Hai già segnalato questo post. Lo esamineremo a breve.',
+        alreadyReportedDesc: 'L\'hai già segnalato. Lo esamineremo presto.',
         submittedTitle: 'Segnalazione inviata',
         submittedDesc: 'Grazie per la segnalazione. La esamineremo e prenderemo i provvedimenti necessari.',
         submitFailed: 'Impossibile inviare la segnalazione. Riprova.',
+        titleComment: 'Segnala commento',
+        titleUser: 'Segnala utente',
+        whyReportingComment: 'Perché segnali questo commento?',
+        whyReportingUser: 'Perché segnali questo utente?',
     },
     follow: {
         follow: 'Segui',
@@ -556,6 +567,7 @@ export default {
         userNotFound: 'Nessun account trovato per questo indirizzo email',
         signupDisabled: 'Le nuove registrazioni sono momentaneamente chiuse',
         usernameTaken: 'Questo nome utente è già in uso',
+        accountSuspended: 'Il tuo account è stato sospeso. Non puoi pubblicare né commentare.',
     },
     time: {
         now: 'Adesso',
@@ -813,6 +825,18 @@ export default {
         noReports: 'Nessuna segnalazione trovata',
         allCaughtUp: 'Tutto in ordine! Nessuna segnalazione in attesa.',
         noMatchingReports: 'Nessuna segnalazione corrisponde a questo filtro.',
+        deleteComment: 'Elimina commento',
+        deleteCommentConfirm: 'Questo commento verrà eliminato definitivamente. Sei sicuro?',
+        deleteCommentDone: 'Commento eliminato e segnalazione risolta.',
+        deleteCommentFailed: 'Impossibile eliminare il commento.',
+        reportedComment: 'Commento segnalato:',
+        reportedUser: 'Utente segnalato:',
+        unban: 'Rimuovi sospensione',
+        unbanConfirm: 'Rimuovere la sospensione di {{username}}?',
+        unbanDone: '{{username}} può pubblicare di nuovo.',
+        unbanFailed: 'Impossibile rimuovere la sospensione.',
+        bannedUsers: 'Utenti sospesi',
+        noBannedUsers: 'Nessun utente sospeso.',
     },
 
 

@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: 'Отпустите для обновления',
         percentValue: '{{value}} %',
         ok: 'ОК',
+        unknownUser: 'Путешественник',
     },
     auth: {
         login: 'Войти',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Повторите ввод нового пароля',
         passwordLengthError: 'Пароль должен содержать не менее 6 символов.',
         passwordMatchError: 'Пароли не совпадают.',
+        resendConfirmation: 'Отправить письмо ещё раз',
+        confirmationResent: 'Мы отправили новое письмо для подтверждения. Проверьте входящие и папку «Спам».',
     },
     onboarding: {
         step1Title: 'Начните исследовать',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: 'Новые маршруты для исследований',
         featuredDefaultDescription: 'Откройте для себя самые красивые маршруты и отправляйтесь в путь.',
         postCount: '{{count}} записей',
+        postResults: 'Публикации',
+        clearHistory: 'Очистить всё',
     },
     create: {
         title: 'Новая публикация',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: 'Открыть письма и чаты',
         typing: 'печатает...',
         yesterday: 'Вчера',
+        sendError: 'Не удалось отправить сообщение.',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: 'Не удалось удалить запись',
         location: 'Место',
         boardingPass: 'Билет на рейс',
+        blockUser: 'Заблокировать пользователя',
     },
     report: {
         title: 'Пожаловаться на публикацию',
@@ -451,10 +458,14 @@ export default {
             other: { label: 'Другое', desc: 'Что-то другое' },
         },
         alreadyReportedTitle: 'Уже отправлено',
-        alreadyReportedDesc: 'Вы уже пожаловались на эту запись. Мы скоро её рассмотрим.',
+        alreadyReportedDesc: 'Вы уже отправили жалобу. Мы скоро её рассмотрим.',
         submittedTitle: 'Жалоба отправлена',
         submittedDesc: 'Спасибо за жалобу. Мы рассмотрим её и примем меры.',
         submitFailed: 'Не удалось отправить жалобу. Попробуйте снова.',
+        titleComment: 'Пожаловаться на комментарий',
+        titleUser: 'Пожаловаться на пользователя',
+        whyReportingComment: 'Почему вы жалуетесь на этот комментарий?',
+        whyReportingUser: 'Почему вы жалуетесь на этого пользователя?',
     },
     follow: {
         follow: 'Подписаться',
@@ -556,6 +567,7 @@ export default {
         userNotFound: 'Аккаунт с таким адресом не найден',
         signupDisabled: 'Регистрация новых пользователей сейчас закрыта',
         usernameTaken: 'Это имя пользователя уже занято',
+        accountSuspended: 'Ваш аккаунт заблокирован. Вы не можете публиковать и комментировать.',
     },
     time: {
         now: 'Сейчас',
@@ -813,6 +825,18 @@ export default {
         noReports: 'Жалоб не найдено',
         allCaughtUp: 'Всё разобрано! Нет жалоб в ожидании.',
         noMatchingReports: 'Нет жалоб, соответствующих этому фильтру.',
+        deleteComment: 'Удалить комментарий',
+        deleteCommentConfirm: 'Комментарий будет удалён навсегда. Вы уверены?',
+        deleteCommentDone: 'Комментарий удалён, жалоба закрыта.',
+        deleteCommentFailed: 'Не удалось удалить комментарий.',
+        reportedComment: 'Комментарий в жалобе:',
+        reportedUser: 'Пользователь в жалобе:',
+        unban: 'Разблокировать',
+        unbanConfirm: 'Разблокировать {{username}}?',
+        unbanDone: '{{username}} снова может публиковать.',
+        unbanFailed: 'Не удалось разблокировать.',
+        bannedUsers: 'Заблокированные пользователи',
+        noBannedUsers: 'Заблокированных пользователей нет.',
     },
 
 

@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: '離して更新',
         percentValue: '{{value}}%',
         ok: 'OK',
+        unknownUser: '旅行者',
     },
     auth: {
         login: 'ログイン',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: '新しいパスワードを再入力してください',
         passwordLengthError: 'パスワードは6文字以上である必要があります。',
         passwordMatchError: 'パスワードが一致しません。',
+        resendConfirmation: 'メールを再送信',
+        confirmationResent: '確認メールを再送信しました。受信トレイと迷惑メールフォルダを確認してください。',
     },
     onboarding: {
         step1Title: '探検を始めよう',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: '探検する新しいルート',
         featuredDefaultDescription: '最も美しいルートを発見し、冒険に出かけましょう。',
         postCount: '{{count}} 件の投稿',
+        postResults: '投稿',
+        clearHistory: 'すべて消去',
     },
     create: {
         title: '新規投稿',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: '手紙とチャットを開く',
         typing: '入力中...',
         yesterday: '昨日',
+        sendError: 'メッセージを送信できませんでした。',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: '投稿を削除できませんでした',
         location: '場所',
         boardingPass: '搭乗券',
+        blockUser: 'ユーザーをブロック',
     },
     report: {
         title: '投稿を報告',
@@ -451,10 +458,14 @@ export default {
             other: { label: 'その他', desc: 'その他の理由' },
         },
         alreadyReportedTitle: 'すでに報告済み',
-        alreadyReportedDesc: 'この投稿はすでに報告済みです。近日中に確認いたします。',
+        alreadyReportedDesc: 'すでに報告済みです。まもなく確認します。',
         submittedTitle: '報告を送信しました',
         submittedDesc: 'ご報告ありがとうございます。内容を確認し、適切に対応いたします。',
         submitFailed: '報告を送信できませんでした。もう一度お試しください。',
+        titleComment: 'コメントを報告',
+        titleUser: 'ユーザーを報告',
+        whyReportingComment: 'このコメントを報告する理由は？',
+        whyReportingUser: 'このユーザーを報告する理由は？',
     },
     follow: {
         follow: 'フォロー',
@@ -556,6 +567,7 @@ export default {
         userNotFound: 'このメールアドレスのアカウントが見つかりません',
         signupDisabled: '現在、新規登録を受け付けていません',
         usernameTaken: 'このユーザー名はすでに使われています',
+        accountSuspended: 'アカウントが停止されています。投稿やコメントはできません。',
     },
     time: {
         now: '今',
@@ -813,6 +825,18 @@ export default {
         noReports: '報告は見つかりませんでした',
         allCaughtUp: 'すべて対応済みです。保留中の報告はありません。',
         noMatchingReports: 'このフィルターに一致する報告はありません。',
+        deleteComment: 'コメントを削除',
+        deleteCommentConfirm: 'このコメントは完全に削除されます。よろしいですか？',
+        deleteCommentDone: 'コメントを削除し、報告を解決しました。',
+        deleteCommentFailed: 'コメントを削除できませんでした。',
+        reportedComment: '報告されたコメント：',
+        reportedUser: '報告されたユーザー：',
+        unban: '停止を解除',
+        unbanConfirm: '{{username}} の停止を解除しますか？',
+        unbanDone: '{{username}} は再び投稿できます。',
+        unbanFailed: '停止を解除できませんでした。',
+        bannedUsers: '停止中のユーザー',
+        noBannedUsers: '停止中のユーザーはいません。',
     },
 
 

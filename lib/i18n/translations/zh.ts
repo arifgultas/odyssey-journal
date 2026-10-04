@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: '松开刷新',
         percentValue: '{{value}}%',
         ok: '好',
+        unknownUser: '旅行者',
     },
     auth: {
         login: '登录',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: '再次输入新密码',
         passwordLengthError: '密码至少需要6个字符。',
         passwordMatchError: '密码不匹配。',
+        resendConfirmation: '重新发送邮件',
+        confirmationResent: '我们已重新发送确认邮件，请查看收件箱和垃圾邮件文件夹。',
     },
     onboarding: {
         step1Title: '开始探索',
@@ -211,6 +214,8 @@ export default {
         featuredDefaultTitle: '探索新路线',
         featuredDefaultDescription: '探索最美丽的路线，踏上奇妙冒险。',
         postCount: '{{count}} 篇帖子',
+        postResults: '帖子',
+        clearHistory: '全部清除',
     },
     categories: {
         nature: '自然',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: '打开信件和聊天',
         typing: '正在输入...',
         yesterday: '昨天',
+        sendError: '消息发送失败。',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: '删除帖子失败',
         location: '位置',
         boardingPass: '登机牌',
+        blockUser: '屏蔽用户',
     },
     report: {
         title: '举报帖子',
@@ -451,10 +458,14 @@ export default {
             other: { label: '其他', desc: '其他原因' },
         },
         alreadyReportedTitle: '已举报',
-        alreadyReportedDesc: '您已举报过这篇帖子，我们会尽快审核。',
+        alreadyReportedDesc: '你已经举报过了，我们会尽快处理。',
         submittedTitle: '举报已提交',
         submittedDesc: '感谢您的举报，我们会审核并采取相应措施。',
         submitFailed: '举报提交失败，请重试。',
+        titleComment: '举报评论',
+        titleUser: '举报用户',
+        whyReportingComment: '你为什么举报这条评论？',
+        whyReportingUser: '你为什么举报这个用户？',
     },
     follow: {
         follow: '关注',
@@ -556,6 +567,7 @@ export default {
         userNotFound: '未找到使用该邮箱的账号',
         signupDisabled: '目前暂不开放新用户注册',
         usernameTaken: '该用户名已被使用',
+        accountSuspended: '你的账号已被停用，无法发布或评论。',
     },
     time: {
         now: '刚刚',
@@ -813,6 +825,18 @@ export default {
         noReports: '未找到举报',
         allCaughtUp: '全部处理完毕！没有待处理的举报。',
         noMatchingReports: '没有符合此筛选条件的举报。',
+        deleteComment: '删除评论',
+        deleteCommentConfirm: '此评论将被永久删除，确定吗？',
+        deleteCommentDone: '评论已删除，举报已处理。',
+        deleteCommentFailed: '删除评论失败。',
+        reportedComment: '被举报的评论：',
+        reportedUser: '被举报的用户：',
+        unban: '解除停用',
+        unbanConfirm: '解除 {{username}} 的停用？',
+        unbanDone: '{{username}} 可以再次发布了。',
+        unbanFailed: '解除停用失败。',
+        bannedUsers: '已停用的用户',
+        noBannedUsers: '没有被停用的用户。',
     },
 
 

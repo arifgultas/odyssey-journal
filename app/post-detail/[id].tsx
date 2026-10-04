@@ -9,9 +9,9 @@ import { supabase } from '@/lib/supabase';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { safeGoBack } from '@/lib/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -64,9 +64,19 @@ import { formatPostDetailDate, formatPostDetailDay } from '@/lib/date-formatter'
 import { getLocalizedCityName, getLocalizedCountryName } from '@/lib/location-formatter';
 import { getWeatherTranslationKey } from '@/lib/weather';
 import { mirrorIcon } from '@/lib/rtl';
+import { invalidatePostQueries } from '@/lib/query-invalidation';
+import { useConfirmBlockUser } from '@/hooks/use-block-user';
+import { useQueryClient } from '@tanstack/react-query';
+import { postCoverSource } from '@/lib/post-image';
+import { useFollowUser } from '@/hooks/use-follow';
+import { checkIfFollowing } from '@/lib/follow';
 
 export default function PostDetailScreen() {
     const insets = useSafeAreaInsets();
+    const queryClient = useQueryClient();
+    const confirmBlockUser = useConfirmBlockUser();
+    const followMutation = useFollowUser();
+    const [isFollowingAuthor, setIsFollowingAuthor] = useState(false);
     const colorScheme = useColorScheme();
     const { t, language } = useLanguage();
     const isDark = colorScheme === 'dark';
@@ -86,23 +96,34 @@ export default function PostDetailScreen() {
 
     const scrollY = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        loadPost();
-    }, [id]);
+    const loadedOnce = useRef(false);
+
+    // On every focus, not only on mount: coming back from editing the post or from its comments
+    // has to show the new title, photos and comment count
+    useFocusEffect(
+        useCallback(() => {
+            loadPost();
+        }, [id])
+    );
 
     const loadPost = async () => {
         if (!id) return;
 
-        setIsLoading(true);
+        // The spinner only for the first load; refreshes on focus keep the content on screen
+        if (!loadedOnce.current) setIsLoading(true);
         try {
             const postData = await fetchPostById(id);
             setPost(postData);
+            loadedOnce.current = true;
             setLikesCount(postData.likes_count || 0);
 
             // Get current user
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setIsOwnPost(user.id === postData.user_id);
+                if (user.id !== postData.user_id) {
+                    setIsFollowingAuthor(await checkIfFollowing(postData.user_id));
+                }
             }
 
             // Check interaction status
@@ -198,6 +219,7 @@ export default function PostDetailScreen() {
                     onPress: async () => {
                         try {
                             await deletePost(post.id);
+                            invalidatePostQueries(queryClient);
                             Alert.alert(t('common.success'), t('post.deleteSuccess'));
                             safeGoBack('/(tabs)');
                         } catch (error) {
@@ -267,9 +289,7 @@ export default function PostDetailScreen() {
         return null;
     }
 
-    const heroImage = post.images && post.images.length > 0
-        ? post.images[0]
-        : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800';
+    const heroImage = postCoverSource(post.images);
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -284,7 +304,7 @@ export default function PostDetailScreen() {
                 ]}
             >
                 <Image
-                    source={{ uri: heroImage }}
+                    source={heroImage}
                     style={styles.heroImage}
                     contentFit="cover"
                 />
@@ -389,7 +409,11 @@ export default function PostDetailScreen() {
                     {/* Author Section - Vintage Postcard Style */}
                     {post.profiles && (
                         <View style={[styles.authorSection, { borderColor: isDark ? 'rgba(212, 165, 116, 0.2)' : 'rgba(139, 94, 60, 0.2)' }]}>
-                            <View style={styles.authorInfo}>
+                            <TouchableOpacity
+                                style={styles.authorInfo}
+                                activeOpacity={0.7}
+                                onPress={() => router.push(`/user-profile/${post.user_id}` as any)}
+                            >
                                 <View style={[styles.authorAvatar, { borderColor: isDark ? theme.accentGold : theme.borderBrown }]}>
                                     {post.profiles.avatar_url ? (
                                         <Image
@@ -403,17 +427,41 @@ export default function PostDetailScreen() {
                                 </View>
                                 <View style={styles.authorDetails}>
                                     <Text style={[styles.authorName, { color: theme.textMain }]}>
-                                        {post.profiles.full_name || post.profiles.username || 'Travel Enthusiast'}
+                                        {post.profiles.full_name || post.profiles.username || t('common.unknownUser')}
                                     </Text>
-                                    <Text style={[styles.authorHandle, { color: theme.textSubtle }]}>
-                                        @{post.profiles.username || 'traveler'}
-                                    </Text>
+                                    {!!post.profiles.username && (
+                                        <Text style={[styles.authorHandle, { color: theme.textSubtle }]}>
+                                            @{post.profiles.username}
+                                        </Text>
+                                    )}
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                             {!isOwnPost && (
-                                <TouchableOpacity style={[styles.followBtn, { backgroundColor: theme.primary }]}>
-                                    <Text style={[styles.followBtnText, { color: isDark ? theme.background : '#FFFFFF' }]}>
-                                        {t('follow.follow')}
+                                <TouchableOpacity
+                                    style={[
+                                        styles.followBtn,
+                                        isFollowingAuthor
+                                            ? { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.primary }
+                                            : { backgroundColor: theme.primary },
+                                    ]}
+                                    disabled={followMutation.isPending}
+                                    onPress={async () => {
+                                        const action = isFollowingAuthor ? 'unfollow' : 'follow';
+                                        try {
+                                            await followMutation.mutateAsync({ targetUserId: post.user_id, action });
+                                            setIsFollowingAuthor(action === 'follow');
+                                        } catch {
+                                            Alert.alert(t('common.error'), t('errors.generic'));
+                                        }
+                                    }}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.followBtnText,
+                                            { color: isFollowingAuthor ? theme.primary : isDark ? theme.background : '#FFFFFF' },
+                                        ]}
+                                    >
+                                        {isFollowingAuthor ? t('follow.following') : t('follow.follow')}
                                     </Text>
                                 </TouchableOpacity>
                             )}
@@ -470,9 +518,9 @@ export default function PostDetailScreen() {
                     <View style={styles.proseContainer}>
                         <Text style={[styles.proseText, { color: theme.textMain }]}>
                             <Text style={[styles.dropCap, { color: theme.primary }]}>
-                                {post.content.charAt(0)}
+                                {(post.content || '').charAt(0)}
                             </Text>
-                            {post.content.slice(1)}
+                            {(post.content || '').slice(1)}
                         </Text>
                     </View>
 
@@ -682,12 +730,27 @@ export default function PostDetailScreen() {
                                     </TouchableOpacity>
                                 </>
                             ) : (
-                                <TouchableOpacity style={styles.menuItem} onPress={handleReport}>
-                                    <Ionicons name="flag-outline" size={20} color="#E57373" />
-                                    <Text style={[styles.menuText, { color: '#E57373' }]}>
-                                        {t('post.reportPost')}
-                                    </Text>
-                                </TouchableOpacity>
+                                <>
+                                    <TouchableOpacity style={styles.menuItem} onPress={handleReport}>
+                                        <Ionicons name="flag-outline" size={20} color="#E57373" />
+                                        <Text style={[styles.menuText, { color: '#E57373' }]}>
+                                            {t('post.reportPost')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <View style={[styles.menuDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }]} />
+                                    <TouchableOpacity
+                                        style={styles.menuItem}
+                                        onPress={() => {
+                                            setShowMenu(false);
+                                            confirmBlockUser(post.user_id, () => safeGoBack('/(tabs)'));
+                                        }}
+                                    >
+                                        <Ionicons name="ban-outline" size={20} color="#E57373" />
+                                        <Text style={[styles.menuText, { color: '#E57373' }]}>
+                                            {t('post.blockUser')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
                             )}
                         </View>
                     )}

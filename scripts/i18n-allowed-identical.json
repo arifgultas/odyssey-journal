@@ -85,7 +85,8 @@
     "profile.posts",
     "profile.badges",
     "post.notesCount",
-    "map.postCount"
+    "map.postCount",
+    "explore.postResults"
   ],
   "pt": [
     "editProfile.bio",

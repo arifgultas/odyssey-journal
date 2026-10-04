@@ -2,7 +2,7 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
 import { CALENDAR_MONTH_NAMES, SHORT_WEEKDAYS_MON_FIRST, formatPolaroidDate } from '@/lib/date-formatter';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Modal,
     Platform,
@@ -60,6 +60,16 @@ export function TravelDatePicker({
     const [viewingYear, setViewingYear] = useState(selectedDate.getFullYear());
     const [viewingMonth, setViewingMonth] = useState(selectedDate.getMonth()); // 0-11
     const [tempSelectedDate, setTempSelectedDate] = useState<Date>(selectedDate);
+
+    // The screens open the modal directly (the date stamp on the polaroid), not through handleOpen,
+    // so the calendar still showed the date from mount - today - and confirming replaced an edited
+    // post's travel date. Sync whenever the modal opens, however it was opened.
+    useEffect(() => {
+        if (!modalVisible) return;
+        setTempSelectedDate(new Date(selectedDate));
+        setViewingYear(selectedDate.getFullYear());
+        setViewingMonth(selectedDate.getMonth());
+    }, [modalVisible]);
 
     // Sync temp state when opening
     const handleOpen = () => {

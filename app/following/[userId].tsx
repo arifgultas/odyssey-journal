@@ -3,7 +3,9 @@ import { ThemedView } from '@/components/themed-view';
 import { UserCard } from '@/components/user-card';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
-import { followUser, getFollowing, unfollowUser, UserProfile } from '@/lib/follow';
+import { useAuth } from '@/context/AuthContext';
+import { useFollowUser } from '@/hooks/use-follow';
+import { getFollowing, UserProfile } from '@/lib/follow';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { safeGoBack } from '@/lib/navigation';
@@ -27,6 +29,9 @@ export default function FollowingScreen() {
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [followingStates, setFollowingStates] = useState<Record<string, boolean>>({});
+    const { user: currentUser } = useAuth();
+    // The hook also refreshes follower counts on the profiles involved
+    const followMutation = useFollowUser();
     const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
     const loadFollowing = async (pageNum: number = 0, refresh: boolean = false) => {
@@ -42,17 +47,17 @@ export default function FollowingScreen() {
             const data = await getFollowing(userId, pageNum, 20);
 
             // Query if the current user follows the retrieved users
-            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            const { data: { user: viewer } } = await supabase.auth.getUser();
             const newStates: Record<string, boolean> = {};
             const allFetchedIds = (refresh || pageNum === 0) 
                 ? data.map(u => u.id) 
                 : [...following.map(u => u.id), ...data.map(u => u.id)];
 
-            if (currentUser && allFetchedIds.length > 0) {
+            if (viewer && allFetchedIds.length > 0) {
                 const { data: followRecords } = await supabase
                     .from('follows')
                     .select('following_id')
-                    .eq('follower_id', currentUser.id)
+                    .eq('follower_id', viewer.id)
                     .in('following_id', allFetchedIds);
                 
                 if (followRecords) {
@@ -98,11 +103,7 @@ export default function FollowingScreen() {
         setLoadingStates(prev => ({ ...prev, [targetUserId]: true }));
 
         try {
-            if (shouldFollow) {
-                await followUser(targetUserId);
-            } else {
-                await unfollowUser(targetUserId);
-            }
+            await followMutation.mutateAsync({ targetUserId, action: shouldFollow ? 'follow' : 'unfollow' });
 
             setFollowingStates(prev => ({ ...prev, [targetUserId]: shouldFollow }));
         } catch (error) {
@@ -185,7 +186,9 @@ export default function FollowingScreen() {
                         user={item}
                         onPress={() => handleUserPress(item)}
                         onFollowPress={handleFollowPress}
-                        isFollowing={followingStates[item.id] !== false}
+                        // Only rows the signed-in user really follows; on someone else's list that is not all of them
+                        isFollowing={followingStates[item.id] === true}
+                        showFollowButton={item.id !== currentUser?.id}
                         followLoading={loadingStates[item.id] || false}
                     />
                 )}

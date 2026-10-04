@@ -62,6 +62,7 @@ export default function BlockedUsersScreen() {
             setBlockedUsers(list);
         } catch (error) {
             console.error('Error loading blocked users:', error);
+            Alert.alert(t('common.error'), t('errors.generic'));
         } finally {
             setIsLoading(false);
             setIsRefreshing(false);
@@ -93,7 +94,7 @@ export default function BlockedUsersScreen() {
                                 // Invalidate query caches to refresh search and profiles immediately
                                 queryClient.invalidateQueries({ queryKey: ['search'] });
                                 queryClient.invalidateQueries({ queryKey: ['profile'] });
-                                queryClient.invalidateQueries({ queryKey: ['suggested-users'] });
+                                queryClient.invalidateQueries({ queryKey: ['suggested', 'users'] });
 
                                 Alert.alert(t('common.success'), t('settings.unblockSuccess'));
                                 setBlockedUsers((prev) => prev.filter((u) => u.id !== user.id));
@@ -122,7 +123,7 @@ export default function BlockedUsersScreen() {
 
             <View style={styles.itemContent}>
                 <Text style={[styles.fullName, { color: theme.textMain }]} numberOfLines={1}>
-                    {item.full_name || 'Traveler'}
+                    {item.full_name || item.username || t('common.unknownUser')}
                 </Text>
                 {item.username && (
                     <Text style={[styles.usernameText, { color: theme.textMuted }]} numberOfLines={1}>

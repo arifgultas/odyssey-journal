@@ -31,6 +31,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mirrorIcon } from '@/lib/rtl';
+import { postCoverSource } from '@/lib/post-image';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - Spacing.md * 3) / 2;
@@ -103,7 +104,11 @@ export default function SavedPostsScreen() {
             if (refresh || pageNum === 0) {
                 setPosts(bookmarkedPosts);
             } else {
-                setPosts([...posts, ...bookmarkedPosts]);
+                // Functional, and without ids already shown: end-reached can fire twice for one page
+                setPosts(prev => {
+                    const seen = new Set(prev.map(p => p.id));
+                    return [...prev, ...bookmarkedPosts.filter(p => !seen.has(p.id))];
+                });
             }
 
             setHasMore(bookmarkedPosts.length === 10);
@@ -138,9 +143,14 @@ export default function SavedPostsScreen() {
         loadCollections();
     };
 
-    const handleLoadMore = () => {
-        if (!isLoading && hasMore) {
-            loadBookmarkedPosts(page + 1);
+    const loadingMore = useRef(false);
+    const handleLoadMore = async () => {
+        if (isLoading || !hasMore || loadingMore.current) return;
+        loadingMore.current = true;
+        try {
+            await loadBookmarkedPosts(page + 1);
+        } finally {
+            loadingMore.current = false;
         }
     };
 
@@ -304,7 +314,7 @@ export default function SavedPostsScreen() {
             }),
         };
 
-        const imageUrl = post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400';
+        const cover = postCoverSource(post.images);
         const locationText = post.location?.city || post.location?.country || t('saved.unknownLocation');
 
         return (
@@ -326,7 +336,7 @@ export default function SavedPostsScreen() {
                     >
                         <View style={styles.polaroidImageContainer}>
                             <Image
-                                source={{ uri: imageUrl }}
+                                source={cover}
                                 style={styles.polaroidImage}
                                 contentFit="cover"
                                 transition={300}

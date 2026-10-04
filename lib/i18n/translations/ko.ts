@@ -35,6 +35,7 @@ export default {
         releaseToRefresh: '놓아서 새로고침',
         percentValue: '{{value}}%',
         ok: '확인',
+        unknownUser: '여행자',
     },
     auth: {
         login: '로그인',
@@ -100,6 +101,8 @@ export default {
         confirmNewPasswordPlaceholder: '새 비밀번호를 다시 입력하세요',
         passwordLengthError: '비밀번호는 6자 이상이어야 합니다.',
         passwordMatchError: '비밀번호가 일치하지 않습니다.',
+        resendConfirmation: '이메일 다시 보내기',
+        confirmationResent: '새 인증 이메일을 보냈습니다. 받은편지함과 스팸함을 확인하세요.',
     },
     onboarding: {
         step1Title: '탐험을 시작하세요',
@@ -169,6 +172,8 @@ export default {
         featuredDefaultTitle: '탐험할 새로운 여행 경로',
         featuredDefaultDescription: '가장 아름다운 경로를 발견하고 모험을 떠나보세요.',
         postCount: '게시물 {{count}}개',
+        postResults: '게시물',
+        clearHistory: '모두 지우기',
     },
     create: {
         title: '새 게시물',
@@ -282,6 +287,7 @@ export default {
         openLettersAndChats: '편지 및 채팅 열기',
         typing: '입력 중...',
         yesterday: '어제',
+        sendError: '메시지를 보내지 못했습니다.',
     },
 
     saved: {
@@ -433,6 +439,7 @@ export default {
         deleteError: '게시물을 삭제하지 못했습니다',
         location: '위치',
         boardingPass: '탑승권',
+        blockUser: '사용자 차단',
     },
     report: {
         title: '게시물 신고',
@@ -451,10 +458,14 @@ export default {
             other: { label: '기타', desc: '다른 이유' },
         },
         alreadyReportedTitle: '이미 신고됨',
-        alreadyReportedDesc: '이미 신고한 게시물입니다. 곧 검토하겠습니다.',
+        alreadyReportedDesc: '이미 신고했습니다. 곧 검토하겠습니다.',
         submittedTitle: '신고가 접수되었습니다',
         submittedDesc: '신고해 주셔서 감사합니다. 검토 후 적절한 조치를 취하겠습니다.',
         submitFailed: '신고를 제출하지 못했습니다. 다시 시도해 주세요.',
+        titleComment: '댓글 신고',
+        titleUser: '사용자 신고',
+        whyReportingComment: '이 댓글을 신고하는 이유는 무엇인가요?',
+        whyReportingUser: '이 사용자를 신고하는 이유는 무엇인가요?',
     },
     follow: {
         follow: '팔로우',
@@ -556,6 +567,7 @@ export default {
         userNotFound: '이 이메일로 등록된 계정을 찾을 수 없습니다',
         signupDisabled: '현재 신규 가입을 받지 않습니다',
         usernameTaken: '이미 사용 중인 사용자 이름입니다',
+        accountSuspended: '계정이 정지되었습니다. 게시하거나 댓글을 달 수 없습니다.',
     },
     time: {
         now: '지금',
@@ -813,6 +825,18 @@ export default {
         noReports: '신고가 없습니다',
         allCaughtUp: '모두 처리되었습니다! 대기 중인 신고가 없습니다.',
         noMatchingReports: '이 필터에 해당하는 신고가 없습니다.',
+        deleteComment: '댓글 삭제',
+        deleteCommentConfirm: '이 댓글이 영구적으로 삭제됩니다. 계속할까요?',
+        deleteCommentDone: '댓글을 삭제하고 신고를 처리했습니다.',
+        deleteCommentFailed: '댓글을 삭제하지 못했습니다.',
+        reportedComment: '신고된 댓글:',
+        reportedUser: '신고된 사용자:',
+        unban: '정지 해제',
+        unbanConfirm: '{{username}}의 정지를 해제할까요?',
+        unbanDone: '{{username}}님이 다시 게시할 수 있습니다.',
+        unbanFailed: '정지를 해제하지 못했습니다.',
+        bannedUsers: '정지된 사용자',
+        noBannedUsers: '정지된 사용자가 없습니다.',
     },
 
 

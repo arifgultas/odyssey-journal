@@ -45,6 +45,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
+import { invalidatePostQueries } from '@/lib/query-invalidation';
+import { useQueryClient } from '@tanstack/react-query';
+import { postErrorMessage } from '@/lib/auth-errors';
 
 const { width } = Dimensions.get('window');
 
@@ -468,6 +471,7 @@ const AddPhotoButton = ({ onPress, theme }: { onPress: () => void; theme: typeof
 
 export default function CreatePostScreen() {
     const { ensureConsent } = useAiConsent();
+    const queryClient = useQueryClient();
     // Set synchronously on the first tap: isSubmitting only disables the button on the next render,
     // and the consent check awaits storage first, so a quick second tap could post twice
     const submitLock = useRef(false);
@@ -620,16 +624,18 @@ export default function CreatePostScreen() {
             const postPayload = {
                 title: title.trim(),
                 content: content.trim(),
-                location: location || undefined,
+                // Editing: null clears a removed location or weather (undefined would keep the old one)
+                location: location || (isEditMode ? null : undefined),
                 images: images.map((img: SelectedImage) => img.uri),
                 imageCaptions: imageCaptions,
-                weatherData: weatherData || undefined,
+                weatherData: weatherData || (isEditMode ? null : undefined),
                 categories: selectedCategories,
                 createdAt: selectedDate.toISOString(),
             };
 
             if (isEditMode && editPostId) {
                 await updatePost(editPostId, postPayload);
+                invalidatePostQueries(queryClient);
                 Alert.alert(t('common.success'), t('create.postSuccess'), [
                     {
                         text: t('createPost.ok'),
@@ -640,7 +646,12 @@ export default function CreatePostScreen() {
                     },
                 ]);
             } else {
-                await createPost(postPayload);
+                await createPost({
+                    ...postPayload,
+                    location: postPayload.location ?? undefined,
+                    weatherData: postPayload.weatherData ?? undefined,
+                });
+                invalidatePostQueries(queryClient);
                 Alert.alert(t('createPost.success'), t('createPost.entryCreated'), [
                     {
                         text: t('createPost.ok'),
@@ -653,7 +664,8 @@ export default function CreatePostScreen() {
             }
         } catch (error) {
             console.error('Error saving post:', error);
-            Alert.alert(t('createPost.errorTitle'), isEditMode ? t('errors.generic') : t('createPost.createError'));
+            // A moderation rejection, the hourly limit or a suspension says why; anything else stays generic
+            Alert.alert(t('createPost.errorTitle'), postErrorMessage(error, isEditMode ? 'errors.generic' : 'createPost.createError'));
         } finally {
             setIsSubmitting(false);
             submitLock.current = false;

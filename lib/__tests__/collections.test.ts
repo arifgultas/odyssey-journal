@@ -2,6 +2,9 @@
  * Tests for lib/collections.ts
  */
 
+// Liked/bookmarked flags are filled by a helper tested on its own; pass the posts through here
+jest.mock('../post-interactions', () => ({ populateInteractions: jest.fn(async (posts: unknown[]) => posts) }));
+
 jest.mock('../supabase', () => {
     const mockSingle = jest.fn();
     const mockSelect = jest.fn();

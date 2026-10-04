@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { Post } from './posts';
+import { populateInteractions } from './post-interactions';
 import { captureError } from './sentry';
 
 /**
@@ -247,9 +248,11 @@ export async function getBookmarkedPosts(
             posts: Post | null;
         };
 
-        return (data as unknown as BookmarkedPostRow[])
-            ?.map((bookmark) => bookmark.posts)
-            .filter((post): post is Post => post !== null) || [];
+        return populateInteractions(
+            (data as unknown as BookmarkedPostRow[])
+                ?.map((bookmark) => bookmark.posts)
+                .filter((post): post is Post => post !== null) || []
+        );
     } catch (error) {
         console.error('Error fetching bookmarked posts:', error);
         captureError(error as Error, { context: 'getBookmarkedPosts' });

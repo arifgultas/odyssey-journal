@@ -143,6 +143,7 @@ export async function getBlockedUsersProfiles(): Promise<BlockedUserProfile[]> {
         return data || [];
     } catch (error) {
         console.error('Error fetching blocked users profiles:', error);
-        return [];
+        // Rethrown: an empty list here would read as "you have blocked nobody"
+        throw error;
     }
 }

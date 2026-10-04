@@ -27,6 +27,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mirrorIcon } from '@/lib/rtl';
+import { formatShortDate } from '@/lib/date-formatter';
 
 // Letter Theme Colors
 const LetterColors = {
@@ -226,7 +227,8 @@ export default function NotificationsScreen() {
         if (diffHours < 24) return t('time.hoursAgo', { count: diffHours });
         if (diffDays === 1) return t('time.yesterday');
         if (diffDays < 7) return t('time.daysAgo', { count: diffDays });
-        return t('time.lastWeek');
+        // Older than a week: the date itself ("last week" was shown for anything older, even months)
+        return formatShortDate(date, language);
     };
 
     const getNotificationIcon = (type: string): keyof typeof Ionicons.glyphMap => {

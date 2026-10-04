@@ -36,6 +36,7 @@ export default {
         releaseToRefresh: 'Release to refresh',
         percentValue: '{{value}}%',
         ok: 'OK',
+        unknownUser: 'Traveler',
     },
 
     // Auth
@@ -105,6 +106,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Enter your new password again',
         passwordLengthError: 'Password must be at least 6 characters.',
         passwordMatchError: 'Passwords do not match.',
+        resendConfirmation: 'Resend email',
+        confirmationResent: 'We sent a new confirmation email. Check your inbox and spam folder.',
     },
 
     // Onboarding
@@ -180,6 +183,8 @@ export default {
         featuredDefaultTitle: 'New Routes to Explore',
         featuredDefaultDescription: 'Discover the most beautiful routes and embark on adventures.',
         postCount: '{{count}} posts',
+        postResults: 'Posts',
+        clearHistory: 'Clear all',
     },
 
     // Create Post
@@ -299,6 +304,7 @@ export default {
         openLettersAndChats: 'Open letters and chats',
         typing: 'is typing...',
         yesterday: 'Yesterday',
+        sendError: 'Your message could not be sent.',
     },
 
     // Saved / Bookmarks
@@ -462,6 +468,7 @@ export default {
         address: 'Address',
         editTitle: 'Edit Post',
         boardingPass: 'Boarding Pass',
+        blockUser: 'Block user',
     },
 
     // Report
@@ -482,10 +489,14 @@ export default {
             other: { label: 'Other', desc: 'Something else' },
         },
         alreadyReportedTitle: 'Already Reported',
-        alreadyReportedDesc: 'You have already reported this post. We will review it soon.',
+        alreadyReportedDesc: 'You have already reported this. We will review it soon.',
         submittedTitle: 'Report Submitted',
         submittedDesc: 'Thank you for your report. We will review it and take appropriate action.',
         submitFailed: 'Failed to submit report. Please try again.',
+        titleComment: 'Report Comment',
+        titleUser: 'Report User',
+        whyReportingComment: 'Why are you reporting this comment?',
+        whyReportingUser: 'Why are you reporting this user?',
     },
 
     // Follow
@@ -593,6 +604,7 @@ export default {
         userNotFound: 'No account was found for this email address',
         signupDisabled: 'New registrations are currently closed',
         usernameTaken: 'This username is already taken',
+        accountSuspended: 'Your account has been suspended. You cannot post or comment.',
     },
 
     // Time
@@ -867,6 +879,18 @@ export default {
         noReports: 'No reports found',
         allCaughtUp: 'All caught up! No pending reports.',
         noMatchingReports: 'No reports match this filter.',
+        deleteComment: 'Delete Comment',
+        deleteCommentConfirm: 'This will permanently delete this comment. Are you sure?',
+        deleteCommentDone: 'Comment deleted and report resolved.',
+        deleteCommentFailed: 'Failed to delete comment.',
+        reportedComment: 'Reported comment:',
+        reportedUser: 'Reported user:',
+        unban: 'Unban',
+        unbanConfirm: 'Lift the ban on {{username}}?',
+        unbanDone: '{{username}} can post again.',
+        unbanFailed: 'Failed to lift the ban.',
+        bannedUsers: 'Banned users',
+        noBannedUsers: 'No banned users.',
     },
 
 

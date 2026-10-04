@@ -54,6 +54,12 @@ jest.mock('../content-moderation', () => ({
     moderateText: jest.fn(),
     moderatePost: jest.fn(),
     getModerationMessage: jest.fn((cats) => `Moderation Flagged: ${cats?.join(', ')}`),
+    ModerationRejectedError: class ModerationRejectedError extends Error {
+        constructor(message: string) {
+            super(message);
+            this.name = 'ModerationRejectedError';
+        }
+    },
 }));
 
 jest.mock('../block', () => ({

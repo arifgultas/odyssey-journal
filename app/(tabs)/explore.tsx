@@ -8,6 +8,7 @@ import { SearchHistory } from '@/components/explore/search-history';
 import { SearchResults } from '@/components/explore/search-results';
 import { useFollowUser } from '@/hooks/use-follow';
 import {
+  useClearSearchHistory,
   useDeleteSearchHistoryItem,
   usePopularDestinations,
   useRecommendedPlaces,
@@ -39,6 +40,8 @@ import {
   View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { postCoverSource } from '@/lib/post-image';
+import { localizedErrorMessage } from '@/lib/auth-errors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -229,13 +232,15 @@ export default function ExploreScreen() {
       });
     } catch (error: any) {
       console.error('Error toggling follow:', error);
-      Alert.alert(t('common.error'), error?.message || t('errors.generic'));
+      Alert.alert(t('common.error'), localizedErrorMessage(error));
     }
   };
 
   const handleDeleteHistory = (id: string) => {
     deleteHistoryItem.mutate(id);
   };
+
+  const clearHistory = useClearSearchHistory();
 
   const handleHistoryItemPress = (query: string) => {
     setSearchQuery(query);
@@ -513,14 +518,14 @@ export default function ExploreScreen() {
       post.location?.city || post.location?.country || post.location_name
     ).map((post: any) => ({
       name: post.location?.city || post.location?.country || post.location_name?.split(',')[0] || t('explore.unknown'),
-      imageUrl: post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400',
+      cover: postCoverSource(post.images),
     })) || [];
 
     // If no post locations, don't show this section
     if (postLocationsRaw.length === 0) return null;
 
     // Group by location name and count
-    const locationMap = new Map<string, { name: string; imageUrl: string; postCount: number }>();
+    const locationMap = new Map<string, { name: string; cover: ReturnType<typeof postCoverSource>; postCount: number }>();
     postLocationsRaw.forEach(loc => {
       if (locationMap.has(loc.name)) {
         const existing = locationMap.get(loc.name)!;
@@ -548,7 +553,7 @@ export default function ExploreScreen() {
             >
               <View style={[styles.destinationImageContainer, { backgroundColor: dest.bgColor + '33' }]}>
                 <Image
-                  source={{ uri: dest.imageUrl }}
+                  source={dest.cover}
                   style={styles.destinationImage}
                   contentFit="contain"
                 />
@@ -616,7 +621,7 @@ export default function ExploreScreen() {
           onPress={() => handlePostPress(featuredPost.id)}
         >
           <Image
-            source={{ uri: featuredPost.images?.[0] || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' }}
+            source={postCoverSource(featuredPost.images)}
             style={styles.weeklyImage}
             contentFit="cover"
           />
@@ -626,7 +631,7 @@ export default function ExploreScreen() {
           />
           <View style={[styles.editorBadge, { backgroundColor: vintageTheme.goldenrod, borderColor: '#c1921a' }]}>
             <Ionicons name="checkmark-circle" size={12} color="#221910" />
-            <Text style={styles.editorBadgeText}>{t('explore.editorsChoice')}</Text>
+            <Text style={styles.editorBadgeText}>{t('explore.trending')}</Text>
           </View>
           <View style={styles.weeklyContent}>
             <Text style={styles.weeklyTitle}>
@@ -678,6 +683,7 @@ export default function ExploreScreen() {
       t={t}
       onLocationPress={handleLocationPress}
       onUserPress={handleUserPress}
+      onPostPress={handlePostPress}
     />
   );
 
@@ -691,6 +697,7 @@ export default function ExploreScreen() {
           t={t}
           onItemPress={handleHistoryItemPress}
           onDeleteItem={handleDeleteHistory}
+          onClearAll={() => clearHistory.mutate()}
         />
       );
     }

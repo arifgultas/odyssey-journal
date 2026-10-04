@@ -1,8 +1,9 @@
 import { getBlockedUsers } from './block';
-import { getModerationMessage, moderatePost, moderateText } from './content-moderation';
+import { getModerationMessage, ModerationRejectedError, moderatePost, moderateText } from './content-moderation';
 import { deleteImage, uploadMultipleImages, uploadImage } from './image-upload';
 import { getCountryCode } from './location-formatter';
 import { placeKeyFor, resolvePlaceNames } from './place-names';
+import { populateInteractions } from './post-interactions';
 import { MAX_IMAGES_PER_POST } from './post-limits';
 import { LIMITS, sanitizePostContent, sanitizePostTitle, sanitizeText } from './sanitize';
 import { supabase } from './supabase';
@@ -41,6 +42,12 @@ export interface CreatePostData {
     categories?: string[]; // Category IDs (e.g., ['nature', 'city'])
     createdAt?: string; // Travel/backdated creation date
 }
+
+/** For editing: null clears the location or the weather; undefined leaves them as they are */
+export type UpdatePostData = Omit<Partial<CreatePostData>, 'location' | 'weatherData'> & {
+    location?: PostLocation | null;
+    weatherData?: WeatherData | null;
+};
 
 export interface Post {
     id: string;
@@ -137,7 +144,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
         // rejected text (or a missing consent) uploads nothing
         const textModeration = await moderateText(`${sanitizedTitle}\n\n${sanitizedContent}`);
         if (!textModeration.approved) {
-            throw new Error(getModerationMessage(textModeration.flaggedCategories));
+            throw new ModerationRejectedError(getModerationMessage(textModeration.flaggedCategories));
         }
 
         // Images need public URLs to be checked, so they are uploaded first and removed again if
@@ -149,7 +156,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             const imageModeration = await moderatePost('', '', imageUrls);
             if (!imageModeration.approved) {
                 await Promise.allSettled(imageUrls.map((url) => deleteImage(url, 'posts')));
-                throw new Error(getModerationMessage(imageModeration.flaggedCategories));
+                throw new ModerationRejectedError(getModerationMessage(imageModeration.flaggedCategories));
             }
         }
 
@@ -199,7 +206,7 @@ export async function createPost(data: CreatePostData): Promise<Post> {
  */
 export async function updatePost(
     postId: string,
-    data: Partial<CreatePostData>
+    data: UpdatePostData
 ): Promise<Post> {
     try {
         const {
@@ -232,7 +239,7 @@ export async function updatePost(
             const content = data.content !== undefined ? sanitizePostContent(data.content) : '';
             const textModeration = await moderateText(`${title}\n\n${content}`);
             if (!textModeration.approved) {
-                throw new Error(getModerationMessage(textModeration.flaggedCategories));
+                throw new ModerationRejectedError(getModerationMessage(textModeration.flaggedCategories));
             }
         }
 
@@ -258,7 +265,7 @@ export async function updatePost(
                 const imageModeration = await moderatePost('', '', newImageUrls);
                 if (!imageModeration.approved) {
                     await Promise.allSettled(newImageUrls.map((url) => deleteImage(url, 'posts')));
-                    throw new Error(getModerationMessage(imageModeration.flaggedCategories));
+                    throw new ModerationRejectedError(getModerationMessage(imageModeration.flaggedCategories));
                 }
             }
         }
@@ -275,7 +282,7 @@ export async function updatePost(
             images?: string[];
             categories?: string[];
             image_captions?: string[];
-            weather_data?: CreatePostData['weatherData'];
+            weather_data?: WeatherData | null;
             created_at?: string;
         } = {
             updated_at: new Date().toISOString(),
@@ -361,12 +368,9 @@ export async function deletePost(postId: string): Promise<void> {
             throw fetchError;
         }
 
-        // Delete images from storage
-        if (post.images && post.images.length > 0) {
-            await Promise.all(post.images.map((url: string) => deleteImage(url, 'posts')));
-        }
-
-        // Delete post from database
+        // The row first: if it cannot be deleted the post must keep its images. Image removal comes
+        // after and cannot fail the delete (allSettled) - a leftover file is better than a post
+        // that is gone for the user but reported as an error
         const { error: deleteError } = await supabase
             .from('posts')
             .delete()
@@ -375,6 +379,10 @@ export async function deletePost(postId: string): Promise<void> {
 
         if (deleteError) {
             throw deleteError;
+        }
+
+        if (post.images && post.images.length > 0) {
+            await Promise.allSettled(post.images.map((url: string) => deleteImage(url, 'posts')));
         }
     } catch (error) {
         console.error('Error deleting post:', error);
@@ -497,55 +505,3 @@ export async function fetchPostsByUser(
     }
 }
 
-/**
- * Helper to populate isLiked and isBookmarked fields on posts for the current authenticated user
- */
-async function populateInteractions(postsData: any[]): Promise<Post[]> {
-    if (!postsData || postsData.length === 0) {
-        return [];
-    }
-
-    try {
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-            return postsData.map(post => ({
-                ...post,
-                isLiked: false,
-                isBookmarked: false,
-            }));
-        }
-
-        const postIds = postsData.map(post => post.id);
-        const [likesResult, bookmarksResult] = await Promise.all([
-            supabase
-                .from('likes')
-                .select('post_id')
-                .eq('user_id', user.id)
-                .in('post_id', postIds),
-            supabase
-                .from('bookmarks')
-                .select('post_id')
-                .eq('user_id', user.id)
-                .in('post_id', postIds),
-        ]);
-
-        const likedPostIds = new Set((likesResult.data || []).map(l => l.post_id));
-        const bookmarkedPostIds = new Set((bookmarksResult.data || []).map(b => b.post_id));
-
-        return postsData.map(post => ({
-            ...post,
-            isLiked: likedPostIds.has(post.id),
-            isBookmarked: bookmarkedPostIds.has(post.id),
-        }));
-    } catch (error) {
-        console.error('Error populating post interactions:', error);
-        return postsData.map(post => ({
-            ...post,
-            isLiked: false,
-            isBookmarked: false,
-        }));
-    }
-}

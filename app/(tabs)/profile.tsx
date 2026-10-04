@@ -29,6 +29,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { mapStyleLight, mapStyleDark } from '@/constants/map-styles';
+import { postCoverSource } from '@/lib/post-image';
 
 const isExpoGoOnIos = Platform.OS === 'ios' && Constants.appOwnership === 'expo';
 const mapsAvailable = Platform.OS !== 'web' && !isExpoGoOnIos;
@@ -238,13 +239,13 @@ export default function ProfileScreen() {
     // Rotation values for polaroid effect
     const rotations = [-2, 1, 2, -1, 1.5, -1.5];
 
-    // Use only real posts with images, no static fallback
+    // The latest six posts. Text-only posts are included (with the app's own cover image):
+    // filtering them out told someone who writes without photos that they had no notes at all
     const journalEntries = posts && posts.length > 0
         ? posts.slice(0, 6)
-            .filter((post: Post) => post.images && post.images.length > 0 && post.images[0])
             .map((post: Post, index: number) => ({
                 id: post.id,
-                image: post.images![0] as string,
+                image: postCoverSource(post.images),
                 caption: post.title || post.location?.city || post.location?.address || t('profile.journalNote'),
                 aspectRatio: index % 2 === 0 ? 0.8 : 1,
                 rotation: rotations[index % rotations.length],
@@ -517,7 +518,7 @@ export default function ProfileScreen() {
                                         onPress={() => handlePostPress(entry.id)}
                                     >
                                         <Image
-                                            source={{ uri: entry.image }}
+                                            source={entry.image}
                                             style={[styles.polaroidImage, { aspectRatio: entry.aspectRatio }]}
                                             contentFit="cover"
                                         />
@@ -537,7 +538,7 @@ export default function ProfileScreen() {
                                         onPress={() => handlePostPress(entry.id)}
                                     >
                                         <Image
-                                            source={{ uri: entry.image }}
+                                            source={entry.image}
                                             style={[styles.polaroidImage, { aspectRatio: entry.aspectRatio }]}
                                             contentFit="cover"
                                         />

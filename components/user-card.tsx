@@ -57,7 +57,7 @@ export function UserCard({
                 {/* User Info */}
                 <View style={styles.userInfo}>
                     <Text style={[styles.fullName, { color: theme.text }]} numberOfLines={1}>
-                        {user.full_name || user.username || 'Unknown User'}
+                        {user.full_name || user.username || t('common.unknownUser')}
                     </Text>
                     {user.username && (
                         <Text style={[styles.username, { color: theme.textSecondary }]} numberOfLines={1}>

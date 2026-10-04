@@ -37,6 +37,7 @@ export default {
         releaseToRefresh: 'Yenilemek için bırakın',
         percentValue: '%{{value}}',
         ok: 'Tamam',
+        unknownUser: 'Gezgin',
     },
 
     // Auth
@@ -106,6 +107,8 @@ export default {
         confirmNewPasswordPlaceholder: 'Yeni şifrenizi tekrar girin',
         passwordLengthError: 'Şifre en az 6 karakter olmalıdır.',
         passwordMatchError: 'Şifreler eşleşmiyor.',
+        resendConfirmation: 'E-postayı tekrar gönder',
+        confirmationResent: 'Yeni bir onay e-postası gönderdik. Gelen kutunu ve spam klasörünü kontrol et.',
     },
 
     // Onboarding
@@ -181,6 +184,8 @@ export default {
         featuredDefaultTitle: 'Keşfedilecek Yeni Rotalar',
         featuredDefaultDescription: 'En güzel rotaları keşfedin ve yeni maceralara atılın.',
         postCount: '{{count}} gönderi',
+        postResults: 'Gönderiler',
+        clearHistory: 'Tümünü temizle',
     },
 
     // Create Post
@@ -300,6 +305,7 @@ export default {
         openLettersAndChats: 'Mektupları ve sohbetleri aç',
         typing: 'yazıyor...',
         yesterday: 'Dün',
+        sendError: 'Mesajın gönderilemedi.',
     },
 
     // Saved / Bookmarks
@@ -462,6 +468,7 @@ export default {
         address: 'Adres',
         editTitle: 'Gönderiyi Düzenle',
         boardingPass: 'Uçuş Kartı',
+        blockUser: 'Kullanıcıyı engelle',
     },
 
     // Report
@@ -482,10 +489,14 @@ export default {
             other: { label: 'Diğer', desc: 'Başka bir şey' },
         },
         alreadyReportedTitle: 'Zaten Şikayet Edildi',
-        alreadyReportedDesc: 'Bu gönderiyi daha önce şikayet ettiniz. En kısa sürede inceleyeceğiz.',
+        alreadyReportedDesc: 'Bunu zaten şikâyet ettin. Kısa süre içinde inceleyeceğiz.',
         submittedTitle: 'Şikayet Gönderildi',
         submittedDesc: 'Şikayetiniz için teşekkürler. İnceleyip gerekli işlemi yapacağız.',
         submitFailed: 'Şikayet gönderilemedi. Lütfen tekrar deneyin.',
+        titleComment: 'Yorumu Şikâyet Et',
+        titleUser: 'Kullanıcıyı Şikâyet Et',
+        whyReportingComment: 'Bu yorumu neden şikâyet ediyorsun?',
+        whyReportingUser: 'Bu kullanıcıyı neden şikâyet ediyorsun?',
     },
 
     // Follow
@@ -593,6 +604,7 @@ export default {
         userNotFound: 'Bu e-posta adresine ait bir hesap bulunamadı',
         signupDisabled: 'Yeni kayıtlar şu anda kapalı',
         usernameTaken: 'Bu kullanıcı adı zaten alınmış',
+        accountSuspended: 'Hesabın askıya alındı. Gönderi paylaşamaz ve yorum yazamazsın.',
     },
 
     // Time
@@ -867,6 +879,18 @@ export default {
         noReports: 'Şikayet bulunamadı',
         allCaughtUp: 'Her şey tamam! Bekleyen şikayet yok.',
         noMatchingReports: 'Bu filtreye uyan şikayet yok.',
+        deleteComment: 'Yorumu Sil',
+        deleteCommentConfirm: 'Bu yorum kalıcı olarak silinecek. Emin misin?',
+        deleteCommentDone: 'Yorum silindi ve şikâyet kapatıldı.',
+        deleteCommentFailed: 'Yorum silinemedi.',
+        reportedComment: 'Şikâyet edilen yorum:',
+        reportedUser: 'Şikâyet edilen kullanıcı:',
+        unban: 'Yasağı kaldır',
+        unbanConfirm: '{{username}} için yasak kaldırılsın mı?',
+        unbanDone: '{{username}} yeniden paylaşım yapabilir.',
+        unbanFailed: 'Yasak kaldırılamadı.',
+        bannedUsers: 'Yasaklı kullanıcılar',
+        noBannedUsers: 'Yasaklı kullanıcı yok.',
     },
 
 

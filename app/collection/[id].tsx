@@ -10,7 +10,7 @@ import { formatPolaroidDate } from '@/lib/date-formatter';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { safeGoBack } from '@/lib/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -28,6 +28,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { mirrorIcon } from '@/lib/rtl';
+import { postCoverSource } from '@/lib/post-image';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - Spacing.md * 3) / 2;
@@ -113,9 +114,12 @@ export default function CollectionDetailScreen() {
         }
     }, [id]);
 
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
+    // On focus: bookmarks removed or posts deleted elsewhere must not linger here
+    useFocusEffect(
+        useCallback(() => {
+            loadData();
+        }, [loadData])
+    );
 
     const handleRefresh = () => {
         loadData(true);
@@ -261,7 +265,7 @@ export default function CollectionDetailScreen() {
             }),
         };
 
-        const imageUrl = post.images?.[0] || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400';
+        const cover = postCoverSource(post.images);
         const locationText = post.location?.city || post.location?.country || t('common.unknownLocation');
 
         return (
@@ -283,7 +287,7 @@ export default function CollectionDetailScreen() {
                     >
                         <View style={styles.polaroidImageContainer}>
                             <Image
-                                source={{ uri: imageUrl }}
+                                source={cover}
                                 style={styles.polaroidImage}
                                 contentFit="cover"
                                 transition={300}
@@ -423,6 +427,13 @@ export default function CollectionDetailScreen() {
     if (isLoading) {
         return (
             <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
+                {/* A way back while loading, too */}
+                <TouchableOpacity
+                    style={[styles.headerButton, { position: 'absolute', top: insets.top + 8, left: 12 }]}
+                    onPress={() => safeGoBack('/(tabs)/saved')}
+                >
+                    <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
+                </TouchableOpacity>
                 <ActivityIndicator size="large" color="#D4A574" />
             </View>
         );
@@ -431,6 +442,12 @@ export default function CollectionDetailScreen() {
     if (!collection) {
         return (
             <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.background }]}>
+                <TouchableOpacity
+                    style={[styles.headerButton, { position: 'absolute', top: insets.top + 8, left: 12 }]}
+                    onPress={() => safeGoBack('/(tabs)/saved')}
+                >
+                    <MaterialIcons name="arrow-back-ios" size={24} color={colors.textPrimary} />
+                </TouchableOpacity>
                 <ThemedText>{t('collection.notFound')}</ThemedText>
             </View>
         );

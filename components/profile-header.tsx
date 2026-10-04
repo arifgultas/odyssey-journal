@@ -66,7 +66,7 @@ export function ProfileHeader({
                 {/* User Info */}
                 <View style={styles.infoContainer}>
                     <Text style={[styles.fullName, { color: theme.text }]}>
-                        {profile.full_name || 'Traveler'}
+                        {profile.full_name || profile.username || t('common.unknownUser')}
                     </Text>
                     {profile.username && (
                         <Text style={[styles.username, { color: theme.textSecondary }]}>@{profile.username}</Text>
