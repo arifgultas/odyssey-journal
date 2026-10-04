@@ -229,6 +229,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Ayarlar → Gizlilik Politikası / Kullanım Şartları telefon dilinde açılıyor (TR'de `/tr/…`)
 - [ ] Gönderi paylaş → link `odysseyjournal.app/tr/?post=…` (uygulama TR iken), sayfada "Uygulamada aç" şeridi
 - [ ] 10'dan fazla farklı yerde gönderisi olan hesapta profil haritası hepsini gösteriyor
+- [ ] Moderatör hesabıyla Ayarlar → Moderasyon Paneli ve Ayarlar → Topluluk Kuralları: üstte **tek** başlık var
+      ("settings" / "admin" yazan ikinci başlık yok — `3a13269`)
 
 **Dil turu** (FINALIZE A4 — uygulamayı **kapatmadan** dil değiştirerek)
 - [ ] Şu ekranlar açıkken dili değiştir; metin anında yeni dile geçmeli: Topluluk Kuralları,
