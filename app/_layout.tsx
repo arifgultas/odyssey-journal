@@ -66,6 +66,10 @@ function RootLayoutNav() {
         <Stack.Screen name="popular-posts" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="blocked-users" options={{ headerShown: false }} />
+        {/* Both draw their own header; without these entries the stack added a second one
+            showing the raw route names ("settings" back button, "admin" title) */}
+        <Stack.Screen name="admin" options={{ headerShown: false }} />
+        <Stack.Screen name="community-guidelines" options={{ headerShown: false }} />
         <Stack.Screen name="reset-password" options={{ headerShown: false }} />
         <Stack.Screen name="map" options={{ headerShown: false }} />
         <Stack.Screen name="create-post" options={{ headerShown: false }} />
