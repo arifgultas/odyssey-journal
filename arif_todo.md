@@ -251,6 +251,28 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Moderatör hesabıyla Ayarlar → Moderasyon Paneli ve Ayarlar → Topluluk Kuralları: üstte **tek** başlık var
       ("settings" / "admin" yazan ikinci başlık yok — `3a13269`)
 
+**4 Ekim akşam (ikinci tur)**
+- [ ] Kayıt ekranında Koşullar ve Gizlilik linklerine bas → site telefon dilinde açılıyor (build 7'de yoktu)
+- [ ] Kayıtlı bir e-postayla yeniden kayıt ol → "bu e-postayla hesap var" uyarısı
+- [ ] Onaylamadığın bir hesapla giriş dene → "E-postayı tekrar gönder" → e-posta geliyor
+- [ ] Ayarlar'dan çıkış → başka hesapla gir → Android'de geri tuşu önceki hesabın ekranlarına dönmüyor
+- [ ] Uçak modunda çıkış yap → giriş ekranında kalıyor (geri sekmelere atmıyor)
+- [ ] Başkasının yorumunda ⋯ → Şikâyet et ve Kullanıcıyı engelle; kendi gönderindeki başkasının yorumunu silebiliyorsun
+- [ ] Bir profilde ⋯ → Şikâyet et / Engelle; sohbet başlığında ⋮ → Şikâyet et / Engelle; gönderi menüsünde "Kullanıcıyı engelle"
+- [ ] Moderatör hesabında panel: yorum ve kullanıcı şikâyetleri görünüyor, yorum silinebiliyor, "Yasaklı" sayısına
+      dokununca liste ve "Yasağı kaldır"
+- [ ] Takipçi / takip listeleri açılıyor (engellediğin biri varsa da); başkasının takip listesinde yalnız gerçekten
+      takip ettiklerin "Takip ediliyor"; kendi satırında Takip et yok
+- [ ] Beğendiğin bir gönderi Kaydedilenler'de ve takip akışında dolu kalple görünüyor
+- [ ] Gönderi detayında yazarın adına bas → profili; Takip et çalışıyor
+- [ ] Gönderiyi düzenle → tarih rozetine bas → takvimde gönderinin tarihi seçili; konumu kaldırıp kaydet → konum gidiyor
+- [ ] Gönderi düzenle/sil → profil sekmesi ve diğer listeler hemen güncel
+- [ ] 100'den fazla mesajlı bir sohbette en son mesajlar görünüyor
+- [ ] Sitedeki "Uygulamada aç" şeridi (`odysseyjournal.app/?post=…` telefonda) → uygulama doğrudan gönderiyi açıyor
+- [ ] Uygulama kapalıyken gelen bildirime dokun → ilgili gönderi/profil açılıyor
+- [ ] Keşfet'te bir gönderi başlığını ara → "Gönderiler" bölümünde çıkıyor; geçmişte "Tümünü temizle"
+- [ ] Yer imine bas → koleksiyon seçicisini kaydetmeden kapat → simge boş kalıyor
+
 **Dil turu** (FINALIZE A4 — uygulamayı **kapatmadan** dil değiştirerek)
 - [ ] Şu ekranlar açıkken dili değiştir; metin anında yeni dile geçmeli: Topluluk Kuralları,
       Yeni Gönderi (tarih seçici, kategoriler), Şifremi Unuttum, Ayarlar profil kartı, Profil

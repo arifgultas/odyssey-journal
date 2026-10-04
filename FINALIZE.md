@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-04 (build 8 öncesi son tur: `032` canlıda, W1–W10 işlendi; hemen aşağıda "4 Ekim").
+**Son güncelleme:** 2026-10-04 akşam (ikinci tur: tüm uygulama yeniden tarandı, ~45 bulgu, `033`; hemen aşağıda).
+Aynı gün sabah: `032` canlıda, W1–W10 işlendi ("4 Ekim — build 8 öncesi son tur").
 Önceki: 2026-09-30 (site ↔ uygulama uyum turu), 2026-09-29 akşam (finalize taraması, advisor S1–S5).
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
@@ -11,7 +12,45 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 4 Ekim — build 8 öncesi son tur (BURADAN DEVAM EDİN)
+## ★ 4 Ekim akşam — ikinci tur (BURADAN DEVAM EDİN)
+
+**Neden:** kullanıcı build 7'de kayıt ekranındaki Koşullar/Gizlilik linklerinin açılmadığını gördü ve build 8'den önce
+**bütün uygulamanın** yeniden kontrolünü istedi. Linkler kodda doğruydu (build 7 = `2fc5259`, linkler `8e4bb2e` ile
+sonra geldi) ama üç tarama (giriş/ayarlar/yönetim, içerik, build hazırlığı + site) ~45 bulgu çıkardı. Karar:
+**hatalar + Apple şartları build 8'e, yeni özellikler 1.1'e.**
+
+**Commit'ler:** `b4b6d27` (şikâyet/engelleme + `033` + yönetim paneli), `26d897b` (giriş, çıkış, linkler, push),
+`550ffd3` (içerik düzeltmeleri, 25 yeni metin × 12 dil). Site: `APP_SYNC_2026-10-04b.md` (`f073496`, şartlar
+metninde şikâyet/engelleme kapsamı).
+
+**Kontroller:** tsc temiz · **27 suite / 230 test** · i18n 12 × **756** · lint 0 hata / 182 uyarı · `expo export` iOS +
+Android · `/security-review`: bulgu yok · PGlite `032`+`033` birlikte **61 kontrol** (ikinci çalıştırmalar dahil).
+
+**Yapılanlar**
+| Alan | Ne |
+|---|---|
+| Apple 1.2 | Yorum ve kullanıcı şikâyet edilebiliyor (yorum menüsü, profil menüsü, sohbet başlığı); engelleme gönderi menüsünde, yorumda, profilde, sohbette (`hooks/use-block-user.ts`). `033`: `reports` gönderi/yorum/kullanıcı hedefli, yazar (`reported_user_id`) sunucuda yazılıyor, hedef başına tek şikâyet; gönderi sahibi kendi gönderisindeki yorumu silebiliyor; `admin_delete_comment`. Yönetim paneli: yorum/kullanıcı şikâyetleri, yorum silme, yasaklı listesi + yasak kaldırma, gönderi gizli olsa da yasaklama |
+| Giriş | Çevrimdışı çıkış oturumu yerelde kapatıyor; Ayarlar'dan çıkışta eski hesabın sekmeleri kalmıyor (`dismissAll`); kayıtlı e-postayla kayıt uyarı veriyor; onaylanmamış girişte "E-postayı tekrar gönder"; "E-posta" etiketi; giriş ekranları uygulama temasında |
+| Linkler / push | `app/+native-intent.tsx` + `lib/deep-links.ts`: `odysseyjournal://post|user|collection/<id>` doğrudan ekrana (site şeridi); eski `use-deep-link-handler` silindi. Kapalı uygulamada push'a dokununca ekran açılıyor |
+| Çökme / yanlış veri | Takipçi/takip listesi engelli kullanıcıda çöküyordu; başkasının takip listesinde herkes "Takip ediliyor"; kendi satırında Takip et; beğeni/kayıt durumu takip akışı, Kaydedilenler, koleksiyonlarda doluyor (`lib/post-interactions.ts`) |
+| Bayat veri | Oluştur/düzenle/sil sonrası listeler yenileniyor (`lib/query-invalidation.ts`); post detail ve koleksiyon odakta yenileniyor; ana akış sayfalarını gereksiz yere sıfırlamıyor; engellemede doğru önerilen-kullanıcı anahtarı |
+| Düzenleme | Tarih seçici bugünü gösterip seyahat tarihinin üzerine yazıyordu; konum/hava kaldırılabiliyor; moderasyon/hız sınırı/askı mesajları gösteriliyor (`ModerationRejectedError`, `postErrorMessage`); gönderi satırı görsellerden önce siliniyor |
+| Sohbet | Uzun sohbette son mesajlar görünüyor; eski sohbetler listede kalıyor; gönderilemeyen mesaj uyarıyla geri alınıyor; okunmamış sayısı gizli (engelli) gönderenleri saymıyor |
+| Diğer | Post detail'de yazara git + çalışan Takip et; Unsplash yedek görselleri (biri yabancı birinin portresi) → uygulamanın kendi görseli (`lib/post-image.ts`); "Editörün seçimi" → Trend; arama sonuçlarında gönderiler, geçmişi temizle; profil günlüğünde metin gönderileri; eski bildirimlerde tarih; koleksiyon seçici kaydetmeden kapanınca kayıt yok, "koleksiyonsuz kaydet" düzgün, kayıtlı gönderi koleksiyona taşınabiliyor; Kaydedilenler'de çift sayfa yok; çevrilmemiş "Traveler/Unknown User/You" |
+| Build | EAS production'a `SENTRY_ALLOW_FAILURE=true` (ilk Sentry yüklemesi düşerse build düşmesin). Chrome'da doğrulandı: iOS push anahtarı (N2V7TK9B43), dağıtım sertifikası, provisioning profile, ASC API anahtarı EAS'te; Ekim dönemi 0 build kullanılmış. `STORE_LISTING`: "itinerary" anahtar kelimesi değişti |
+
+**Bilerek yapılmayanlar:** image-picker / location eklentilerinin eklediği İngilizce mikrofon ve "her zaman konum"
+metinleri **kaldırılmadı** — kod bu API'lere referans verdiği için metin silinirse App Store yüklemesi ITMS-90683
+(eksik amaç metni) ile reddedilebilir. `(tabs)/create.tsx`'e e-posta doğrulama kontrolü eklenmedi (onaysız hesap zaten
+giriş yapamıyor). 1.1'e: koleksiyon düzenleme, listelerde sayfalama, harita gönderi sınırı, gizli 3 kategori,
+sıralama, W6, PR preview build, lint uyarıları, paket yükseltmeleri.
+
+**Sırada:** kullanıcı "Deploy Supabase" (`033`) onayı → Advisor → **Android + iOS build 8 (oturum alır)** →
+`eas submit -p ios` → cihaz turu (`arif_todo.md` §3, "4 Ekim akşam" maddeleri).
+
+---
+
+## 4 Ekim — build 8 öncesi son tur
 
 **Durum:** kodda bekleyen iş yok. `main` = origin (`9ee729a`), CI yeşil, **`032` canlıda** (Deploy Supabase
 10:41'de geçti). Sırada: **iOS build 8 + Android AAB (versionCode 2) EAS'ten** → cihaz turu (`arif_todo.md` §3).
