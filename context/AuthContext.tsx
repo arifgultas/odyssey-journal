@@ -100,8 +100,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Otherwise the next account signed in on this device gets this user's notifications
         await removePushToken();
         clearSentryUser();
-        await supabase.auth.signOut();
+        const { error } = await supabase.auth.signOut();
+        // Offline (or a server error) signOut returns early and keeps the session on the device;
+        // the route guard would then send the user straight back in. Drop it locally.
+        if (error) await supabase.auth.signOut({ scope: 'local' });
         await clearUserQueryCache(queryClient);
+        // Settings is pushed on top of the tabs, so a replace alone would leave this account's tabs
+        // mounted underneath (reachable with Android's back button after the next sign-in)
+        if (router.canDismiss()) router.dismissAll();
         router.replace('/(auth)/login');
     };
 

@@ -1,9 +1,10 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
-import { localizedErrorMessage } from '@/lib/auth-errors';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { localizedErrorKey, localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
-import { SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
+import { emailConfirmedUrl, SOCIAL_SIGN_IN_ENABLED } from '@/lib/legal-links';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
@@ -19,7 +20,6 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    useColorScheme,
 } from 'react-native';
 
 // Updated Stitch design colors matching the new HTML
@@ -78,8 +78,29 @@ export default function LoginScreen() {
             password,
         });
 
-        if (error) Alert.alert(t('auth.loginError'), localizedErrorMessage(error));
+        if (error && localizedErrorKey(error) === 'errors.emailNotConfirmed') {
+            // The confirmation email can bounce or get lost; without this there is no way to get another
+            Alert.alert(t('auth.loginError'), t('errors.emailNotConfirmed'), [
+                { text: t('common.cancel'), style: 'cancel' },
+                { text: t('auth.resendConfirmation'), onPress: resendConfirmation },
+            ]);
+        } else if (error) {
+            Alert.alert(t('auth.loginError'), localizedErrorMessage(error));
+        }
         setLoading(false);
+    }
+
+    async function resendConfirmation() {
+        const { error } = await supabase.auth.resend({
+            type: 'signup',
+            email,
+            options: { emailRedirectTo: emailConfirmedUrl(language) },
+        });
+        if (error) {
+            Alert.alert(t('common.error'), localizedErrorMessage(error));
+        } else {
+            Alert.alert(t('common.success'), t('auth.confirmationResent'));
+        }
     }
 
     async function signInWithGoogle() {
@@ -154,7 +175,7 @@ export default function LoginScreen() {
                                     <TextInput
                                         testID="login-email"
                                         style={[styles.input, { color: theme.text }]}
-                                        placeholder={t('auth.emailOrUsername')}
+                                        placeholder={t('auth.email')}
                                         placeholderTextColor={theme.textMuted}
                                         value={email}
                                         onChangeText={setEmail}
@@ -172,7 +193,7 @@ export default function LoginScreen() {
                                         <Text style={[styles.floatingLabel, {
                                             color: emailFocused ? theme.primaryGold : theme.textMuted,
                                         }]}>
-                                            {t('auth.emailOrUsername')}
+                                            {t('auth.email')}
                                         </Text>
                                     </View>
                                 )}

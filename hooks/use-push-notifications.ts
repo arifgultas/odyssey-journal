@@ -14,6 +14,38 @@ export function usePushNotifications(userId: string | undefined) {
     const router = useRouter();
     const notificationListener = useRef<EventSubscription>(undefined);
     const responseListener = useRef<EventSubscription>(undefined);
+    // Each notification opens its screen once, whichever path reports it first
+    const handledResponse = useRef<string | null>(null);
+
+    const openFromNotification = (response: Notifications.NotificationResponse) => {
+        const id = response.notification.request.identifier;
+        if (handledResponse.current === id) return;
+        handledResponse.current = id;
+
+        const data = response.notification.request.content.data;
+        if (!data) return;
+        const { type, post_id, actor_id } = data as {
+            type?: string;
+            post_id?: string;
+            actor_id?: string;
+        };
+
+        switch (type) {
+            case 'like':
+            case 'comment':
+                if (post_id) {
+                    router.push(`/post-detail/${post_id}` as any);
+                }
+                break;
+            case 'follow':
+                if (actor_id) {
+                    router.push(`/user-profile/${actor_id}` as any);
+                }
+                break;
+            default:
+                break;
+        }
+    };
 
     useEffect(() => {
         if (!userId) return;
@@ -32,32 +64,15 @@ export function usePushNotifications(userId: string | undefined) {
         });
 
         // Handle notification taps (when user taps a push notification)
-        responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-            const data = response.notification.request.content.data;
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(openFromNotification);
 
-            if (data) {
-                const { type, post_id, actor_id } = data as {
-                    type?: string;
-                    post_id?: string;
-                    actor_id?: string;
-                };
-
-                switch (type) {
-                    case 'like':
-                    case 'comment':
-                        if (post_id) {
-                            router.push(`/post-detail/${post_id}` as any);
-                        }
-                        break;
-                    case 'follow':
-                        if (actor_id) {
-                            router.push(`/user-profile/${actor_id}` as any);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
+        // A tap that launched the app from a killed state may have happened before the listener
+        // existed (this runs only once the user is known); handle it here
+        Notifications.getLastNotificationResponseAsync().then((response) => {
+            if (!response) return;
+            openFromNotification(response);
+            // Kept by the OS otherwise, and would open again on the next sign-in
+            void Notifications.clearLastNotificationResponseAsync();
         });
 
         return () => {

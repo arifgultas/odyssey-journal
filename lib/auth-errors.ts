@@ -55,7 +55,8 @@ const MESSAGE_PATTERNS: [pattern: string, key: string][] = [
     ['already been registered', 'errors.emailExists'],
     ['password should be', 'errors.weakPassword'],
     ['should be different from the old password', 'errors.samePassword'],
-    ['rate limit', 'errors.rateLimit'],
+    ['rate limit', 'errors.rateLimit'], // also the posts / comments per hour limits (030)
+    ['account has been suspended', 'errors.accountSuspended'],
     ['too many requests', 'errors.rateLimit'],
     ['expired', 'errors.linkExpired'],
     ['network request failed', 'errors.network'],
@@ -101,6 +102,15 @@ function keyFor(error: unknown): string | null {
  * @param error     whatever was caught or returned in `{ error }`
  * @param fallbackKey translation key used when the error is not recognised
  */
+/**
+ * For saving a post or a comment: a moderation rejection already carries its localized reason;
+ * rate limits and suspensions map to their own messages; anything else gets the screen's fallback.
+ */
+export function postErrorMessage(error: unknown, fallbackKey: string): string {
+    if (error instanceof Error && error.name === 'ModerationRejectedError') return error.message;
+    return localizedErrorMessage(error, fallbackKey);
+}
+
 export function localizedErrorMessage(error: unknown, fallbackKey: string = 'errors.generic'): string {
     return t(keyFor(error) ?? fallbackKey);
 }

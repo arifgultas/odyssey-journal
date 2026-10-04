@@ -14,6 +14,17 @@ export class AiConsentRequiredError extends Error {
     }
 }
 
+/**
+ * Content the moderation check rejected. The message is already in the reader's language
+ * (getModerationMessage), so screens show it as it is instead of a generic error.
+ */
+export class ModerationRejectedError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'ModerationRejectedError';
+    }
+}
+
 async function assertAiConsent() {
     const { data } = await supabase.auth.getSession();
     const userId = data.session?.user.id;

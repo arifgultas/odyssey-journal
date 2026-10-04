@@ -1,5 +1,6 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { useOAuth } from '@/hooks/use-oauth';
@@ -19,7 +20,6 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    useColorScheme,
 } from 'react-native';
 
 // Updated Stitch design colors matching the login screen
@@ -94,7 +94,7 @@ export default function SignUpScreen() {
         }
 
         setLoading(true);
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
@@ -109,11 +109,15 @@ export default function SignUpScreen() {
 
         if (error) {
             Alert.alert(t('auth.signupError'), localizedErrorMessage(error));
+        } else if (data.user && data.user.identities?.length === 0) {
+            // With email confirmation on, Supabase answers an already registered address with a user
+            // that has no identities instead of an error, and sends no email
+            Alert.alert(t('auth.signupError'), t('errors.emailExists'));
         } else {
             Alert.alert(
                 t('auth.accountCreated'),
                 t('auth.checkEmailVerify'),
-                [{ text: t('common.done'), onPress: () => router.push('/login') }]
+                [{ text: t('common.done'), onPress: () => router.replace('/login') }]
             );
         }
         setLoading(false);

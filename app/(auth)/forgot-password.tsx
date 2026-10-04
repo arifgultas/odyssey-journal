@@ -1,5 +1,6 @@
 import { BorderRadius, Shadows, Typography } from '@/constants/theme';
 import { useLanguage } from '@/context/language-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { localizedErrorMessage } from '@/lib/auth-errors';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +19,6 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    useColorScheme,
 } from 'react-native';
 import { mirrorIcon } from '@/lib/rtl';
 

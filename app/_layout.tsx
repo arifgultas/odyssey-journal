@@ -4,7 +4,6 @@ import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider, useLanguage } from '@/context/language-context';
 import { ThemeProvider as AppThemeProvider, useTheme } from '@/context/theme-context';
 import { useBookFonts } from '@/hooks/use-book-fonts';
-import { useDeepLinkHandler } from '@/hooks/use-deep-link-handler';
 import { useOnboardingLoaded } from '@/hooks/use-onboarding';
 import { persistOptions, queryClientConfig } from '@/lib/query-persister';
 import { initSentry, SentryErrorBoundary } from '@/lib/sentry';
@@ -46,7 +45,6 @@ export const unstable_settings = {
 // Inner layout that uses theme context
 function RootLayoutNav() {
   const { colorScheme, isDark } = useTheme();
-  useDeepLinkHandler();
 
   return (
     <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
