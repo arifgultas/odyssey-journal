@@ -1,7 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-09-30 (site ↔ uygulama uyum turu site deposunda bitti; siteden uygulamaya dönen 10 madde hemen
-aşağıda "30 Eylül"). Önceki: 2026-09-29 akşam (finalize taraması, Supabase advisor S1–S5, build 8 öncesi düzeltmeler).
+**Son güncelleme:** 2026-10-04 (build 8 öncesi son tur: `032` canlıda, W1–W10 işlendi; hemen aşağıda "4 Ekim").
+Önceki: 2026-09-30 (site ↔ uygulama uyum turu), 2026-09-29 akşam (finalize taraması, advisor S1–S5).
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
 Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan her şeyi kapsıyor.
 
@@ -11,7 +11,63 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 30 Eylül — siteden gelenler (BURADAN DEVAM EDİN)
+## ★ 4 Ekim — build 8 öncesi son tur (BURADAN DEVAM EDİN)
+
+**Durum:** kodda bekleyen iş yok. `main` = origin (`9ee729a`), CI yeşil, **`032` canlıda** (Deploy Supabase
+10:41'de geçti). Sırada: **iOS build 8 + Android AAB (versionCode 2) EAS'ten** → cihaz turu (`arif_todo.md` §3).
+
+**Kontroller:** `tsc` temiz · **24 suite / 225 test** · `i18n:check` 12×732 · lint 0 hata / 175 uyarı ·
+`expo export` iOS + Android paketleri derleniyor · çözümlenen config: buildNumber 8, versionCode 2, privacyManifests var.
+
+**Bu turda yapılanlar**
+| # | Ne | Nerede |
+|---|---|---|
+| S1 | Üç bucket'ta listeleme kapandı: SELECT yalnız sahibinin klasörü (+ legacy `avatars/<uid>-*`). Bucket'larda kalan **bütün** SELECT politikaları isimden bağımsız düşürülüyor (030'daki DO kalıbı) | `032` |
+| S2/S3 | `get_popular_destinations` / `get_trending_locations` anon'a kapalı (PUBLIC dahil); `move_profile_push_token` doğrudan çağrılamaz | `032` |
+| W1 | Ev konumu `profiles.home_location` → **`user_home_locations`** (yalnız sahibi). Eski build'ler sütuna yazarsa tetikleyici tabloya taşıyıp sütunu boşaltıyor (push token kalıbı). Km `get_travel_distance_km` RPC'sinden; uygulama başkasının profil satırını artık okumuyor. **Güvenlik incelemesi:** tam toplam, herkese açık gönderi koordinatlarıyla farklardan ev konumunu üçgenlemeye izin veriyordu → başkalarına km, ev konumunun 0,5°'ye (~55 km) yuvarlanmış hâlinden; sahibi tam değeri görüyor (`1ee62fb`) | `032`, `lib/profile-service.ts`, `home-location-modal.tsx`, `(tabs)/index.tsx` |
+| W2 | **5 fotoğraf** her yolda: galeri `selectionLimit = 5 − mevcut` (0'da açılmıyor — 0 = sınırsız), kamera 5'te duruyor, yükleme ve düzenleme 5'i reddediyor. Tek kaynak `lib/post-limits.ts`. Yan: foto silinince açıklaması da gidiyor; dosya adlarına rastgele ek (paralel yüklemede çakışma) | `hooks/use-image-picker.ts`, iki oluşturma ekranı, `lib/image-upload.ts`, `lib/posts.ts` |
+| W3 | Gönderilmiş push kuyruğu satırları 30 gün sonra siliniyor (`purge-push-queue`, her gece 03:17 UTC) | `032` |
+| W4 | Çıkışta / başka hesap girince React Query önbelleği bellekte ve diskte temizleniyor (`clearUserQueryCache`); oturum kendiliğinden düşünce de (`SIGNED_OUT`) | `context/AuthContext.tsx`, `lib/query-persister.ts` |
+| W5 | Moderasyon **yayından önce**: metin → yükleme → fotoğraf kontrolü → insert. İşaretlenen fotoğraf silinir, gönderi hiç oluşmaz; metin reddedilirse hiçbir şey yüklenmez. Fail-open değişmedi | `lib/posts.ts` |
+| W7 | Gurme rozeti `food` kategorisinde 3 gönderiyle açılıyor; Fotoğrafçı artık fotoğraflı gönderileri sayıyor | `lib/badge-service.ts`, `getProfileStats` |
+| W8/W10 | Gizlilik / Şartlar ve paylaşım linki uygulama dilinde (`/<dil>/…`, EN kökte; bilinmeyen kod → kök) | `lib/legal-links.ts`, `lib/share.ts` |
+| W9 | `STORE_LISTING.md` 12 dilde "o günün hava durumu" → "paylaştığın andaki" | — |
+| + | Profil haritası bütün yerleri işaretliyor (önceden en eski 10); statik yedek en yeni 10 | `(tabs)/profile.tsx` |
+| + | Explore her açılışta bütün `posts`'u çekip cihazda geocode eden tek seferlik göç kaldırıldı | `(tabs)/explore.tsx`, `lib/search-service.ts` |
+| + | **iOS privacy manifest** (uygulama hedefinde hiç yoktu): UserDefaults, FileTimestamp, SystemBootTime, DiskSpace gerekçeleri, tracking yok | `app.config.ts` |
+| + | Sentry release'i native SDK veriyor (`bundle@sürüm+build`; sabit "1.0.0" build 7/8'i karıştırıyordu) | `lib/sentry.ts` |
+| + | `store_control.md`: App Privacy'ye arama geçmişi, mesajlar, performans; Crash Data **bağlı**; Data safety'ye arama geçmişi, tanılama, push token; §2 "Android Studio/.jks" → EAS; inceleme notu W5'e göre | — |
+
+**Test:** `032` PGlite'ta (FULL_SETUP + 004/025/028/011/030/031, `cron` stub'ı, canlıdaki gibi `home_location` sütunu)
+**43 kontrol** geçti, ikinci çalıştırma dahil. Harness: scratchpad'de `test032.mjs` (kaynak 8959deb7'deki `test030.mjs`).
+Yeni birim testleri: `post-limits`, `legal-links` (share dahil), `badges`, `query-persister`; `posts.test.ts` yeni sıraya göre.
+
+**Canlı doğrulama (deploy sonrası):** OpenAPI'de `user_home_locations` + `get_travel_distance_km` var; anon
+`get_trending_locations` → **401**; anon `posts` bucket listesi → **[]**. **Security Advisor (yeniden çalıştırıldı):
+0 hata, 7 uyarı** — `pg_net` public'te (S4, dokunmayın) ve oturum açmış kullanıcının çağırması gereken 6 SECURITY
+DEFINER fonksiyon (`clear_push_token`, `set_push_token`, `delete_user_account`, iki destinasyon RPC'si,
+`get_travel_distance_km`) — bilerek. Bucket listeleme ve anon uyarıları düştü.
+
+**Site:** `APP_SYNC_2026-10-04.md` site deposunda (`b5d3f84`, push'landı). Site metninde değişecek üç yer:
+gizlilik §2A ev konumu, `/delete-account` §4 push kayıtları "30 gün", gizlilik §5/8 fotoğraf kontrolü "yayından önce".
+Site oturumu yapacak (12 dil) — build'ler mağazaya çıkmadan önce.
+
+**Bilerek yapılmayanlar:** onboarding'deki "seyahat ipuçları edinin" (12 dil) — topluluk gönderileri için savunulabilir
+pazarlama dili, değiştirilmedi. W6 (admin'in sildiği gönderinin görselleri), sohbet ekranında şikâyet/engelle
+(profilde var), PR'larda preview EAS build, hata ekranında stack, lint uyarıları, paket yükseltmeleri → 1.0 sonrası.
+
+**Doğrulanamayanlar:** canlı veri okuması (admin var mı, demo hesap dolu mu, kaç profilde ev konumu vardı, `.maestro`
+akışlarındaki `explorer@odyssey.com` canlıda var mı) bu oturumda izin sınıflandırıcısı tarafından reddedildi →
+salt-okuma SQL'i `arif_todo.md` §1'de, kullanıcı çalıştırır. Eski build'lerde (TestFlight 7) km artık İstanbul'dan
+hesaplanır (ev konumu sütunu boş) — beklenen.
+
+**Build sırası:** (1) `eas build --platform android --profile production` (oturum) (2) iOS build 8 (kullanıcı ya da
+oturum) → `eas submit -p ios` (3) Sentry → Releases'ta `app.odysseyjournal@1.0.0+8` / `com.odysseyjournal.app@1.0.0+2`
+ve source map (4) Play dahili test + App integrity SHA-1'leri Maps anahtarına (5) cihaz turu.
+
+---
+
+## ★ 30 Eylül — siteden gelenler (4 Ekim'de işlendi — yukarıda)
 
 Site oturumu (`odyssey-journal-website`) siteyi bu deponun build 8 hâline göre baştan düzeltti ve yayına aldı
 (site `e89f542` hukuk 12 dil, `af1d965` ana sayfa, `79b9d8e` belgeler; deploy `492cc01`, canlıda doğrulandı).

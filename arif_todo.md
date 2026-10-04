@@ -1,6 +1,6 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-09-29
+**Güncelleme:** 2026-10-04
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
@@ -11,8 +11,9 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
-> Kodda bekleyen iş yok. **Android AAB'yi artık oturum EAS ile alacak** (29 Eylül: bu bilgisayarda yerel
-> Android build Windows'un 260 karakter yol sınırına takılıyor — aşağıda §2).
+> **4 Ekim: kodda bekleyen iş yok** — W1–W10 ve `032` bitti, `032` canlıda (deploy onayın için teşekkürler).
+> Sırada build'ler (§2). **Android AAB'yi oturum EAS ile alır** (bu bilgisayarda yerel Android build Windows'un
+> 260 karakter yol sınırına takılıyor).
 
 ---
 
@@ -38,11 +39,27 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
-- [ ] **`032` deploy onayı** — (30 Eylül: kapsam büyüdü → S1–S3 + siteden gelen W1 ev konumu gizliliği + W3
-      bildirim kuyruğu temizliği; ayrıca W2/W4 istemci düzeltmeleri — hepsi build 8'den önce, sonraki oturum)
-      Sonraki oturum Supabase Security Advisor'ın bulduğu açıkları (bucket'lar
-      listelenebiliyor, iki fonksiyon oturumsuz çağrılabiliyor) `032` ile kapatacak. Push'tan sonra GitHub →
-      Actions → "Deploy Supabase" → Review deployments → **Approve** (FINALIZE "29 Eylül akşamı" S1–S3)
+- [x] ~~**`032` deploy onayı**~~ ✅ 4 Ekim — canlıda; Security Advisor 0 hata (kalan 7 uyarı bilerek)
+- [ ] **Tek salt-okuma sorgusu (2 dk)** — Supabase → SQL Editor'a yapıştır → Run → çıkan tek satırı oturuma ilet.
+      Oturum canlı veriyi kendisi okuyamıyor (izin sınıflandırıcısı reddetti). Hiçbir şeyi değiştirmez:
+```sql
+select jsonb_pretty(jsonb_build_object(
+  'admins', (select jsonb_agg(coalesce(username, id::text)) from public.profiles where is_admin),
+  'review_account', (select jsonb_build_object(
+      'username', p.username, 'full_name', p.full_name, 'avatar', p.avatar_url is not null,
+      'posts', (select count(*) from public.posts where user_id = u.id),
+      'following', (select count(*) from public.follows where follower_id = u.id),
+      'last_sign_in', u.last_sign_in_at)
+    from auth.users u left join public.profiles p on p.id = u.id
+    where u.email = 'review@odysseyjournal.app'),
+  'maestro_test_account_exists', exists(select 1 from auth.users where email = 'explorer@odyssey.com'),
+  'home_locations_moved', (select count(*) from public.user_home_locations),
+  'profiles_home_location_left', (select count(*) from public.profiles where home_location is not null),
+  'purge_job', (select schedule from cron.job where jobname = 'purge-push-queue')
+)) as report;
+```
+      Beklenen: `admins` en az bir hesap (yoksa §3b'deki `is_admin` SQL'i), `profiles_home_location_left: 0`,
+      `purge_job: "17 3 * * *"`, `maestro_test_account_exists: false` (true ise o hesap silinmeli — şifresi public repoda).
 - [ ] **E-postanı kontrol et:** App Store Connect'ten TestFlight build'leri için "ITMS-91053 / Missing
       API declaration" (privacy manifest) konulu uyarı e-postası geldi mi? Geldiyse oturuma ilet
       (build 8'den önce düzeltilmeli)
@@ -87,7 +104,7 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Profil sekmesinden çıkış yap → başka hesapla gir → önceki hesabın bildirimleri **gelmiyor**
 - [ ] Giriş ekranı → Şifremi unuttum → e-postadaki linke telefonda bas → uygulama açılıp yeni
       şifre soruyor → yeni şifreyle giriş (Admin2'nin unutulan şifresi de böyle sıfırlanabilir)
-- [ ] **Test hesabıyla** (`review@review.com` ya da "Deneme" — §3b) hesap sil → Supabase Dashboard → Storage → `posts/<uid>/` ve
+- [ ] **Test hesabıyla** (eski test hesabı `review@review.com` ya da "Deneme" — §3b; demo hesap `review@odysseyjournal.app` **değil**) hesap sil → Supabase Dashboard → Storage → `posts/<uid>/` ve
       `avatars/<uid>/` klasörleri boşalmış mı
 - [ ] Bir kullanıcıyı engelle → o kullanıcı sana mesaj atamıyor
 - [ ] Bir gönderiyi paylaş → link `odysseyjournal.app/?post=…` → ana sayfa açılıyor
@@ -117,6 +134,19 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
       gönderide pencere yeniden çıkıyor
 - [ ] Çıkış yap, uygulamayı tamamen kapatıp aç → tanıtım ekranları değil doğrudan giriş ekranı
 - [ ] §0.1'deki ekip dışı adresle kayıt + şifre sıfırlama testi
+
+**4 Ekim değişiklikleri**
+- [ ] Yeni gönderide kamerayla 2 + galeriden 4 fotoğraf dene → toplam **5**'te duruyor, "en fazla 5 fotoğraf" uyarısı;
+      önce çekilen fotoğraflar **silinmiyor**. 5 doluyken kamera/galeri açılmıyor, uyarı çıkıyor
+- [ ] 3 fotoğrafa açıklama yaz, ortadakini sil → kalan açıklamalar kendi fotoğraflarında
+- [ ] Mevcut bir gönderiyi düzenle → 5'i geçecek fotoğraf eklenemiyor
+- [ ] Çıkış yap → başka hesapla gir → önceki hesabın profili / akışı / arama geçmişi bir an bile görünmüyor
+- [ ] Ana sayfadaki ev konumu sorusuna "Mevcut konumu kullan" → kendi biniş kartında km değişiyor; başka bir
+      hesaptan senin profiline bak → km görünüyor (yaklaşık değer, birkaç km farklı olabilir — bilerek)
+- [ ] "Yemek" kategorisinde 3 gönderi → Profil → rozetler: **Gurme** açık
+- [ ] Ayarlar → Gizlilik Politikası / Kullanım Şartları telefon dilinde açılıyor (TR'de `/tr/…`)
+- [ ] Gönderi paylaş → link `odysseyjournal.app/tr/?post=…` (uygulama TR iken), sayfada "Uygulamada aç" şeridi
+- [ ] 10'dan fazla farklı yerde gönderisi olan hesapta profil haritası hepsini gösteriyor
 
 **Dil turu** (FINALIZE A4 — uygulamayı **kapatmadan** dil değiştirerek)
 - [ ] Şu ekranlar açıkken dili değiştir; metin anında yeni dile geçmeli: Topluluk Kuralları,
@@ -217,9 +247,10 @@ temizlenir. Diğerini de aynı yolla sil.
 - [x] ~~**Site ↔ uygulama uyum turu**~~ ✅ 30 Eylül — site oturumu yaptı ve yayına aldı: hukuk sayfaları 12 dil
       (Keychain, PITR, prescreen, FCM/APNs, Apple, ev konumu, anında silme …), ana sayfa (olmayan özellikler
       çıktı, topluluk bölümü, 5 fotoğraf, "Çok yakında"). Ayrıntı sitenin `WORKLOG.md` "2026-09-30".
-- [ ] **Siteden uygulamaya dönen 10 madde** (`FINALIZE.md` "30 Eylül", W1–W10) — oturum yapar; senin kararın
-      gereken: **W1** (ev konumunun gizlenmesi — öncelikli) için yöntem onayı, **W3** (push kayıtlarının 30 gün
-      sonra silinmesi) için onay. W2 kararı verildi: kayıt başına 5 fotoğraf.
+- [x] ~~**Siteden uygulamaya dönen 10 madde** (W1–W10)~~ ✅ 4 Ekim — uygulamada yapıldı (`FINALIZE.md` "4 Ekim").
+- [ ] **Site metninde 3 güncelleme** — site deposundaki `APP_SYNC_2026-10-04.md`: ev konumu, push kayıtları 30 gün,
+      fotoğraf kontrolü yayından önce (12 dil). Site projesinde bir oturuma "APP_SYNC_2026-10-04'ü uygula" demen yeterli;
+      mağazaya göndermeden önce.
 - [ ] **Hukuk metinlerini avukata göster** (özellikle `tr`): sitede `npm run legal:package` EN/TR yan yana üretir.
 - [ ] Uygulama yayına girince ana sayfadaki **App Store / Google Play** butonlarına gerçek mağaza
       linklerini koy (şu an `#download`). Sitenin `WORKLOG.md` → "Yapacaklarımız" adımları anlatıyor;
