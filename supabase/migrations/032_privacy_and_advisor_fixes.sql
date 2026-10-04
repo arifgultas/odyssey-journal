@@ -218,6 +218,14 @@ BEGIN
         home_lon := 28.9784;
     END IF;
 
+    -- For anyone but the owner the sum starts from a coarse home (a 0.5° grid, about 55 km).
+    -- Post coordinates are public, so an exact sum would let a caller watch it change as posts
+    -- are added and trilaterate the home position from the differences.
+    IF p_user_id <> auth.uid() THEN
+        home_lat := round(home_lat * 2) / 2;
+        home_lon := round(home_lon * 2) / 2;
+    END IF;
+
     SELECT COALESCE(SUM(
         2 * 6371 * 2 * atan2(
             sqrt(a),
