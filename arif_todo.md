@@ -40,7 +40,13 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
 - [x] ~~**`032` deploy onayı**~~ ✅ 4 Ekim — canlıda; Security Advisor 0 hata (kalan 7 uyarı bilerek)
-- [ ] **Tek salt-okuma sorgusu (2 dk)** — Supabase → SQL Editor'a yapıştır → Run → çıkan tek satırı oturuma ilet.
+- [ ] **Kendini yönetici yap** (4 Ekim sorgusu: `admins: null` → moderasyon paneli kimseye görünmüyor, Apple 1.2):
+      SQL Editor'da `update public.profiles set is_admin = true where id = '643ff194-f61d-4ad8-b5e5-c5e24d60c4ad';`
+      (Admin hesabı; başka hesap istersen oturuma söyle)
+- [x] ~~**Tek salt-okuma sorgusu**~~ ✅ 4 Ekim sonucu: admin yok (yukarıdaki madde) · purge_job `17 3 * * *` ✓ ·
+      6 ev konumu tabloya taşındı, sütunda 0 kaldı ✓ · maestro test hesabı yok ✓ · **demo hesap boş** (0 gönderi,
+      ad/fotoğraf yok, hiç giriş yok) → build 8 gelince §3b
+- [ ] ~~(sorgu metni, tekrar gerekirse)~~ — Supabase → SQL Editor'a yapıştır → Run → çıkan tek satırı oturuma ilet.
       Oturum canlı veriyi kendisi okuyamıyor (izin sınıflandırıcısı reddetti). Hiçbir şeyi değiştirmez:
 ```sql
 select jsonb_pretty(jsonb_build_object(
