@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-04 akşam (ikinci tur: tüm uygulama yeniden tarandı, ~45 bulgu, `033`; hemen aşağıda).
+**Son güncelleme:** 2026-10-04 gün sonu (`033` canlıda; build'ler yarına kaldı; yarının sırası hemen aşağıda).
+Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
 Aynı gün sabah: `032` canlıda, W1–W10 işlendi ("4 Ekim — build 8 öncesi son tur").
 Önceki: 2026-09-30 (site ↔ uygulama uyum turu), 2026-09-29 akşam (finalize taraması, advisor S1–S5).
 **Bu dosya ne işe yarar:** Oturumlar arası tek referans. Nerede kaldık, sırada ne var, neden.
@@ -12,7 +13,41 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 4 Ekim akşam — ikinci tur (BURADAN DEVAM EDİN)
+## ★ 5 Ekim — yarının sırası (BURADAN BAŞLAYIN)
+
+**4 Ekim gün sonu durumu:** `main` = origin (`4845c48` + gün sonu notları), CI yeşil. **`033` canlıda** (Deploy Supabase
+run `37213112586`, 15:28'de geçti). Site oturumu `APP_SYNC_2026-10-04` ve `-04b`'yi 12 dilde yayına aldı (site
+`3730b91`) ve paylaşılan gönderi linkleri için `/p/<id>` sayfasını hazırladı (site `8058a39`). Siteden gelen not:
+`SITE_SYNC_2026-10-04.md` (bu depoda). **Build'ler alınmadı** — kullanıcı günü kapattı.
+
+**Sıra (build 8'den önce 1-3, sonra build):**
+1. **Uygulamada açılan paylaşım linkleri** (`SITE_SYNC_2026-10-04.md` §2; native ayar → build ister, OTA ile gelmez):
+   - `app.config.ts`: `ios.associatedDomains: ["applinks:odysseyjournal.app"]`; `android.intentFilters` (https,
+     `odysseyjournal.app`, `pathPrefix: "/p/"` ve `pathPattern: "/../p/.*"`, `autoVerify: true`, BROWSABLE + DEFAULT).
+   - `lib/share.ts` `generatePostShareUrl`: `siteUrl(\`/?post=…\`)` → `siteUrl(\`/p/${encodeURIComponent(postId)}\`)`.
+   - `lib/deep-links.ts` `mapAppLink`: tam adres (`https://odysseyjournal.app/tr/p/<id>`) ve yalnız yol (`/tr/p/<id>`)
+     → `/post-detail/<id>`; şema + host'u at, isteğe bağlı iki harfli dil önekini atla; `odysseyjournal://post/<id>` aynen.
+   - Testler: `share` (EN kök + `tr` önekli `/p/`), `deep-links` (https tam/önekli, yalnız yol, eski şema, eşleşmeyen yol).
+   - Associated Domains yeteneği App ID'de yoksa EAS build sırasında eşitler; build günlüğünde kontrol et.
+   - Site doğrulama dosyaları (AASA / `assetlinks.json`) Team ID ve SHA-256 gelince yayınlanır; o zamana kadar link
+     siteye düşer, bir şey bozulmaz.
+2. **Team ID ve Android SHA-256'ları siteye ver** (oturum yapar): expo.dev → Credentials (Chrome, salt-okuma):
+   iOS dağıtım sertifikasındaki Apple Team ID ve Android production keystore SHA-256. Play'in **uygulama imzalama**
+   SHA-256'sı ilk Play yüklemesinden sonra çıkar (Play Console → App integrity). Hepsi site deposuna `APP_SYNC_<tarih>.md`
+   (Team ID ve sertifika parmak izleri gizli değildir, zaten AASA / assetlinks'te herkese açık yayınlanır).
+3. Supabase Security Advisor'a `033` sonrası bak (Chrome, salt-okuma; beklenen: 0 hata, 7 bilinen uyarı).
+4. **Build 8:** tsc + test + i18n:check → `eas build --platform android --profile production` (versionCode 2) ve
+   `eas build --platform ios --profile production` (buildNumber 8) → `eas submit -p ios --profile production`.
+5. Sentry → Releases'ta iki sürüm + source map. Play dahili test yüklemesi (kullanıcı) → iki SHA-1 Maps anahtarına,
+   SHA-256'lar siteye. Cihaz turu `arif_todo.md` §3 ("4 Ekim akşam" + "5 Ekim" maddeleri).
+
+**Kullanıcı kararı bekleyen (SITE_SYNC §3):** Supabase e-posta şablonları (kayıt onayı, şifre sıfırlama) kullanıcı
+dilinde olsun mu? "Evet" ise uygulamada küçük iş: `app/(auth)/signup.tsx` `signUp` → `options.data.language`;
+şablonları site oturumu hazırlar (`{{ .Data.language }}`). Build 8'e girmesi istenirse 1'le birlikte yapılır.
+
+---
+
+## 4 Ekim akşam — ikinci tur
 
 **Neden:** kullanıcı build 7'de kayıt ekranındaki Koşullar/Gizlilik linklerinin açılmadığını gördü ve build 8'den önce
 **bütün uygulamanın** yeniden kontrolünü istedi. Linkler kodda doğruydu (build 7 = `2fc5259`, linkler `8e4bb2e` ile
@@ -45,8 +80,8 @@ metinleri **kaldırılmadı** — kod bu API'lere referans verdiği için metin 
 giriş yapamıyor). 1.1'e: koleksiyon düzenleme, listelerde sayfalama, harita gönderi sınırı, gizli 3 kategori,
 sıralama, W6, PR preview build, lint uyarıları, paket yükseltmeleri.
 
-**Sırada:** kullanıcı "Deploy Supabase" (`033`) onayı → Advisor → **Android + iOS build 8 (oturum alır)** →
-`eas submit -p ios` → cihaz turu (`arif_todo.md` §3, "4 Ekim akşam" maddeleri).
+**Sonuç:** `033` aynı akşam canlıya alındı. Build'ler 5 Ekim'e kaldı; önce sitenin istediği `/p/<id>` linkleri
+(yukarıda "5 Ekim").
 
 ---
 
