@@ -125,9 +125,9 @@ where email = 'moderation@odysseyjournal.app' and email_confirmed_at is null;
 update public.profiles set is_admin = true
 where id = (select id from auth.users where email = 'moderation@odysseyjournal.app');
 ```
-- [ ] Sonuç **"Success. 1 row affected"** (ya da "UPDATE 1") olmalı. **0 row** çıkarsa: kayıt/onay tamamlanmamış →
-      Adım 2'ye dön (Authentication → Users listesinde adres görünüyor mu bak)
-- [ ] Kontrol için aynı yerde çalıştır → `moderation@odysseyjournal.app | true` görmelisin:
+- [ ] Editör `update` için hep **"Success. No rows returned"** der (kaç satır değiştiğini göstermez) — bu normal
+- [ ] Kontrol için aynı yerde çalıştır → `moderation@odysseyjournal.app | true` görmelisin. Liste boşsa hesap ya da
+      profil satırı yok → Adım 2'ye dön:
 ```sql
 select u.email, p.is_admin from auth.users u join public.profiles p on p.id = u.id where p.is_admin;
 ```
