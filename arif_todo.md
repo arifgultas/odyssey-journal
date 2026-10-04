@@ -124,8 +124,8 @@ select u.email, p.is_admin from auth.users u join public.profiles p on p.id = u.
 (Uygulamadan bu yetki verilemez — 030'daki koruma; SQL Editor sahibi olarak çalıştığı için geçer.)
 
 **Adım 4 — uygulamada kontrol (1 dk)**
-- [ ] Uygulamayı **tamamen kapat ve aç** (yetki girişte okunuyor), moderatör hesabıyla girili olsun
-- [ ] **Ayarlar** → en altta yeni bir **ADMİN** kartı → **Moderasyon Paneli** görünüyor
+- [ ] Moderatör hesabıyla girili olsun; Ayarlar açıksa kapatıp yeniden aç (yetki Ayarlar açılırken okunuyor)
+- [ ] **Ayarlar** → **Yasal ve Topluluk** kartının hemen üstünde yeni bir **ADMİN** kartı → **Moderasyon Paneli** görünüyor
 - [ ] Panele gir → açılıyor (şikâyet yoksa liste boş — normal)
 - [ ] İstersen dene: başka bir hesaptan bir gönderiyi **Şikâyet et** → moderatör hesabında panelde görünüyor
 
