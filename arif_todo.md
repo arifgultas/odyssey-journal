@@ -102,9 +102,19 @@ Build 7 (TestFlight) ya da Android'de Expo ile olur; build 8'i beklemeye gerek y
 - [ ] E-posta: `moderation@odysseyjournal.app`
 - [ ] Şifre: **güçlü ve yeni** bir şifre (en az 16 karakter; başka yerde kullanmadığın). **Hemen şifre yöneticine kaydet**
       — bu hesap yasaklama ve silme yetkisi taşıyacak
-- [ ] Kullanıcı adı: `odysseyteam` (ya da `odysseymoderation`) · Ad: `Odyssey Team`
+- [ ] Ad soyad: `Odyssey Team` (kayıt ekranı yalnız bunu soruyor; kullanıcı adını girişten sonra Profil → Profili
+      düzenle'den `odysseyteam` yapabilirsin)
 - [ ] Koşulları kabul et → Kayıt ol
 - [ ] hello@ kutusuna gelen **onay e-postasındaki** linke bas (sitenin "e-posta onaylandı" sayfası açılır)
+  - **Gelmezse** (4 Ekim'de böyle oldu — büyük olasılıkla takma ad kayıt anında henüz aktif değildi ve e-posta geri döndü):
+    Gmail'de `moderation` ve `Address not found` diye ara (Spam dahil). Yoksa Supabase → **Authentication → Users**'ta
+    adres "Waiting for verification" görünüyorsa SQL Editor'da elle onayla (adres senin alan adında, sakıncası yok):
+```sql
+update auth.users set email_confirmed_at = now()
+where email = 'moderation@odysseyjournal.app' and email_confirmed_at is null;
+```
+    Listede hiç yoksa takma ad aktif olduktan sonra (başka adresten test e-postası atıp hello@'ya düştüğünü gör)
+    uygulamadan yeniden kayıt ol.
 - [ ] Uygulamada bu hesapla **giriş yap**. Gönderi paylaşma, kimseyi takip etme, ev konumu sorusunu **atla**
       (profil boş kalsın; amacı yalnız moderasyon)
 
