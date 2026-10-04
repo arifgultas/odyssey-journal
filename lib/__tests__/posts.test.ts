@@ -142,20 +142,43 @@ describe('posts service', () => {
             expect(deleteImage).toHaveBeenCalledWith('url-1', 'posts');
         });
 
-        it('deletes post and images if image moderation fails', async () => {
-            const mockCreatedPost = { id: 'post-1', images: ['url-1'] };
+        it('rejects flagged images before the post is created and removes them', async () => {
             (uploadMultipleImages as jest.Mock).mockResolvedValueOnce(['url-1']);
-            (fromBuilder.single as jest.Mock).mockResolvedValueOnce({ data: mockCreatedPost, error: null });
             (moderatePost as jest.Mock).mockResolvedValueOnce({ approved: false, flaggedCategories: ['Adult'] });
 
             await expect(createPost({ title: 'My Trip', content: 'Fun times!', images: ['local-uri'] })).rejects.toThrow('Moderation Flagged: Adult');
-            expect(fromBuilder.delete).toHaveBeenCalled();
-            expect(fromBuilder.eq).toHaveBeenCalledWith('id', 'post-1');
+            expect(fromBuilder.insert).not.toHaveBeenCalled();
             expect(deleteImage).toHaveBeenCalledWith('url-1', 'posts');
+        });
+
+        it('checks images before inserting the post', async () => {
+            const order: string[] = [];
+            (uploadMultipleImages as jest.Mock).mockImplementationOnce(async () => { order.push('upload'); return ['url-1']; });
+            (moderatePost as jest.Mock).mockImplementationOnce(async () => { order.push('moderate'); return { approved: true, flaggedCategories: [] }; });
+            (fromBuilder.insert as jest.Mock).mockImplementationOnce(() => { order.push('insert'); return fromBuilder; });
+            (fromBuilder.single as jest.Mock).mockResolvedValueOnce({ data: { id: 'post-1' }, error: null });
+
+            await createPost({ title: 'My Trip', content: 'Fun times!', images: ['local-uri'] });
+            expect(order).toEqual(['upload', 'moderate', 'insert']);
+        });
+
+        it('uploads nothing when the text is rejected', async () => {
+            (moderateText as jest.Mock).mockResolvedValueOnce({ approved: false, flaggedCategories: ['Hate'] });
+
+            await expect(createPost({ title: 'x', content: 'y', images: ['local-uri'] })).rejects.toThrow('Moderation Flagged: Hate');
+            expect(uploadMultipleImages).not.toHaveBeenCalled();
         });
     });
 
     describe('updatePost', () => {
+        it('refuses more than five photos', async () => {
+            (fromBuilder.single as jest.Mock).mockResolvedValueOnce({ data: { images: [] }, error: null });
+            const images = ['a', 'b', 'c', 'd', 'e', 'f'].map((n) => `file:///${n}.jpg`);
+
+            await expect(updatePost('post-1', { images })).rejects.toThrow('Maximum 5 images');
+            expect(uploadImage).not.toHaveBeenCalled();
+        });
+
         it('updates text fields and handles new images', async () => {
             const mockOldPost = { id: 'post-1', images: ['https://example.com/old-url'] };
             const mockUpdatedPost = { id: 'post-1', title: 'New Title', images: ['https://example.com/old-url', 'new-url'] };

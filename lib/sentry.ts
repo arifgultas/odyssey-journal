@@ -8,7 +8,6 @@
  * Sign up at: https://sentry.io/signup/
  */
 import * as Sentry from '@sentry/react-native';
-import Constants from 'expo-constants';
 import React from 'react';
 import { ErrorBoundaryFallback } from '@/components/error-boundary-fallback';
 
@@ -29,7 +28,8 @@ export function initSentry() {
         debug: __DEV__,
         enabled: !__DEV__, // Only enabled in production
         environment: __DEV__ ? 'development' : 'production',
-        release: Constants.expoConfig?.version || '1.0.0',
+        // No release set here: the native SDK reports <bundle id>@<version>+<build>, which tells
+        // build 7 from build 8 and matches the release the EAS build uploads source maps to.
 
         // Performance monitoring
         tracesSampleRate: 0.2, // 20% of transactions (keep costs low)

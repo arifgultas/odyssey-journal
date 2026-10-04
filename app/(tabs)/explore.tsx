@@ -20,7 +20,6 @@ import {
 } from '@/hooks/use-search';
 import { TRAVEL_CATEGORIES } from '@/lib/types/categories';
 import type { SearchFilters } from '@/lib/types/search';
-import { SearchService } from '@/lib/search-service';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -137,18 +136,6 @@ export default function ExploreScreen() {
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
-
-  // Migrate legacy posts' location_name on mount
-  useEffect(() => {
-    const runMigration = async () => {
-      try {
-        await SearchService.migrateLegacyLocations();
-      } catch (e) {
-        console.error('[ExploreScreen Migration] Error:', e);
-      }
-    };
-    runMigration();
-  }, []);
 
   // Typing animation effect
   useEffect(() => {

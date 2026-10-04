@@ -59,6 +59,32 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSPhotoLibraryAddUsageDescription:
         "Odyssey Journal saves photos to your library only when you ask it to.",
     },
+    // Apple's privacy manifest for the app target (ITMS-91053). Without this key Expo writes no
+    // PrivacyInfo.xcprivacy for the app itself; some libraries ship their own, React Native's
+    // JS runtime and AsyncStorage still need these reasons declared at app level.
+    // Tracking: none (no ads, no cross-app identifiers). Collected data types are declared in
+    // App Store Connect → App Privacy (store_control.md §1.2).
+    privacyManifests: {
+      NSPrivacyTracking: false,
+      NSPrivacyAccessedAPITypes: [
+        {
+          NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategoryUserDefaults",
+          NSPrivacyAccessedAPITypeReasons: ["CA92.1"],
+        },
+        {
+          NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategoryFileTimestamp",
+          NSPrivacyAccessedAPITypeReasons: ["C617.1", "0A2A.1", "3B52.1"],
+        },
+        {
+          NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategorySystemBootTime",
+          NSPrivacyAccessedAPITypeReasons: ["35F9.1"],
+        },
+        {
+          NSPrivacyAccessedAPIType: "NSPrivacyAccessedAPICategoryDiskSpace",
+          NSPrivacyAccessedAPITypeReasons: ["E174.1", "85F4.1"],
+        },
+      ],
+    },
   },
   android: {
     package: "com.odysseyjournal.app",

@@ -1,5 +1,6 @@
 import { Alert, Platform, Share } from 'react-native';
 import { t } from './i18n';
+import { siteUrl } from './legal-links';
 
 export interface SharePostData {
     title: string;
@@ -55,7 +56,8 @@ export function generatePostShareUrl(postId: string): string {
     // The site is a static marketing page with no login, so it will never show posts; /post/<id>
     // was a 404. The home page is where the store links are. The id rides along only so a future
     // universal link / App Link can open the post in the app for people who have it installed.
-    return `https://odysseyjournal.app/?post=${encodeURIComponent(postId)}`;
+    // In the sharer's language: every language's home page shows the "open in the app" banner.
+    return siteUrl(`/?post=${encodeURIComponent(postId)}`);
 }
 
 /**

@@ -1,10 +1,12 @@
 import { markOnboardingComplete } from '@/hooks/use-onboarding';
 import { removePushToken } from '@/lib/push-notifications';
+import { clearUserQueryCache } from '@/lib/query-persister';
 import { clearSentryUser, setSentryUser } from '@/lib/sentry';
 import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSegments } from 'expo-router';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 type AuthContextType = {
     session: Session | null;
@@ -28,6 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const segments = useSegments();
+    const queryClient = useQueryClient();
+    // Whose data the query cache currently holds
+    const cachedUserId = useRef<string | null>(null);
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -37,7 +42,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
+            (event, session) => {
+                const nextUserId = session?.user?.id ?? null;
+                // Signed out (also when the session expires on its own), or a different account
+                // signed in: drop the previous user's cached data. Not awaited - this callback
+                // must not block the auth client.
+                if (event === 'SIGNED_OUT' || (cachedUserId.current && nextUserId && nextUserId !== cachedUserId.current)) {
+                    clearUserQueryCache(queryClient);
+                }
+                cachedUserId.current = nextUserId;
                 setSession(session);
                 setUser(session?.user ?? null);
                 setIsLoading(false);
@@ -88,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await removePushToken();
         clearSentryUser();
         await supabase.auth.signOut();
+        await clearUserQueryCache(queryClient);
         router.replace('/(auth)/login');
     };
 

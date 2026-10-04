@@ -1,7 +1,6 @@
 import { getBlockedUsers } from './block';
 import { supabase } from './supabase';
 import { captureError } from './sentry';
-import * as Location from 'expo-location';
 import type {
     RecommendedPlace,
     SearchFilters,
@@ -632,106 +631,6 @@ export class SearchService {
             console.error('Error fetching all trending posts:', error);
             captureError(error as Error, { context: 'getAllTrendingPosts' });
             return [];
-        }
-    }
-
-    static async migrateLegacyLocations() {
-        try {
-            const { data: posts, error } = await supabase
-                .from('posts')
-                .select('id, title, location, location_name, latitude, longitude');
-
-            if (error) throw error;
-            if (!posts || posts.length === 0) return;
-
-            let migrationCount = 0;
-
-            for (const post of posts) {
-                const loc = post.location;
-                let needsUpdate = false;
-                const updateData: any = {};
-
-                if (post.location_name === null && loc) {
-                    let locationName = null;
-                    if (loc.city && loc.country) {
-                        locationName = `${loc.city}, ${loc.country}`;
-                    } else if (loc.city) {
-                        locationName = loc.city;
-                    } else if (loc.country) {
-                        locationName = loc.country;
-                    } else if (loc.address) {
-                        locationName = loc.address;
-                    } else if (loc.name) {
-                        locationName = loc.name;
-                    }
-                    if (locationName) {
-                        updateData.location_name = locationName;
-                        needsUpdate = true;
-                    }
-                }
-
-                let lat = post.latitude;
-                let lon = post.longitude;
-
-                if (lat === null && loc?.latitude) {
-                    lat = loc.latitude;
-                    updateData.latitude = lat;
-                    needsUpdate = true;
-                }
-                if (lon === null && loc?.longitude) {
-                    lon = loc.longitude;
-                    updateData.longitude = lon;
-                    needsUpdate = true;
-                }
-
-                // Geocode fallback: If coordinates are STILL null but location_name is present
-                if ((lat === null || lon === null) && (post.location_name || updateData.location_name)) {
-                    const query = post.location_name || updateData.location_name;
-                    try {
-                        console.log(`[migrateLegacyLocations] Geocoding location name for post "${post.title}": "${query}"`);
-                        const results = await Location.geocodeAsync(query);
-                        if (results.length > 0) {
-                            const res = results[0];
-                            lat = res.latitude;
-                            lon = res.longitude;
-                            updateData.latitude = lat;
-                            updateData.longitude = lon;
-
-                            if (!loc) {
-                                updateData.location = {
-                                    latitude: lat,
-                                    longitude: lon,
-                                    city: query.split(',')[0].trim(),
-                                    country: query.split(',')[1]?.trim() || '',
-                                    name: query
-                                };
-                            } else {
-                                updateData.location = {
-                                    ...loc,
-                                    latitude: lat,
-                                    longitude: lon
-                                };
-                            }
-                            needsUpdate = true;
-                            console.log(`[migrateLegacyLocations] Successfully geocoded "${query}" -> lat: ${lat}, lon: ${lon}`);
-                        }
-                    } catch (geocodeErr) {
-                        console.warn(`[migrateLegacyLocations] Failed to geocode "${query}":`, geocodeErr);
-                    }
-                }
-
-                if (needsUpdate) {
-                    migrationCount++;
-                    console.log(`[migrateLegacyLocations] Migrating post "${post.title}" (ID: ${post.id}) ->`, JSON.stringify(updateData));
-                    await supabase
-                        .from('posts')
-                        .update(updateData)
-                        .eq('id', post.id);
-                }
-            }
-            console.log(`[migrateLegacyLocations] Migration complete. Updated ${migrationCount} posts.`);
-        } catch (error) {
-            console.error('[migrateLegacyLocations] Error running migration:', error);
         }
     }
 }

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PersistedClient, Persister } from '@tanstack/react-query-persist-client';
+import type { QueryClient } from '@tanstack/react-query';
 
 /**
  * Custom AsyncStorage persister for React Query
@@ -73,3 +74,14 @@ export const persistOptions = {
         },
     },
 };
+
+/**
+ * Forget everything cached for the signed-in user, in memory and on disk. Without this the next
+ * account signed in on the same device sees the previous one's profile, feed and search history
+ * until the queries refetch (and the disk copy survives for 24 hours).
+ * clear() first: each removal persists the shrinking cache, so the disk copy is removed after it.
+ */
+export async function clearUserQueryCache(client: QueryClient): Promise<void> {
+    client.clear();
+    await asyncStoragePersister.removeClient();
+}

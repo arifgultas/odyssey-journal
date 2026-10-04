@@ -2,12 +2,12 @@ import { decode } from 'base64-arraybuffer';
 import * as ExpoFileSystem from 'expo-file-system/legacy';
 import { File } from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { MAX_IMAGES_PER_POST } from './post-limits';
 import { supabase } from './supabase';
 
 // Image upload limits
 const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-const MAX_IMAGES_PER_POST = 10;
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
 
 /**
@@ -48,7 +48,8 @@ export async function uploadImage(
 
         // 3. Generate unique filename
         const fileExt = 'jpg';
-        const fileName = `${userId}/${Date.now()}.${fileExt}`;
+        // A random suffix: a post's photos upload in parallel and can finish in the same millisecond
+        const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
 
         // 4. Upload to Supabase Storage
         const { data, error } = await supabase.storage

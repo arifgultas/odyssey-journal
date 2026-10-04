@@ -111,9 +111,21 @@ export default function ProfileScreen() {
 
     const mapRef = useRef<any>(null);
 
+    // Every place the user has posted from, once each (visitedLocations has one entry per post,
+    // oldest first). The map shows all of them, as the store listing promises.
+    const mapLocations = useMemo(() => {
+        const seen = new Set<string>();
+        return (stats?.visitedLocations ?? []).filter((loc) => {
+            const key = `${loc.latitude.toFixed(3)},${loc.longitude.toFixed(3)}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }, [stats?.visitedLocations]);
+
     const calculatedRegion = useMemo(() => {
-        if (!stats?.visitedLocations || stats.visitedLocations.length === 0) return null;
-        const locations = stats.visitedLocations.slice(0, 10);
+        if (mapLocations.length === 0) return null;
+        const locations = mapLocations;
         
         // Filter out extreme outliers (e.g. single test pins like Kiribati) to keep the map focused on the main travel area
         const filteredLocations = locations.filter((loc, idx) => {
@@ -148,7 +160,7 @@ export default function ProfileScreen() {
             longitudeDelta: Math.max(lngDelta, 0.5),
         };
         return calculated;
-    }, [stats?.visitedLocations]);
+    }, [mapLocations]);
 
     useEffect(() => {
         if (calculatedRegion && mapRef.current) {
@@ -344,7 +356,7 @@ export default function ProfileScreen() {
                             <>
                                 {mapsAvailable ? (
                                     (() => {
-                                        const locations = stats.visitedLocations.slice(0, 10); // Limit to 10 markers
+                                        const locations = mapLocations;
                                         const latitudes = locations.map(l => l.latitude);
                                         const longitudes = locations.map(l => l.longitude);
                                         const region = {
@@ -389,7 +401,8 @@ export default function ProfileScreen() {
                                         source={{
                                             uri: (() => {
                                                 // Create Google Maps Static API URL with markers
-                                                const locations = stats.visitedLocations.slice(0, 10); // Limit to 10 markers
+                                                // The newest 10: a static map URL cannot carry every marker
+                                                const locations = mapLocations.slice(-10);
                                                 const markers = locations
                                                     .map(loc => `markers=color:d47311%7C${loc.latitude},${loc.longitude}`)
                                                     .join('&');

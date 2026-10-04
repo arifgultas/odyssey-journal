@@ -3,6 +3,7 @@ import { getModerationMessage, moderatePost, moderateText } from './content-mode
 import { deleteImage, uploadMultipleImages, uploadImage } from './image-upload';
 import { getCountryCode } from './location-formatter';
 import { placeKeyFor, resolvePlaceNames } from './place-names';
+import { MAX_IMAGES_PER_POST } from './post-limits';
 import { LIMITS, sanitizePostContent, sanitizePostTitle, sanitizeText } from './sanitize';
 import { supabase } from './supabase';
 import { WeatherData } from './weather';
@@ -125,12 +126,6 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             throw new Error('User not authenticated');
         }
 
-        // Upload images if provided
-        let imageUrls: string[] = [];
-        if (data.images && data.images.length > 0) {
-            imageUrls = await uploadMultipleImages(data.images, 'posts', user.id);
-        }
-
         // Sanitize text fields
         const sanitizedTitle = sanitizePostTitle(data.title);
         const sanitizedContent = sanitizePostContent(data.content);
@@ -138,10 +133,24 @@ export async function createPost(data: CreatePostData): Promise<Post> {
             (c) => sanitizeText(c, LIMITS.POST_TITLE)
         );
 
-        // AI Content Moderation — check text before publishing
+        // AI Content Moderation: everything is checked before the post exists. Text first, so a
+        // rejected text (or a missing consent) uploads nothing
         const textModeration = await moderateText(`${sanitizedTitle}\n\n${sanitizedContent}`);
         if (!textModeration.approved) {
             throw new Error(getModerationMessage(textModeration.flaggedCategories));
+        }
+
+        // Images need public URLs to be checked, so they are uploaded first and removed again if
+        // flagged. No post points to them in between, so nobody is shown them
+        let imageUrls: string[] = [];
+        if (data.images && data.images.length > 0) {
+            imageUrls = await uploadMultipleImages(data.images, 'posts', user.id);
+
+            const imageModeration = await moderatePost('', '', imageUrls);
+            if (!imageModeration.approved) {
+                await Promise.allSettled(imageUrls.map((url) => deleteImage(url, 'posts')));
+                throw new Error(getModerationMessage(imageModeration.flaggedCategories));
+            }
         }
 
         const location = await resolvePostLocation(data.location);
@@ -175,17 +184,6 @@ export async function createPost(data: CreatePostData): Promise<Post> {
                 await Promise.allSettled(imageUrls.map((url) => deleteImage(url, 'posts')));
             }
             throw postError;
-        }
-
-        // AI Content Moderation — check images after upload (needs public URLs)
-        if (imageUrls.length > 0) {
-            const imageModeration = await moderatePost('', '', imageUrls);
-            if (!imageModeration.approved) {
-                // Delete the post and images if flagged
-                await supabase.from('posts').delete().eq('id', post.id);
-                await Promise.allSettled(imageUrls.map((url) => deleteImage(url, 'posts')));
-                throw new Error(getModerationMessage(imageModeration.flaggedCategories));
-            }
         }
 
         return post;
@@ -236,6 +234,10 @@ export async function updatePost(
             if (!textModeration.approved) {
                 throw new Error(getModerationMessage(textModeration.flaggedCategories));
             }
+        }
+
+        if (data.images && data.images.length > MAX_IMAGES_PER_POST) {
+            throw new Error(`Maximum ${MAX_IMAGES_PER_POST} images allowed per post`);
         }
 
         // Upload new (local) images, keeping existing remote ones

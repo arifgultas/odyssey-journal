@@ -668,7 +668,7 @@ export default function CreatePostScreen() {
             },
             {
                 text: t('createPost.pickFromGallery'),
-                onPress: () => pickMultipleImages(5),
+                onPress: () => pickMultipleImages(),
             },
             {
                 text: t('common.cancel'),
@@ -1047,7 +1047,11 @@ export default function CreatePostScreen() {
                                     key={`${image.uri}-${index}`}
                                     image={image}
                                     index={index}
-                                    onRemove={() => removeImage(index)}
+                                    onRemove={() => {
+                                        removeImage(index);
+                                        // Captions are a parallel array: drop the same slot so the rest stay on their photos
+                                        setImageCaptions(prev => prev.filter((_, i) => i !== index));
+                                    }}
                                     rotation={getPolaroidRotation(index)}
                                     caption={imageCaptions[index] || ''}
                                     onCaptionChange={(text) => updateCaption(index, text)}

@@ -1,6 +1,7 @@
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useLanguage } from '@/context/language-context';
+import { MAX_IMAGES_PER_POST, remainingImageSlots } from '@/lib/post-limits';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -29,46 +30,40 @@ export function useImagePicker() {
         return true;
     };
 
-    const pickImage = async () => {
-        const hasPermission = await requestPermissions();
-        if (!hasPermission) return;
-
-        setIsLoading(true);
-        try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: false,
-                quality: 0.8,
-            });
-
-            if (!result.canceled && result.assets[0]) {
-                const asset = result.assets[0];
-
-                // Strip EXIF metadata and validate/compress
-                const manipulatedImage = await ImageManipulator.manipulateAsync(
-                    asset.uri,
-                    [],
-                    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-                );
-
-                const newImage: SelectedImage = {
-                    uri: manipulatedImage.uri,
-                    width: manipulatedImage.width,
-                    height: manipulatedImage.height,
-                    type: asset.type,
-                    fileName: asset.fileName,
-                };
-                setImages([...images, newImage]);
-            }
-        } catch (error) {
-            console.error('Error picking image:', error);
-            Alert.alert(t('common.error'), t('errors.imagePickFailed'));
-        } finally {
-            setIsLoading(false);
-        }
+    const showLimitReached = () => {
+        Alert.alert(t('common.info'), t('create.maxImages', { count: MAX_IMAGES_PER_POST }));
     };
 
-    const pickMultipleImages = async (maxImages: number = 5) => {
+    // Strip EXIF metadata and re-encode as JPEG
+    const processAsset = async (asset: ImagePicker.ImagePickerAsset): Promise<SelectedImage> => {
+        const manipulatedImage = await ImageManipulator.manipulateAsync(
+            asset.uri,
+            [],
+            { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+        );
+        return {
+            uri: manipulatedImage.uri,
+            width: manipulatedImage.width,
+            height: manipulatedImage.height,
+            type: asset.type,
+            fileName: asset.fileName,
+        };
+    };
+
+    // New photos go after the existing ones and never past the limit. Functional update, so a
+    // photo added while another pick was processing is not lost.
+    const appendImages = (newImages: SelectedImage[]) => {
+        setImages((prev) => [...prev, ...newImages].slice(0, MAX_IMAGES_PER_POST));
+    };
+
+    const pickMultipleImages = async () => {
+        const remaining = remainingImageSlots(images.length);
+        // selectionLimit 0 means "no limit" to expo-image-picker, so a full post never opens it
+        if (remaining === 0) {
+            showLimitReached();
+            return;
+        }
+
         const hasPermission = await requestPermissions();
         if (!hasPermission) return;
 
@@ -78,30 +73,21 @@ export function useImagePicker() {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsMultipleSelection: true,
                 quality: 0.8,
-                selectionLimit: maxImages,
+                selectionLimit: remaining,
             });
 
             if (!result.canceled && result.assets.length > 0) {
+                // Older Android pickers can ignore selectionLimit
+                const assets = result.assets.slice(0, remaining);
                 const processedImages: SelectedImage[] = [];
-
-                for (const asset of result.assets) {
-                    // Strip EXIF metadata and validate/compress
-                    const manipulatedImage = await ImageManipulator.manipulateAsync(
-                        asset.uri,
-                        [],
-                        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-                    );
-
-                    processedImages.push({
-                        uri: manipulatedImage.uri,
-                        width: manipulatedImage.width,
-                        height: manipulatedImage.height,
-                        type: asset.type,
-                        fileName: asset.fileName,
-                    });
+                for (const asset of assets) {
+                    processedImages.push(await processAsset(asset));
                 }
+                appendImages(processedImages);
 
-                setImages([...images, ...processedImages].slice(0, maxImages));
+                if (result.assets.length > remaining) {
+                    showLimitReached();
+                }
             }
         } catch (error) {
             console.error('Error picking images:', error);
@@ -112,6 +98,11 @@ export function useImagePicker() {
     };
 
     const takePhoto = async () => {
+        if (remainingImageSlots(images.length) === 0) {
+            showLimitReached();
+            return;
+        }
+
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert(
@@ -129,23 +120,7 @@ export function useImagePicker() {
             });
 
             if (!result.canceled && result.assets[0]) {
-                const asset = result.assets[0];
-
-                // Strip EXIF metadata and validate/compress
-                const manipulatedImage = await ImageManipulator.manipulateAsync(
-                    asset.uri,
-                    [],
-                    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-                );
-
-                const newImage: SelectedImage = {
-                    uri: manipulatedImage.uri,
-                    width: manipulatedImage.width,
-                    height: manipulatedImage.height,
-                    type: asset.type,
-                    fileName: asset.fileName,
-                };
-                setImages([...images, newImage]);
+                appendImages([await processAsset(result.assets[0])]);
             }
         } catch (error) {
             console.error('Error taking photo:', error);
@@ -156,7 +131,7 @@ export function useImagePicker() {
     };
 
     const removeImage = (index: number) => {
-        setImages(images.filter((_, i) => i !== index));
+        setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const clearImages = () => {
@@ -167,7 +142,6 @@ export function useImagePicker() {
         images,
         setImages,
         isLoading,
-        pickImage,
         pickMultipleImages,
         takePhoto,
         removeImage,
