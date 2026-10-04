@@ -226,8 +226,8 @@ export default function HomeScreen() {
       const prompted = await AsyncStorage.getItem(`home_location_prompted_${userId}`);
       if (prompted) return;
 
-      const profile = await ProfileService.getCurrentProfile();
-      if (!profile || !profile.home_location) {
+      const home = await ProfileService.getMyHomeLocation();
+      if (!home) {
         setTimeout(() => {
           setShowHomeLocationModal(true);
         }, 800);

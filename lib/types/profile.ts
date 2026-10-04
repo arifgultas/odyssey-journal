@@ -20,7 +20,6 @@ export interface Profile {
     website: string | null;
     updated_at: string | null;
     notification_preferences?: NotificationPreferences;
-    home_location?: HomeLocation | null;
 }
 
 export interface VisitedLocation {
@@ -37,6 +36,8 @@ export interface ProfileStats {
     followingCount: number;
     countriesVisited: number;
     totalDistanceKm: number;
+    foodPostsCount: number;
+    photoPostsCount: number;
     travelDays: number;
     visitedLocations: VisitedLocation[];
 }
@@ -52,7 +53,6 @@ export interface UpdateProfileData {
     bio?: string;
     website?: string;
     avatar_url?: string;
-    home_location?: HomeLocation;
 }
 
 export interface CommonDestination {

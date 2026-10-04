@@ -51,16 +51,16 @@ const BADGE_DEFINITIONS: BadgeDefinition[] = [
         name: 'Photographer',
         icon: 'camera-outline',
         requirement: 'Share 10 posts with photos',
-        checkUnlocked: (stats) => stats.postsCount >= 10,
-        getProgress: (stats) => Math.min((stats.postsCount / 10) * 100, 100),
+        checkUnlocked: (stats) => stats.photoPostsCount >= 10,
+        getProgress: (stats) => Math.min((stats.photoPostsCount / 10) * 100, 100),
     },
     {
         id: 'gourmet',
         name: 'Gourmet',
         icon: 'restaurant-outline',
         requirement: 'Share 3 posts in the food category',
-        checkUnlocked: (_stats) => false, // Requires category tracking - future feature
-        getProgress: (_stats) => 0,
+        checkUnlocked: (stats) => stats.foodPostsCount >= 3,
+        getProgress: (stats) => Math.min((stats.foodPostsCount / 3) * 100, 100),
     },
     {
         id: 'marathon-traveler',

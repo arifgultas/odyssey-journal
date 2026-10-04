@@ -86,13 +86,11 @@ export function HomeLocationModal({
                 console.warn('Reverse geocoding failed, continuing with coords only:', geoError);
             }
 
-            await ProfileService.updateProfile({
-                home_location: {
-                    latitude,
-                    longitude,
-                    city: cityName,
-                    country: countryName,
-                },
+            await ProfileService.setHomeLocation({
+                latitude,
+                longitude,
+                city: cityName,
+                country: countryName,
             });
 
             await markPromptAsSeen();

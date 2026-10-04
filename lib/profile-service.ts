@@ -2,7 +2,7 @@ import { uploadImage } from './image-upload';
 import { getCountryCode } from './location-formatter';
 import { sanitizeBio, sanitizeFullName, sanitizeText, sanitizeUsername } from './sanitize';
 import { supabase } from './supabase';
-import type { CommonDestination, Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
+import type { CommonDestination, HomeLocation, Profile, ProfileStats, ProfileWithStats, UpdateProfileData } from './types/profile';
 import { captureError } from './sentry';
 
 /**
@@ -90,33 +90,6 @@ export class ProfileService {
     }
 
     /**
-     * Calculate distance between two coordinates using Haversine formula
-     * Returns distance in kilometers
-     */
-    private static calculateDistance(
-        lat1: number,
-        lon1: number,
-        lat2: number,
-        lon2: number
-    ): number {
-        const R = 6371; // Earth's radius in kilometers
-        const dLat = this.toRadians(lat2 - lat1);
-        const dLon = this.toRadians(lon2 - lon1);
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(this.toRadians(lat1)) *
-            Math.cos(this.toRadians(lat2)) *
-            Math.sin(dLon / 2) *
-            Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    }
-
-    private static toRadians(degrees: number): number {
-        return degrees * (Math.PI / 180);
-    }
-
-    /**
      * Get profile statistics with extended travel data
      */
     static async getProfileStats(userId: string): Promise<ProfileStats> {
@@ -127,7 +100,9 @@ export class ProfileService {
                 followersResult,
                 followingResult,
                 postsDataResult,
-                profileResult
+                distanceResult,
+                foodPostsResult,
+                photoPostsResult
             ] = await Promise.all([
                 supabase
                     .from('posts')
@@ -147,24 +122,25 @@ export class ProfileService {
                     .eq('user_id', userId)
                     .not('location', 'is', null)
                     .order('created_at', { ascending: true }),
-                (async () => {
-                    try {
-                        return await supabase
-                            .from('profiles')
-                            .select('*')
-                            .eq('id', userId)
-                            .single();
-                    } catch (e) {
-                        return { data: null, error: null };
-                    }
-                })()
+                // Kilometers are worked out on the server (032): home coordinates are readable
+                // only by their owner, so only the number comes back
+                supabase.rpc('get_travel_distance_km', { p_user_id: userId }),
+                supabase
+                    .from('posts')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', userId)
+                    .contains('categories', ['food']),
+                supabase
+                    .from('posts')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', userId)
+                    .not('images', 'eq', '{}'),
             ]);
 
             const postsCount = postsResult.count;
             const followersCount = followersResult.count;
             const followingCount = followingResult.count;
             const posts = postsDataResult.data;
-            const profile = profileResult.data;
 
             // Process location data
             const visitedLocations: Array<{
@@ -176,39 +152,7 @@ export class ProfileService {
             }> = [];
             const uniqueCountries = new Set<string>();
             const countryDays = new Map<string, Set<string>>(); // country -> Set of unique dates
-            let totalDistanceKm = 0;
-
-            // Fetch profile dynamically to see if home_location or home_latitude/longitude is set, otherwise use env or default to Istanbul
-            let homeLat = 41.0082;
-            let homeLon = 28.9784;
-
-            if (process.env.EXPO_PUBLIC_HOME_LATITUDE) {
-                homeLat = parseFloat(process.env.EXPO_PUBLIC_HOME_LATITUDE);
-            }
-            if (process.env.EXPO_PUBLIC_HOME_LONGITUDE) {
-                homeLon = parseFloat(process.env.EXPO_PUBLIC_HOME_LONGITUDE);
-            }
-
-            if (profile) {
-                const p = profile as any;
-                if (p.home_location) {
-                    if (typeof p.home_location === 'object') {
-                        const latVal = p.home_location.latitude || p.home_location.lat;
-                        const lonVal = p.home_location.longitude || p.home_location.lon;
-                        if (latVal !== undefined && lonVal !== undefined) {
-                            homeLat = Number(latVal);
-                            homeLon = Number(lonVal);
-                        }
-                    }
-                } else if (p.home_latitude !== undefined && p.home_longitude !== undefined) {
-                    if (p.home_latitude !== null && p.home_longitude !== null) {
-                        homeLat = Number(p.home_latitude);
-                        homeLon = Number(p.home_longitude);
-                    }
-                }
-            }
-
-            const homeLocation = { lat: homeLat, lon: homeLon };
+            const totalDistanceKm = typeof distanceResult.data === 'number' ? distanceResult.data : 0;
 
             if (posts && posts.length > 0) {
                 for (const post of posts) {
@@ -250,14 +194,6 @@ export class ProfileService {
                         }
                         countryDays.get(countryKey)!.add(visitDate);
 
-                        // Calculate round-trip distance from home
-                        const distance = this.calculateDistance(
-                            homeLocation.lat,
-                            homeLocation.lon,
-                            location.latitude,
-                            location.longitude
-                        );
-                        totalDistanceKm += distance * 2; // Round trip (gidiş-dönüş)
                     }
                 }
             }
@@ -273,7 +209,9 @@ export class ProfileService {
                 followersCount: followersCount || 0,
                 followingCount: followingCount || 0,
                 countriesVisited: uniqueCountries.size,
-                totalDistanceKm: Math.round(totalDistanceKm),
+                totalDistanceKm,
+                foodPostsCount: foodPostsResult.count || 0,
+                photoPostsCount: photoPostsResult.count || 0,
                 travelDays: travelDays,
                 visitedLocations: visitedLocations,
             };
@@ -286,10 +224,59 @@ export class ProfileService {
                 followingCount: 0,
                 countriesVisited: 0,
                 totalDistanceKm: 0,
+                foodPostsCount: 0,
+                photoPostsCount: 0,
                 travelDays: 0,
                 visitedLocations: [],
             };
         }
+    }
+
+    /**
+     * The signed-in user's home location, or null. It lives in its own table that only its owner
+     * can read (032), not on the profile row every signed-in user can select.
+     */
+    static async getMyHomeLocation(): Promise<HomeLocation | null> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+
+        const { data, error } = await supabase
+            .from('user_home_locations')
+            .select('latitude, longitude, city, country')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+        if (!data) return null;
+        return {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            city: data.city ?? undefined,
+            country: data.country ?? undefined,
+        };
+    }
+
+    /**
+     * Save the signed-in user's home location (used for the boarding pass kilometers)
+     */
+    static async setHomeLocation(home: HomeLocation): Promise<void> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            throw new Error('No authenticated user');
+        }
+
+        const { error } = await supabase
+            .from('user_home_locations')
+            .upsert({
+                user_id: user.id,
+                latitude: Number(home.latitude),
+                longitude: Number(home.longitude),
+                city: home.city ? sanitizeText(home.city, 100) : null,
+                country: home.country ? sanitizeText(home.country, 100) : null,
+                updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id' });
+
+        if (error) throw error;
     }
 
     /**
@@ -316,14 +303,6 @@ export class ProfileService {
             }
             if (sanitizedUpdates.website) {
                 sanitizedUpdates.website = sanitizeText(sanitizedUpdates.website, 200);
-            }
-            if (sanitizedUpdates.home_location) {
-                sanitizedUpdates.home_location = {
-                    latitude: Number(sanitizedUpdates.home_location.latitude),
-                    longitude: Number(sanitizedUpdates.home_location.longitude),
-                    city: sanitizedUpdates.home_location.city ? sanitizeText(sanitizedUpdates.home_location.city, 100) : undefined,
-                    country: sanitizedUpdates.home_location.country ? sanitizeText(sanitizedUpdates.home_location.country, 100) : undefined,
-                };
             }
 
             const { data, error } = await supabase
