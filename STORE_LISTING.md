@@ -96,7 +96,7 @@ Odyssey Journal turns your travel photos into beautiful stories, in a design ins
 WRITE YOUR TRAVEL STORIES
 • Add several photos to a post, each with its own caption
 • Tag the place, pick the travel date and categories
-• The weather of that day is saved with your memory
+• The weather where you are is saved with your memory as you post it
 
 YOUR PASSPORT AND TRAVEL MAP
 • A passport-style profile with a boarding pass of your stats: countries, kilometers, days
@@ -170,7 +170,7 @@ Odyssey Journal, seyahat fotoğraflarını eski defterlerden, pasaportlardan ve 
 SEYAHAT HİKÂYELERİNİ YAZ
 • Bir gönderiye birden çok fotoğraf ekle, her birine ayrı açıklama yaz
 • Yeri etiketle, seyahat tarihini ve kategorileri seç
-• O günün hava durumu anınla birlikte kaydedilir
+• Paylaştığın andaki hava durumu anınla birlikte kaydedilir
 
 PASAPORTUN VE SEYAHAT HARİTAN
 • Pasaport tarzı profil ve istatistiklerinin yer aldığı uçuş kartı: ülkeler, kilometreler, günler
@@ -244,7 +244,7 @@ Odyssey Journal convierte tus fotos de viaje en historias preciosas, con un dise
 ESCRIBE TUS HISTORIAS DE VIAJE
 • Añade varias fotos a una publicación, cada una con su propia descripción
 • Etiqueta el lugar, elige la fecha del viaje y las categorías
-• El tiempo que hizo ese día se guarda con tu recuerdo
+• El tiempo del momento en que publicas se guarda con tu recuerdo
 
 TU PASAPORTE Y TU MAPA DE VIAJES
 • Un perfil tipo pasaporte con una tarjeta de embarque de tus estadísticas: países, kilómetros, días
@@ -318,7 +318,7 @@ Odyssey Journal transforme vos photos de voyage en beaux récits, avec un design
 ÉCRIVEZ VOS RÉCITS DE VOYAGE
 • Ajoutez plusieurs photos à une publication, chacune avec sa légende
 • Indiquez le lieu, choisissez la date du voyage et les catégories
-• La météo du jour est enregistrée avec votre souvenir
+• La météo du moment de la publication est enregistrée avec votre souvenir
 
 VOTRE PASSEPORT ET VOTRE CARTE DE VOYAGE
 • Un profil façon passeport, avec une carte d'embarquement de vos statistiques : pays, kilomètres, jours
@@ -392,7 +392,7 @@ Odyssey Journal macht aus deinen Reisefotos schöne Geschichten – im Design al
 SCHREIBE DEINE REISEGESCHICHTEN
 • Füge einem Beitrag mehrere Fotos hinzu, jedes mit eigener Bildunterschrift
 • Markiere den Ort, wähle Reisedatum und Kategorien
-• Das Wetter des Tages wird mit deiner Erinnerung gespeichert
+• Das Wetter beim Teilen wird mit deiner Erinnerung gespeichert
 
 DEIN REISEPASS UND DEINE REISEKARTE
 • Ein Profil im Reisepass-Stil mit einer Bordkarte deiner Statistiken: Länder, Kilometer, Tage
@@ -466,7 +466,7 @@ O Odyssey Journal transforma suas fotos de viagem em belas histórias, com um de
 ESCREVA SUAS HISTÓRIAS DE VIAGEM
 • Adicione várias fotos a uma publicação, cada uma com sua própria legenda
 • Marque o lugar, escolha a data da viagem e as categorias
-• O clima daquele dia fica salvo junto com a sua memória
+• O clima do momento em que você publica fica salvo junto com a sua memória
 
 SEU PASSAPORTE E SEU MAPA DE VIAGEM
 • Um perfil estilo passaporte com um cartão de embarque das suas estatísticas: países, quilômetros, dias
@@ -540,7 +540,7 @@ Odyssey Journal trasforma le tue foto di viaggio in storie bellissime, con un de
 SCRIVI LE TUE STORIE DI VIAGGIO
 • Aggiungi più foto a un post, ognuna con la sua didascalia
 • Indica il luogo, scegli la data del viaggio e le categorie
-• Il meteo di quel giorno viene salvato insieme al tuo ricordo
+• Il meteo del momento in cui pubblichi viene salvato insieme al tuo ricordo
 
 IL TUO PASSAPORTO E LA TUA MAPPA DI VIAGGIO
 • Un profilo in stile passaporto con una carta d'imbarco delle tue statistiche: paesi, chilometri, giorni
@@ -614,7 +614,7 @@ Odyssey Journal превращает ваши фотографии из поез
 ПИШИТЕ ИСТОРИИ О ПУТЕШЕСТВИЯХ
 • Добавляйте в публикацию несколько фотографий, каждую со своей подписью
 • Отмечайте место, выбирайте дату поездки и категории
-• Погода того дня сохраняется вместе с воспоминанием
+• Погода в момент публикации сохраняется вместе с воспоминанием
 
 ВАШ ПАСПОРТ И КАРТА ПУТЕШЕСТВИЙ
 • Профиль в стиле паспорта и посадочный талон с вашей статистикой: страны, километры, дни
@@ -688,7 +688,7 @@ Odyssey Journal は、古いノートやパスポート、搭乗券から着想�
 旅のストーリーを書く
 • 1つの投稿に複数の写真を追加し、それぞれにキャプションを付けられます
 • 場所をタグ付けし、旅行日とカテゴリーを選べます
-• その日の天気も思い出と一緒に保存されます
+• 投稿したときの天気も思い出と一緒に保存されます
 
 あなたのパスポートと旅行マップ
 • パスポート風のプロフィールと、国・キロ数・日数をまとめた搭乗券
@@ -762,7 +762,7 @@ Odyssey Journal은 오래된 노트, 여권, 탑승권에서 영감을 받은 �
 여행 이야기를 쓰세요
 • 게시물 하나에 여러 장의 사진을 올리고 사진마다 설명을 달 수 있습니다
 • 장소를 태그하고 여행 날짜와 카테고리를 선택하세요
-• 그날의 날씨도 추억과 함께 저장됩니다
+• 게시할 때의 날씨도 추억과 함께 저장됩니다
 
 나의 여권과 여행 지도
 • 여권 스타일 프로필과 국가·킬로미터·일수를 담은 탑승권
@@ -836,7 +836,7 @@ Odyssey Journal 以旧笔记本、护照和登机牌为设计灵感，把你的�
 写下你的旅行故事
 • 一篇帖子可以添加多张照片，每张都能配上说明
 • 标记地点，选择旅行日期和分类
-• 当天的天气会和回忆一起保存
+• 发布时的天气会和回忆一起保存
 
 你的护照和旅行地图
 • 护照风格的个人主页，登机牌上展示你的统计：国家、公里数、天数
@@ -910,7 +910,7 @@ Odyssey Journal 以旧笔记本、护照和登机牌为设计灵感，把你的�
 اكتب قصص رحلاتك
 • أضف عدة صور إلى المنشور الواحد، ولكل صورة وصفها الخاص
 • حدّد المكان، واختر تاريخ الرحلة والفئات
-• يُحفظ طقس ذلك اليوم مع ذكرياتك
+• يُحفظ الطقس وقت النشر مع ذكرياتك
 
 جواز سفرك وخريطة رحلاتك
 • ملف شخصي على طراز جواز السفر، مع بطاقة صعود تعرض إحصاءاتك: الدول والكيلومترات والأيام

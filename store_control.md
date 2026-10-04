@@ -51,9 +51,15 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
 |---|---|---|---|
 | Name, Email Address | App Functionality | Evet | Hayır |
 | Photos or Videos, Other User Content | App Functionality | Evet | Hayır |
-| Precise Location | App Functionality | Evet | Hayır |
+| Emails or Text Messages (uygulama içi mesajlar) | App Functionality | Evet | Hayır |
+| Precise Location (gönderi konumu + ev konumu) | App Functionality | Evet | Hayır |
+| Search History (aramalar sunucuda saklanıyor, `search_history`) | App Functionality | Evet | Hayır |
 | User ID | App Functionality | Evet | Hayır |
-| Crash Data | App Functionality | Hayır | Hayır |
+| Crash Data | App Functionality | **Evet** (Sentry'ye kullanıcı ID'si gidiyor) | Hayır |
+| Performance Data (Sentry, işlemlerin %20'si) | App Functionality | Evet | Hayır |
+
+> 4 Ekim düzeltmesi: önceki tabloda mesajlar, arama geçmişi ve performans verisi yoktu, çökme verisi "bağlı değil"
+> işaretliydi. Sentry kullanıcı ID'siyle kayıt tuttuğu için "bağlı". Gizlilik politikası bunların hepsini sayıyor.
 
 - [ ] **Privacy Policy URL:** `https://odysseyjournal.app/privacy-policy`
 
@@ -89,9 +95,10 @@ appstoreconnect.apple.com → **Apps → Odyssey Journal**
 Users can report posts and block users (post menu → Report / Block).
 Community Guidelines: Settings → Legal & Community.
 Account deletion: Settings → Account → Delete Account.
-Posts and comments are checked by OpenAI's Moderation API before publishing. The app asks for
-permission first (App Store 5.1.2(i)); it can be withdrawn in Settings → Legal & Community →
-AI content check.
+Post text, photos and comments are checked by OpenAI's Moderation API before they are
+published; flagged content is never posted. The app asks for permission first (App Store
+5.1.2(i)); it can be withdrawn in Settings → Legal & Community → AI content check.
+Reported content is reviewed by the developer in the in-app moderation panel.
 ```
 
 ### 1.7 Version Release
@@ -102,31 +109,18 @@ AI content check.
 
 ---
 
-## 2. Android — AAB'yi Android Studio'dan alma
+## 2. Android — AAB EAS'ten
 
-> ⚠️ **29 Eylül: bu yol bu bilgisayarda çalışmıyor.** Yerel build C++ adımında Windows'un 260 karakterlik
-> yol sınırına takılıyor (`Filename longer than 260 characters`). AAB'yi oturum **EAS** ile alır:
-> `eas build --platform android --profile production` (mevcut EAS imza anahtarı). Aşağısı yalnız referans.
+Android Studio ve `.jks` **yok**. AAB'yi oturum alır: `eas build --platform android --profile production`
+(versionCode `app.config.ts`'ten). İmza (upload) anahtarı EAS'te duruyor; EAS'in kendi oluşturduğu, yedeği
+`eas credentials`'tan indirilebilir. İlk yüklemede Play App Signing açılır: Google uygulamayı kendi anahtarıyla
+imzalar, EAS'teki anahtar yalnız "upload key" olur. (Bu bilgisayarda yerel build Windows'un 260 karakter yol
+sınırına takılıyor — `FINALIZE.md` "Android build notu".)
 
-`android/` klasörü 29 Eylül'de yeniden üretildi (versionCode 2, yeni Maps anahtarı, Firebase, Sentry).
-Sentry kaynak haritası build sırasında kendiliğinden yüklenir (token: proje kökündeki `.env.sentry-build-plugin`).
-
-1. [ ] Android Studio → **Open** → projedeki **`android`** klasörünü seç (proje kökünü değil).
-       **File → Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK → `jdk-17`**
-       (Android Studio'nun kendi JDK 25'i bu Gradle ile açılmaz: "Unsupported class file major version 69").
-       Gradle senkronizasyonunun bitmesini bekle.
-2. [ ] **Build → Generate Signed App Bundle or APK → Android App Bundle → Next**
-3. [ ] **Create new…** (yeni anahtar dosyası):
-   - Konum: proje dışında, örn. `Belgeler\odyssey-upload.jks`
-   - Şifre, Alias: `upload`, Validity: 25 yıl, ad-soyad
-4. [ ] **release** → **Create** → çıktı: `android/app/release/app-release.aab`
-
-> ⚠️ **`.jks` dosyasını ve şifreleri mutlaka yedekleyin** (bulut + ikinci bir yer). Kaybolursa
-> uygulamaya güncelleme yükleyemezsiniz.
+> ⚠️ 19 Eylül'de EAS'ten alınan eski AAB'yi (`324319a5`, versionCode 1, legacy Supabase anahtarı) **yüklemeyin**.
+> Aynı EAS anahtarıyla imzalı ama eski kod.
 >
-> ⚠️ Daha önce EAS'ten alınan AAB'yi (`324319a5`, versionCode 1, eski anahtar) Play'e **yüklemeyin**.
->
-> İleride EAS'ten Android build alınacaksa bu `.jks` dosyası `eas credentials` ile EAS'e yüklenmeli.
+> Her yeni Play yüklemesinden önce `android.versionCode` artırılmalı (Play aynı kodu ikinci kez almaz).
 
 ---
 
@@ -147,7 +141,9 @@ play.google.com/console
 - [ ] **Target audience:** 13+ (çocuklara yönelik değil)
 - [ ] **News app:** No
 - [ ] **Data safety:**
-  - Toplanan: e-posta, ad, kullanıcı ID, fotoğraflar, hassas konum, mesajlar, diğer kullanıcı içeriği, çökme kayıtları.
+  - Toplanan: e-posta, ad, kullanıcı ID, fotoğraflar, hassas konum, mesajlar, diğer kullanıcı içeriği,
+    **uygulama içi arama geçmişi** (App activity), çökme kayıtları + **tanılama** (Diagnostics, Sentry),
+    **cihaz veya diğer kimlikler** (push bildirim token'ı).
     Mikrofon/ses **yok** (29 Eylül'de `RECORD_AUDIO` izni kaldırıldı)
   - Aktarımda şifreli: **Yes**
   - Kullanıcı silme isteyebilir: **Yes** → URL: `https://odysseyjournal.app/delete-account`
@@ -167,7 +163,7 @@ play.google.com/console
 ### 3.4 Dahili test (Internal testing)
 - [ ] **Test → Internal testing → Create new release**
 - [ ] "Play App Signing" sorusu → **Continue**
-- [ ] `app-release.aab` yükle → **Save → Review → Start rollout**
+- [ ] EAS'ten indirilen `.aab`'yi yükle → **Save → Review → Start rollout**
 - [ ] **Testers** sekmesi → e-posta listesi oluştur, kendi mailini ekle → **opt-in linkinden** telefona kur
 
 ### 3.5 Production'a geçiş
