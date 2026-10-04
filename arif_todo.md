@@ -40,9 +40,8 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 ## 1. Önce bunlar — güvenlik ve anahtarlar
 
 - [x] ~~**`032` deploy onayı**~~ ✅ 4 Ekim — canlıda; Security Advisor 0 hata (kalan 7 uyarı bilerek)
-- [ ] **Kendini yönetici yap** (4 Ekim sorgusu: `admins: null` → moderasyon paneli kimseye görünmüyor, Apple 1.2):
-      SQL Editor'da `update public.profiles set is_admin = true where id = '643ff194-f61d-4ad8-b5e5-c5e24d60c4ad';`
-      (Admin hesabı; başka hesap istersen oturuma söyle)
+- [ ] **Moderatör hesabı aç ve yönetici yap** — adım adım aşağıda **§1b** (4 Ekim sorgusu: `admins: null` →
+      moderasyon paneli kimseye görünmüyor; mağazaya göndermeden önce şart, Apple 1.2)
 - [x] ~~**Tek salt-okuma sorgusu**~~ ✅ 4 Ekim sonucu: admin yok (yukarıdaki madde) · purge_job `17 3 * * *` ✓ ·
       6 ev konumu tabloya taşındı, sütunda 0 kaldı ✓ · maestro test hesabı yok ✓ · **demo hesap boş** (0 gönderi,
       ad/fotoğraf yok, hiç giriş yok) → build 8 gelince §3b
@@ -64,7 +63,7 @@ select jsonb_pretty(jsonb_build_object(
   'purge_job', (select schedule from cron.job where jobname = 'purge-push-queue')
 )) as report;
 ```
-      Beklenen: `admins` en az bir hesap (yoksa §3b'deki `is_admin` SQL'i), `profiles_home_location_left: 0`,
+      Beklenen: `admins` en az bir hesap (yoksa §1b), `profiles_home_location_left: 0`,
       `purge_job: "17 3 * * *"`, `maestro_test_account_exists: false` (true ise o hesap silinmeli — şifresi public repoda).
 - [ ] **E-postanı kontrol et:** App Store Connect'ten TestFlight build'leri için "ITMS-91053 / Missing
       API declaration" (privacy manifest) konulu uyarı e-postası geldi mi? Geldiyse oturuma ilet
@@ -78,6 +77,72 @@ select jsonb_pretty(jsonb_build_object(
 
 > Bundan sonra `supabase/` altında bir değişiklik push edilince deploy **senin onayını bekler**:
 > GitHub → Actions → "Deploy Supabase" → *Review deployments* → **Approve**.
+
+---
+
+## 1b. Moderatör hesabı — `moderation@odysseyjournal.app` (build beklemez, şimdi yapılabilir)
+
+**Neden ayrı hesap:** şimdiki "Admin" hesabının e-postası notlarda `admin@admin.com` — `admin.com` başkasına ait
+gerçek bir alan adı, şifre sıfırlama oraya gider (hesap kurtarılamaz). Ayrıca 10 gönderisi olan, akışta görünen bir
+içerik hesabı. Yasaklama / gönderi silme yetkisi gönderi paylaşmayan, kurtarılabilir, ayrı bir hesapta olmalı.
+(4 Ekim kararı.) Demo hesap `review@` **yönetici yapılmaz**.
+
+**Adım 1 — e-posta takma adı (Google Workspace, 2 dk)**
+- [ ] admin.google.com → **hello@odysseyjournal.app** ile gir
+- [ ] Sol menü **Directory → Users** → **hello@odysseyjournal.app** kullanıcısına tıkla
+- [ ] **User information** → **Alternate email addresses (email aliases)** → **Add an alternate email**
+- [ ] `moderation` yaz (alan adı `@odysseyjournal.app` zaten seçili) → **Save**
+- [ ] Birkaç dakika bekle (takma adın aktif olması 5-10 dk sürebilir). Gelen e-postalar hello@ kutusuna düşer —
+      `review@`, `privacy@` gibi
+
+**Adım 2 — uygulamadan kayıt ol (telefonda, 5 dk)**
+Build 7 (TestFlight) ya da Android'de Expo ile olur; build 8'i beklemeye gerek yok.
+- [ ] Uygulamada başka hesapla girdiysen: Profil → çıkış yap
+- [ ] Giriş ekranı → **Kayıt ol**
+- [ ] E-posta: `moderation@odysseyjournal.app`
+- [ ] Şifre: **güçlü ve yeni** bir şifre (en az 16 karakter; başka yerde kullanmadığın). **Hemen şifre yöneticine kaydet**
+      — bu hesap yasaklama ve silme yetkisi taşıyacak
+- [ ] Kullanıcı adı: `odysseyteam` (ya da `odysseymoderation`) · Ad: `Odyssey Team`
+- [ ] Koşulları kabul et → Kayıt ol
+- [ ] hello@ kutusuna gelen **onay e-postasındaki** linke bas (sitenin "e-posta onaylandı" sayfası açılır)
+- [ ] Uygulamada bu hesapla **giriş yap**. Gönderi paylaşma, kimseyi takip etme, ev konumu sorusunu **atla**
+      (profil boş kalsın; amacı yalnız moderasyon)
+
+**Adım 3 — yönetici yap (Supabase, 1 dk)**
+- [ ] supabase.com → proje **odyssey-journal-eu** → sol menü **SQL Editor** → **New query**
+- [ ] Şunu yapıştır → **Run**:
+```sql
+update public.profiles set is_admin = true
+where id = (select id from auth.users where email = 'moderation@odysseyjournal.app');
+```
+- [ ] Sonuç **"Success. 1 row affected"** (ya da "UPDATE 1") olmalı. **0 row** çıkarsa: kayıt/onay tamamlanmamış →
+      Adım 2'ye dön (Authentication → Users listesinde adres görünüyor mu bak)
+- [ ] Kontrol için aynı yerde çalıştır → `moderation@odysseyjournal.app | true` görmelisin:
+```sql
+select u.email, p.is_admin from auth.users u join public.profiles p on p.id = u.id where p.is_admin;
+```
+(Uygulamadan bu yetki verilemez — 030'daki koruma; SQL Editor sahibi olarak çalıştığı için geçer.)
+
+**Adım 4 — uygulamada kontrol (1 dk)**
+- [ ] Uygulamayı **tamamen kapat ve aç** (yetki girişte okunuyor), moderatör hesabıyla girili olsun
+- [ ] **Ayarlar** → en altta yeni bir **ADMİN** kartı → **Moderasyon Paneli** görünüyor
+- [ ] Panele gir → açılıyor (şikâyet yoksa liste boş — normal)
+- [ ] İstersen dene: başka bir hesaptan bir gönderiyi **Şikâyet et** → moderatör hesabında panelde görünüyor
+
+**Adım 5 — şikâyetleri takip (sürekli)**
+Apple şikâyet edilen içeriğe **24 saat içinde** bakılmasını bekliyor. Uygulama şikâyette moderatöre bildirim
+göndermiyor, iki yoldan biriyle günde bir bak:
+- uygulamada moderatör hesabına geçip **Ayarlar → Moderasyon Paneli**, ya da
+- Supabase → **Table Editor → `reports`** tablosu (yeni satır = yeni şikâyet)
+
+**Adım 6 — eski "Admin" hesabı (isteğe bağlı, acil değil)**
+Hesap **silinmeyecek**: 10 gönderisi demo akışı dolduruyor. Yalnız yönetici yapılmıyor.
+- [ ] Supabase → **Authentication → Users** → listede "Admin" hesabının e-postasına bak. Gerçekten `admin@admin.com`
+      gibi senin olmayan bir adresse **şifresini şifre yöneticine kaydet** (unutursan kurtarılamaz)
+- [ ] İstersen görünen adını gerçekçi bir gezgin adıyla değiştir (uygulamada o hesapla gir → Profil → Profili düzenle).
+      İnceleyici akışta "Admin" yerine gerçek bir isim görür. `Admin2`, `Admin3` için de aynısı
+- [ ] E-postasını kendi alan adına (örn. `travel@odysseyjournal.app` takma adı) taşımak istersen oturuma söyle;
+      panelden doğrudan değiştirilemiyor, oturum SQL'ini hazırlar
 
 ---
 
@@ -189,16 +254,9 @@ Telefonda **review@ ile giriş yap** ve sırayla:
 - [ ] Admin hesabından demo hesaba 1-2 mesaj at (Mesajlar ekranı boş kalmasın)
 - [ ] Çıkış yap
 
-**Göz önünde bulundur:** inceleyici akışta yazar adı olarak "Admin", "Admin2" görecek. Mecburi değil,
-ama istersen bu üç hesabın görünen adını gerçekçi gezgin adlarıyla değiştir (profil düzenle).
+**Göz önünde bulundur:** inceleyici akışta yazar adı olarak "Admin", "Admin2" görecek → §1b Adım 6.
 
-**Moderasyon paneli:** hiçbir hesapta `is_admin` açık değil, yani uygulamadaki moderasyon paneli şu an
-kimseye görünmüyor. Şikâyetlere 24 saat içinde bakabilmek için (Apple 1.2) kendi hesabını yönetici yap —
-Supabase → SQL Editor'da bir kez çalıştır (Admin hesabı `admin@admin.com` ise):
-```sql
-update public.profiles set is_admin = true where id = '643ff194-f61d-4ad8-b5e5-c5e24d60c4ad';
-```
-(Uygulamadan bu sütun değiştirilemez — 030'daki koruma; SQL editörü sahibi olarak çalıştığı için geçer.)
+**Moderasyon paneli:** ayrı moderatör hesabında (`moderation@`, §1b). Demo hesap yönetici **yapılmaz**.
 
 **Eski test hesapları:** `review@review.com` ("Review", 19 Eylül — büyük olasılıkla bir oturumun
 Android push testi için açtığı hesap) ve bugünkü `arifgultas93@gmail.com` ("Deneme"). §3'teki
