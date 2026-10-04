@@ -150,8 +150,17 @@ göndermiyor, iki yoldan biriyle günde bir bak:
 Hesap **silinmeyecek**: 10 gönderisi demo akışı dolduruyor. Yalnız yönetici yapılmıyor.
 - [ ] Supabase → **Authentication → Users** → listede "Admin" hesabının e-postasına bak. Gerçekten `admin@admin.com`
       gibi senin olmayan bir adresse **şifresini şifre yöneticine kaydet** (unutursan kurtarılamaz)
-- [ ] İstersen görünen adını gerçekçi bir gezgin adıyla değiştir (uygulamada o hesapla gir → Profil → Profili düzenle).
-      İnceleyici akışta "Admin" yerine gerçek bir isim görür. `Admin2`, `Admin3` için de aynısı
+- [x] ~~Admin → "Elif Demir" / `elifdemir`~~ ✅ 4 Ekim (uygulamadan)
+- [ ] **Admin2, Admin3** — şifreleri hatırlanmıyor; giriş gerekmez, yalnız gönderileri akışta duruyor. Adlarını
+      SQL Editor'dan değiştir (030'daki koruma yalnız yetki/sayaç sütunlarını kapsıyor, ad/kullanıcı adı serbest):
+```sql
+update public.profiles set full_name = 'Can Yılmaz', username = 'canyilmaz' where full_name = 'Admin2';
+update public.profiles set full_name = 'Sofia Rossi', username = 'sofiarossi' where full_name = 'Admin3';
+select full_name, username, posts_count from public.profiles
+where username in ('elifdemir', 'canyilmaz', 'sofiarossi');
+```
+      Son sorgu **3 satır** göstermeli. Eksik satır varsa o hesabın adı tam "Admin2"/"Admin3" değil → sonucu oturuma ilet.
+      İleride bu hesaplara girmek gerekirse oturum şifre için ayrı SQL hazırlar (e-postaları büyük olasılıkla gerçek değil)
 - [ ] E-postasını kendi alan adına (örn. `travel@odysseyjournal.app` takma adı) taşımak istersen oturuma söyle;
       panelden doğrudan değiştirilemiyor, oturum SQL'ini hazırlar
 
@@ -229,6 +238,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] Ayarlar → Gizlilik Politikası / Kullanım Şartları telefon dilinde açılıyor (TR'de `/tr/…`)
 - [ ] Gönderi paylaş → link `odysseyjournal.app/tr/?post=…` (uygulama TR iken), sayfada "Uygulamada aç" şeridi
 - [ ] 10'dan fazla farklı yerde gönderisi olan hesapta profil haritası hepsini gösteriyor
+- [ ] Bir hesaptan çık, başka hesapla gir → Ayarlar → Profili düzenle: formda **şu anki** hesabın adı ve kullanıcı adı
+      var (4 Ekim'de önceki hesabınki çıkıyordu — `b5a41a6`)
 - [ ] Moderatör hesabıyla Ayarlar → Moderasyon Paneli ve Ayarlar → Topluluk Kuralları: üstte **tek** başlık var
       ("settings" / "admin" yazan ikinci başlık yok — `3a13269`)
 
