@@ -31,9 +31,9 @@ Mağaza formlarında kullanılacak adresler (projede zaten bu adresler geçiyor 
 
 ## 1. App Store Connect
 
-> **İncelemeye build 8 gönderilecek** (kayıt ekranı linkleri + gizlenen Google/Apple butonları).
-> Build 8, EAS kredisi gelince alınacak. Formlar, metinler ve görseller şimdiden doldurulabilir;
-> yalnızca 1.4'teki build seçimi ve 1.8 gönderim build 8'i bekler.
+> **6 Ekim: başvuru günü.** İncelemeye **build 9** gönderilecek ("18 yaşında veya daha büyüğüm" kutusu). Build 9 gecikirse
+> build 8 (TestFlight'ta, linkler çalışıyor) da gönderilebilir. Yaş derecelendirmesi: Koşullar ve Play hedef kitlesi 18+;
+> Apple anketinin sonucu daha düşük çıkarsa 18+'ya yükseltmek kullanıcıya sorulur. Demo hesap **önce** doldurulmalı.
 
 appstoreconnect.apple.com → **Apps → Odyssey Journal**
 

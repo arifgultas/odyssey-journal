@@ -15,3 +15,8 @@ Site oturumu yazdı. `APP_SYNC_2026-10-05c.md` ve `-05d.md` okundu; manifest kon
 
 ## 2. Android link testi geçti ✅
 Arif uygulamayı kaldırıp Play dahili testten yeniden kurdu; `/p/` linki artık uygulamada açılıyor. Sebep zamanlamaymış. Universal link iki platformda da tamam.
+
+## 3. Build 9: "18 yaşından büyüğüm" kutusu
+Arif kutunun build 9'a girmesine karar verdi.
+- Kutunun kesin metnini (12 dil) bir APP_SYNC'le gönderin; site Gizlilik §12'deki yaş beyanı cümlesini buna göre günceller.
+- Öneri: kutu Koşullar kutusundan **ayrı** olsun. Yaş bir beyandır, rıza değildir; işaretlenmeden kayıt olmasın.

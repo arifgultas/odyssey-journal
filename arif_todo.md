@@ -11,19 +11,29 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
-> **5 Ekim akşam — Play kurulumu bitti ✅, kapalı testin kilidi açık.**
-> **6 Ekim, senden:**
-> 1. **12 test kullanıcısı:** Android telefonu olan 12 kişinin Gmail adresini topla. Oturum adresleri "kapalı test" listesine
->    ekler, kanalı açar, build 8'i oraya koyar. Kişiler linke dokunup "test kullanıcısı ol" der, Play'den kurar ve 14 gün
->    boyunca telefonda tutar. 14 günlük sayaç kapalı test yayınlanınca başlar.
-> 2. **Demo hesabı doldur:** `review@odysseyjournal.app` boş (§3b). Play incelemesi bu hesapla girecek; telefonda birkaç gönderi,
->    takip ve mesaj ekle.
-> 3. ✅ ~~**Android link testi**~~ — 5 Ekim gece: kaldır + yeniden kur sonrası link uygulamada açıldı. iPhone da ✅.
-> 4. **E-posta testi:** şablonlar panelde ✅. Türkçe telefonla yeni hesap → onay e-postası Türkçe gelmeli; başka dilde → konu
->    İngilizce, gövde o dilde.
-> 5. ✅ **Yaş sınırı 18+** canlıda (site `5a5041d`, 12 dil; Play hedef kitlesi de 18+). Duyuru gerekmiyor.
->    **Karar senin (acelesi yok):** kayıt ekranına ayrı bir "18 yaşından büyüğüm" kutusu. Zorunlu değil, Koşullar kutusu
->    yaşı zaten kapsıyor; mağaza incelemesinde artı olur. İstersen build 9'a eklerim.
+> **6 Ekim — senden beklenenler** (oturum gerisini yapar; plan: `FINALIZE.md` "★ 6 Ekim planı")
+> 1. **12 test kullanıcısının Gmail adresi.** Android telefonu olan 12 kişi. Oturum kapalı test listesine ekler, kanalı açar,
+>    sürümü Google'a gönderir. Sen onlara katılım linkini iletirsin. Linke dokunup "test kullanıcısı ol" derler, Play'den
+>    kurarlar ve **14 gün** telefonda tutarlar. Sayaç kapalı test sürümü yayına girince başlar.
+> 2. **Demo hesabı doldur** (App Store ve Play incelemesi bundan önce olmamalı): `review@odysseyjournal.app` ile telefonda
+>    gir, profil fotoğrafı ve adı ekle, 2-3 fotoğraflı gönderi paylaş, birkaç kişiyi takip et, bir mesajlaşma başlat (§3b).
+> 3. **Build 9'a onay ver.** İçinde: "18 yaşında veya daha büyüğüm" kutusu. iOS build'i oturum almayı dener; Apple girişi
+>    isterse komutu kendi terminalinde çalıştırırsın (`npx eas build -p ios --profile production`).
+> 4. **App Store başvurusu (iOS):** App Store Connect formlarını oturum Chrome'da doldurur. Senden:
+>    - beyan cevaplarına onay;
+>    - yaş derecelendirmesi kararı (anketin çıkardığı mı, yoksa Koşullar'la aynı 18+ mı);
+>    - inceleme bilgisinde **demo hesabın şifresi** (sen yazarsın);
+>    - iletişim için ad ve telefon;
+>    - son "Submit for Review" onayı.
+> 5. **E-posta testi:** Türkçe telefonla yeni hesap aç; onay e-postası Türkçe gelmeli. Başka dilde: konu İngilizce, gövde o dilde.
+> 6. **Şirket:** bakacağın konu, acele yok (bugünkü kişisel hesaplarla yayına çıkılabiliyor).
+>
+> **5 Ekim akşam/gece — yapılanlar ✅**
+> - Play'de uygulama oluşturuldu, build 8 dahili testte, telefonda kuruldu (harita dolu).
+> - Play kurulumu 11/11, kapalı testin kilidi açık. Hedef kitle **18+** (senin kararın). Site yaş sınırını 12 dilde 18 yaptı.
+> - Paylaşım linkleri iPhone ✅ ve Android ✅ (kaldır + yeniden kur sonrası).
+> - E-posta şablonları Supabase'de (senin onayınla, site oturumu koydu).
+> - "18 yaşında veya daha büyüğüm" kutusu kodda, **build 9'u bekliyor** (build alınmadı).
 >
 > **5 Ekim — build 8 alındı ✅** (iOS TestFlight'a gönderildi; Android AAB İndirilenler'de)
 > **Senden, sırayla:**

@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-05 öğleden sonra (**build 8 alındı**: iOS TestFlight'a gönderildi, AAB hazır — hemen aşağıda).
+**Son güncelleme:** 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti, linkler iki platformda çalışıyor; **6 Ekim planı hemen aşağıda**).
 Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
 Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
 Aynı gün sabah: `032` canlıda, W1–W10 işlendi ("4 Ekim — build 8 öncesi son tur").
@@ -14,7 +14,45 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 5 Ekim — build öncesi tamam, sırada build 8 (BURADAN BAŞLAYIN)
+## ★ 6 Ekim planı + 5 Ekim akşam/gece özeti (BURADAN BAŞLAYIN)
+
+**Durum:** `main` = origin, CI yeşil. **Build 9'a girecek kod hazır, build alınmadı** (kullanıcı: "şimdi build alma, yarın
+bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.
+
+### 5 Ekim akşam/gece yapılanlar
+| Ne | Sonuç |
+|---|---|
+| **Play: uygulama oluşturuldu** | Kişisel hesap "Gültaş Software", app id `4973909615936715001`, `com.odysseyjournal.app`, en-US, ücretsiz |
+| **Play: build 8 dahili testte** | `2 (1.0.0)`, Play App Signing açık, test listesi "Odyssey Journal" (gultassoftware@gmail.com). Kullanıcı kurdu; harita dolu |
+| **Parmak izleri** | Play imzalama + EAS upload SHA-1'leri "Odyssey Android Maps SDK" anahtarında. Play SHA-256 sitede `assetlinks.json`'da (site `388a7ca`) |
+| **Paylaşım linkleri** | iPhone ✅ (TestFlight build 8). Android ✅: ilk denemede sitede açıldı; kaldır + yeniden kur sonrası uygulamada açıldı (uygulama parmak izinden önce kurulmuştu) |
+| **Play kurulumu 11/11, kapalı testin kilidi açık** | Ayrıntı: aşağıda "Sıradaki" 2b. Hedef kitle **yalnız 18+** (kullanıcı kararı; 13-17 seçilince Play Aile politikasını istiyor) |
+| **Site** | Yaş sınırı Koşullar §2 ve Gizlilik §12'de 12 dilde **18** (site `5a5041d`). E-posta şablonları Supabase'de (konu TR/EN, gövde 12 dil, site `5a7ed19`). Notlar: `APP_SYNC_2026-10-05b…e`, `SITE_SYNC_2026-10-05b…d` |
+| **Build 9 kodu: "18 yaşında veya daha büyüğüm" kutusu** | Kullanıcı istedi. `app/(auth)/signup.tsx`: Koşullar kutusunun üstünde ayrı kutu (`confirmAge`); işaretlenmeden kayıt yok (`auth.ageConfirmRequired`). 12 dilde `auth.ageConfirm` + `auth.ageConfirmRequired`. Kontroller: tsc temiz, 27 suite / 237 test, i18n 12 × **759**, lint 0 |
+
+### 6 Ekim planı (sırayla)
+1. **Kullanıcıdan:** 12 test kullanıcısının Gmail adresi; demo hesabı (`review@odysseyjournal.app`) içeriği; build 9 kararı.
+2. **Build 9** (kullanıcı onayıyla):
+   - Android: `eas build -p android --profile production` (versionCode 3).
+   - iOS: `eas build -p ios --profile production` (buildNumber 9). Yeni native yetenek yok, `--non-interactive` yeterli olmalı. Düşerse kullanıcı kendi terminalinde etkileşimli alır.
+   - Sonra `eas submit -p ios`, Sentry source map kontrolü.
+3. **App Store başvurusu** (`store_control.md` §1, kullanıcıyla birlikte; oturum Chrome'da doldurur, beyanlar onayla):
+   - **İncelemeye build 9 gönderilir** (18+ kutusu inceleme sürümünde olsun). Build 9 gecikirse build 8 de gönderilebilir; karar kullanıcının.
+   - 1.1 kategori, içerik hakları, **yaş derecelendirmesi**: anket içerikten hesaplar, Koşullar 18 dediği için 18+ seçmek de bir seçenek; kullanıcıya sorulur.
+   - 1.2 App Privacy, 1.3 fiyat.
+   - 1.4-1.5b metinler ve görseller (12 dil, `STORE_LISTING.md` + `mockup_feature/ios/<dil>/`).
+   - 1.6 inceleme bilgisi: demo hesabın şifresini kullanıcı yazar; hesap **önce doldurulmuş olmalı**.
+   - 1.7 manuel yayın, 1.8 gönder.
+4. **Play kapalı test:**
+   - Kanal oluştur, ülkeler: tümü. Test listesi: 12 Gmail.
+   - Sürüm: build 9 AAB (yoksa build 8). Google incelemesine gönder.
+   - Kullanıcı test kullanıcılarına katılım linkini iletir. **14 günlük sayaç** sürüm yayına girince başlar.
+5. **Play mağaza çevirileri** (isteğe bağlı): 11 dilin metni ve görselleri (`STORE_LISTING.md`, `mockup_feature/android/<dil>/`, `feature-graphic-<dil>.png`). Görselleri tek tek ekle, toplu yüklemede sıra karışıyor.
+6. Cihaz testleri `arif_todo.md` §3 (e-posta dili dahil).
+
+---
+
+## 5 Ekim — gün içi: build öncesi işler ve build 8
 
 **Durum:** `main` = origin (`7b0725b` + bu notlar), CI yeşil. `supabase/**` değişmedi (deploy yok). Kullanıcı bu oturumda
 **build alınmamasını** istedi; build'i ayrıca başlatacak. Build öncesi kalan her şey yapıldı:
