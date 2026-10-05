@@ -22,6 +22,11 @@ import {
     View,
 } from 'react-native';
 
+// Stand-ins for the two links in auth.consentSentence; control characters, so no translation
+// can contain them
+const TERMS_MARK = '\u0001';
+const PRIVACY_MARK = '\u0002';
+
 // Updated Stitch design colors matching the login screen
 const StitchColors = {
     light: {
@@ -65,6 +70,10 @@ export default function SignUpScreen() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [acceptTerms, setAcceptTerms] = useState(false);
+    // The checkbox sentence with its two links where the language's grammar puts them
+    const consentParts = t('auth.consentSentence', { terms: TERMS_MARK, privacy: PRIVACY_MARK })
+        .split(new RegExp(`(${TERMS_MARK}|${PRIVACY_MARK})`))
+        .filter(Boolean);
 
     // Focus states for floating labels
     const [fullNameFocused, setFullNameFocused] = useState(false);
@@ -349,22 +358,20 @@ export default function SignUpScreen() {
                                 )}
                             </View>
                             <Text style={[styles.termsText, { color: theme.textMuted }]}>
-                                <Text
-                                    style={{ color: theme.tealLink, textDecorationLine: 'underline' }}
-                                    onPress={() => openLegalPage('terms')}
-                                    suppressHighlighting
-                                >
-                                    {t('auth.termsOfService')}
-                                </Text>
-                                {' '}{t('common.and')}{' '}
-                                <Text
-                                    style={{ color: theme.tealLink, textDecorationLine: 'underline' }}
-                                    onPress={() => openLegalPage('privacy')}
-                                    suppressHighlighting
-                                >
-                                    {t('auth.privacyPolicy')}
-                                </Text>
-                                {t('auth.acceptSuffix')}
+                                {consentParts.map((part, index) =>
+                                    part === TERMS_MARK || part === PRIVACY_MARK ? (
+                                        <Text
+                                            key={index}
+                                            style={{ color: theme.tealLink, textDecorationLine: 'underline' }}
+                                            onPress={() => openLegalPage(part === TERMS_MARK ? 'terms' : 'privacy')}
+                                            suppressHighlighting
+                                        >
+                                            {t(part === TERMS_MARK ? 'auth.consentTermsLink' : 'auth.consentPrivacyLink')}
+                                        </Text>
+                                    ) : (
+                                        part
+                                    )
+                                )}
                             </Text>
                         </TouchableOpacity>
 

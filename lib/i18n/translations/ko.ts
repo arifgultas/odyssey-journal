@@ -79,9 +79,11 @@ export default {
         appleLoginSoon: 'Apple 로그인 곧 출시!',
         googleSignupSoon: 'Google 가입 곧 출시!',
         appleSignupSoon: 'Apple 가입 곧 출시!',
-        termsOfService: '이용약관',
-        privacyPolicy: '개인정보처리방침',
-        acceptSuffix: '.',
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: '{{terms}}에 동의하며 {{privacy}}을 읽었습니다.',
+        consentTermsLink: '이용약관',
+        consentPrivacyLink: '개인정보처리방침',
         copyright: '© 2026 Odyssey Journal. 모든 권리 보유.',
         forgotPasswordTitle: '비밀번호를 잊으셨나요',
         forgotPasswordSubtitle: '걱정 마세요. 이메일을 입력하여 재설정하세요.',
@@ -727,6 +729,7 @@ export default {
     moderation: {
         flaggedNoReasons: '콘텐츠가 검토를 위해 플래그되었습니다. 커뮤니티 가이드라인을 준수하는지 확인해 주세요.',
         flaggedWithReasons: '콘텐츠가 다음 사유로 인해 플래그되었습니다: {{reasons}}. 게시물이 커뮤니티 가이드라인을 준수하는지 확인해 주세요.',
+        appealHint: '오류라고 생각되면 {{email}}(으)로 문의해 주세요. 담당자가 직접 검토합니다.',
         categories: {
             harassment: '괴롭힘',
             'harassment/threatening': '협박성 괴롭힘',

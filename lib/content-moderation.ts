@@ -1,6 +1,7 @@
 import { hasAiConsent } from './ai-consent';
 import { supabase } from './supabase';
 import { t, hasTranslation } from './i18n';
+import { LEGAL_EMAILS } from './legal-links';
 
 /**
  * Thrown when content would go to OpenAI without the reader's permission (App Store 5.1.2(i)).
@@ -146,9 +147,14 @@ export async function moderatePost(
 }
 
 /**
- * Get user-friendly rejection message
+ * Get user-friendly rejection message, ending with how to contest it (the privacy policy
+ * promises a person reviews mistakes sent to support)
  */
 export function getModerationMessage(flaggedCategories: string[]): string {
+    return `${flaggedReason(flaggedCategories)}\n\n${t('moderation.appealHint', { email: LEGAL_EMAILS.support })}`;
+}
+
+function flaggedReason(flaggedCategories: string[]): string {
     if (flaggedCategories.length === 0) {
         return t('moderation.flaggedNoReasons');
     }

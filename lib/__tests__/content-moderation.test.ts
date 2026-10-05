@@ -19,7 +19,7 @@ jest.mock('../ai-consent', () => ({
 
 import { hasAiConsent } from '../ai-consent';
 import { supabase } from '../supabase';
-import { AiConsentRequiredError, moderateText, moderateImages } from '../content-moderation';
+import { AiConsentRequiredError, getModerationMessage, moderateText, moderateImages } from '../content-moderation';
 
 describe('content-moderation', () => {
     beforeEach(() => {
@@ -78,5 +78,10 @@ describe('content-moderation', () => {
             const result = await moderateImages([]);
             expect(result.approved).toBe(true);
         });
+    });
+
+    it('tells the writer how to contest a rejection', () => {
+        expect(getModerationMessage([])).toContain('support@odysseyjournal.app');
+        expect(getModerationMessage(['harassment'])).toContain('support@odysseyjournal.app');
     });
 });

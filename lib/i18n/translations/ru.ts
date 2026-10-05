@@ -79,9 +79,11 @@ export default {
         appleLoginSoon: 'Вход через Apple скоро!',
         googleSignupSoon: 'Регистрация через Google скоро!',
         appleSignupSoon: 'Регистрация через Apple скоро!',
-        termsOfService: 'Условия использования',
-        privacyPolicy: 'Политика конфиденциальности',
-        acceptSuffix: '.',
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: 'Я принимаю {{terms}} и ознакомлен(а) с {{privacy}}.',
+        consentTermsLink: 'Условия использования',
+        consentPrivacyLink: 'Политикой конфиденциальности',
         copyright: '© 2026 Odyssey Journal. Все права защищены.',
         forgotPasswordTitle: 'Забыли пароль',
         forgotPasswordSubtitle: 'Не волнуйтесь, бывает. Введите почту для сброса.',
@@ -727,6 +729,7 @@ export default {
     moderation: {
         flaggedNoReasons: 'Ваш контент был отмечен для проверки. Пожалуйста, убедитесь, что он соответствует правилам нашего сообщества.',
         flaggedWithReasons: 'Ваш контент был отмечен по следующим причинам: {{reasons}}. Пожалуйста, убедитесь, что ваша публикация соответствует правилам нашего сообщества.',
+        appealHint: 'Если вы считаете это ошибкой, напишите на {{email}}, и решение проверит человек.',
         categories: {
             harassment: 'домогательство/травля',
             'harassment/threatening': 'угрожающее домогательство',

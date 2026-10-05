@@ -79,9 +79,11 @@ export default {
         appleLoginSoon: 'Accesso con Apple presto disponibile!',
         googleSignupSoon: 'Registrazione con Google presto disponibile!',
         appleSignupSoon: 'Registrazione con Apple presto disponibile!',
-        termsOfService: 'Termini di servizio',
-        privacyPolicy: 'Informativa sulla privacy',
-        acceptSuffix: '.',
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: "Accetto i {{terms}} e ho letto l'{{privacy}}.",
+        consentTermsLink: 'Termini di servizio',
+        consentPrivacyLink: 'Informativa sulla privacy',
         copyright: '© 2026 Odyssey Journal. Tutti i diritti riservati.',
         forgotPasswordTitle: 'Password dimenticata',
         forgotPasswordSubtitle: 'Non preoccuparti, succede. Inserisci la tua email per reimpostare.',
@@ -727,6 +729,7 @@ export default {
     moderation: {
         flaggedNoReasons: 'Il tuo contenuto è stato segnalato per la revisione. Assicurati che rispetti le nostre linee guida della community.',
         flaggedWithReasons: 'Il tuo contenuto è stato segnalato per: {{reasons}}. Assicurati che rispetti le nostre linee guida della community.',
+        appealHint: 'Se pensi che sia un errore, scrivi a {{email}}: una persona lo esaminerà.',
         categories: {
             harassment: 'molestie',
             'harassment/threatening': 'molestie minacciose',

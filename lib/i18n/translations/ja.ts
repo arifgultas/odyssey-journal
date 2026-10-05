@@ -79,9 +79,11 @@ export default {
         appleLoginSoon: 'Appleログインは近日公開！',
         googleSignupSoon: 'Google登録は近日公開！',
         appleSignupSoon: 'Apple登録は近日公開！',
-        termsOfService: '利用規約',
-        privacyPolicy: 'プライバシーポリシー',
-        acceptSuffix: '。',
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: '{{terms}}に同意し、{{privacy}}を読みました。',
+        consentTermsLink: '利用規約',
+        consentPrivacyLink: 'プライバシーポリシー',
         copyright: '© 2026 Odyssey Journal. 全著作権所有。',
         forgotPasswordTitle: 'パスワードを忘れた',
         forgotPasswordSubtitle: '心配いりません。メールを入力してリセットしてください。',
@@ -727,6 +729,7 @@ export default {
     moderation: {
         flaggedNoReasons: 'あなたのコンテンツは確認のためにフラグが付けられました。コミュニティガイドラインに従っているかご確認ください。',
         flaggedWithReasons: 'あなたのコンテンツは次の理由でフラグが付けられました：{{reasons}}。投稿がコミュニティガイドラインに従っているかご確認ください。',
+        appealHint: '誤りだと思われる場合は {{email}} までご連絡ください。担当者が確認します。',
         categories: {
             harassment: '嫌がらせ',
             'harassment/threatening': '嫌がらせ・脅迫',

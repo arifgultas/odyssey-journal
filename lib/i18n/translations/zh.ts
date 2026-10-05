@@ -79,9 +79,11 @@ export default {
         appleLoginSoon: 'Apple登录即将推出！',
         googleSignupSoon: 'Google注册即将推出！',
         appleSignupSoon: 'Apple注册即将推出！',
-        termsOfService: '服务条款',
-        privacyPolicy: '隐私政策',
-        acceptSuffix: '。',
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: '我接受{{terms}}，并已阅读{{privacy}}。',
+        consentTermsLink: '服务条款',
+        consentPrivacyLink: '隐私政策',
         copyright: '© 2026 Odyssey Journal. 版权所有。',
         forgotPasswordTitle: '忘记密码',
         forgotPasswordSubtitle: '别担心。输入邮箱重置密码。',
@@ -727,6 +729,7 @@ export default {
     moderation: {
         flaggedNoReasons: '您的内容已被标记以待审查。请确保它符合我们的社区准则。',
         flaggedWithReasons: '您的内容因以下原因被标记: {{reasons}}。请确保您的帖子符合我们的社区准则。',
+        appealHint: '如果您认为这是误判，请发送邮件至 {{email}}，我们会由人工进行审核。',
         categories: {
             harassment: '骚扰',
             'harassment/threatening': '威胁性骚扰',

@@ -83,9 +83,11 @@ export default {
         appleLoginSoon: 'Apple login will be available soon!',
         googleSignupSoon: 'Google signup will be available soon!',
         appleSignupSoon: 'Apple signup will be available soon!',
-        termsOfService: 'Terms of Service',
-        privacyPolicy: 'Privacy Policy',
-        acceptSuffix: '.',
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: 'I accept the {{terms}} and have read the {{privacy}}.',
+        consentTermsLink: 'Terms of Service',
+        consentPrivacyLink: 'Privacy Policy',
         copyright: '© 2026 Odyssey Journal. All rights reserved.',
         // Forgot password keys
         forgotPasswordTitle: 'Forgot Password',
@@ -781,6 +783,7 @@ export default {
     moderation: {
         flaggedNoReasons: 'Your content was flagged for review. Please ensure it follows our community guidelines.',
         flaggedWithReasons: 'Your content was flagged for: {{reasons}}. Please ensure your post follows our community guidelines.',
+        appealHint: 'If you think this is a mistake, write to {{email}} and a person will review it.',
         categories: {
             harassment: 'harassment',
             'harassment/threatening': 'harassment/threatening',

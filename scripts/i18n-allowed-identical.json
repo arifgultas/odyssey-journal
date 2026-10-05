@@ -7,7 +7,6 @@
   ],
   "*": [
     "home.title",
-    "auth.acceptSuffix",
     "createPost.ok"
   ],
   "de": [

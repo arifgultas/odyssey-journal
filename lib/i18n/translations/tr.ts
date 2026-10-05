@@ -84,9 +84,11 @@ export default {
         appleLoginSoon: 'Apple ile giriş yakında aktif olacak!',
         googleSignupSoon: 'Google ile kayıt yakında aktif olacak!',
         appleSignupSoon: 'Apple ile kayıt yakında aktif olacak!',
-        termsOfService: 'Kullanım Koşulları',
-        privacyPolicy: 'Gizlilik Politikası',
-        acceptSuffix: "'nı kabul ediyorum.",
+        // Sign-up checkbox: the Terms are accepted, the Privacy Policy only read (KVKK: a notice
+        // is not consented to). The two links go where each language's grammar puts them.
+        consentSentence: "{{terms}}'nı kabul ediyorum ve {{privacy}}'nı okudum.",
+        consentTermsLink: 'Kullanım Koşulları',
+        consentPrivacyLink: 'Gizlilik Politikası',
         copyright: '© 2026 Odyssey Journal. Tüm hakları saklıdır.',
         // Forgot password keys
         forgotPasswordTitle: 'Şifremi Unuttum',
@@ -781,6 +783,7 @@ export default {
     moderation: {
         flaggedNoReasons: 'İçeriğiniz inceleme için işaretlendi. Lütfen topluluk kurallarımıza uyduğundan emin olun.',
         flaggedWithReasons: 'İçeriğiniz şu nedenlerden dolayı işaretlendi: {{reasons}}. Lütfen gönderinizin topluluk kurallarımıza uyduğundan emin olun.',
+        appealHint: 'Bunun bir hata olduğunu düşünüyorsanız {{email}} adresine yazın; bir kişi inceleyecek.',
         categories: {
             harassment: 'taciz',
             'harassment/threatening': 'tehditkar taciz',
