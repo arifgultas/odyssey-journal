@@ -28,6 +28,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: false,
     bundleIdentifier: "app.odysseyjournal",
     buildNumber: "8",
+    // Shared post links (https://odysseyjournal.app/[<lang>/]p/<id>) open in the app once the site
+    // publishes /.well-known/apple-app-site-association; until then they open the site's /p/ page.
+    // lib/deep-links.ts maps them to the post screen.
+    associatedDomains: ["applinks:odysseyjournal.app"],
     infoPlist: {
       // The twelve languages the app ships (lib/i18n). Declaring them lets iOS - and
       // MapKit with it - treat this as a localized app instead of an English-only one.
@@ -90,6 +94,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: "com.odysseyjournal.app",
     versionCode: 2,
     softwareKeyboardLayoutMode: "resize",
+    // Shared post links, as on iOS above; verified against the site's /.well-known/assetlinks.json.
+    // Only /p/ paths: claiming / would send every visit to the site into the app. pathPattern's "."
+    // is any character, so "/../p/.*" is the language-prefixed form (/tr/p/<id>).
+    intentFilters: [
+      {
+        action: "VIEW",
+        autoVerify: true,
+        data: [
+          { scheme: "https", host: "odysseyjournal.app", pathPrefix: "/p/" },
+          { scheme: "https", host: "odysseyjournal.app", pathPattern: "/../p/.*" },
+        ],
+        category: ["BROWSABLE", "DEFAULT"],
+      },
+    ],
     adaptiveIcon: {
       // Same cream as the iOS icon, so the Android icon reads as the same artwork
       backgroundColor: "#F7F6F0",

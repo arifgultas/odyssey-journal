@@ -53,11 +53,10 @@ export async function sharePost(data: SharePostData): Promise<boolean> {
  * Generate shareable post URL
  */
 export function generatePostShareUrl(postId: string): string {
-    // The site is a static marketing page with no login, so it will never show posts; /post/<id>
-    // was a 404. The home page is where the store links are. The id rides along only so a future
-    // universal link / App Link can open the post in the app for people who have it installed.
-    // In the sharer's language: every language's home page shows the "open in the app" banner.
-    return siteUrl(`/?post=${encodeURIComponent(postId)}`);
+    // Without the app this lands on the site's /p/<id> page (store links, "open in the app"; the site
+    // never shows posts itself). With the app installed the same address opens the post in the app
+    // (universal link / App Link, app.config.ts). In the sharer's language.
+    return siteUrl(`/p/${encodeURIComponent(postId)}`);
 }
 
 /**

@@ -20,10 +20,10 @@ describe('site links follow the language', () => {
         expect(siteUrl('/support', 'xx')).toBe('https://odysseyjournal.app/support');
     });
 
-    it('shares posts on the home page in the app language', async () => {
+    it('shares posts on the site /p/ page in the app language', async () => {
         await setLanguage('de');
-        expect(generatePostShareUrl('abc')).toBe('https://odysseyjournal.app/de/?post=abc');
+        expect(generatePostShareUrl('abc')).toBe('https://odysseyjournal.app/de/p/abc');
         await setLanguage('en');
-        expect(generatePostShareUrl('abc')).toBe('https://odysseyjournal.app/?post=abc');
+        expect(generatePostShareUrl('abc')).toBe('https://odysseyjournal.app/p/abc');
     });
 });
