@@ -138,7 +138,7 @@ play.google.com/console
 - [ ] **Ads:** No
 - [ ] **Content rating:** e-posta gir → kategori **Social / Communication** → kullanıcılar etkileşiyor mu:
       **Yes** → konum paylaşılıyor mu: **Yes** → şiddet, cinsellik vb.: **No**
-- [ ] **Target audience:** 13+ (çocuklara yönelik değil)
+- [x] **Target audience:** ~~13+~~ → **yalnız 18+** (5 Ekim kararı: 13-17 seçilince Play Aile politikasını istiyor)
 - [ ] **News app:** No
 - [ ] **Data safety:**
   - Toplanan: e-posta, ad, kullanıcı ID, fotoğraflar, hassas konum, mesajlar, diğer kullanıcı içeriği,

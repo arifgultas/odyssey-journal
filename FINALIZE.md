@@ -41,7 +41,29 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 **Sıradaki:**
 1. ✅ (5 Ekim akşam) Play'de uygulama oluşturuldu (kişisel hesap "Gültaş Software", app id `4973909615936715001`, en-US, ücretsiz). AAB Dahili test'e yayınlandı: `2 (1.0.0)`, Play App Signing açık. Test listesi "Odyssey Journal" (gultassoftware@gmail.com). Katılım linki: `https://play.google.com/apps/internaltest/4701189709697953452`. İnceleme beklerken uygulama adı geçici olarak "com.odysseyjournal.app (unreviewed)" görünüyor.
-2. ½ Parmak izleri okundu (yukarıda "Google Maps anahtarları"); SHA-256 siteye gitti (`APP_SYNC_2026-10-05b`, site `1e0c973`). İki SHA-1 de "Odyssey Android Maps SDK" anahtarına eklendi (5 Ekim akşam, kullanıcı onayıyla; kaydedildikten sonra yeniden açılıp doğrulandı). Anahtarda şimdi debug + upload + app signing var; debug yayından önce kaldırılacak.
+2. ✅ Parmak izleri okundu (yukarıda "Google Maps anahtarları"); SHA-256 siteye gitti (`APP_SYNC_2026-10-05b`, site `1e0c973`). İki SHA-1 de "Odyssey Android Maps SDK" anahtarına eklendi (5 Ekim akşam, kullanıcı onayıyla; kaydedildikten sonra yeniden açılıp doğrulandı). Anahtarda şimdi debug + upload + app signing var; debug yayından önce kaldırılacak. Kullanıcı Play'den kurdu: harita dolu geliyor.
+2b. ✅ (5 Ekim gece) **Play kurulumu 11/11, kapalı testin kilidi açık.** Oturum Chrome'da doldurdu, kullanıcı cevapları onayladı. Kayıt ekranındaki OpenAI satırını kullanıcı sordu: kasıtlı (Apple 5.1.2(i), `acc5f32`), kalıyor.
+   - Uygulama içeriği:
+     - gizlilik `/privacy-policy`;
+     - reklam yok; reklam kimliği yok (AAB manifest'inde `AD_ID` yok, kontrol edildi);
+     - oturum açma `review@odysseyjournal.app` (şifreyi kullanıcı yazdı);
+     - IARC: e-posta support@, kategori Sosyal. Konum paylaşımı evet, engelle/bildir evet, sohbet denetimi hayır, satın alma hayır. Sonuç ABD 13+, PEGI "ebeveyn rehberliği";
+     - **hedef kitle yalnız 18+** + Google'ın küçük saydığı kullanıcıları kısıtla. Kullanıcı kararı: 13-15 ve 16-17 seçilince Play Aile politikasını istiyor. Site Koşullar/Gizlilik'teki "13"ü 18 yapacak, `APP_SYNC_2026-10-05c` (site `e6588ee`);
+     - veri güvenliği 11 tür. Hepsi toplanıyor, hiçbiri paylaşılmıyor, hiçbiri kısa süreli değil:
+       - ad, e-posta, kullanıcı kimliği: zorunlu; amaç işlevsellik + hesap yönetimi;
+       - tam konum, mesajlar, arama geçmişi, cihaz kimliği: isteğe bağlı; amaç işlevsellik;
+       - fotoğraflar ve diğer kullanıcı içeriği: isteğe bağlı; amaç işlevsellik + güvenlik/uyumluluk (moderasyon);
+       - kilitlenme günlükleri ve teşhisler: zorunlu; amaç analiz.
+       - Hesap silme bağlantısı `/delete-account`; kısmi veri silme bağlantısı boş (isteğe bağlı alan).
+     - resmi kurum, finans ve sağlık: hayır.
+   - Mağaza ayarları:
+     - Seyahat ve Yerel; support@, `https://odysseyjournal.app`.
+     - **Dikkat:** iletişim penceresinde "Kaydet ve yayınla"dan sonra bir onay penceresi daha çıkıyor; onaylanmazsa kaydedilmiyor.
+   - Varsayılan giriş en-US:
+     - `STORE_LISTING.md` metni, `play-icon-512.png`, `feature-graphic-en.png`, `android/en` 01→08.
+     - Toplu yüklemede sıra karışıyor, tek tek eklendi.
+     - **11 dilin çevirisi henüz yok** (zorunlu değil).
+   - Sırada: kapalı test kanalı (ülkeler, test listesi, build 8 sürümü, Google incelemesi). Kullanıcı 6 Ekim'de 12 Gmail adresi getirecek.
 3. TestFlight kurulunca link testi (iPhone Notlar → `/tr/p/<id>`) ve cihaz turu `arif_todo.md` §3.
 4. E-posta şablonları panele (kullanıcı onayıyla; site deposu `supabase-email-templates/`).
 5. Şirket kararı (kullanıcı bakacak): bugün Apple Individual + Play kişisel + sitede veri sorumlusu "Arif Gültaş" — tutarlı. Şirket kurulursa Apple hesabı dönüştürülür (Team ID'nin kalması beklenir), Play'de yeni şirket hesabına uygulama aktarımı, site metinleri.

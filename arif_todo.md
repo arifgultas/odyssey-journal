@@ -11,6 +11,16 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **5 Ekim akşam — Play kurulumu bitti ✅, kapalı testin kilidi açık.**
+> **6 Ekim, senden:**
+> 1. **12 test kullanıcısı:** Android telefonu olan 12 kişinin Gmail adresini topla. Oturum adresleri "kapalı test" listesine
+>    ekler, kanalı açar, build 8'i oraya koyar. Kişiler linke dokunup "test kullanıcısı ol" der, Play'den kurar ve 14 gün
+>    boyunca telefonda tutar. 14 günlük sayaç kapalı test yayınlanınca başlar.
+> 2. **Demo hesabı doldur:** `review@odysseyjournal.app` boş (§3b). Play incelemesi bu hesapla girecek; telefonda birkaç gönderi,
+>    takip ve mesaj ekle.
+> 3. **Yaş sınırı 18+:** Play hedef kitlesi "yalnız 18 ve üstü" seçildi (Aile politikasından uzak durmak için). Site Koşullar ve
+>    Gizlilik'teki "13"ü 18'e çekecek (`APP_SYNC_2026-10-05c`); senden bir şey gerekmiyor, yalnız haberin olsun.
+>
 > **5 Ekim — build 8 alındı ✅** (iOS TestFlight'a gönderildi; Android AAB İndirilenler'de)
 > **Senden, sırayla:**
 > 1. ✅ ~~**AAB'yi Play'e yükle**~~ — 5 Ekim akşam: uygulama oluşturuldu, `2 (1.0.0)` Dahili test'te, SHA-256 siteye gitti.
