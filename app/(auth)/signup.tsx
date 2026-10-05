@@ -103,6 +103,9 @@ export default function SignUpScreen() {
                 data: {
                     full_name: fullName,
                     display_name: fullName.split(' ')[0],
+                    // Picks the language of the confirmation email ({{ .Data.language }} in the
+                    // Supabase templates); kept current afterwards by syncPreferredLanguage
+                    language,
                 },
             },
         });

@@ -474,7 +474,10 @@ export class ProfileService {
 
     /**
      * Records the language the app is set to, so the server can write push notifications in
-     * it (the queue is built by a database trigger, which has no other way of knowing).
+     * it (the queue is built by a database trigger, which has no other way of knowing), and
+     * in the account's metadata, which Supabase's own emails read ({{ .Data.language }} in
+     * the email templates) - so a password reset arrives in the language the app is in now,
+     * not the one the account signed up in.
      *
      * Fire and forget: failing to record a preference must never interrupt the user.
      */
@@ -484,6 +487,10 @@ export class ProfileService {
             if (!user) return;
 
             await supabase.from('profiles').update({ preferred_language: language }).eq('id', user.id);
+            // Only on a change: every updateUser is a request and a USER_UPDATED event
+            if (user.user_metadata?.language !== language) {
+                await supabase.auth.updateUser({ data: { language } });
+            }
         } catch (error) {
             captureError(error as Error, { context: 'syncPreferredLanguage', language });
         }
