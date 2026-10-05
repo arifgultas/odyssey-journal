@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-04 gün sonu (`033` canlıda; build'ler yarına kaldı; yarının sırası hemen aşağıda).
+**Son güncelleme:** 2026-10-05 (build öncesi her şey bitti; sırada yalnız build 8 — hemen aşağıda).
+Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
 Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
 Aynı gün sabah: `032` canlıda, W1–W10 işlendi ("4 Ekim — build 8 öncesi son tur").
 Önceki: 2026-09-30 (site ↔ uygulama uyum turu), 2026-09-29 akşam (finalize taraması, advisor S1–S5).
@@ -13,39 +14,32 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 5 Ekim — yarının sırası (BURADAN BAŞLAYIN)
+## ★ 5 Ekim — build öncesi tamam, sırada build 8 (BURADAN BAŞLAYIN)
 
-**4 Ekim gün sonu durumu:** `main` = origin (`4845c48` + gün sonu notları), CI yeşil. **`033` canlıda** (Deploy Supabase
-run `37213112586`, 15:28'de geçti). Site oturumu `APP_SYNC_2026-10-04` ve `-04b`'yi 12 dilde yayına aldı (site
-`3730b91`) ve paylaşılan gönderi linkleri için `/p/<id>` sayfasını hazırladı (site `8058a39`). Siteden gelen not:
-`SITE_SYNC_2026-10-04.md` (bu depoda). **Build'ler alınmadı** — kullanıcı günü kapattı.
+**Durum:** `main` = origin (`7b0725b` + bu notlar), CI yeşil. `supabase/**` değişmedi (deploy yok). Kullanıcı bu oturumda
+**build alınmamasını** istedi; build'i ayrıca başlatacak. Build öncesi kalan her şey yapıldı:
 
-**Sıra (build 8'den önce 1-3, sonra build):**
-1. **Uygulamada açılan paylaşım linkleri** (`SITE_SYNC_2026-10-04.md` §2; native ayar → build ister, OTA ile gelmez):
-   - `app.config.ts`: `ios.associatedDomains: ["applinks:odysseyjournal.app"]`; `android.intentFilters` (https,
-     `odysseyjournal.app`, `pathPrefix: "/p/"` ve `pathPattern: "/../p/.*"`, `autoVerify: true`, BROWSABLE + DEFAULT).
-   - `lib/share.ts` `generatePostShareUrl`: `siteUrl(\`/?post=…\`)` → `siteUrl(\`/p/${encodeURIComponent(postId)}\`)`.
-   - `lib/deep-links.ts` `mapAppLink`: tam adres (`https://odysseyjournal.app/tr/p/<id>`) ve yalnız yol (`/tr/p/<id>`)
-     → `/post-detail/<id>`; şema + host'u at, isteğe bağlı iki harfli dil önekini atla; `odysseyjournal://post/<id>` aynen.
-   - Testler: `share` (EN kök + `tr` önekli `/p/`), `deep-links` (https tam/önekli, yalnız yol, eski şema, eşleşmeyen yol).
-   - Associated Domains yeteneği App ID'de yoksa EAS build sırasında eşitler; build günlüğünde kontrol et.
-   - Site doğrulama dosyaları (AASA / `assetlinks.json`) Team ID ve SHA-256 gelince yayınlanır; o zamana kadar link
-     siteye düşer, bir şey bozulmaz.
-2. **Team ID ve Android SHA-256'ları siteye ver** (oturum yapar): expo.dev → Credentials (Chrome, salt-okuma):
-   iOS dağıtım sertifikasındaki Apple Team ID ve Android production keystore SHA-256. Play'in **uygulama imzalama**
-   SHA-256'sı ilk Play yüklemesinden sonra çıkar (Play Console → App integrity). Hepsi site deposuna `APP_SYNC_<tarih>.md`
-   (Team ID ve sertifika parmak izleri gizli değildir, zaten AASA / assetlinks'te herkese açık yayınlanır).
-3. Supabase Security Advisor'a `033` sonrası bak (Chrome, salt-okuma; beklenen: 0 hata, 7 bilinen uyarı).
-4. **Build 8:** tsc + test + i18n:check → `eas build --platform android --profile production` (versionCode 2) ve
-   `eas build --platform ios --profile production` (buildNumber 8) → `eas submit -p ios --profile production`.
-5. Sentry → Releases'ta iki sürüm + source map. Play dahili test yüklemesi (kullanıcı) → iki SHA-1 Maps anahtarına,
-   SHA-256'lar siteye. Cihaz turu `arif_todo.md` §3 ("4 Ekim akşam" + "5 Ekim" maddeleri).
+| Ne | Nerede |
+|---|---|
+| **Paylaşım linkleri uygulamada açılıyor** (`SITE_SYNC_2026-10-04` §2): link `/<dil>/p/<id>` (EN kökte); iOS `associatedDomains: applinks:odysseyjournal.app`; Android doğrulanan intent filter (`/p/`, `/../p/.*`); `mapAppLink` tam adresi ve yalnız yolu `/post-detail/<id>`'ye çeviriyor, eski `odysseyjournal://post/<id>` aynen | `dd6baac` — `app.config.ts`, `lib/share.ts`, `lib/deep-links.ts` + testler |
+| **E-posta dili — kullanıcı kararı: evet, build 8'e.** Kayıt `user_metadata.language` gönderiyor; `syncPreferredLanguage` (açılışta ve dil değişince) farklıysa `auth.updateUser({ data: { language } })` → şifre sıfırlama e-postası güncel dilde. Değeri olmayan hesaplar (eski build'ler) İngilizce alır. Şablonları site oturumu hazırlıyor (`{{ .Data.language }}`) | `7b0725b` — `app/(auth)/signup.tsx`, `lib/profile-service.ts`, `preferred-language.test.ts` |
+| **Siteye bilgi:** Apple Team ID `28848845P3` (iOS bundle `app.odysseyjournal`), EAS upload anahtarı SHA-256 `EB:7F:…:45:2A` (tamamı site notunda), AASA/assetlinks örneği, e-posta şablon isteği | site `1246b55` `APP_SYNC_2026-10-05.md` |
+| **Security Advisor:** 0 hata, **8** uyarı — 7 bilinen + `admin_delete_comment` (`033`; ilk satırda `is_admin` kontrolü, anon'a kapalı → bilerek) | Chrome, salt-okuma |
 
-**Kullanıcı kararı bekleyen (SITE_SYNC §3):** Supabase e-posta şablonları (kayıt onayı, şifre sıfırlama) kullanıcı
-dilinde olsun mu? "Evet" ise uygulamada küçük iş: `app/(auth)/signup.tsx` `signUp` → `options.data.language`;
-şablonları site oturumu hazırlar (`{{ .Data.language }}`). Build 8'e girmesi istenirse 1'le birlikte yapılır.
+**Kontroller:** tsc temiz · **27 suite / 236 test** · i18n 12 × 756 · değişen dosyalarda lint 0 hata · `expo config`'te
+`associatedDomains` ve `intentFilters` var · `/security-review` (iki commit): bulgu yok.
 
----
+**Sıradaki (build 8):**
+1. `eas build --platform android --profile production` (versionCode 2) ve `eas build --platform ios --profile production`
+   (buildNumber 8). iOS günlüğünde **Associated Domains** yeteneğinin App ID'ye eşitlendiğini kontrol et (EAS kendisi açar;
+   açamazsa developer.apple.com → Identifiers → `app.odysseyjournal` → Associated Domains). → `eas submit -p ios --profile production`.
+   Push'ta build tetiklenmiyor: `ci.yml`'nin production build'i ve `eas-build.yml`'nin preview'ı yalnız elle (workflow_dispatch).
+2. Sentry → Releases'ta iki sürüm + source map.
+3. Kullanıcı AAB'yi Play Console → Dahili test'e yükler → oturum: App integrity'deki iki SHA-1 → Maps anahtarı; Play
+   **uygulama imzalama** SHA-256'sı → site (`assetlinks.json`'a ikinci parmak izi; o olmadan Play kurulumunda App Link doğrulanmaz).
+4. Site oturumu: AASA + `assetlinks.json` yayını ve 12 dilli e-posta şablonları → şablonlar hazır olunca oturum Supabase →
+   Authentication → Email Templates'e koyar (kullanıcı onayıyla).
+5. Cihaz turu `arif_todo.md` §3 ("4 Ekim akşam" + "5 Ekim").
 
 ## 4 Ekim akşam — ikinci tur
 

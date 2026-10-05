@@ -1,6 +1,6 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-10-04 gün sonu
+**Güncelleme:** 2026-10-05
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
@@ -11,14 +11,15 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
-> **5 Ekim (yarın) — senden gerekenler, sırayla:**
-> 1. Oturuma "devam edelim" de. Oturum önce sitenin istediği paylaşım linklerini (`/p/<id>`, uygulamada açılsın)
->    ekler, Team ID ve Android SHA-256'yı expo.dev'den kendisi okuyup siteye yazar, sonra **iOS ve Android build 8'i
->    alır** ve iOS'u TestFlight'a gönderir. Senden yalnız `git push` sonrası çıkabilecek onaylar.
-> 2. **Karar:** kayıt onayı / şifre sıfırlama e-postaları kullanıcının dilinde olsun mu? (Şu an hep İngilizce.)
->    "Evet" dersen uygulamada küçük bir değişiklik + site oturumu şablonları hazırlar.
-> 3. Build'ler bitince: AAB'yi Play Console → Dahili test'e yükle (§2) → oturum SHA-1/SHA-256'ları yerine koyar.
-> 4. TestFlight'tan build 8'i kur → §3 cihaz turu ("4 Ekim akşam" + "5 Ekim" maddeleri).
+> **5 Ekim — build öncesi her şey bitti, sırada build 8:**
+> - ✅ Paylaşım linkleri (`/p/<id>`) uygulamada açılacak şekilde eklendi; ✅ e-posta dili kararın (**evet**) uygulamaya
+>   girdi; ✅ Team ID + Android SHA-256 siteye yazıldı; ✅ Security Advisor 0 hata.
+> - **Senden, sırayla:**
+>   1. Build'i başlatmak istediğinde oturuma "build 8'i alalım" de (ya da kendin: `eas build --platform android --profile
+>      production` ve `eas build --platform ios --profile production`, sonra `eas submit -p ios --profile production`).
+>   2. Build'ler bitince AAB'yi Play Console → Dahili test'e yükle (§2) → oturum SHA-1/SHA-256'ları yerine koyar.
+>   3. TestFlight'tan build 8'i kur → §3 cihaz turu ("4 Ekim akşam" + "5 Ekim" maddeleri).
+>   4. Site oturumu 12 dilli e-posta şablonlarını hazırlayınca oturum Supabase paneline koyar — o adımda onayın istenir.
 >
 > **4 Ekim gün sonu:** `033` canlıda. Site, 4 Ekim'in iki metin güncellemesini 12 dilde yayına aldı (§6).
 >
@@ -289,6 +290,8 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] O linki Notlar'a yapıştır, dokun → uygulama gönderiyi açıyor (site doğrulama dosyaları yayındaysa; değilse site
       açılır, bu da doğru)
 - [ ] Uygulama silinmişken aynı link → site açılıyor
+- [ ] **E-posta dili** (site şablonları Supabase'e girdikten sonra): uygulama Türkçeyken yeni bir adresle kayıt ol → onay
+      e-postası Türkçe. Uygulamayı İngilizceye çevir → "Şifremi unuttum" → sıfırlama e-postası İngilizce
 
 **Dil turu** (FINALIZE A4 — uygulamayı **kapatmadan** dil değiştirerek)
 - [ ] Şu ekranlar açıkken dili değiştir; metin anında yeni dile geçmeli: Topluluk Kuralları,
@@ -387,8 +390,8 @@ temizlenir. Diğerini de aynı yolla sil.
       aldı (site `3730b91`): ev konumu, push kayıtları 30 gün, fotoğraf kontrolü, şikâyet/engelleme kapsamı.
 - [x] ~~Hukuk metinlerini avukata göster~~ → avukat yok (4 Ekim kararı). Kontrolü site oturumu yapıyor (KVKK +
       GDPR/CCPA + mağaza kuralları).
-- [ ] **Site için iki bilgi** (Apple Team ID, Android SHA-256'lar) — 5 Ekim'de oturum expo.dev'den okur; Play'in
-      uygulama imzalama SHA-256'sı ilk Play yüklemesinden sonra (§2).
+- [x] ~~**Site için iki bilgi** (Apple Team ID, EAS SHA-256)~~ ✅ 5 Ekim — oturum expo.dev'den okudu, site deposuna
+      `APP_SYNC_2026-10-05.md`. Kalan: Play'in uygulama imzalama SHA-256'sı ilk Play yüklemesinden sonra (§2), oturum yapar.
 - [ ] Uygulama yayına girince ana sayfadaki **App Store / Google Play** butonlarına gerçek mağaza
       linklerini koy (şu an `#download`). Sitenin `WORKLOG.md` → "Yapacaklarımız" adımları anlatıyor;
       oturuma linkleri vermen yeterli.
