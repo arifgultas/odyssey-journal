@@ -70,6 +70,8 @@ export default {
         passwordsDontMatch: 'パスワードが一致しません。',
         passwordMinLength: 'パスワードは6文字以上必要です。',
         acceptTermsRequired: '利用規約に同意してください。',
+        ageConfirm: '18歳以上です。',
+        ageConfirmRequired: 'アカウントを作成するには18歳以上である必要があります。',
         loginError: 'ログインエラー',
         signupError: '登録エラー',
         accountCreated: 'アカウントが作成されました！',

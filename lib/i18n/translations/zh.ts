@@ -70,6 +70,8 @@ export default {
         passwordsDontMatch: '密码不匹配。',
         passwordMinLength: '密码至少需要6个字符。',
         acceptTermsRequired: '请同意服务条款。',
+        ageConfirm: '我已年满18岁。',
+        ageConfirmRequired: '您必须年满18岁才能创建账户。',
         loginError: '登录错误',
         signupError: '注册错误',
         accountCreated: '账户已创建！',

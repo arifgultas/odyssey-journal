@@ -70,6 +70,8 @@ export default {
         passwordsDontMatch: 'As senhas não coincidem.',
         passwordMinLength: 'A senha deve ter pelo menos 6 caracteres.',
         acceptTermsRequired: 'Você deve aceitar os termos.',
+        ageConfirm: 'Tenho 18 anos ou mais.',
+        ageConfirmRequired: 'Você precisa ter 18 anos ou mais para criar uma conta.',
         loginError: 'Erro de login',
         signupError: 'Erro de cadastro',
         accountCreated: 'Conta criada!',

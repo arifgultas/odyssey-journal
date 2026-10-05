@@ -70,6 +70,8 @@ export default {
         passwordsDontMatch: 'Пароли не совпадают.',
         passwordMinLength: 'Пароль должен быть не менее 6 символов.',
         acceptTermsRequired: 'Вы должны принять условия.',
+        ageConfirm: 'Мне 18 лет или больше.',
+        ageConfirmRequired: 'Чтобы создать аккаунт, вам должно быть 18 лет или больше.',
         loginError: 'Ошибка входа',
         signupError: 'Ошибка регистрации',
         accountCreated: 'Аккаунт создан!',

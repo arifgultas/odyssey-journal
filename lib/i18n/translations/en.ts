@@ -74,6 +74,8 @@ export default {
         passwordsDontMatch: 'Passwords do not match.',
         passwordMinLength: 'Password must be at least 6 characters.',
         acceptTermsRequired: 'You must accept the terms to continue.',
+        ageConfirm: 'I am 18 or older.',
+        ageConfirmRequired: 'You must be 18 or older to create an account.',
         loginError: 'Login Error',
         signupError: 'Signup Error',
         accountCreated: 'Account Created!',

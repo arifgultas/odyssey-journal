@@ -70,6 +70,8 @@ export default {
         passwordsDontMatch: '비밀번호가 일치하지 않습니다.',
         passwordMinLength: '비밀번호는 6자 이상이어야 합니다.',
         acceptTermsRequired: '이용약관에 동의해주세요.',
+        ageConfirm: '만 18세 이상입니다.',
+        ageConfirmRequired: '계정을 만들려면 만 18세 이상이어야 합니다.',
         loginError: '로그인 오류',
         signupError: '가입 오류',
         accountCreated: '계정이 생성되었습니다!',

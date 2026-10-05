@@ -71,6 +71,8 @@ export default {
         passwordsDontMatch: 'كلمات المرور غير متطابقة.',
         passwordMinLength: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.',
         acceptTermsRequired: 'يجب قبول الشروط.',
+        ageConfirm: 'عمري 18 عامًا أو أكثر.',
+        ageConfirmRequired: 'يجب أن يكون عمرك 18 عامًا أو أكثر لإنشاء حساب.',
         loginError: 'خطأ في تسجيل الدخول',
         signupError: 'خطأ في إنشاء الحساب',
         accountCreated: 'تم إنشاء الحساب!',

@@ -75,6 +75,8 @@ export default {
         passwordsDontMatch: 'Şifreler eşleşmiyor.',
         passwordMinLength: 'Şifre en az 6 karakter olmalıdır.',
         acceptTermsRequired: 'Devam etmek için kullanım koşullarını kabul etmelisiniz.',
+        ageConfirm: '18 yaşında veya daha büyüğüm.',
+        ageConfirmRequired: 'Hesap açmak için 18 yaşında veya daha büyük olmalısınız.',
         loginError: 'Giriş Hatası',
         signupError: 'Kayıt Hatası',
         accountCreated: 'Hesap Oluşturuldu!',

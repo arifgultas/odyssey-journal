@@ -70,6 +70,8 @@ export default function SignUpScreen() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [acceptTerms, setAcceptTerms] = useState(false);
+    // The Terms set the minimum age at 18 (Play's target audience is 18+); asked separately so it is explicit
+    const [confirmAge, setConfirmAge] = useState(false);
     // The checkbox sentence with its two links where the language's grammar puts them
     const consentParts = t('auth.consentSentence', { terms: TERMS_MARK, privacy: PRIVACY_MARK })
         .split(new RegExp(`(${TERMS_MARK}|${PRIVACY_MARK})`))
@@ -94,6 +96,11 @@ export default function SignUpScreen() {
 
         if (password.length < 6) {
             Alert.alert(t('common.error'), t('auth.passwordMinLength'));
+            return;
+        }
+
+        if (!confirmAge) {
+            Alert.alert(t('common.error'), t('auth.ageConfirmRequired'));
             return;
         }
 
@@ -342,6 +349,27 @@ export default function SignUpScreen() {
                                 </View>
                             )}
                         </View>
+
+                        {/* Age Checkbox */}
+                        <TouchableOpacity
+                            style={styles.termsContainer}
+                            onPress={() => setConfirmAge(!confirmAge)}
+                            activeOpacity={0.7}
+                            accessibilityRole="checkbox"
+                            accessibilityState={{ checked: confirmAge }}
+                        >
+                            <View style={[styles.checkbox, {
+                                backgroundColor: confirmAge ? theme.primaryGold : 'transparent',
+                                borderColor: confirmAge ? theme.primaryGold : theme.border,
+                            }]}>
+                                {confirmAge && (
+                                    <Ionicons name="checkmark" size={14} color="#2C1810" />
+                                )}
+                            </View>
+                            <Text style={[styles.termsText, { color: theme.textMuted }]}>
+                                {t('auth.ageConfirm')}
+                            </Text>
+                        </TouchableOpacity>
 
                         {/* Terms Checkbox */}
                         <TouchableOpacity
