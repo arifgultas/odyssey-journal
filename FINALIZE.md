@@ -24,9 +24,11 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | **Paylaşım linkleri uygulamada açılıyor** (`SITE_SYNC_2026-10-04` §2): link `/<dil>/p/<id>` (EN kökte); iOS `associatedDomains: applinks:odysseyjournal.app`; Android doğrulanan intent filter (`/p/`, `/../p/.*`); `mapAppLink` tam adresi ve yalnız yolu `/post-detail/<id>`'ye çeviriyor, eski `odysseyjournal://post/<id>` aynen | `dd6baac` — `app.config.ts`, `lib/share.ts`, `lib/deep-links.ts` + testler |
 | **E-posta dili — kullanıcı kararı: evet, build 8'e.** Kayıt `user_metadata.language` gönderiyor; `syncPreferredLanguage` (açılışta ve dil değişince) farklıysa `auth.updateUser({ data: { language } })` → şifre sıfırlama e-postası güncel dilde. Değeri olmayan hesaplar (eski build'ler) İngilizce alır. Şablonları site oturumu hazırlıyor (`{{ .Data.language }}`) | `7b0725b` — `app/(auth)/signup.tsx`, `lib/profile-service.ts`, `preferred-language.test.ts` |
 | **Siteye bilgi:** Apple Team ID `28848845P3` (iOS bundle `app.odysseyjournal`), EAS upload anahtarı SHA-256 `EB:7F:…:45:2A` (tamamı site notunda), AASA/assetlinks örneği, e-posta şablon isteği | site `1246b55` `APP_SYNC_2026-10-05.md` |
+| **Siteden `SITE_SYNC_2026-10-05`** (bu depoda): AASA + `assetlinks.json` canlıda (Team ID + EAS SHA-256; Apple CDN almış). **Kayıt kutusu KVKK'ya göre:** Koşullar kabul edilir, Gizlilik Politikası yalnız okunur — 12 dilde tek cümle `auth.consentSentence` (`{{terms}}`, `{{privacy}}`), linkler dilin dil bilgisine göre yerleşiyor (ru: araç hâli). **Moderasyon reddi** sonunda 12 dilde "hata olduğunu düşünüyorsan support@'ya yaz, bir kişi inceler" (`moderation.appealHint`). "Gultas Software" uygulama metinlerinde yok (yalnız Sentry org kimliği). Yanıt site `7c14e7c` (`APP_SYNC_2026-10-05` §5) | `04c00af` — `signup.tsx`, `content-moderation.ts`, 12 çeviri |
+| **E-posta şablonları** site deposunda hazır (`supabase-email-templates/`, site `2843977`; okundu, temiz). Kullanıcı panele koymayı **build 8 sonrasına erteledi** → o zamana kadar e-postalar Supabase'in İngilizce varsayılanı | — |
 | **Security Advisor:** 0 hata, **8** uyarı — 7 bilinen + `admin_delete_comment` (`033`; ilk satırda `is_admin` kontrolü, anon'a kapalı → bilerek) | Chrome, salt-okuma |
 
-**Kontroller:** tsc temiz · **27 suite / 236 test** · i18n 12 × 756 · değişen dosyalarda lint 0 hata · `expo config`'te
+**Kontroller:** tsc temiz · **27 suite / 237 test** · i18n 12 × **757** · değişen dosyalarda lint 0 hata · `expo config`'te
 `associatedDomains` ve `intentFilters` var · `/security-review` (iki commit): bulgu yok.
 
 **Sıradaki (build 8):**
@@ -37,8 +39,9 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 2. Sentry → Releases'ta iki sürüm + source map.
 3. Kullanıcı AAB'yi Play Console → Dahili test'e yükler → oturum: App integrity'deki iki SHA-1 → Maps anahtarı; Play
    **uygulama imzalama** SHA-256'sı → site (`assetlinks.json`'a ikinci parmak izi; o olmadan Play kurulumunda App Link doğrulanmaz).
-4. Site oturumu: AASA + `assetlinks.json` yayını ve 12 dilli e-posta şablonları → şablonlar hazır olunca oturum Supabase →
-   Authentication → Email Templates'e koyar (kullanıcı onayıyla).
+4. E-posta şablonları (kullanıcı build 8 sonrasına bıraktı): site deposu `supabase-email-templates/` → Supabase →
+   Authentication → Email Templates → Confirm signup + Reset password (gövde `*.html`, konu `*.subject.txt`; konu alanı
+   şablonu kabul etmezse sitenin verdiği İngilizce konu). Kullanıcı onayıyla, Chrome. Sonra site APP_SYNC'e "panelde".
 5. Cihaz turu `arif_todo.md` §3 ("4 Ekim akşam" + "5 Ekim").
 
 ## 4 Ekim akşam — ikinci tur

@@ -19,7 +19,10 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 >      production` ve `eas build --platform ios --profile production`, sonra `eas submit -p ios --profile production`).
 >   2. Build'ler bitince AAB'yi Play Console → Dahili test'e yükle (§2) → oturum SHA-1/SHA-256'ları yerine koyar.
 >   3. TestFlight'tan build 8'i kur → §3 cihaz turu ("4 Ekim akşam" + "5 Ekim" maddeleri).
->   4. Site oturumu 12 dilli e-posta şablonlarını hazırlayınca oturum Supabase paneline koyar — o adımda onayın istenir.
+>   4. **E-posta şablonları** (12 dil, site hazırladı): build 8'den sonra oturuma "şablonları panele koy" de — sen
+>      erteledin. O zamana kadar onay / sıfırlama e-postaları İngilizce.
+> - Site istekleri de bitti: kayıt kutusu KVKK metni (Koşulları kabul, Gizlilik Politikası'nı okudum) ve moderasyon
+>   mesajına "support@'ya yaz" cümlesi, 12 dilde.
 >
 > **4 Ekim gün sonu:** `033` canlıda. Site, 4 Ekim'in iki metin güncellemesini 12 dilde yayına aldı (§6).
 >
@@ -290,6 +293,9 @@ TestFlight build 7'de avatar yükleme artık hata verir — beklenen, build 8'de
 - [ ] O linki Notlar'a yapıştır, dokun → uygulama gönderiyi açıyor (site doğrulama dosyaları yayındaysa; değilse site
       açılır, bu da doğru)
 - [ ] Uygulama silinmişken aynı link → site açılıyor
+- [ ] Kayıt ekranındaki kutu: "Kullanım Koşulları'nı kabul ediyorum ve Gizlilik Politikası'nı okudum." İki link de
+      açılıyor; bir de İngilizce ya da Rusça bak (cümle düzgün, linkler doğru yerde)
+- [ ] İçerik kontrolüne takılan bir yorumda (ör. açık hakaret) uyarının sonunda "support@odysseyjournal.app adresine yazın" cümlesi
 - [ ] **E-posta dili** (site şablonları Supabase'e girdikten sonra): uygulama Türkçeyken yeni bir adresle kayıt ol → onay
       e-postası Türkçe. Uygulamayı İngilizceye çevir → "Şifremi unuttum" → sıfırlama e-postası İngilizce
 
