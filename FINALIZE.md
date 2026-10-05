@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-05 (build öncesi her şey bitti; sırada yalnız build 8 — hemen aşağıda).
+**Son güncelleme:** 2026-10-05 öğleden sonra (**build 8 alındı**: iOS TestFlight'a gönderildi, AAB hazır — hemen aşağıda).
 Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
 Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
 Aynı gün sabah: `032` canlıda, W1–W10 işlendi ("4 Ekim — build 8 öncesi son tur").
@@ -31,18 +31,20 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 **Kontroller:** tsc temiz · **27 suite / 237 test** · i18n 12 × **757** · değişen dosyalarda lint 0 hata · `expo config`'te
 `associatedDomains` ve `intentFilters` var · `/security-review` (iki commit): bulgu yok.
 
-**Sıradaki (build 8):**
-1. `eas build --platform android --profile production` (versionCode 2) ve `eas build --platform ios --profile production`
-   (buildNumber 8). iOS günlüğünde **Associated Domains** yeteneğinin App ID'ye eşitlendiğini kontrol et (EAS kendisi açar;
-   açamazsa developer.apple.com → Identifiers → `app.odysseyjournal` → Associated Domains). → `eas submit -p ios --profile production`.
-   Push'ta build tetiklenmiyor: `ci.yml`'nin production build'i ve `eas-build.yml`'nin preview'ı yalnız elle (workflow_dispatch).
-2. Sentry → Releases'ta iki sürüm + source map.
-3. Kullanıcı AAB'yi Play Console → Dahili test'e yükler → oturum: App integrity'deki iki SHA-1 → Maps anahtarı; Play
-   **uygulama imzalama** SHA-256'sı → site (`assetlinks.json`'a ikinci parmak izi; o olmadan Play kurulumunda App Link doğrulanmaz).
-4. E-posta şablonları (kullanıcı build 8 sonrasına bıraktı): site deposu `supabase-email-templates/` → Supabase →
-   Authentication → Email Templates → Confirm signup + Reset password (gövde `*.html`, konu `*.subject.txt`; konu alanı
-   şablonu kabul etmezse sitenin verdiği İngilizce konu). Kullanıcı onayıyla, Chrome. Sonra site APP_SYNC'e "panelde".
-5. Cihaz turu `arif_todo.md` §3 ("4 Ekim akşam" + "5 Ekim").
+**Build 8 — alındı (5 Ekim 13:50), ikisi de `be5ac43`:**
+| | |
+|---|---|
+| iOS build 8 | EAS `2c5d74bb`. İlk deneme (`8973c59e`) **düştü**: 7 Eylül'deki provisioning profile Associated Domains içermiyordu; `--non-interactive` Apple'a giremediği için yeteneği eşitleyemedi. Kullanıcı kendi terminalinde etkileşimli `eas build -p ios` ile Apple'a girdi → yetenek açıldı, yeni profil. **Ders:** native yetenek eklenen build'i etkileşimli al (yerelde ASC API anahtarı `.p8` yok). `eas submit` (`c5316cbd`) → App Store Connect'e yüklendi |
+| Android AAB | EAS `0680e4c7`, versionCode 2. Kullanıcının İndirilenler klasöründe `odyssey-journal-1.0.0-vc2.aab` |
+| Sentry | Source Map Uploads'ta `1.0.0 (8)` ve `1.0.0 (2)` (5 Ekim). Releases listesinde yeni sürümler uygulama ilk olay/oturumu gönderince görünür — normal |
+| Site | `APP_SYNC_2026-10-05` §6 (site `2c4e0a2`) |
+
+**Sıradaki:**
+1. Kullanıcı AAB'yi Play Console → Odyssey Journal → Dahili test'e yükler (mevcut **kişisel** Play hesabı; başka bir uygulaması yayında). 12 test / 14 gün şartı panelde çıkarsa kapalı test hemen başlatılır.
+2. Oturum: Play Console → App integrity → iki SHA-1 → Google Cloud "Odyssey Android Maps SDK" anahtarı; Play **uygulama imzalama** SHA-256 → site APP_SYNC (`assetlinks.json` ikinci parmak izi).
+3. TestFlight kurulunca link testi (iPhone Notlar → `/tr/p/<id>`) ve cihaz turu `arif_todo.md` §3.
+4. E-posta şablonları panele (kullanıcı onayıyla; site deposu `supabase-email-templates/`).
+5. Şirket kararı (kullanıcı bakacak): bugün Apple Individual + Play kişisel + sitede veri sorumlusu "Arif Gültaş" — tutarlı. Şirket kurulursa Apple hesabı dönüştürülür (Team ID'nin kalması beklenir), Play'de yeni şirket hesabına uygulama aktarımı, site metinleri.
 
 ## 4 Ekim akşam — ikinci tur
 

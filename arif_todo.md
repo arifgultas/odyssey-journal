@@ -11,18 +11,16 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
-> **5 Ekim — build öncesi her şey bitti, sırada build 8:**
-> - ✅ Paylaşım linkleri (`/p/<id>`) uygulamada açılacak şekilde eklendi; ✅ e-posta dili kararın (**evet**) uygulamaya
->   girdi; ✅ Team ID + Android SHA-256 siteye yazıldı; ✅ Security Advisor 0 hata.
-> - **Senden, sırayla:**
->   1. Build'i başlatmak istediğinde oturuma "build 8'i alalım" de (ya da kendin: `eas build --platform android --profile
->      production` ve `eas build --platform ios --profile production`, sonra `eas submit -p ios --profile production`).
->   2. Build'ler bitince AAB'yi Play Console → Dahili test'e yükle (§2) → oturum SHA-1/SHA-256'ları yerine koyar.
->   3. TestFlight'tan build 8'i kur → §3 cihaz turu ("4 Ekim akşam" + "5 Ekim" maddeleri).
->   4. **E-posta şablonları** (12 dil, site hazırladı): build 8'den sonra oturuma "şablonları panele koy" de — sen
->      erteledin. O zamana kadar onay / sıfırlama e-postaları İngilizce.
-> - Site istekleri de bitti: kayıt kutusu KVKK metni (Koşulları kabul, Gizlilik Politikası'nı okudum) ve moderasyon
->   mesajına "support@'ya yaz" cümlesi, 12 dilde.
+> **5 Ekim — build 8 alındı ✅** (iOS TestFlight'a gönderildi; Android AAB İndirilenler'de)
+> **Senden, sırayla:**
+> 1. **AAB'yi Play'e yükle:** Play Console → Odyssey Journal (yoksa "Uygulama oluştur") → Test ve yayınla → **Dahili test** →
+>    Yeni sürüm oluştur → `C:\Users\arifg\Downloads\odyssey-journal-1.0.0-vc2.aab` → Play App Signing'i kabul et → kaydet → yayınla.
+>    Panelde "12 test kullanıcısı / 14 gün" adımı çıkarsa oturuma söyle. Yükleyince oturuma haber ver: SHA-1'leri harita anahtarına,
+>    SHA-256'yı siteye o koyar.
+> 2. **TestFlight:** Apple'dan "işlendi" e-postası gelince build 8'i kur → Notlar'a `https://odysseyjournal.app/tr/p/<bir gönderi id>`
+>    yaz, dokun → uygulama açılmalı. Sonra §3 cihaz turu ("4 Ekim akşam" + "5 Ekim").
+> 3. **E-posta şablonları:** hazır olduğunda oturuma "şablonları panele koy" de.
+> 4. **Şirket:** bakacağın konu; bugünkü hesaplarla yayına çıkmak mümkün (FINALIZE "5 Ekim" madde 5).
 >
 > **4 Ekim gün sonu:** `033` canlıda. Site, 4 Ekim'in iki metin güncellemesini 12 dilde yayına aldı (§6).
 >
@@ -191,12 +189,12 @@ where id = (select id from public.profiles where username = 'sofiarossi');
 
 ## 2. Build'ler
 
-- [ ] **iOS build 8** — EAS kredisi yenilenince (expo.dev → Billing/Usage'dan tarihi kontrol et)
+- [x] ~~**iOS build 8**~~ ✅ 5 Ekim — TestFlight'a gönderildi. Eski not: EAS kredisi yenilenince (expo.dev → Billing/Usage'dan tarihi kontrol et)
       `eas build --platform ios --profile production` → TestFlight. 29 Eylül dahil tüm düzeltmeleri
       içerir. Önce §0.4'teki Sentry değişkenlerini EAS'e gir (yoksa build yine geçer, yalnız çökme
       raporları okunmaz).
       (FINALIZE "Engel: Expo (EAS) build kredileri")
-- [ ] **Android AAB — oturum alır, EAS'ten (~1 Ekim kota yenilenince). Android Studio'ya gerek yok.**
+- [x] ~~**Android AAB**~~ ✅ 5 Ekim — `C:\Users\arifg\Downloads\odyssey-journal-1.0.0-vc2.aab` (versionCode 2). Eski not:
       Neden: 29 Eylül'de bu bilgisayarda yerel build denendi; C++ derleme adımı Windows'un 260 karakterlik
       dosya yolu sınırına takılıyor (proje `C:\oj`'ye taşınsa bile 269). EAS Linux'ta derliyor ve EAS'te
       duran imza (upload) anahtarını kullanıyor → `.jks` oluşturma/yedekleme derdi yok.
