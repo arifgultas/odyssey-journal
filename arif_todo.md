@@ -18,7 +18,12 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 >    boyunca telefonda tutar. 14 günlük sayaç kapalı test yayınlanınca başlar.
 > 2. **Demo hesabı doldur:** `review@odysseyjournal.app` boş (§3b). Play incelemesi bu hesapla girecek; telefonda birkaç gönderi,
 >    takip ve mesaj ekle.
-> 3. **Yaş sınırı 18+:** Play hedef kitlesi "yalnız 18 ve üstü" seçildi (Aile politikasından uzak durmak için). Site Koşullar ve
+> 3. **Android link testi:** iPhone'da çalışıyor ✅. Android'de uygulamayı **kaldır → Play dahili testten yeniden kur** → Keep, WhatsApp ya da
+>    Mesajlar'a `https://odysseyjournal.app/tr/p/<gönderi id>` yaz, oradan dokun (Chrome'un içinden dokunursan sitede kalır, bu normal).
+>    Uygulama açılmazsa Ayarlar → Uygulamalar → Odyssey Journal → Varsayılan olarak aç ekranının görüntüsünü oturuma gönder.
+> 4. **E-posta testi:** şablonlar panelde ✅. Türkçe telefonla yeni hesap → onay e-postası Türkçe gelmeli; başka dilde → konu
+>    İngilizce, gövde o dilde.
+> 5. **Yaş sınırı 18+:** Play hedef kitlesi "yalnız 18 ve üstü" seçildi (Aile politikasından uzak durmak için). Site Koşullar ve
 >    Gizlilik'teki "13"ü 18'e çekecek (`APP_SYNC_2026-10-05c`); senden bir şey gerekmiyor, yalnız haberin olsun.
 >
 > **5 Ekim — build 8 alındı ✅** (iOS TestFlight'a gönderildi; Android AAB İndirilenler'de)
