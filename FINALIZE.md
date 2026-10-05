@@ -48,7 +48,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
      - reklam yok; reklam kimliği yok (AAB manifest'inde `AD_ID` yok, kontrol edildi);
      - oturum açma `review@odysseyjournal.app` (şifreyi kullanıcı yazdı);
      - IARC: e-posta support@, kategori Sosyal. Konum paylaşımı evet, engelle/bildir evet, sohbet denetimi hayır, satın alma hayır. Sonuç ABD 13+, PEGI "ebeveyn rehberliği";
-     - **hedef kitle yalnız 18+** + Google'ın küçük saydığı kullanıcıları kısıtla. Kullanıcı kararı: 13-15 ve 16-17 seçilince Play Aile politikasını istiyor. Site Koşullar/Gizlilik'teki "13"ü 18 yapacak, `APP_SYNC_2026-10-05c` (site `e6588ee`);
+     - **hedef kitle yalnız 18+** + Google'ın küçük saydığı kullanıcıları kısıtla. Kullanıcı kararı: 13-15 ve 16-17 seçilince Play Aile politikasını istiyor. Site Koşullar §2 ve Gizlilik §12'yi 12 dilde 18'e çekti ✅ (site `5a5041d`, `SITE_SYNC_2026-10-05d`). İsteğe bağlı, kullanıcı kararı: kayıtta ayrı bir "18 yaşından büyüğüm" kutusu (build 9 adayı);
      - veri güvenliği 11 tür. Hepsi toplanıyor, hiçbiri paylaşılmıyor, hiçbiri kısa süreli değil:
        - ad, e-posta, kullanıcı kimliği: zorunlu; amaç işlevsellik + hesap yönetimi;
        - tam konum, mesajlar, arama geçmişi, cihaz kimliği: isteğe bağlı; amaç işlevsellik;
@@ -64,7 +64,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
      - Toplu yüklemede sıra karışıyor, tek tek eklendi.
      - **11 dilin çevirisi henüz yok** (zorunlu değil).
    - Sırada: kapalı test kanalı (ülkeler, test listesi, build 8 sürümü, Google incelemesi). Kullanıcı 6 Ekim'de 12 Gmail adresi getirecek.
-3. ½ Link testi (`SITE_SYNC_2026-10-05b/c`): **iPhone ✅** (TestFlight build 8, `/tr/p/<id>` uygulamayı açıyor). **Android ⏳**: link sitede açılıyor. Site Play parmak izini yayına aldı ve Google'ın listesinde iki parmak izi de var. Oturum AAB manifest'ini kontrol etti: tek filtre, `autoVerify="true"`, VIEW + BROWSABLE + DEFAULT, `/p/` + `/../p/.*`; doğru. Büyük ihtimalle uygulama parmak izi yayına girmeden kuruldu. Yapılacak: kaldır → yeniden kur → linke **başka bir uygulamadan** dokun (Chrome içinden olmaz); olmazsa `adb shell pm verify-app-links --re-verify` / `get-app-links` (`APP_SYNC_2026-10-05d`). Cihaz turu `arif_todo.md` §3.
+3. ✅ Link testi (`SITE_SYNC_2026-10-05b/c`): **iPhone ✅** (TestFlight build 8, `/tr/p/<id>` uygulamayı açıyor). **Android ✅** (5 Ekim gece, kaldır + yeniden kur sonrası). İlk denemede link sitede açılmıştı: Site Play parmak izini yayına aldı ve Google'ın listesinde iki parmak izi de var. Oturum AAB manifest'ini kontrol etti: tek filtre, `autoVerify="true"`, VIEW + BROWSABLE + DEFAULT, `/p/` + `/../p/.*`; doğru. Büyük ihtimalle uygulama parmak izi yayına girmeden kuruldu. Yapılacak: kaldır → yeniden kur → linke **başka bir uygulamadan** dokun (Chrome içinden olmaz); olmazsa `adb shell pm verify-app-links --re-verify` / `get-app-links` (`APP_SYNC_2026-10-05d`). Çözüm buydu, kurulumdan sonra doğrulandı. **Ders:** parmak izi değişirse uygulama yeniden kurulmalı. Cihaz turu `arif_todo.md` §3.
 4. ✅ E-posta şablonları panelde (kullanıcı onayıyla site oturumu koydu, site `5a7ed19`). Supabase konu alanı en fazla 255 karakter aldığı için konu satırı TR/EN, gövde 12 dilde. Cihazda test: `arif_todo.md` §3.
 5. Şirket kararı (kullanıcı bakacak): bugün Apple Individual + Play kişisel + sitede veri sorumlusu "Arif Gültaş" — tutarlı. Şirket kurulursa Apple hesabı dönüştürülür (Team ID'nin kalması beklenir), Play'de yeni şirket hesabına uygulama aktarımı, site metinleri.
 
