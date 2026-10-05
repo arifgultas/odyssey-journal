@@ -13,10 +13,9 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 > **5 Ekim — build 8 alındı ✅** (iOS TestFlight'a gönderildi; Android AAB İndirilenler'de)
 > **Senden, sırayla:**
-> 1. **AAB'yi Play'e yükle:** Play Console → Odyssey Journal (yoksa "Uygulama oluştur") → Test ve yayınla → **Dahili test** →
->    Yeni sürüm oluştur → `C:\Users\arifg\Downloads\odyssey-journal-1.0.0-vc2.aab` → Play App Signing'i kabul et → kaydet → yayınla.
->    Panelde "12 test kullanıcısı / 14 gün" adımı çıkarsa oturuma söyle. Yükleyince oturuma haber ver: SHA-1'leri harita anahtarına,
->    SHA-256'yı siteye o koyar.
+> 1. ✅ ~~**AAB'yi Play'e yükle**~~ — 5 Ekim akşam: uygulama oluşturuldu, `2 (1.0.0)` Dahili test'te, SHA-256 siteye gitti.
+>    **Android telefonda:** gultassoftware@gmail.com ile `https://play.google.com/apps/internaltest/4701189709697953452`
+>    → "Test kullanıcısı ol" → Play'den kur. Haritanın dolu gelmesi için iki SHA-1'in harita anahtarına eklenmesi gerekiyor.
 > 2. **TestFlight:** Apple'dan "işlendi" e-postası gelince build 8'i kur → Notlar'a `https://odysseyjournal.app/tr/p/<bir gönderi id>`
 >    yaz, dokun → uygulama açılmalı. Sonra §3 cihaz turu ("4 Ekim akşam" + "5 Ekim").
 > 3. **E-posta şablonları:** hazır olduğunda oturuma "şablonları panele koy" de.
