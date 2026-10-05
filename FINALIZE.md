@@ -41,7 +41,7 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 **Sıradaki:**
 1. ✅ (5 Ekim akşam) Play'de uygulama oluşturuldu (kişisel hesap "Gültaş Software", app id `4973909615936715001`, en-US, ücretsiz). AAB Dahili test'e yayınlandı: `2 (1.0.0)`, Play App Signing açık. Test listesi "Odyssey Journal" (gultassoftware@gmail.com). Katılım linki: `https://play.google.com/apps/internaltest/4701189709697953452`. İnceleme beklerken uygulama adı geçici olarak "com.odysseyjournal.app (unreviewed)" görünüyor.
-2. ½ Parmak izleri okundu (yukarıda "Google Maps anahtarları"); SHA-256 siteye gitti (`APP_SYNC_2026-10-05b`, site `1e0c973`). **Kalan:** iki SHA-1 Google Cloud "Odyssey Android Maps SDK" anahtarına (kullanıcı onayıyla).
+2. ½ Parmak izleri okundu (yukarıda "Google Maps anahtarları"); SHA-256 siteye gitti (`APP_SYNC_2026-10-05b`, site `1e0c973`). İki SHA-1 de "Odyssey Android Maps SDK" anahtarına eklendi (5 Ekim akşam, kullanıcı onayıyla; kaydedildikten sonra yeniden açılıp doğrulandı). Anahtarda şimdi debug + upload + app signing var; debug yayından önce kaldırılacak.
 3. TestFlight kurulunca link testi (iPhone Notlar → `/tr/p/<id>`) ve cihaz turu `arif_todo.md` §3.
 4. E-posta şablonları panele (kullanıcı onayıyla; site deposu `supabase-email-templates/`).
 5. Şirket kararı (kullanıcı bakacak): bugün Apple Individual + Play kişisel + sitede veri sorumlusu "Arif Gültaş" — tutarlı. Şirket kurulursa Apple hesabı dönüştürülür (Team ID'nin kalması beklenir), Play'de yeni şirket hesabına uygulama aktarımı, site metinleri.
@@ -388,9 +388,9 @@ Repo **public** ve eski Maps anahtarı (`AIzaSyCEGo…`, daha eskisi `AIzaSyDzxS
 SHA-1'ler üç aşamada (Maps SDK anahtarına **+ Add**, aynı paket adıyla):
 - ✅ debug: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25` — RN şablonunda herkeste
   aynı, **yayından önce kaldırılır**.
-- ⏳ upload key (EAS keystore): SHA-1 `88:FA:45:45:FD:1A:47:4C:26:60:AA:96:AA:AA:93:7B:43:C2:A8:3F`
+- ✅ upload key (EAS keystore): SHA-1 `88:FA:45:45:FD:1A:47:4C:26:60:AA:96:AA:AA:93:7B:43:C2:A8:3F`
   (SHA-256 `EB:7F:…:45:2A`, sitede zaten var). 5 Ekim'de Play → Uygulama imzalama'dan okundu.
-- ⏳ app signing key (Google): SHA-1 `83:64:A8:D9:2E:FE:E7:C6:A4:40:76:A6:2F:CB:F1:D4:D2:82:57:5C`,
+- ✅ app signing key (Google): SHA-1 `83:64:A8:D9:2E:FE:E7:C6:A4:40:76:A6:2F:CB:F1:D4:D2:82:57:5C`,
   SHA-256 `F4:29:A7:DF:75:03:47:F9:1F:20:7B:0C:47:35:CF:3A:0B:81:4E:27:D2:92:DC:0B:E1:12:57:4E:0B:86:53:08`
   (siteye `APP_SYNC_2026-10-05b`, site `1e0c973`). **Bu SHA-1 eklenmezse Play'den kurulan uygulamada harita boş gelir.**
 
