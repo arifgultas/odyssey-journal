@@ -25,6 +25,13 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | Gmail: alias'a giden e-posta | `noreply@` → `review@` (ikisi de hello@ hesabının takma adı) **gelen kutusuna düşmüyor, Gönderilmiş'te**. 4 Ekim'de moderation@ onay e-postasının "gelmemesi" de büyük ihtimalle buydu |
 | **Hata (build 9): sıfırlama linki sonsuz yükleniyor** | Uygulama açıkken linke dokununca `reset-password` ekranı linki görmüyordu: `Linking.useURL()` açılış URL'si + sonraki olaylar; olay ekran mount olmadan geçiyor. Düzeltme: `useLinkingURL()` (native son linki tutuyor, iOS/Android kaynağı kontrol edildi). **Build 10'a girer**. Build 9'da geçici yol: uygulamayı tamamen kapat, sonra linke dokun (soğuk açılışta çalışır) |
 
+**6 Ekim öğleden sonra — build 10 alındı ✅** (`f303cb7`; içinde sıfırlama linki düzeltmesi `4b9531f`). **İncelemeye ve kapalı teste build 10 gider**, build 9 değil.
+| | |
+|---|---|
+| iOS build 10 | EAS `d5b84266`, kullanıcı `!` ile başlattı (`--non-interactive` geçti). `eas submit --id` → `26f0f13e` |
+| Android build 10 | EAS `0e56128f`, versionCode 4. AAB: İndirilenler'de `odyssey-journal-1.0.0-vc4.aab` (98 MB) |
+| Demo hesap şifresi | İkinci sıfırlama isteği "çok fazla deneme" verdi (Supabase e-posta sınırı). Build 10 kurulunca tekrar denenecek |
+
 **Durum (5 Ekim gece):** `main` = origin, CI yeşil. Build 9'a girecek kod hazır, build alınmadı (kullanıcı: "şimdi build alma, yarın
 bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.
 

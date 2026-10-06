@@ -11,6 +11,10 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **6 Ekim öğleden sonra — build 10 alındı ✅** (şifre sıfırlama linki düzeltmesiyle). iOS App Store Connect'e gitti;
+> "işlendi" e-postası gelince TestFlight'tan güncelle, sonra "Şifremi unuttum"u dene (e-posta Gmail'de **Gönderilmiş**'te).
+> Android: `odyssey-journal-1.0.0-vc4.aab` İndirilenler'de. Kapalı teste ve App Store incelemesine **build 10** gider.
+>
 > **6 Ekim öğlen — build 9 alındı ✅** iOS TestFlight'ta (sen güncelledin). Android AAB İndirilenler'de
 > `odyssey-journal-1.0.0-vc3.aab`. Demo hesabın şifresi: uygulamada "Şifremi unuttum" → e-posta hello@ kutusuna gelir.
 > Yeni şifreyi Play "Uygulama erişimi"ne de yazmak gerekecek.
