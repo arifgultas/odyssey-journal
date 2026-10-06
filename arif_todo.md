@@ -13,7 +13,9 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 > **6 Ekim gece — Android build 10 dahili testte ✅, trafik kaydı (034) canlıda ✅.** Senden: telefonda Play'den güncelle;
 > bir gönderi + yorum + mesaj at, gönderiyi düzenle; sonra oturumun verdiği SQL'i Supabase'de çalıştırıp sonucu ilet.
-> Kapalı test taslakta, test kullanıcı listesini bekliyor. 18+ kutusu cihazda denendi ✅ (işaretlenmeden kayıt ilerlemiyor).
+> Kapalı test: sen listeyi ("Odyssey Kapalı Test", 57 kişi) tanımlayıp incelemeye gönderdin ✅. Google onaylayınca test
+> kullanıcılarına katılım linkini ilet (`https://play.google.com/apps/testing/com.odysseyjournal.app`); en az 12 kişi
+> katılıp 14 gün kalmalı. 14 gün dolunca Play'de "üretime erişim başvurusu" açılır, oturuma söyle. 18+ kutusu cihazda denendi ✅ (işaretlenmeden kayıt ilerlemiyor).
 >
 > **6 Ekim akşam — App Store'a gönderildi ✅ (1.0 Waiting for Review, build 10).** Yaş 18+, 174 ülke (Çin yok), 14 dil,
 > manuel yayın. Apple'dan e-posta gelince oturuma söyle: onaysa **Release** düğmesine sen basarsın; retse birlikte bakarız.
