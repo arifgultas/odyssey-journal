@@ -44,6 +44,14 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | **Gönderildi ✅** | 6 Ekim ~18:45, kullanıcı onayıyla: App Privacy Publish → Add for Review → **Submit for Review**. Durum **1.0 Waiting for Review** (build 10). Apple "48 saate kadar" diyor. İlk denemede "Privacy Policy URL" hatası: URL **her yerelleştirmede ayrı** girilmeli (14 dile eklendi; ASC diyaloğunda dil değiştirince Kaydet ancak gerçek klavye girişiyle aktifleşiyor) |
 | Onaydan sonra | Manuel yayın: kullanıcı ASC'de **Release** der. Ret gelirse e-posta + ASC'de "Resolution Center" |
 
+**6 Ekim akşam — 034 trafik kaydı canlıda, Play'de vc4:**
+| | |
+|---|---|
+| `034_traffic_log.sql` (`6b77e00`) | Site isteği `SITE_SYNC_2026-10-06b` (5651 m.5/3). `public.traffic_log` (RLS açık, policy yok; FK yok, hesap silinince kalır), trigger `log_traffic()`: posts, comments, messages, profiles, collections (gizli koleksiyon hariç). Yalnız sayaç/okundu/token/zaman değişen UPDATE'ler yazılmıyor (TG_ARGV hariç tutma listesi). IP: `request.headers` → `x-forwarded-for` ilk adres, yoksa `cf-connecting-ip`. Hata kullanıcının yazmasını bozmaz. Cron `purge-traffic-log` 03:47, 365 gün. Yerel Postgres 17'de (stub auth.uid/cron) denendi. Deploy kullanıcı onayıyla ✅. **Kalan:** cihazdan test + SQL ile gerçek IP kontrolü → `APP_SYNC_2026-10-06` siteye |
+| Play dahili test | vc4 `4 (1.0.0)` yayında (kullanıcı AAB'yi sürükledi; tarayıcı aracı 10 MB üstünü yükleyemiyor). Uyarı yalnız "deobfuscation dosyası yok" |
+| Play kapalı test (Alpha) | Ülkeler: tümü ✅. vc4 sürümü **taslak** (gönderilmedi). Test kullanıcıları boş: hesapta başka uygulamadan "Alpha Users" (28), "Alpha Users 2" (30), "Yakın" (2) listeleri var, **kullanıcı bunları istemedi**; yeni liste gelecek |
+| Android geliştirici doğrulaması | Play'de "tüm uygulamalar kaydedildi" ✅; Play dışı dağıtım yok, iş yok |
+
 **Durum (5 Ekim gece):** `main` = origin, CI yeşil. Build 9'a girecek kod hazır, build alınmadı (kullanıcı: "şimdi build alma, yarın
 bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.
 

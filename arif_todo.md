@@ -11,6 +11,10 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **6 Ekim gece — Android build 10 dahili testte ✅, trafik kaydı (034) canlıda ✅.** Senden: telefonda Play'den güncelle;
+> bir gönderi + yorum + mesaj at, gönderiyi düzenle; sonra oturumun verdiği SQL'i Supabase'de çalıştırıp sonucu ilet.
+> Kapalı test taslakta, test kullanıcı listesini bekliyor.
+>
 > **6 Ekim akşam — App Store'a gönderildi ✅ (1.0 Waiting for Review, build 10).** Yaş 18+, 174 ülke (Çin yok), 14 dil,
 > manuel yayın. Apple'dan e-posta gelince oturuma söyle: onaysa **Release** düğmesine sen basarsın; retse birlikte bakarız.
 > **Sıradakiler:** (1) 12 Gmail → Play kapalı test (vc4 + "Uygulama erişimi" şifresi). (2) Cihazda 18+ kutusu ve e-posta dili
