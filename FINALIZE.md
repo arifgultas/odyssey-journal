@@ -41,7 +41,8 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 | Fiyat / ülkeler | Free; **174 ülke, Çin anakarası çıkarıldı** (ICP lisansı yok; kullanıcı kararı) |
 | Sürüm 1.0 | 14 yerelleştirmede tanıtım metni, açıklama, anahtar kelime, destek/pazarlama URL'si; build **10**; manuel yayın; inceleme notu + demo hesap + iletişim (şifre ve telefonu kullanıcı yazdı) |
 | Ekran görüntüleri | **Apple artık 6.1"/6.3" (1206×2622) istiyor**, 6.9" isteğe bağlı. `mockup_feature/ios-6.3/<dil>/` (sharp ile 1290×2796'dan küçültüldü, ~2 px kırpma). 14 yerelleştirmede 8'er görsel. iPad bölümü "Required" görünüyor ama build 10 yalnız iPhone (`UIDeviceFamily [1]`, IPA'dan okundu) |
-| Kalan | Kullanıcı onayıyla: App Privacy **Publish** → **Add for Review → Submit for Review** |
+| **Gönderildi ✅** | 6 Ekim ~18:45, kullanıcı onayıyla: App Privacy Publish → Add for Review → **Submit for Review**. Durum **1.0 Waiting for Review** (build 10). Apple "48 saate kadar" diyor. İlk denemede "Privacy Policy URL" hatası: URL **her yerelleştirmede ayrı** girilmeli (14 dile eklendi; ASC diyaloğunda dil değiştirince Kaydet ancak gerçek klavye girişiyle aktifleşiyor) |
+| Onaydan sonra | Manuel yayın: kullanıcı ASC'de **Release** der. Ret gelirse e-posta + ASC'de "Resolution Center" |
 
 **Durum (5 Ekim gece):** `main` = origin, CI yeşil. Build 9'a girecek kod hazır, build alınmadı (kullanıcı: "şimdi build alma, yarın
 bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.

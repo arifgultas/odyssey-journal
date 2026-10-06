@@ -11,6 +11,11 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **6 Ekim akşam — App Store'a gönderildi ✅ (1.0 Waiting for Review, build 10).** Yaş 18+, 174 ülke (Çin yok), 14 dil,
+> manuel yayın. Apple'dan e-posta gelince oturuma söyle: onaysa **Release** düğmesine sen basarsın; retse birlikte bakarız.
+> **Sıradakiler:** (1) 12 Gmail → Play kapalı test (vc4 + "Uygulama erişimi" şifresi). (2) Cihazda 18+ kutusu ve e-posta dili
+> testi. (3) Site isteği `SITE_SYNC_2026-10-06b`: 5651 trafik kaydı → migration `034` (deploy senin onayınla).
+>
 > **6 Ekim öğleden sonra — build 10 alındı ✅** (şifre sıfırlama linki düzeltmesiyle). iOS App Store Connect'e gitti;
 > "işlendi" e-postası gelince TestFlight'tan güncelle, sonra "Şifremi unuttum"u dene (e-posta Gmail'de **Gönderilmiş**'te).
 > Android: `odyssey-journal-1.0.0-vc4.aab` İndirilenler'de. Kapalı teste ve App Store incelemesine **build 10** gider.
