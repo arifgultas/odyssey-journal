@@ -12,10 +12,8 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 8 (acelesi yok).
 
 > **★ 7 Ekim — senden beklenenler** (genel durum: `FINALIZE.md` "★ 7 Ekim — başlarken")
-> 1. **Play "Uygulama erişimi"ndeki demo şifresini güncelle (önemli).** `review@` şifresini 6 Ekim'de değiştirdin; Play'de
->    hâlâ eskisi yazıyor. Google'ın inceleyicisi (kapalı test şimdi, üretim sonra) giriş yapamazsa ret gelebilir.
->    Play Console → Odyssey Journal → Politika ve programlar → Uygulama içeriği → **Uygulama erişimi** → Düzenle → şifre →
->    Kaydet (çıkan onay penceresini de onayla). İstersen oturum sayfayı açar, şifreyi sen yazarsın.
+> 1. ✅ ~~Play "Uygulama erişimi" demo şifresi~~ — 6 Ekim gece kontrol edildi: Play'deki şifre App Store Connect'tekiyle
+>    aynı (yeni şifre), değişiklik gerekmedi. Şifre bir daha değişirse iki yerde de güncelle.
 > 2. **Apple'dan e-posta bekle.** Onaysa App Store Connect'te **Release**'e bas ve oturuma söyle (site mağaza linkini
 >    ekleyecek). Retse e-postayı/Resolution Center metnini oturuma ilet.
 > 3. **Play kapalı test:** listeyi (57 kişi) kurdun, incelemeye gönderdin, linki dağıttın ✅. Google onaylayınca kişiler

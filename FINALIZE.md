@@ -25,7 +25,7 @@ Android versionCode 4). Son migration: `034` (canlıda). Site ile uyumlu (site `
 |---|---|---|
 | **App Store incelemesi** (iOS 1.0, build 10, "Waiting for Review", 6 Ekim ~18:45) | Apple | Onay → **Arif ASC'de Release**'e basar; mağaza adresi gelince siteye APP_SYNC (site "Yayın günü": `APP_STORE_URL`, `--release`). Ret → e-posta/Resolution Center gerekçesine göre düzeltme; site metnine dokunuyorsa SITE'a not |
 | **Play kapalı test incelemesi** (vc4, liste "Odyssey Kapalı Test" 57 kişi) | Google | Arif katılım linkini dağıttı (`https://play.google.com/apps/testing/com.odysseyjournal.app`). Onaydan sonra **12+ kişi × 14 gün**. Dolunca Play'de "Üretime erişim başvurusu" → birlikte doldurulur → üretim sürümü (vc4 ya da yenisi) |
-| **Play "Uygulama erişimi" demo şifresi eski** | Arif (oturum sayfayı açabilir) | `review@` şifresi 6 Ekim'de değişti, Play'de eskisi duruyor → Google inceleyicisi giremeyebilir. Uygulama içeriği → Uygulama erişimi → şifreyi Arif yazar, Kaydet + onay penceresi |
+| (Kontrol edildi ✅) Play "Uygulama erişimi" | — | Şifre ASC'dekiyle aynı (yeni). Şifre değişirse **iki yerde** güncelle |
 | Play mağaza girişinin 11 dil çevirisi | Oturum (isteğe bağlı) | `STORE_LISTING.md` + `mockup_feature/android/<dil>/` + `feature-graphic-<dil>.png`; görselleri tek tek ekle. Üretimden önce yapılması iyi olur |
 
 **Yayından önce / sonra yapılacaklar (acil değil):**
