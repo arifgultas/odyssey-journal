@@ -1,6 +1,6 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-10-05
+**Güncelleme:** 2026-10-06 gece
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
@@ -11,11 +11,20 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
-> **6 Ekim gece — Android build 10 dahili testte ✅, trafik kaydı (034) canlıda ✅.** Senden: telefonda Play'den güncelle;
-> bir gönderi + yorum + mesaj at, gönderiyi düzenle; sonra oturumun verdiği SQL'i Supabase'de çalıştırıp sonucu ilet.
-> Kapalı test: sen listeyi ("Odyssey Kapalı Test", 57 kişi) tanımlayıp incelemeye gönderdin ✅. Google onaylayınca test
-> kullanıcılarına katılım linkini ilet (`https://play.google.com/apps/testing/com.odysseyjournal.app`); en az 12 kişi
-> katılıp 14 gün kalmalı. 14 gün dolunca Play'de "üretime erişim başvurusu" açılır, oturuma söyle. 18+ kutusu cihazda denendi ✅ (işaretlenmeden kayıt ilerlemiyor).
+> **★ 7 Ekim — senden beklenenler** (genel durum: `FINALIZE.md` "★ 7 Ekim — başlarken")
+> 1. **Play "Uygulama erişimi"ndeki demo şifresini güncelle (önemli).** `review@` şifresini 6 Ekim'de değiştirdin; Play'de
+>    hâlâ eskisi yazıyor. Google'ın inceleyicisi (kapalı test şimdi, üretim sonra) giriş yapamazsa ret gelebilir.
+>    Play Console → Odyssey Journal → Politika ve programlar → Uygulama içeriği → **Uygulama erişimi** → Düzenle → şifre →
+>    Kaydet (çıkan onay penceresini de onayla). İstersen oturum sayfayı açar, şifreyi sen yazarsın.
+> 2. **Apple'dan e-posta bekle.** Onaysa App Store Connect'te **Release**'e bas ve oturuma söyle (site mağaza linkini
+>    ekleyecek). Retse e-postayı/Resolution Center metnini oturuma ilet.
+> 3. **Play kapalı test:** listeyi (57 kişi) kurdun, incelemeye gönderdin, linki dağıttın ✅. Google onaylayınca kişiler
+>    katılır; **en az 12 kişi 14 gün** kalmalı. Ara sıra Play Console → Kapalı test → Test kullanıcıları'nda katılan sayısına bak.
+>    14 gün dolunca "Üretime erişim başvurusu" açılır → oturuma söyle.
+> 4. Acelesi yok: şirket konusu (FINALIZE "5 Ekim" madde 5), support@ / privacy@ kutularını izlemek (5651 bildirimleri).
+>
+> **6 Ekim gece — tamamlananlar ✅:** Android build 10 dahili testte; trafik kaydı (034) canlıda ve gerçek IP doğrulandı;
+> 18+ kutusu cihazda denendi (işaretlenmeden kayıt ilerlemiyor); kapalı test listesi + incelemeye gönderim (sen).
 >
 > **6 Ekim akşam — App Store'a gönderildi ✅ (1.0 Waiting for Review, build 10).** Yaş 18+, 174 ülke (Çin yok), 14 dil,
 > manuel yayın. Apple'dan e-posta gelince oturuma söyle: onaysa **Release** düğmesine sen basarsın; retse birlikte bakarız.

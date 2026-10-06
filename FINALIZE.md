@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti, linkler iki platformda çalışıyor; **6 Ekim planı hemen aşağıda**).
+**Son güncelleme:** 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
+Önceki: 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti).
 Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
 Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
 Aynı gün sabah: `032` canlıda, W1–W10 işlendi ("4 Ekim — build 8 öncesi son tur").
@@ -14,7 +15,45 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 6 Ekim planı + 5 Ekim akşam/gece özeti (BURADAN BAŞLAYIN)
+## ★ 7 Ekim — başlarken (BURADAN BAŞLAYIN)
+
+**Durum (6 Ekim gece):** `main` = origin, temiz. Kodda bekleyen iş yok. Son kod: build 10 = `f303cb7` (iOS buildNumber 10,
+Android versionCode 4). Son migration: `034` (canlıda). Site ile uyumlu (site `a8f5b67` 5651 metinleri canlıda, site
+"uygulamaya iş yok" diyor).
+
+| Bekleyen | Kimde | Ne olunca ne yapılır |
+|---|---|---|
+| **App Store incelemesi** (iOS 1.0, build 10, "Waiting for Review", 6 Ekim ~18:45) | Apple | Onay → **Arif ASC'de Release**'e basar; mağaza adresi gelince siteye APP_SYNC (site "Yayın günü": `APP_STORE_URL`, `--release`). Ret → e-posta/Resolution Center gerekçesine göre düzeltme; site metnine dokunuyorsa SITE'a not |
+| **Play kapalı test incelemesi** (vc4, liste "Odyssey Kapalı Test" 57 kişi) | Google | Arif katılım linkini dağıttı (`https://play.google.com/apps/testing/com.odysseyjournal.app`). Onaydan sonra **12+ kişi × 14 gün**. Dolunca Play'de "Üretime erişim başvurusu" → birlikte doldurulur → üretim sürümü (vc4 ya da yenisi) |
+| **Play "Uygulama erişimi" demo şifresi eski** | Arif (oturum sayfayı açabilir) | `review@` şifresi 6 Ekim'de değişti, Play'de eskisi duruyor → Google inceleyicisi giremeyebilir. Uygulama içeriği → Uygulama erişimi → şifreyi Arif yazar, Kaydet + onay penceresi |
+| Play mağaza girişinin 11 dil çevirisi | Oturum (isteğe bağlı) | `STORE_LISTING.md` + `mockup_feature/android/<dil>/` + `feature-graphic-<dil>.png`; görselleri tek tek ekle. Üretimden önce yapılması iyi olur |
+
+**Yayından önce / sonra yapılacaklar (acil değil):**
+- Maps "Odyssey Android Maps SDK" anahtarından **debug SHA-1'i kaldır** (yayından önce).
+- Build 11 gerekirse: `app.config.ts` iOS buildNumber 11 / versionCode 5. iOS build'i oturumun komutu izin sınıflandırıcısına
+  takılıyor → kullanıcı `! npx eas build -p ios --profile production --non-interactive --no-wait` çalıştırır; `eas submit`
+  oturumda çalışıyor. Android AAB 98 MB: Play'e kullanıcı sürükler (tarayıcı aracı 10 MB üstünü yükleyemiyor) ya da
+  ileride EAS submit için Google servis hesabı kurulur.
+- Başkalarının gördüğü **yeni bir içerik tablosu** eklenirse `traffic_log` trigger'ı ona da konmalı (`034`'teki gibi,
+  hariç tutulacak sütunlarla); site Gizlilik 2B + Hesap silme §4'ü günceller.
+- Koşullar'da ilk esaslı değişiklikte uygulamada "Koşullar güncellendi, kabul et" ekranı gerekir (site Koşullar §12, 6 Ekim).
+- Şirket kurulursa: Apple hesabı dönüştürme, Play'de uygulama aktarımı, site metinleri, BTK yer sağlayıcı bildirimi (site tarafı).
+
+### 6 Ekim gün sonu özeti
+| İş | Sonuç | Commit |
+|---|---|---|
+| Build 9 (18+ kutusu) | iOS + Android alındı | `13a8bf4` |
+| Sıfırlama linki uygulama açıkken sonsuz yükleniyordu | `useLinkingURL` ile düzeltildi, cihazda ✅ | `4b9531f` |
+| Build 10 (iOS 10 / vc4) | iOS TestFlight + App Store'a gönderildi; Android Play dahili testte | `f303cb7` |
+| Demo hesap `review@` | Şifre sıfırlandı, dolduruldu (2 şehir, takip, mesaj). Gmail: alias'a giden e-posta **Gönderilmiş**'te | — |
+| App Store Connect | 18+, 174 ülke (Çin yok), 14 dil (dile göre ad), 6.3" görseller, gizlilik etiketi, **Submit for Review** | `b9490b8`, `3001f02` |
+| 18+ kutusu, e-posta dili, paylaşım kartı | Cihazda ✅ (Arif) | — |
+| 5651 trafik kaydı | `034` canlıda, gerçek IP doğrulandı, siteye `APP_SYNC_2026-10-06` (site `6f05b06`, `f8d8770`) | `6b77e00` |
+| Play kapalı test | Arif listeyi (57) kurup incelemeye gönderdi | `6e166cb` |
+
+---
+
+## 6 Ekim planı + 5 Ekim akşam/gece özeti (arşiv)
 
 **6 Ekim öğlen — build 9 alındı ✅** (ikisi de `13a8bf4`; öncesinde tsc temiz, 27 suite / 237 test):
 | | |
@@ -63,7 +102,7 @@ bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCod
 | **Parmak izleri** | Play imzalama + EAS upload SHA-1'leri "Odyssey Android Maps SDK" anahtarında. Play SHA-256 sitede `assetlinks.json`'da (site `388a7ca`) |
 | **Paylaşım linkleri** | iPhone ✅ (TestFlight build 8). Android ✅: ilk denemede sitede açıldı; kaldır + yeniden kur sonrası uygulamada açıldı (uygulama parmak izinden önce kurulmuştu) |
 | **Play kurulumu 11/11, kapalı testin kilidi açık** | Ayrıntı: aşağıda "Sıradaki" 2b. Hedef kitle **yalnız 18+** (kullanıcı kararı; 13-17 seçilince Play Aile politikasını istiyor) |
-| **Site** | Yaş sınırı Koşullar §2 ve Gizlilik §12'de 12 dilde **18** (site `5a5041d`). E-posta şablonları Supabase'de (konu TR/EN, gövde 12 dil, site `5a7ed19`). Notlar: `APP_SYNC_2026-10-05b…e`, `SITE_SYNC_2026-10-05b…d` |
+| **Site** | Yaş sınırı Koşullar §3.1 (eski notlarda yanlışlıkla §2) ve Gizlilik §12'de 12 dilde **18** (site `5a5041d`). E-posta şablonları Supabase'de (konu TR/EN, gövde 12 dil, site `5a7ed19`). Notlar: `APP_SYNC_2026-10-05b…e`, `SITE_SYNC_2026-10-05b…d` |
 | **Build 9 kodu: "18 yaşında veya daha büyüğüm" kutusu** | Kullanıcı istedi. `app/(auth)/signup.tsx`: Koşullar kutusunun üstünde ayrı kutu (`confirmAge`); işaretlenmeden kayıt yok (`auth.ageConfirmRequired`). 12 dilde `auth.ageConfirm` + `auth.ageConfirmRequired`. Kontroller: tsc temiz, 27 suite / 237 test, i18n 12 × **759**, lint 0 |
 
 ### 6 Ekim planı (sırayla)
@@ -122,7 +161,7 @@ bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCod
      - reklam yok; reklam kimliği yok (AAB manifest'inde `AD_ID` yok, kontrol edildi);
      - oturum açma `review@odysseyjournal.app` (şifreyi kullanıcı yazdı);
      - IARC: e-posta support@, kategori Sosyal. Konum paylaşımı evet, engelle/bildir evet, sohbet denetimi hayır, satın alma hayır. Sonuç ABD 13+, PEGI "ebeveyn rehberliği";
-     - **hedef kitle yalnız 18+** + Google'ın küçük saydığı kullanıcıları kısıtla. Kullanıcı kararı: 13-15 ve 16-17 seçilince Play Aile politikasını istiyor. Site Koşullar §2 ve Gizlilik §12'yi 12 dilde 18'e çekti ✅ (site `5a5041d`, `SITE_SYNC_2026-10-05d`). İsteğe bağlı, kullanıcı kararı: kayıtta ayrı bir "18 yaşından büyüğüm" kutusu (build 9 adayı);
+     - **hedef kitle yalnız 18+** + Google'ın küçük saydığı kullanıcıları kısıtla. Kullanıcı kararı: 13-15 ve 16-17 seçilince Play Aile politikasını istiyor. Site Koşullar §3.1 (eski notlarda yanlışlıkla §2) ve Gizlilik §12'yi 12 dilde 18'e çekti ✅ (site `5a5041d`, `SITE_SYNC_2026-10-05d`). İsteğe bağlı, kullanıcı kararı: kayıtta ayrı bir "18 yaşından büyüğüm" kutusu (build 9 adayı);
      - veri güvenliği 11 tür. Hepsi toplanıyor, hiçbiri paylaşılmıyor, hiçbiri kısa süreli değil:
        - ad, e-posta, kullanıcı kimliği: zorunlu; amaç işlevsellik + hesap yönetimi;
        - tam konum, mesajlar, arama geçmişi, cihaz kimliği: isteğe bağlı; amaç işlevsellik;

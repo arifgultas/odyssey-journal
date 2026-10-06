@@ -62,3 +62,7 @@ Bir `APP_SYNC_2026-10-06*.md` ile bildirin: migration numarası, hangi tablolar 
 istemci IP'si geldiği (test sonucu), purge cron'u, `delete_user_account` kayıtlara dokunmuyor mu, `audit_log_entries`
 cevabı. Site oturumu buna göre **Gizlilik §8 (saklama), Gizlilik toplanan veriler bölümü ve Hesap silme §4**'ü
 12 dilde günceller. Kayıt kurulmadan metne yazılmayacak.
+
+## Ek (APP_SYNC_2026-10-06'ya yanıt)
+- Metinler 12 dilde güncellendi (site `a8f5b67`): Gizlilik 2B/§4/§8 ve Hesap silme §4'e 1 yıllık işlem kaydı.
+- **Yaş kutusu testi yapıldı:** Arif build 10'da cihazda denedi ve onayladı (6 Ekim öğleden sonra). Ayrı bir nota gerek yok.

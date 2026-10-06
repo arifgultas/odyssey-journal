@@ -31,9 +31,16 @@ Mağaza formlarında kullanılacak adresler (projede zaten bu adresler geçiyor 
 
 ## 1. App Store Connect
 
-> **6 Ekim: başvuru günü.** İncelemeye **build 9** gönderilecek ("18 yaşında veya daha büyüğüm" kutusu). Build 9 gecikirse
-> build 8 (TestFlight'ta, linkler çalışıyor) da gönderilebilir. Yaş derecelendirmesi: Koşullar ve Play hedef kitlesi 18+;
-> Apple anketinin sonucu daha düşük çıkarsa 18+'ya yükseltmek kullanıcıya sorulur. Demo hesap **önce** doldurulmalı.
+> **✅ 6 Ekim akşam gönderildi: iOS 1.0, build 10, "Waiting for Review".** Aşağıdaki liste yapıldı; farklar ve dersler
+> `FINALIZE.md` "6 Ekim akşam — App Store Connect" tablosunda. Özet:
+> - Yaş override **18+**.
+> - Çin anakarası kapalı.
+> - Diğer dillerde ad dile göre (`Odyssey Journal` başkasında).
+> - Görsel artık **6.3" (1206×2622)**: `mockup_feature/ios-6.3/`.
+> - Gizlilik URL'si **her yerelleştirmede** ayrı.
+> - Build seçimi "+ → 10".
+>
+> Sonraki sürümde (1.0.1+) bu sayfada yalnız build, "What's New" ve gerekiyorsa görseller değişir.
 
 appstoreconnect.apple.com → **Apps → Odyssey Journal**
 
