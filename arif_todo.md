@@ -11,6 +11,10 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **6 Ekim öğlen — build 9 alındı ✅** iOS TestFlight'ta (sen güncelledin). Android AAB İndirilenler'de
+> `odyssey-journal-1.0.0-vc3.aab`. Demo hesabın şifresi: uygulamada "Şifremi unuttum" → e-posta hello@ kutusuna gelir.
+> Yeni şifreyi Play "Uygulama erişimi"ne de yazmak gerekecek.
+>
 > **6 Ekim — senden beklenenler** (oturum gerisini yapar; plan: `FINALIZE.md` "★ 6 Ekim planı")
 > 1. **12 test kullanıcısının Gmail adresi.** Android telefonu olan 12 kişi. Oturum kapalı test listesine ekler, kanalı açar,
 >    sürümü Google'a gönderir. Sen onlara katılım linkini iletirsin. Linke dokunup "test kullanıcısı ol" derler, Play'den

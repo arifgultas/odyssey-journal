@@ -16,7 +16,14 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ## ★ 6 Ekim planı + 5 Ekim akşam/gece özeti (BURADAN BAŞLAYIN)
 
-**Durum:** `main` = origin, CI yeşil. **Build 9'a girecek kod hazır, build alınmadı** (kullanıcı: "şimdi build alma, yarın
+**6 Ekim öğlen — build 9 alındı ✅** (ikisi de `13a8bf4`; öncesinde tsc temiz, 27 suite / 237 test):
+| | |
+|---|---|
+| iOS build 9 | EAS `1e4b6b83`, 6 dk. `--non-interactive` geçti (yeni yetenek yok; profil dün yenilenmişti). Oturumun komutu izin sınıflandırıcısına takıldı, kullanıcı `! npx eas build …` ile başlattı. `eas submit --id` (`4e1365e9`, ASC App ID `6809580456`) → kullanıcı TestFlight'tan güncelledi |
+| Android build 9 | EAS `3e92b379`, versionCode 3. AAB: İndirilenler'de `odyssey-journal-1.0.0-vc3.aab` (98 MB). Play'e kapalı test kurulurken yüklenecek |
+| Demo hesap | Kullanıcı `review@` şifresini bilmiyor → uygulamada "Şifremi unuttum" (e-posta hello@ kutusuna). **Şifre değişirse Play "Uygulama erişimi"ndeki şifre de güncellenmeli** |
+
+**Durum (5 Ekim gece):** `main` = origin, CI yeşil. Build 9'a girecek kod hazır, build alınmadı (kullanıcı: "şimdi build alma, yarın
 bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.
 
 ### 5 Ekim akşam/gece yapılanlar
