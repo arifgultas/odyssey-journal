@@ -30,7 +30,18 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 |---|---|
 | iOS build 10 | EAS `d5b84266`, kullanıcı `!` ile başlattı (`--non-interactive` geçti). `eas submit --id` → `26f0f13e` |
 | Android build 10 | EAS `0e56128f`, versionCode 4. AAB: İndirilenler'de `odyssey-journal-1.0.0-vc4.aab` (98 MB) |
-| Demo hesap şifresi | İkinci sıfırlama isteği "çok fazla deneme" verdi (Supabase e-posta sınırı). Build 10 kurulunca tekrar denenecek |
+| Demo hesap şifresi | Build 10'da "Şifremi unuttum" uygulama açıkken çalıştı ✅ (düzeltme cihazda doğrulandı). Kullanıcı yeni şifreyi belirledi, hesabı doldurdu (2 şehirden gönderi, takip, mesaj) |
+
+**6 Ekim akşam — App Store Connect dolduruldu (gönderilmedi).** Oturum Chrome'da (Windows) doldurdu:
+| Bölüm | Durum |
+|---|---|
+| App Information | Travel + Social Networking; içerik hakları Yes; **yaş 18+** (anket 13+ çıkardı; Apple "EULA'da yaş alt sınırı varsa uyumlu derecelendirme seç" diyor → override 18+, Kore 19+, eski iOS 17+) |
+| Ad (yerelleştirme) | EN `Odyssey Journal: Travel Diary`. **"Odyssey Journal" başka uygulamada**; EN adı diğer dillerde de "kullanımda" → her dile çevrilmiş ek (kullanıcı kararı): tr `Odyssey Journal: Gezi Günlüğü`, es-ES `…: Diario Viajes` (Bitácora es-ES'te alınamadı), es-MX `…: Bitácora`, fr `Odyssey Journal : Voyages`, de `…: Reisetagebuch`, pt-BR/pt-PT `…: Viagens`, it `…: Diario Viaggi`, ru `…: Путешествия`, ja `…: 旅の日記`, ko `…: 여행 일기`, zh `…: 旅行日记`, ar `…: مذكرات سفر`. **Ders:** ASC'de birden çok dil aynı anda kaydedilince yeni eklenen dili tekrar oluşturmaya çalışıp "ad kullanımda" diyor → her dili ayrı kaydet, arada sayfayı yenile |
+| App Privacy | URL + 11 veri türü (ad, e-posta, hassas konum, mesajlar, fotoğraf, diğer içerik, arama geçmişi, kullanıcı ID, cihaz ID, çökme, performans); hepsi App Functionality, bağlı, takip yok. **Publish edilmedi (kullanıcı onayı)** |
+| Fiyat / ülkeler | Free; **174 ülke, Çin anakarası çıkarıldı** (ICP lisansı yok; kullanıcı kararı) |
+| Sürüm 1.0 | 14 yerelleştirmede tanıtım metni, açıklama, anahtar kelime, destek/pazarlama URL'si; build **10**; manuel yayın; inceleme notu + demo hesap + iletişim (şifre ve telefonu kullanıcı yazdı) |
+| Ekran görüntüleri | **Apple artık 6.1"/6.3" (1206×2622) istiyor**, 6.9" isteğe bağlı. `mockup_feature/ios-6.3/<dil>/` (sharp ile 1290×2796'dan küçültüldü, ~2 px kırpma). 14 yerelleştirmede 8'er görsel. iPad bölümü "Required" görünüyor ama build 10 yalnız iPhone (`UIDeviceFamily [1]`, IPA'dan okundu) |
+| Kalan | Kullanıcı onayıyla: App Privacy **Publish** → **Add for Review → Submit for Review** |
 
 **Durum (5 Ekim gece):** `main` = origin, CI yeşil. Build 9'a girecek kod hazır, build alınmadı (kullanıcı: "şimdi build alma, yarın
 bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.
