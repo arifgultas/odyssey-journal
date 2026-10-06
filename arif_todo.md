@@ -13,7 +13,7 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 
 > **6 Ekim gece — Android build 10 dahili testte ✅, trafik kaydı (034) canlıda ✅.** Senden: telefonda Play'den güncelle;
 > bir gönderi + yorum + mesaj at, gönderiyi düzenle; sonra oturumun verdiği SQL'i Supabase'de çalıştırıp sonucu ilet.
-> Kapalı test taslakta, test kullanıcı listesini bekliyor.
+> Kapalı test taslakta, test kullanıcı listesini bekliyor. 18+ kutusu cihazda denendi ✅ (işaretlenmeden kayıt ilerlemiyor).
 >
 > **6 Ekim akşam — App Store'a gönderildi ✅ (1.0 Waiting for Review, build 10).** Yaş 18+, 174 ülke (Çin yok), 14 dil,
 > manuel yayın. Apple'dan e-posta gelince oturuma söyle: onaysa **Release** düğmesine sen basarsın; retse birlikte bakarız.
