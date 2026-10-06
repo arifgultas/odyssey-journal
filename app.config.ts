@@ -27,7 +27,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: "app.odysseyjournal",
-    buildNumber: "9",
+    buildNumber: "10",
     // Shared post links (https://odysseyjournal.app/[<lang>/]p/<id>) open in the app once the site
     // publishes /.well-known/apple-app-site-association; until then they open the site's /p/ page.
     // lib/deep-links.ts maps them to the post screen.
@@ -92,7 +92,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: "com.odysseyjournal.app",
-    versionCode: 3,
+    versionCode: 4,
     softwareKeyboardLayoutMode: "resize",
     // Shared post links, as on iOS above; verified against the site's /.well-known/assetlinks.json.
     // Only /p/ paths: claiming / would send every visit to the site into the app. pathPattern's "."
