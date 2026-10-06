@@ -21,7 +21,9 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 |---|---|
 | iOS build 9 | EAS `1e4b6b83`, 6 dk. `--non-interactive` geçti (yeni yetenek yok; profil dün yenilenmişti). Oturumun komutu izin sınıflandırıcısına takıldı, kullanıcı `! npx eas build …` ile başlattı. `eas submit --id` (`4e1365e9`, ASC App ID `6809580456`) → kullanıcı TestFlight'tan güncelledi |
 | Android build 9 | EAS `3e92b379`, versionCode 3. AAB: İndirilenler'de `odyssey-journal-1.0.0-vc3.aab` (98 MB). Play'e kapalı test kurulurken yüklenecek |
-| Demo hesap | Kullanıcı `review@` şifresini bilmiyor → uygulamada "Şifremi unuttum" (e-posta hello@ kutusuna). **Şifre değişirse Play "Uygulama erişimi"ndeki şifre de güncellenmeli** |
+| Demo hesap | Kullanıcı `review@` şifresini bilmiyor → uygulamada "Şifremi unuttum". **Şifre değişirse Play "Uygulama erişimi"ndeki şifre de güncellenmeli** |
+| Gmail: alias'a giden e-posta | `noreply@` → `review@` (ikisi de hello@ hesabının takma adı) **gelen kutusuna düşmüyor, Gönderilmiş'te**. 4 Ekim'de moderation@ onay e-postasının "gelmemesi" de büyük ihtimalle buydu |
+| **Hata (build 9): sıfırlama linki sonsuz yükleniyor** | Uygulama açıkken linke dokununca `reset-password` ekranı linki görmüyordu: `Linking.useURL()` açılış URL'si + sonraki olaylar; olay ekran mount olmadan geçiyor. Düzeltme: `useLinkingURL()` (native son linki tutuyor, iOS/Android kaynağı kontrol edildi). **Build 10'a girer**. Build 9'da geçici yol: uygulamayı tamamen kapat, sonra linke dokun (soğuk açılışta çalışır) |
 
 **Durum (5 Ekim gece):** `main` = origin, CI yeşil. Build 9'a girecek kod hazır, build alınmadı (kullanıcı: "şimdi build alma, yarın
 bakarız"). `app.config.ts` hazır: iOS `buildNumber` **9**, Android `versionCode` **3**. `supabase/**` değişmedi.

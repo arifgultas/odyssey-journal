@@ -31,7 +31,10 @@ function linkParams(url: string): Record<string, string> {
 }
 
 export default function ResetPasswordScreen() {
-    const url = Linking.useURL();
+    // useLinkingURL, not useURL: when the app is already running, the link's event fires before
+    // the router mounts this screen, and useURL (launch URL + later events) never sees it. The
+    // native side keeps the latest received link, which useLinkingURL starts from.
+    const url = Linking.useLinkingURL();
     const router = useRouter();
     const { t } = useLanguage();
     const [ready, setReady] = useState(false);
