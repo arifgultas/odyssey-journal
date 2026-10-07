@@ -11,6 +11,11 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **7 Ekim öğlen — App Store 2.1 bilgi isteği cevaplandı ✅.** Apple sabah "Information Needed" gönderdi (ret değil, yeni
+> hesaplara standart). Senin videon + cevap metni gönderildi, Notes ve Attachment güncellendi, sürüm yeniden **Waiting for
+> Review**. Yapacağın yok; Apple'dan e-posta gelince oturuma söyle. Ekran kaydını gerekirse iPhone'daki **orijinal** haliyle
+> sakla (gönderilen, WhatsApp'ın küçülttüğü 384×832 kopya; Apple görüntüyü yetersiz bulursa orijinali göndeririz).
+>
 > **★ 7 Ekim — senden beklenenler** (genel durum: `FINALIZE.md` "★ 7 Ekim — başlarken")
 > 1. ✅ ~~Play "Uygulama erişimi" demo şifresi~~ — 6 Ekim gece kontrol edildi: Play'deki şifre App Store Connect'tekiyle
 >    aynı (yeni şifre), değişiklik gerekmedi. Şifre bir daha değişirse iki yerde de güncelle.

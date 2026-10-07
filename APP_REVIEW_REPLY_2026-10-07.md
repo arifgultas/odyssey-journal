@@ -1,5 +1,8 @@
 # App Review — 2.1 Information Needed (7 Ekim 2026)
 
+**Sonuç (7 Ekim 13:47) ✅:** Cevap + video (WhatsApp kopyası, 8.5 MB'a sıkıştırıldı) gönderildi; Notes'a 2-6. maddeler eklendi;
+video App Review Information → Attachment'a da kondu; **Resubmit** → "Waiting for Review".
+
 **Durum:** iOS 1.0 (build 10), 7 Ekim 06:45'te "Rejected — 2.1.0 Performance: App Completeness".
 Gerçekte bir hata bulunmadı: Apple, inceleme geçmişi az olan yeni hesaplardan standart olarak 6 madde istiyor.
 Uygulamada değişiklik ya da yeni build gerekmiyor. Videoyu ve aşağıdaki metni gönderip **Resubmit** etmek yeterli.

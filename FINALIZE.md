@@ -1,6 +1,6 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
+**Son güncelleme:** 2026-10-07 öğlen (App Store 2.1 bilgi isteği cevaplandı, iOS 1.0 yeniden incelemede). Önceki: 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
 Önceki: 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti).
 Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
 Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
@@ -23,7 +23,7 @@ Android versionCode 4). Son migration: `034` (canlıda). Site ile uyumlu (site `
 
 | Bekleyen | Kimde | Ne olunca ne yapılır |
 |---|---|---|
-| **App Store incelemesi** (iOS 1.0, build 10, "Waiting for Review", 6 Ekim ~18:45) | Apple | Onay → **Arif ASC'de Release**'e basar; mağaza adresi gelince siteye APP_SYNC (site "Yayın günü": `APP_STORE_URL`, `--release`). Ret → e-posta/Resolution Center gerekçesine göre düzeltme; site metnine dokunuyorsa SITE'a not |
+| **App Store incelemesi** (iOS 1.0, build 10). 6 Ekim ~18:45 gönderildi → **7 Ekim 06:45 "2.1 Information Needed"** (yeni hesaplara standart bilgi isteği, hata yok) → 7 Ekim 13:47 cevap + ekran kaydı gönderildi, Notes + Attachment güncellendi, **yeniden "Waiting for Review"** (`APP_REVIEW_REPLY_2026-10-07.md`) | Apple | Onay → **Arif ASC'de Release**'e basar; mağaza adresi gelince siteye APP_SYNC (site "Yayın günü": `APP_STORE_URL`, `--release`). Ret → e-posta/Resolution Center gerekçesine göre düzeltme; site metnine dokunuyorsa SITE'a not |
 | **Play kapalı test incelemesi** (vc4, liste "Odyssey Kapalı Test" 57 kişi) | Google | Arif katılım linkini dağıttı (`https://play.google.com/apps/testing/com.odysseyjournal.app`). Onaydan sonra **12+ kişi × 14 gün**. Dolunca Play'de "Üretime erişim başvurusu" → birlikte doldurulur → üretim sürümü (vc4 ya da yenisi) |
 | (Kontrol edildi ✅) Play "Uygulama erişimi" | — | Şifre ASC'dekiyle aynı (yeni). Şifre değişirse **iki yerde** güncelle |
 | Play mağaza girişinin 11 dil çevirisi | Oturum (isteğe bağlı) | `STORE_LISTING.md` + `mockup_feature/android/<dil>/` + `feature-graphic-<dil>.png`; görselleri tek tek ekle. Üretimden önce yapılması iyi olur |
