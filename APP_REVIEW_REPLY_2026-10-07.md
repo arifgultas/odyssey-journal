@@ -45,10 +45,10 @@ Hello App Review team,
 Thank you for reviewing Odyssey Journal. Please find the requested information below.
 
 1. SCREEN RECORDING
-Attached (recorded on a physical iPhone running the latest iOS). It starts with launching the app and shows
-account registration, login, creating a post, likes/comments, explore and search, the passport profile and travel
-map, collections, direct messages, reporting a post, blocking a user, the Community Guidelines and the full
-account deletion flow.
+Attached (recorded on a physical iPhone running the latest iOS). It starts with launching the app from the
+home screen and shows account registration (age confirmation, Terms acceptance and email verification), login,
+the public feed, the travel map, reporting a post, blocking a user, Explore, the post creation screen, the
+passport profile, settings, the Community Guidelines and the full account deletion flow.
 
 2. PURPOSE AND TARGET AUDIENCE
 Odyssey Journal is a travel diary and travel community for adults (18+). Travelers turn their trip photos into
