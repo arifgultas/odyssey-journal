@@ -14,9 +14,7 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 > **★ 17 Ekim — Apple onayladı 🎉** (iOS 1.0 "Pending Developer Release"; genel durum: `FINALIZE.md` "★ 17 Ekim")
 > **Sıra (senin kararın):** kapalı teste dokunulmaz → 14 gün dolar → üretim başvurusu → temizlik → iki platform aynı gün yayın.
 > 1. **Release'e henüz basma.** Android üretim onayıyla aynı gün basılacak. Onay süresiz bekleyebilir.
-> 2. **DSA trader beyanı** (yayından önce, herhangi bir gün): App Store Connect → **Business** → "Complete Compliance
->    Requirements". Yapılmazsa uygulama AB'de görünmez. Öneri **"trader değilim"**: ücretsiz, reklamsız, gelirsiz; ev
->    adresin AB mağazasında görünmez. Gelir başlayınca güncellenir. (`store_control.md` §1.9)
+> 2. ✅ ~~**DSA trader beyanı**~~ — 18 Ekim, oturum "trader değilim" olarak gönderdi (senin isteğinle). AB'de yayına engel kalmadı.
 > 3. **~20 Ekim:** Play Console'da "Üretime başvur" açılınca oturuma söyle. Formun taslağını oturum hazırlar, sen gönderirsin.
 > 4. **Yaş derecelendirmesi, yeni sosyal medya soruları** (ASC duyurusu): oturum taslak çıkarır, sen onaylarsın.
 > 5. **Şirket:** şimdi gerekmiyor. **Gelir modeli eklemeden önce Ltd** kurulması önerildi (`FINALIZE.md` "Şirket kararı").

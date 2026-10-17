@@ -25,7 +25,7 @@ iOS 10 / vc4). Son migration `034`.
 |---|---|---|
 | **App Store iOS 1.0 (build 10)** | ✅ **Onaylandı**, "Pending Developer Release". Süresiz bekleyebilir; Apple 30 gün sonra yalnızca hatırlatma gönderir | **Android'le aynı gün** Release (Arif basar). Önce DSA beyanı ve veritabanı temizliği |
 | **Play kapalı test** (vc4) | "12 test kullanıcısı kesintisiz olarak 11 gündür kayıtlı". 14. gün ~**20 Ekim** | 20 Ekim'de **Üretime başvur**: oturum taslak hazırlar, Arif gönderir (`store_control.md` §3.5) |
-| **DSA trader beyanı (Apple, AB)** | ❌ **Yapılmamış.** ASC → Business uyarısı: *"you need to let us know whether or not you are a trader"*. Yapılmazsa AB'de yayınlanmaz | Arif beyan eder. Öneri "trader değil" (`store_control.md` §1.9) |
+| **DSA trader beyanı (Apple, AB)** | ✅ **18 Ekim: "not a trader"** (oturum, Arif'in isteğiyle). Compliance: DSA, 27 ülke, Active; uyarı kalktı | Gelir modeli eklenince "trader" olarak güncellenir. Not: Free Apps Agreement bitişi **3 Eylül 2027** (üyelik yenilenince uzar) |
 | **Yaş derecelendirmesi, yeni sosyal medya soruları** | ASC duyurusu var, cevaplanmadı | Oturum taslak çıkarır, Arif onaylar (§1.9) |
 | Lojistik Sözlüğü (Arif'in **diğer** uygulaması) | Play bildirimi: hedef API düzeyi **1 Kasım**'a kadar yükseltilmeli | Bu projeyle ilgisi yok; Arif'e hatırlatıldı |
 

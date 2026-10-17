@@ -116,7 +116,8 @@ Reported content is reviewed by the developer in the in-app moderation panel.
       **17 Ekim'de görüldü: onaylandı**, durum "Pending Developer Release".
 
 ### 1.9 Yayından önce (17 Ekim'de ASC'de görüldü)
-- [ ] **DSA trader beyanı (AB):** ASC → **Business** → "Complete Compliance Requirements". Bu beyan olmadan Release'e
+- [x] **DSA trader beyanı (AB):** ✅ **18 Ekim — "I'm not a trader under the DSA"** (oturum, Arif'in isteğiyle).
+      Business → Compliance: "Digital Services Act, 27 Countries or Regions, 18 Eki 2026, Active". Eski not: ASC → **Business** → "Complete Compliance Requirements". Bu beyan olmadan Release'e
       basılsa bile uygulama **AB ülkelerinde görünmez**.
   - **"Trader değilim":** uygulama ücretsiz, reklamsız ve gelirsiz olduğu için önerilen seçenek bu. Adres gösterilmez;
     AB'deki kullanıcılar ürün sayfasında "geliştirici trader değil" notunu görür.
