@@ -82,6 +82,40 @@ Oturumun önerisi: **şimdi gerekmiyor**. Karar Arif'in; avukat görüşü alın
   hesabı organizasyon hesabına dönüştürülür (D-U-N-S gerekir), Play'de uygulama aktarılır, site metinleri, DSA beyanı
   ve BTK bildirimi güncellenir.
 
+### 17-18 Ekim gün sonu — yapılanlar
+| İş | Sonuç | Commit |
+|---|---|---|
+| App Store durumu (Chrome) | iOS 1.0 **onaylı**, "Pending Developer Release" | — |
+| Play durumu (Chrome) | Kapalı test: 12 kişi × 11 gün (17 Ekim), 14. gün ~20 Ekim | — |
+| Şirket sorusu | Şimdi gerekmiyor; gelir modelinden önce Ltd önerildi (yukarıda "Şirket kararı") | `41d1894` |
+| Yayın sırası | Arif'in kararı: teste dokunma → üretim başvurusu → veri temizliği → iki platform aynı gün | `41d1894` |
+| Site ile uyum | Site `SITE_SYNC_2026-10-17` yazdı (alındı). Siteye `APP_SYNC_2026-10-17` gitti (site `c317673`, `fe46cc4`) | `ba2642c` |
+| **DSA trader beyanı** | ✅ 18 Ekim: oturum, Arif'in isteğiyle "**not a trader**" gönderdi. Compliance: DSA, 27 ülke, Active | `77ece79` |
+| Uygulama kodu ve build | Değişiklik yok (bilerek) | — |
+
+### Sonraki oturum başlarken (sırayla)
+1. `ls SITE_SYNC_2026-10-1*` ile siteden yeni not var mı bak; `arif_todo.md` başındaki "★ 17 Ekim" kutusunu oku.
+2. **~20 Ekim, Arif "üretime başvur açıldı" deyince:**
+   - Play Console → Kontrol paneli → **Üretime başvur**.
+   - Oturum cevap taslaklarını Chrome'da hazırlar: test kullanıcıları nasıl bulundu, etkileşim, geri bildirimler,
+     düzeltmeler, neden hazır.
+   - Arif gönderir (`store_control.md` §3.5).
+3. **Başvuru incelemedeyken (~1 hafta):**
+   - **Yaş derecelendirmesindeki yeni sosyal medya soruları**: ASC → App Information → Age Rating. Oturum taslak
+     çıkarır, Arif onaylar. Release beklerken metadata değişikliği yapmamaya dikkat edilir; önce bu sorunun mevcut
+     sürümü etkileyip etkilemediğine bakılır, gerekirse 1.0.1'e bırakılır.
+   - (İsteğe bağlı) Play mağaza girişinin 11 dil çevirisi (§3.3).
+   - Test bittiği için Maps anahtarından **debug SHA-1** kaldırılır; Play'den kurulu uygulamada harita kontrol edilir.
+4. **Üretim onayı gelince — veri temizliği** (yukarıda "Temizlik"):
+   - Salt-okuma envanter sorgusu → Arif çalıştırır.
+   - Silinecekler işaretlenir (Elif, Can, Sofia + Arif'in deneme hesapları), silme SQL'i çalıştırılır, storage
+     temizlenir, envanter yeniden çalıştırılarak doğrulanır.
+5. **Yayın günü** (`store_control.md` §3.6):
+   - Play üretime vc4 gönderilir.
+   - Arif ASC'de **Release** eder.
+   - İki adres siteye APP_SYNC ile gider: `https://apps.apple.com/app/id6809580456`, `https://play.google.com/store/apps/details?id=com.odysseyjournal.app`.
+6. **Yayından sonra (1.0.1):** repo temizliği (kök notlar → `docs/archive/`), paket güncellemeleri, Google/Apple girişi.
+
 ---
 
 ## ★ 7 Ekim — başlarken (arşiv)
