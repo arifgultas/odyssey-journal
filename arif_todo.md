@@ -1,6 +1,6 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-10-06 gece
+**Güncelleme:** 2026-10-17
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
@@ -11,6 +11,22 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **★ 17 Ekim — Apple onayladı 🎉** (iOS 1.0 "Pending Developer Release"; genel durum: `FINALIZE.md` "★ 17 Ekim")
+> **Sıra (senin kararın):** kapalı teste dokunulmaz → 14 gün dolar → üretim başvurusu → temizlik → iki platform aynı gün yayın.
+> 1. **Release'e henüz basma.** Android üretim onayıyla aynı gün basılacak. Onay süresiz bekleyebilir.
+> 2. **DSA trader beyanı** (yayından önce, herhangi bir gün): App Store Connect → **Business** → "Complete Compliance
+>    Requirements". Yapılmazsa uygulama AB'de görünmez. Öneri **"trader değilim"**: ücretsiz, reklamsız, gelirsiz; ev
+>    adresin AB mağazasında görünmez. Gelir başlayınca güncellenir. (`store_control.md` §1.9)
+> 3. **~20 Ekim:** Play Console'da "Üretime başvur" açılınca oturuma söyle. Formun taslağını oturum hazırlar, sen gönderirsin.
+> 4. **Yaş derecelendirmesi, yeni sosyal medya soruları** (ASC duyurusu): oturum taslak çıkarır, sen onaylarsın.
+> 5. **Şirket:** şimdi gerekmiyor. **Gelir modeli eklemeden önce Ltd** kurulması önerildi (`FINALIZE.md` "Şirket kararı").
+>    İstersen bir mali müşavir ya da avukatla 1 saatlik görüşme.
+> 6. **Diğer uygulaman Lojistik Sözlüğü:** Play, hedef API düzeyinin **1 Kasım**'a kadar yükseltilmesini istiyor (bu
+>    projeyle ilgisi yok).
+> 7. Üretim onayından sonra **temizlik**: oturum bir envanter sorgusu verir, SQL Editor'da çalıştırıp sonucu iletirsin.
+>    Silinecekleri birlikte işaretleriz: Elif, Can, Sofia ve deneme hesapların. `review@`, `moderation@` ve gerçek test
+>    kullanıcıları kalır.
+>
 > **7 Ekim öğlen — App Store 2.1 bilgi isteği cevaplandı ✅.** Apple sabah "Information Needed" gönderdi (ret değil, yeni
 > hesaplara standart). Senin videon + cevap metni gönderildi, Notes ve Attachment güncellendi, sürüm yeniden **Waiting for
 > Review**. Yapacağın yok; Apple'dan e-posta gelince oturuma söyle. Ekran kaydını gerekirse iPhone'daki **orijinal** haliyle

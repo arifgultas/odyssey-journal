@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-07 öğlen (App Store 2.1 bilgi isteği cevaplandı, iOS 1.0 yeniden incelemede). Önceki: 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
+**Son güncelleme:** 2026-10-17 (**iOS 1.0 onaylandı**, Pending Developer Release; Play kapalı test 11/14 gün; şirket ve DSA kararı; **17 Ekim başlangıcı hemen aşağıda**).
+Önceki: 2026-10-07 öğlen (App Store 2.1 bilgi isteği cevaplandı, iOS 1.0 yeniden incelemede). Önceki: 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
 Önceki: 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti).
 Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
 Aynı gün akşam: ikinci tur (tüm uygulama yeniden tarandı, ~45 bulgu, `033`).
@@ -15,7 +16,65 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 7 Ekim — başlarken (BURADAN BAŞLAYIN)
+## ★ 17 Ekim — başlarken (BURADAN BAŞLAYIN)
+
+**Durum (17 Ekim, Chrome'da kontrol edildi):** `main` temiz, kodda bekleyen iş yok. Son kod hâlâ build 10 (`f303cb7`,
+iOS 10 / vc4). Son migration `034`.
+
+| Ne | Durum | Sıradaki adım |
+|---|---|---|
+| **App Store iOS 1.0 (build 10)** | ✅ **Onaylandı**, "Pending Developer Release". Süresiz bekleyebilir; Apple 30 gün sonra yalnızca hatırlatma gönderir | **Android'le aynı gün** Release (Arif basar). Önce DSA beyanı ve veritabanı temizliği |
+| **Play kapalı test** (vc4) | "12 test kullanıcısı kesintisiz olarak 11 gündür kayıtlı". 14. gün ~**20 Ekim** | 20 Ekim'de **Üretime başvur**: oturum taslak hazırlar, Arif gönderir (`store_control.md` §3.5) |
+| **DSA trader beyanı (Apple, AB)** | ❌ **Yapılmamış.** ASC → Business uyarısı: *"you need to let us know whether or not you are a trader"*. Yapılmazsa AB'de yayınlanmaz | Arif beyan eder. Öneri "trader değil" (`store_control.md` §1.9) |
+| **Yaş derecelendirmesi, yeni sosyal medya soruları** | ASC duyurusu var, cevaplanmadı | Oturum taslak çıkarır, Arif onaylar (§1.9) |
+| Lojistik Sözlüğü (Arif'in **diğer** uygulaması) | Play bildirimi: hedef API düzeyi **1 Kasım**'a kadar yükseltilmeli | Bu projeyle ilgisi yok; Arif'e hatırlatıldı |
+
+**Sıra (Arif'in kararı, 17 Ekim):** kapalı teste **dokunulmaz**. Sıra şöyle:
+1. 14 gün dolar.
+2. Üretime erişim başvurusu yapılır, Google onaylar.
+3. **Temizlik** yapılır.
+4. **İki platform aynı gün** yayına girer.
+5. Site `--release` ile güncellenir.
+
+Yeni build gerekmez: temizlik yalnız veri ve repo dosyası; uygulama kodunda test ya da demo ekranı yok (17 Ekim'de
+`app/` tarandı).
+
+### Temizlik (üretim onayından sonra, yayından önce)
+Arif "gereksizler" olarak şunları seçti: **sahte tohum hesaplar + test hesapları/gönderileri + repo dağınıklığı**.
+- **Veritabanı** — iki aşamada:
+  - a) Oturum bir salt-okuma envanter sorgusu hazırlar. Her hesap için e-posta, kullanıcı adı, gönderi/yorum/mesaj sayısı,
+    son giriş ve storage dosya sayısını listeler. Arif SQL Editor'da çalıştırıp sonucu iletir.
+  - b) Silinecek liste birlikte işaretlenir.
+  - c) Silme SQL'i `delete_user_account`'un (`030`) sırasını izler; mesajları ve konuşmaları da kapsar.
+  - d) Storage fotoğrafları panelden ya da Storage API ile silinir; SQL ile silinemez.
+  - **Silinir:** Elif Demir (`elifdemir`), Can Yılmaz (`canyilmaz`), Sofia Rossi (`sofiarossi`) ve Arif'in deneme hesapları.
+  - **Kalır:**
+    - `review@` (her güncellemenin incelemesinde gerekli; kendi gönderileri durur);
+    - `moderation@` (yönetici);
+    - **gerçek test kullanıcıları ve içerikleri** (ilk kullanıcılar);
+    - `traffic_log` (5651 gereği 1 yıl, FK'siz, bilerek).
+- **Repo** (public):
+  - Kökteki `SITE_SYNC_*`, `APP_REVIEW_REPLY_*` ve `I18N_HANDOFF.md` → `docs/archive/`.
+  - `tsc_errors.txt` ve `tsc_output.txt` silinir.
+  - `scratch/`, `brain/` ve `SS/` için önce liste gösterilir, sonra karar verilir.
+  - `mockup_feature/` kalır (mağaza görselleri).
+  - Notlarda hassas bilgi taraması yapılır.
+
+### Şirket kararı (17 Ekim, Arif sordu: "KVKK ve GDPR için firma mı açmalıyım?")
+Oturumun önerisi: **şimdi gerekmiyor**. Karar Arif'in; avukat görüşü alınmadı.
+- **KVKK:** gerçek kişi de veri sorumlusu olabilir. Sitede "Arif Gültaş" yazıyor; Apple Individual ve Play kişisel
+  hesaplarla tutarlı. VERBİS muafiyeti var (site WORKLOG 5 Ekim).
+- **GDPR m.27 AB temsilcisi:** şirket bunu çözmez, çünkü TR Ltd de AB dışında kalır. Bilinen risk olarak duruyor;
+  büyürse ücretli bir temsilci hizmeti alınır.
+- **Şirketin gerektiği an:** gelir modeli (fatura, vergi), sorumluluk ayrımı (yalnız Ltd ya da AŞ), DSA'da ev adresi
+  yerine şirket adresi, BTK yer sağlayıcı bildirimi.
+- **Arif'in gelir planı:** "belki, ileride". Öneri: **gelir modeli eklemeden önce Ltd** kurulsun. Kurulunca Apple
+  hesabı organizasyon hesabına dönüştürülür (D-U-N-S gerekir), Play'de uygulama aktarılır, site metinleri, DSA beyanı
+  ve BTK bildirimi güncellenir.
+
+---
+
+## ★ 7 Ekim — başlarken (arşiv)
 
 **Durum (6 Ekim gece):** `main` = origin, temiz. Kodda bekleyen iş yok. Son kod: build 10 = `f303cb7` (iOS buildNumber 10,
 Android versionCode 4). Son migration: `034` (canlıda). Site ile uyumlu (site `a8f5b67` 5651 metinleri canlıda, site

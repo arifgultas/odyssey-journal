@@ -112,7 +112,26 @@ Reported content is reviewed by the developer in the in-app moderation panel.
 - [ ] **Manually release this version** (önerilen — onaydan sonra yayın zamanını siz seçersiniz)
 
 ### 1.8 Gönder
-- [ ] Sağ üstte **Add for Review** → **Submit**
+- [x] ~~Sağ üstte **Add for Review** → **Submit**~~ — 6 Ekim gönderildi. 7 Ekim'de 2.1 bilgi isteği geldi, cevaplandı.
+      **17 Ekim'de görüldü: onaylandı**, durum "Pending Developer Release".
+
+### 1.9 Yayından önce (17 Ekim'de ASC'de görüldü)
+- [ ] **DSA trader beyanı (AB):** ASC → **Business** → "Complete Compliance Requirements". Bu beyan olmadan Release'e
+      basılsa bile uygulama **AB ülkelerinde görünmez**.
+  - **"Trader değilim":** uygulama ücretsiz, reklamsız ve gelirsiz olduğu için önerilen seçenek bu. Adres gösterilmez;
+    AB'deki kullanıcılar ürün sayfasında "geliştirici trader değil" notunu görür.
+  - **"Trader":** ad, adres (Bayrampaşa), telefon ve e-posta AB mağazasında **herkese açık** görünür.
+  - Gelir modeli eklenince (reklam, abonelik) beyan "trader" olarak güncellenmeli. O noktada şirket kurulmuş olursa
+    şirketin bilgileri girilir (`FINALIZE.md` "★ 17 Ekim").
+  - Beyanı Arif gönderir: bu bir hukuki beyan.
+- [ ] **Yaş derecelendirmesi, yeni sosyal medya soruları:** ASC duyurusu "Review New Social Media Questions on Age
+      Ratings". App Information → Age Rating → soruları cevapla (oturum taslak çıkarır, Arif onaylar). Cevaplar 18+
+      kararıyla tutarlı olmalı.
+- [ ] **Release This Version:** Android üretimle **aynı gün** basılır (§3.6). "Pending Developer Release" durumu
+      süresiz bekleyebilir; Apple 30 gün sonra yalnızca hatırlatma e-postası gönderir. Release'ten önce veritabanı
+      temizliği bitmiş olmalı (`FINALIZE.md` "★ 17 Ekim").
+- Uygulama ID'si `6809580456`. Mağaza adresi: `https://apps.apple.com/app/id6809580456`. Site bu adresi yayın günü
+  kullanır.
 
 ---
 
@@ -177,6 +196,22 @@ play.google.com/console
 - Hesap **kişisel** ve **Kasım 2023'ten sonra** açıldıysa: Google önce **12 test kullanıcılı,
   14 gün süren kapalı test** ister. Dashboard'da bu şart görünürse oturuma söyleyin, birlikte kurulur.
 - Görünmüyorsa: **Production → Create release** → aynı AAB → gönder.
+- **Durum (17 Ekim):** şart bu uygulamaya uygulanıyor. Dashboard'da "12 test kullanıcısı kesintisiz olarak 11 gündür
+  kayıtlı" yazıyor. 14. gün ~20 Ekim; o gün **Üretime başvur** düğmesi açılır.
+  - Arif'in kararı: kapalı test bitene kadar **hiçbir şeye dokunulmaz** (veri temizliği, yeni sürüm, liste değişikliği yok).
+  - Başvuru formu kapalı testle ilgili soruları içerir: test kullanıcıları nasıl bulundu, nasıl bir etkileşim oldu,
+    geri bildirimler, yapılan düzeltmeler, uygulamanın üretime neden hazır olduğu. Oturum Chrome'da taslağı hazırlar,
+    **Arif gönderir**. Google incelemesi birkaç gün ile ~1 hafta sürer.
+
+### 3.6 Yayın günü (üretim onayı geldikten sonra)
+- [ ] Önce veritabanı temizliği (`FINALIZE.md` "★ 17 Ekim" → temizlik).
+- [ ] Maps "Odyssey Android Maps SDK" anahtarından **debug SHA-1**'i kaldır.
+- [ ] (İsteğe bağlı) Mağaza girişinin 11 dil çevirisi (§3.3).
+- [ ] **Production → Create release** → vc4'ü kütüphaneden seç (yeni build gerekmez; temizlik yalnız veri) → ülkeler
+      kapalı testle aynı → gönder.
+- [ ] Aynı gün ASC'de **Release This Version** (§1.9).
+- [ ] İki mağaza adresi siteye APP_SYNC ile gider: `APP_STORE_URL` / `PLAY_STORE_URL` → `--release` → deploy.
+      Play adresi: `https://play.google.com/store/apps/details?id=com.odysseyjournal.app`.
 
 ---
 
