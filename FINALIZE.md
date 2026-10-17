@@ -39,6 +39,16 @@ iOS 10 / vc4). Son migration `034`.
 Yeni build gerekmez: temizlik yalnız veri ve repo dosyası; uygulama kodunda test ya da demo ekranı yok (17 Ekim'de
 `app/` tarandı).
 
+**Site ile uyum (17 Ekim):** site oturumu aynı gün `SITE_SYNC_2026-10-17.md` yazdı. İçeriği bu bölümle örtüşüyor:
+- yayına kadar kod, paket ve build değişikliği yok; üretime vc4 çıkar;
+- beklerken ASC'de "Cancel release" ve metadata değişikliği yapılmaz;
+- debug SHA-1 test bitince kaldırılır;
+- yayın günü iki adres aynı gün APP_SYNC ile siteye gider.
+
+Site notu, kod tarafındaki depo temizliğini 1.0.1'e bırakıyor. Kök dosyaları build'e girmediği için bunun bir önemi yok.
+**Veri temizliği** (sahte hesaplar) yayından önce yapılır. Siteye giden cevap: site deposunda `APP_SYNC_2026-10-17.md`
+(`c317673`): DSA trader eksiği, Play 12 kişi × 11 gün ve yaklaşan veri temizliği.
+
 ### Temizlik (üretim onayından sonra, yayından önce)
 Arif "gereksizler" olarak şunları seçti: **sahte tohum hesaplar + test hesapları/gönderileri + repo dağınıklığı**.
 - **Veritabanı** — iki aşamada:
