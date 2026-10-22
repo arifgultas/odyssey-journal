@@ -52,6 +52,27 @@ bulmak "Çok zor", geri bildirim olumlu ve hata yok):
 3. **Üretim sürümü:** vc4 kütüphaneden seçilir, ülkeler kapalı testle aynı tutulur, incelemeye gönderilir. Google onaylar ve sürüm "yayınlamaya hazır" bekler.
 4. **Yayın günü:** Play'de "Yayınla" ve ASC'de "Release This Version" aynı gün yapılır, iki mağaza adresi siteye APP_SYNC ile gider.
 
+### 22 Ekim — oturumda yapılanlar
+| İş | Sonuç | Commit |
+|---|---|---|
+| Play kontrol paneli (Chrome) | Üç şart tamam (kapalı sürüm, 12+ kişi, 14+ gün) | — |
+| Başvuru öncesi kontrol | Vitals 28 gün: 0 çökme / 0 ANR; Play test geri bildirimi yok; takip ve engelleme kodda var (`lib/follow.ts`, `lib/block.ts`) | — |
+| **Üretim erişimi başvurusu** | ✅ 22 Ekim 22:02'de gönderildi, Google incelemesinde | `167cc7b` |
+| Notlar | Bu bölüm, `store_control.md` §3.5/§3.6, `arif_todo.md` | `167cc7b` |
+| Push izni | `git push` otomatik mod tarafından gerekçesiz engellendi. Arif'in isteğiyle `.claude/settings.local.json`'a `Bash(git push)` ve `Bash(git push origin main)` izni eklendi (dosya gitignore'da). `--force` hâlâ onay ister | `5059783` |
+| Site | Sitede iş yok; site deposuna not yazılmadı. Arif'e site oturumuna iletmesi için tek satırlık bir mesaj verildi | — |
+| Kod, build, kapalı test | Dokunulmadı (bilerek) | — |
+
+### Sonraki oturum başlarken (sırayla)
+1. `ls SITE_SYNC_2026-10-*` ile siteden yeni not var mı bak, sonra `arif_todo.md` başını oku.
+2. Arif "Google e-postası geldi" deyince Play kontrol panelini Chrome'da aç ve sonucu kontrol et.
+   - **Onay:** Yönetilen yayınlama açılır (Arif'e sorulur; ayar değişikliği). Ardından veri temizliği ("★ 17 Ekim" → Temizlik)
+     ve debug SHA-1 kaldırma yapılır. Sonra üretim sürümü (vc4) incelemeye gönderilir ve "yayınlamaya hazır"da bekletilir.
+   - **Ret:** Gerekçe okunur, form yeniden doldurulur. Google ek test süresi isterse kapalı test sürer.
+3. Beklerken yapılabilecekler (isteğe bağlı):
+   - ASC yaş derecelendirmesindeki yeni sosyal medya soruları (taslak çıkar, Arif onaylar);
+   - Play mağaza girişinin 11 dil çevirisi (§3.3).
+
 ---
 
 ## ★ 17 Ekim — başlarken (arşiv)
