@@ -60,3 +60,6 @@ google-services.json
 # supabase CLI cache and IDE settings
 supabase/.temp/
 .idea/
+
+# Claude Code personal settings
+.claude/settings.local.json
