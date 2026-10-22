@@ -197,6 +197,8 @@ play.google.com/console
 - Hesap **kişisel** ve **Kasım 2023'ten sonra** açıldıysa: Google önce **12 test kullanıcılı,
   14 gün süren kapalı test** ister. Dashboard'da bu şart görünürse oturuma söyleyin, birlikte kurulur.
 - Görünmüyorsa: **Production → Create release** → aynı AAB → gönder.
+- **22 Ekim: başvuru gönderildi** (22:02, oturum doldurdu; cevaplar `FINALIZE.md` "★ 22 Ekim"). Google incelemesi
+  genellikle ≤7 gün; sonuç Arif'e e-postayla gelir.
 - **Durum (17 Ekim):** şart bu uygulamaya uygulanıyor. Dashboard'da "12 test kullanıcısı kesintisiz olarak 11 gündür
   kayıtlı" yazıyor. 14. gün ~20 Ekim; o gün **Üretime başvur** düğmesi açılır.
   - Arif'in kararı: kapalı test bitene kadar **hiçbir şeye dokunulmaz** (veri temizliği, yeni sürüm, liste değişikliği yok).
@@ -208,6 +210,8 @@ play.google.com/console
 - [ ] Önce veritabanı temizliği (`FINALIZE.md` "★ 17 Ekim" → temizlik).
 - [ ] Maps "Odyssey Android Maps SDK" anahtarından **debug SHA-1**'i kaldır.
 - [ ] (İsteğe bağlı) Mağaza girişinin 11 dil çevirisi (§3.3).
+- [ ] **Yönetilen yayınlama**yı aç (Yayınlama özeti). Arif'in kararı: Android de iOS gibi son noktada bekler; açıkken
+      onaylanan sürüm "Yayınla"ya basılana kadar yayına girmez. Sürüm oluşturulmadan **önce** açılmalı.
 - [ ] **Production → Create release** → vc4'ü kütüphaneden seç (yeni build gerekmez; temizlik yalnız veri) → ülkeler
       kapalı testle aynı → gönder.
 - [ ] Aynı gün ASC'de **Release This Version** (§1.9).

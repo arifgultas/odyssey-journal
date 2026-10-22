@@ -1,6 +1,6 @@
 # Arif'in yapılacaklar listesi
 
-**Güncelleme:** 2026-10-17
+**Güncelleme:** 2026-10-22
 Yalnızca **senin** yapman gereken işler. Kategoriler kabaca yapılma sırasına göre dizildi.
 Ayrıntı gerektiğinde parantezdeki dosyaya bak: `FINALIZE.md` (genel durum), `store_control.md`
 (mağaza adımları), `STORE_LISTING.md` (mağaza metinleri). Bir işi bitirince oturuma söyle;
@@ -15,7 +15,8 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 > **Sıra (senin kararın):** kapalı teste dokunulmaz → 14 gün dolar → üretim başvurusu → temizlik → iki platform aynı gün yayın.
 > 1. **Release'e henüz basma.** Android üretim onayıyla aynı gün basılacak. Onay süresiz bekleyebilir.
 > 2. ✅ ~~**DSA trader beyanı**~~ — 18 Ekim, oturum "trader değilim" olarak gönderdi (senin isteğinle). AB'de yayına engel kalmadı.
-> 3. **~20 Ekim:** Play Console'da "Üretime başvur" açılınca oturuma söyle. Formun taslağını oturum hazırlar, sen gönderirsin.
+> 3. ✅ ~~Üretim başvurusu~~ — 22 Ekim 22:02'de oturum gönderdi. **Google'dan e-posta bekle** (genellikle ≤7 gün),
+>    gelince oturuma söyle. Onaydan sonra Android de iOS gibi "yayınlamaya hazır"da bekletilecek (Yönetilen yayınlama).
 > 4. **Yaş derecelendirmesi, yeni sosyal medya soruları** (ASC duyurusu): oturum taslak çıkarır, sen onaylarsın.
 > 5. **Şirket:** şimdi gerekmiyor. **Gelir modeli eklemeden önce Ltd** kurulması önerildi (`FINALIZE.md` "Şirket kararı").
 >    İstersen bir mali müşavir ya da avukatla 1 saatlik görüşme.

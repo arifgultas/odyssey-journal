@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-17 (**iOS 1.0 onaylandı**, Pending Developer Release; Play kapalı test 11/14 gün; şirket ve DSA kararı; **17 Ekim başlangıcı hemen aşağıda**).
+**Son güncelleme:** 2026-10-22 (**Play üretim erişimi başvurusu gönderildi**, Google incelemesinde; aşağıda "★ 22 Ekim").
+Önceki: 2026-10-17 (**iOS 1.0 onaylandı**, Pending Developer Release; Play kapalı test 11/14 gün; şirket ve DSA kararı; **17 Ekim başlangıcı hemen aşağıda**).
 Önceki: 2026-10-07 öğlen (App Store 2.1 bilgi isteği cevaplandı, iOS 1.0 yeniden incelemede). Önceki: 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
 Önceki: 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti).
 Önceki: 2026-10-04 gün sonu (`033` canlıda; build'ler 5 Ekim'e kaldı).
@@ -16,7 +17,44 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 17 Ekim — başlarken (BURADAN BAŞLAYIN)
+## ★ 22 Ekim — Play üretim başvurusu gönderildi (BURADAN BAŞLAYIN)
+
+**Durum:** Kontrol panelinde üç şart da tamamdı (kapalı sürüm yayında, 12+ kullanıcı, 14+ gün). Oturum formu Arif'in
+isteğiyle Chrome'da doldurdu ve **22 Ekim 22:02'de gönderdi**. Panel: "Üretim erişimi başvurunuzu aldık. Hesap sahibine
+e-postayla bilgi verilecek. Genellikle 7 gün veya daha kısa." Kod, build ve kapalı teste dokunulmadı.
+
+Başvurudan önce kontrol edilenler: Android vitals son 28 günde **0 çökme / 0 ANR**; Play "Test geri bildirimleri" boş.
+
+**Arif'in kararı (22 Ekim):** Android de iOS gibi **son noktaya kadar gelip durur**; yayın düğmesine iki platformda aynı
+gün basılır. Play'deki karşılığı **Yönetilen yayınlama** (Yayınlama özeti → Yönetilen yayınlama): açıkken Google'ın
+onayladığı üretim sürümü Arif "Yayınla" diyene kadar bekler. Üretim sürümü oluşturulmadan **önce** açılmalı (`store_control.md` §3.6).
+
+**Forma giden cevaplar** (İngilizce; Arif test kullanıcısı soruları için seçim yaptı: arkadaş + iş/okul çevresi,
+bulmak "Çok zor", geri bildirim olumlu ve hata yok):
+| Soru | Cevap (özet) |
+|---|---|
+| Test kullanıcıları nereden | Arkadaşlar, iş ve okul çevresi; katılım linki kişisel olarak (mesajlaşma, yüz yüze) iletildi |
+| Bulmak ne kadar kolaydı | Çok zor |
+| Etkileşim | Kayıt, fotoğraflı/yerli gönderi, akış ve harita, beğeni/yorum, mesaj; tüm temel özellikler kullanıldı |
+| Geri bildirim | Mesajlaşma ve yüz yüze toplandı; olumlu, hata bildirilmedi, vitals'ta çökme/ANR yok |
+| Hedef kitle | 18+ gezginler, kişisel seyahat günlüğü ve paylaşım; 14 dil |
+| Değer | Gönderiler + kişisel harita, takip, keşif, yorum, mesaj; şikâyet/engelleme/moderasyon |
+| İlk yıl yükleme | 0 – 10 bin |
+| Yapılan değişiklikler | Kapalı testten önceki iç testte düzeltmeler (şifre sıfırlama linki, 18+ onayı); testte hata çıkmadı, aynı build korundu; yayından önce demo/test verisi silinecek |
+| Neden hazır | 12+ kişi × 14+ gün, çökme yok, olumlu geri bildirim; aynı sürüm Apple incelemesinden geçti; gizlilik, veri güvenliği, moderasyon hazır |
+
+### Sıradaki adımlar
+1. **Google e-postası** (Arif'in hesabına). Ret gelirse gerekçesine göre form yeniden doldurulur.
+2. **Onay gelince:**
+   - Yönetilen yayınlama açılır.
+   - Veri temizliği yapılır ("★ 17 Ekim" → Temizlik).
+   - Maps anahtarından debug SHA-1 kaldırılır.
+3. **Üretim sürümü:** vc4 kütüphaneden seçilir, ülkeler kapalı testle aynı tutulur, incelemeye gönderilir. Google onaylar ve sürüm "yayınlamaya hazır" bekler.
+4. **Yayın günü:** Play'de "Yayınla" ve ASC'de "Release This Version" aynı gün yapılır, iki mağaza adresi siteye APP_SYNC ile gider.
+
+---
+
+## ★ 17 Ekim — başlarken (arşiv)
 
 **Durum (17 Ekim, Chrome'da kontrol edildi):** `main` temiz, kodda bekleyen iş yok. Son kod hâlâ build 10 (`f303cb7`,
 iOS 10 / vc4). Son migration `034`.
