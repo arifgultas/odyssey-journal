@@ -18,7 +18,7 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 > 3. ✅ ~~Üretim başvurusu~~ — 22 Ekim'de gönderildi, Google 24 Ekim'de onayladı. ✅ 27 Ekim: üretim sürümü (vc4)
 >    incelemeye gönderildi, yönetilen yayınlama açık. **Google onaylayınca "Yayınla"ya basma**; yayın günü iOS
 >    Release ile aynı gün basacaksın. Onay e-postası gelince oturuma söyle.
-> 4. **Yaş derecelendirmesi, yeni sosyal medya soruları** (ASC duyurusu): oturum taslak çıkarır, sen onaylarsın.
+> 4. ✅ ~~**Yaş derecelendirmesi, yeni sosyal medya soruları**~~ — 27 Ekim: zaten cevaplıydı, sonuç 18+. Yapacağın yok.
 > 5. **Şirket:** şimdi gerekmiyor. **Gelir modeli eklemeden önce Ltd** kurulması önerildi (`FINALIZE.md` "Şirket kararı").
 >    İstersen bir mali müşavir ya da avukatla 1 saatlik görüşme.
 > 6. ✅ ~~**Diğer uygulaman Lojistik Sözlüğü:** hedef API düzeyi (1 Kasım)~~ — 27 Ekim, güncellemeyi yaptın.

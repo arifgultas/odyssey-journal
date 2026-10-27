@@ -56,7 +56,9 @@ Not: başka bir Supabase projesi "Gultas Archive" org'una (Free) taşındı; ody
 2. Beklerken ya da onaydan sonra, yayından önce:
    - ~~veri temizliği~~ ✅;
    - ~~Maps anahtarından debug SHA-1'in kaldırılması~~ ✅ (Arif Play'den kurulu uygulamada haritayı kontrol eder);
-   - ASC yaş derecelendirmesindeki yeni sosyal medya soruları.
+   - ~~ASC yaş derecelendirmesindeki yeni sosyal medya soruları~~ ✅ 27 Ekim'de salt okunur olarak kontrol edildi, zaten
+     cevaplıydı: UGC Evet, Sosyal Medya Evet, 13 yaş altı için sosyal medya kapatma Hayır, Mesajlaşma Evet,
+     Reklam/Web/Ebeveyn denetimi/Yaş doğrulama Hayır. Sonuç: **18+** (173 ülke; Brezilya 18+, Kore 19+). Değişiklik yapılmadı.
 3. **Yayın günü:** Play'de Yayınlama özeti → "Yayınla", ASC'de "Release This Version", ikisi aynı gün. Ardından iki mağaza
    adresi siteye APP_SYNC ile gider.
 4. Yayından sonra: Play mağaza girişinin 11 dil çevirisi (§3.3) ve 1.0.1 repo temizliği.
