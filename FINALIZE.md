@@ -33,10 +33,28 @@ Chrome'da şunları yaptı:
 
 Mağaza girişinin 11 dil çevirisi: **Arif'in kararı, yayından sonra.** İnceleme sürerken mağaza girişine dokunulmaz.
 
+### ✅ Veri temizliği (27 Ekim, Arif SQL Editor'da çalıştırdı)
+Envanterde 22 hesap vardı. **6 hesap silindi:**
+- `admin@admin.com` (Elif Demir), `admin2@admin.com` (Can Yılmaz), `admin3@admin.com` (Sofia Rossi);
+- `review@review.com`, `test@test.com`;
+- 17 Ekim'de açılmış, boş, tanınmayan bir iCloud hesabı (büyük ihtimalle Apple incelemesi).
+
+Silme `delete_user_account` (030) sırasını izledi. Doğrulama sorgusu bu 6 kimlik için profil, gönderi, yorum, beğeni,
+takip, mesaj ve bildirimde 0 döndü; sahipsiz profil ya da gönderi de 0. Storage'da `posts` bucket'ındaki 3 klasör (16
+dosya) panelden silindi, kalan dosya 0. Toplam **16 hesap** kaldı:
+- `review@odysseyjournal.app` (2 gönderi);
+- `moderation@` (yönetici);
+- Arif'in kişisel gmail hesabı ("Deneme", silinmedi);
+- 13 gerçek test kullanıcısı.
+
+Arif cihazlarda artık `review@` (günlük test), `moderation@` ya da kendi kişisel hesabıyla giriş yapar.
+Not: ilk silme denemesi "Run with RLS" sorusundan sonra hata gösterdi, ama silme gerçekleşmişti. Doğrulama sorgusu bunu gösterdi.
+Not: başka bir Supabase projesi "Gultas Archive" org'una (Free) taşındı; odyssey-journal-eu `arifgultas's Org`'da **Pro**'da kaldı.
+
 ### Sıradaki adımlar
 1. Google onayını bekle (e-posta ya da Yayınlama özeti). Ret gelirse gerekçesine göre düzeltilir.
 2. Beklerken ya da onaydan sonra, yayından önce:
-   - veri temizliği ("★ 17 Ekim" → Temizlik);
+   - ~~veri temizliği~~ ✅;
    - Maps anahtarından debug SHA-1'in kaldırılması;
    - ASC yaş derecelendirmesindeki yeni sosyal medya soruları.
 3. **Yayın günü:** Play'de Yayınlama özeti → "Yayınla", ASC'de "Release This Version", ikisi aynı gün. Ardından iki mağaza

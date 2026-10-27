@@ -21,11 +21,10 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 > 4. **Yaş derecelendirmesi, yeni sosyal medya soruları** (ASC duyurusu): oturum taslak çıkarır, sen onaylarsın.
 > 5. **Şirket:** şimdi gerekmiyor. **Gelir modeli eklemeden önce Ltd** kurulması önerildi (`FINALIZE.md` "Şirket kararı").
 >    İstersen bir mali müşavir ya da avukatla 1 saatlik görüşme.
-> 6. **Diğer uygulaman Lojistik Sözlüğü:** Play, hedef API düzeyinin **1 Kasım**'a kadar yükseltilmesini istiyor (bu
->    projeyle ilgisi yok).
-> 7. Üretim onayından sonra **temizlik**: oturum bir envanter sorgusu verir, SQL Editor'da çalıştırıp sonucu iletirsin.
->    Silinecekleri birlikte işaretleriz: Elif, Can, Sofia ve deneme hesapların. `review@`, `moderation@` ve gerçek test
->    kullanıcıları kalır.
+> 6. ✅ ~~**Diğer uygulaman Lojistik Sözlüğü:** hedef API düzeyi (1 Kasım)~~ — 27 Ekim, güncellemeyi yaptın.
+> 7. ✅ ~~**Temizlik**~~ — 27 Ekim: 6 hesap ve 16 fotoğraf silindi. Cihazlarda artık `review@odysseyjournal.app`,
+>    `moderation@` ya da kendi kişisel gmail hesabınla giriş yap. İstersen kendi hesabına ad/kullanıcı adı koy ve
+>    yayından önce birkaç gerçek gezi paylaş (akış boş görünmesin).
 >
 > **7 Ekim öğlen — App Store 2.1 bilgi isteği cevaplandı ✅.** Apple sabah "Information Needed" gönderdi (ret değil, yeni
 > hesaplara standart). Senin videon + cevap metni gönderildi, Notes ve Attachment güncellendi, sürüm yeniden **Waiting for
