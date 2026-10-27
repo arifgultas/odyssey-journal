@@ -55,7 +55,7 @@ Not: başka bir Supabase projesi "Gultas Archive" org'una (Free) taşındı; ody
 1. Google onayını bekle (e-posta ya da Yayınlama özeti). Ret gelirse gerekçesine göre düzeltilir.
 2. Beklerken ya da onaydan sonra, yayından önce:
    - ~~veri temizliği~~ ✅;
-   - Maps anahtarından debug SHA-1'in kaldırılması;
+   - ~~Maps anahtarından debug SHA-1'in kaldırılması~~ ✅ (Arif Play'den kurulu uygulamada haritayı kontrol eder);
    - ASC yaş derecelendirmesindeki yeni sosyal medya soruları.
 3. **Yayın günü:** Play'de Yayınlama özeti → "Yayınla", ASC'de "Release This Version", ikisi aynı gün. Ardından iki mağaza
    adresi siteye APP_SYNC ile gider.
@@ -729,8 +729,8 @@ Repo **public** ve eski Maps anahtarı (`AIzaSyCEGo…`, daha eskisi `AIzaSyDzxS
   e-posta atar, harcamayı durduran kota.
 
 SHA-1'ler üç aşamada (Maps SDK anahtarına **+ Add**, aynı paket adıyla):
-- ✅ debug: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25` — RN şablonunda herkeste
-  aynı, **yayından önce kaldırılır**.
+- ~~debug: `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`~~ — RN şablonunda herkeste
+  aynı. **27 Ekim'de kaldırıldı** (oturum, Arif'in onayıyla; sayfa yeniden açılıp doğrulandı, iki SHA-1 kaldı).
 - ✅ upload key (EAS keystore): SHA-1 `88:FA:45:45:FD:1A:47:4C:26:60:AA:96:AA:AA:93:7B:43:C2:A8:3F`
   (SHA-256 `EB:7F:…:45:2A`, sitede zaten var). 5 Ekim'de Play → Uygulama imzalama'dan okundu.
 - ✅ app signing key (Google): SHA-1 `83:64:A8:D9:2E:FE:E7:C6:A4:40:76:A6:2F:CB:F1:D4:D2:82:57:5C`,

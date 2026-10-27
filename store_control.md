@@ -208,7 +208,7 @@ play.google.com/console
 
 ### 3.6 Yayın günü (üretim onayı geldikten sonra)
 - [x] Önce veritabanı temizliği (`FINALIZE.md` "★ 17 Ekim" → temizlik). (27 Ekim: 6 hesap ve 16 dosya silindi.)
-- [ ] Maps "Odyssey Android Maps SDK" anahtarından **debug SHA-1**'i kaldır.
+- [x] Maps "Odyssey Android Maps SDK" anahtarından **debug SHA-1**'i kaldır. (27 Ekim; app signing + upload kaldı.)
 - [ ] (İsteğe bağlı) Mağaza girişinin 11 dil çevirisi (§3.3).
 - [x] **Yönetilen yayınlama**yı aç (Yayınlama özeti). Arif'in kararı: Android de iOS gibi son noktada bekler; açıkken
       onaylanan sürüm "Yayınla"ya basılana kadar yayına girmez. Sürüm oluşturulmadan **önce** açılmalı. (27 Ekim: zaten açıktı.)
