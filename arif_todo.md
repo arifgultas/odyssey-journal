@@ -11,6 +11,15 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 (mağaza formları; build beklemeden doldurulabilir) → 6 (site metinleri) → 7 (yayından hemen önce) →
 8 (acelesi yok).
 
+> **★ 27 Ekim — senden beklenenler (şu an yalnız bunlar)**
+> 1. **Google onay e-postasını bekle** (Play üretim sürümü incelemede). Gelince oturuma söyle. **"Yayınla"ya henüz basma.**
+> 2. Oturum Güney Kore'yi iki mağazadan çıkarınca **yayın günü**: Play → Yayınlama özeti → **Yayınla** ve ASC →
+>    **Release This Version**, ikisi aynı gün. Sonra oturuma söyle; mağaza adresleri siteye gider.
+> 3. Cihazlarda `review@odysseyjournal.app`, `moderation@` ya da kendi kişisel hesabınla giriş yap. `review@` şifresini
+>    değiştirme; Apple ve Play bu şifreyi kullanıyor.
+> 4. (İsteğe bağlı) Kendi hesabına ad ve kullanıcı adı koy. Yayından önce birkaç gerçek gezi paylaş.
+> 5. (Yayından sonra, acelesi yok) Play mağaza girişinin 11 dil çevirisi için oturuma söyle.
+>
 > **★ 17 Ekim — Apple onayladı 🎉** (iOS 1.0 "Pending Developer Release"; genel durum: `FINALIZE.md` "★ 17 Ekim")
 > **Sıra (senin kararın):** kapalı teste dokunulmaz → 14 gün dolar → üretim başvurusu → temizlik → iki platform aynı gün yayın.
 > 1. **Release'e henüz basma.** Android üretim onayıyla aynı gün basılacak. Onay süresiz bekleyebilir.

@@ -72,6 +72,34 @@ Not: başka bir Supabase projesi "Gultas Archive" org'una (Free) taşındı; ody
    adresi siteye APP_SYNC ile gider.
 4. Yayından sonra: Play mağaza girişinin 11 dil çevirisi (§3.3) ve 1.0.1 repo temizliği.
 
+### 27 Ekim — oturumda yapılanlar
+| İş | Sonuç | Commit |
+|---|---|---|
+| Google üretim erişimi | 24 Ekim'de verildi (Arif'in e-postası) | — |
+| **Play üretim sürümü** | vc4, 178 ülke, en-US/tr-TR notlar; incelemeye gönderildi. Yönetilen yayınlama zaten açıktı | `0ab31c0` |
+| Site oturumuna bilgi | `odyssey-journal-website-a1` oturumuna mesaj gitti (üretim incelemede, sitede iş yok) | — |
+| Supabase planı | Başka bir proje "Gultas Archive"e (Free) taşındı; Odyssey projesi Pro'da kaldı ve uygulama onu kullanıyor | — |
+| **Veri temizliği** | 6 hesap (Elif, Can, Sofia, `review@review.com`, `test@test.com`, tanınmayan iCloud) ve 16 fotoğraf silindi; doğrulama tamam | `66ceadf` |
+| **Debug SHA-1** | Maps anahtarından kaldırıldı; Arif Android'de haritanın açıldığını doğruladı | `af3c576`, `deff6ce` |
+| Yaş derecelendirmesi (ASC) | Zaten cevaplıydı (18+). Salt okunur kontrol edildi, değişiklik yok | `1f57397` |
+| Play ülke kuralları (yardım 6223646) | AB coğrafi engelleme kartı yalnızca bilgilendirme. **Kore yayından önce çıkarılacak** (Arif'in kararı) | `55f35d1` |
+| Lojistik Sözlüğü hedef API | Arif güncelledi, hatırlatma kapandı | `66ceadf` |
+| Herkese açık repo | Üçüncü kişinin e-posta adresi ve Arif'in kişisel gmail'i notlara yazılmadı (push engeli üzerine düzeltildi) | — |
+| Kod, build, kapalı test | Dokunulmadı | — |
+
+### Sonraki oturum başlarken (sırayla)
+1. `ls SITE_SYNC_2026-10-*` ile siteden yeni not var mı bak, sonra `arif_todo.md` başını oku.
+2. **Arif "Google onayladı" deyince** (e-posta ya da Play Yayınlama özeti → "Yayınlanmaya hazır"):
+   - Play: Üretim → Ülkeler/bölgeler → **Güney Kore'yi kaldır** → kaydet → Yayınlama özeti → incelemeye gönder. Bu değişiklik
+     de yönetilen yayınlamada bekler. Onaylanınca iki değişiklik birlikte yayınlanır.
+   - ASC: Pricing and Availability → **Güney Kore'yi kaldır**. İncelemeye gitmez; Pending Developer Release bozulmaz.
+     "Cancel release" ya da metadata değişikliği yapma.
+3. **Yayın günü** (Arif basar, aynı gün): Play Yayınlama özeti → **Yayınla**, ASC → **Release This Version**. Mağazada
+   görününce iki adres site oturumuna gider (`APP_STORE_URL` / `PLAY_STORE_URL`, site `--release`):
+   `https://apps.apple.com/app/id6809580456`, `https://play.google.com/store/apps/details?id=com.odysseyjournal.app`.
+4. Yayından sonra: Play mağaza girişinin 11 dil çevirisi (§3.3); 1.0.1 repo temizliği (kök notlar → `docs/archive/`);
+   isteğe bağlı olarak eski commit'teki kişisel e-postanın `arif_todo.md`'den kaldırılması.
+
 ---
 
 ## ★ 22 Ekim — Play üretim başvurusu gönderildi (arşiv)
