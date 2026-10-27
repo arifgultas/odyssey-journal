@@ -55,7 +55,7 @@ Not: başka bir Supabase projesi "Gultas Archive" org'una (Free) taşındı; ody
 1. Google onayını bekle (e-posta ya da Yayınlama özeti). Ret gelirse gerekçesine göre düzeltilir.
 2. Beklerken ya da onaydan sonra, yayından önce:
    - ~~veri temizliği~~ ✅;
-   - ~~Maps anahtarından debug SHA-1'in kaldırılması~~ ✅ (Arif Play'den kurulu uygulamada haritayı kontrol eder);
+   - ~~Maps anahtarından debug SHA-1'in kaldırılması~~ ✅ (Arif Play'den kurulu uygulamada haritanın açıldığını doğruladı, 27 Ekim);
    - ~~ASC yaş derecelendirmesindeki yeni sosyal medya soruları~~ ✅ 27 Ekim'de salt okunur olarak kontrol edildi, zaten
      cevaplıydı: UGC Evet, Sosyal Medya Evet, 13 yaş altı için sosyal medya kapatma Hayır, Mesajlaşma Evet,
      Reklam/Web/Ebeveyn denetimi/Yaş doğrulama Hayır. Sonuç: **18+** (173 ülke; Brezilya 18+, Kore 19+). Değişiklik yapılmadı.
