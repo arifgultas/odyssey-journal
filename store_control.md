@@ -210,10 +210,11 @@ play.google.com/console
 - [ ] Önce veritabanı temizliği (`FINALIZE.md` "★ 17 Ekim" → temizlik).
 - [ ] Maps "Odyssey Android Maps SDK" anahtarından **debug SHA-1**'i kaldır.
 - [ ] (İsteğe bağlı) Mağaza girişinin 11 dil çevirisi (§3.3).
-- [ ] **Yönetilen yayınlama**yı aç (Yayınlama özeti). Arif'in kararı: Android de iOS gibi son noktada bekler; açıkken
-      onaylanan sürüm "Yayınla"ya basılana kadar yayına girmez. Sürüm oluşturulmadan **önce** açılmalı.
-- [ ] **Production → Create release** → vc4'ü kütüphaneden seç (yeni build gerekmez; temizlik yalnız veri) → ülkeler
-      kapalı testle aynı → gönder.
+- [x] **Yönetilen yayınlama**yı aç (Yayınlama özeti). Arif'in kararı: Android de iOS gibi son noktada bekler; açıkken
+      onaylanan sürüm "Yayınla"ya basılana kadar yayına girmez. Sürüm oluşturulmadan **önce** açılmalı. (27 Ekim: zaten açıktı.)
+- [x] **Production → Create release** → vc4'ü kütüphaneden seç (yeni build gerekmez; temizlik yalnız veri) → ülkeler
+      kapalı testle aynı → gönder. (27 Ekim: 178 ülke, en-US/tr-TR notlar, incelemeye gönderildi.)
+- [ ] Google onaylayınca: Yayınlama özeti → **Yayınla** (yayın günü, Arif).
 - [ ] Aynı gün ASC'de **Release This Version** (§1.9).
 - [ ] İki mağaza adresi siteye APP_SYNC ile gider: `APP_STORE_URL` / `PLAY_STORE_URL` → `--release` → deploy.
       Play adresi: `https://play.google.com/store/apps/details?id=com.odysseyjournal.app`.

@@ -1,6 +1,7 @@
 # Odyssey Journal — Yayın Öncesi Durum ve Kalanlar
 
-**Son güncelleme:** 2026-10-22 (**Play üretim erişimi başvurusu gönderildi**, Google incelemesinde; aşağıda "★ 22 Ekim").
+**Son güncelleme:** 2026-10-27 (**Play üretim sürümü vc4 incelemeye gönderildi**, yönetilen yayınlama açık; aşağıda "★ 27 Ekim").
+Önceki: 2026-10-22 (Play üretim erişimi başvurusu gönderildi; "★ 22 Ekim").
 Önceki: 2026-10-17 (**iOS 1.0 onaylandı**, Pending Developer Release; Play kapalı test 11/14 gün; şirket ve DSA kararı; **17 Ekim başlangıcı hemen aşağıda**).
 Önceki: 2026-10-07 öğlen (App Store 2.1 bilgi isteği cevaplandı, iOS 1.0 yeniden incelemede). Önceki: 2026-10-06 gece (iOS 1.0 App Store incelemesinde, Play kapalı test incelemesinde, `034` canlıda; **7 Ekim başlangıcı hemen aşağıda**).
 Önceki: 2026-10-05 gece (build 8 iki mağazada test kanalında, Play kurulumu bitti).
@@ -17,7 +18,34 @@ Dil işinin teknik detayı `I18N_HANDOFF.md`'de; bu dosya yayına kadar kalan he
 
 ---
 
-## ★ 22 Ekim — Play üretim başvurusu gönderildi (BURADAN BAŞLAYIN)
+## ★ 27 Ekim — Play üretim sürümü incelemede (BURADAN BAŞLAYIN)
+
+**Durum:** Google üretim erişimini **24 Ekim 22:08**'de e-postayla verdi. 27 Ekim ~21:05'te oturum, Arif'in isteğiyle
+Chrome'da şunları yaptı:
+- **Yönetilen yayınlama**: zaten açıktı ("Yönetilen yayınlama etkinleştirildi"), ayara dokunulmadı.
+- **Üretim → Ülkeler/bölgeler**: 178 ülke/bölge seçildi (kapalı testle aynı: 177 ülke + "dünyanın geri kalanı").
+- **Üretim sürümü**: vc4 (1.0.0) kütüphaneden eklendi, yükleme yapılmadı. İlk üretim sürümü olduğu için %100 kullanıma
+  sunuluyor, kademeli seçenek yok. Sürüm notları en-US ve tr-TR olarak yazıldı ("First release of Odyssey Journal: …").
+  Kapalı testteki not ("18+ onayı + şifre sıfırlama düzeltmesi") üretime uygun olmadığı için kopyalanmadı.
+- Önizlemede tek uyarı çıktı: R8/proguard kod gösterme dosyası yok. Bu standart bir uyarı, engel değil.
+- **3 değişiklik incelemeye gönderildi.** Yayınlama özeti şu an "İncelenmekte olan değişiklikler" gösteriyor.
+  Onaydan sonra sürüm "Yayınlanmaya hazır olan değişiklikler"de bekler; **"Yayınla"ya Arif yayın günü basar.**
+
+Mağaza girişinin 11 dil çevirisi: **Arif'in kararı, yayından sonra.** İnceleme sürerken mağaza girişine dokunulmaz.
+
+### Sıradaki adımlar
+1. Google onayını bekle (e-posta ya da Yayınlama özeti). Ret gelirse gerekçesine göre düzeltilir.
+2. Beklerken ya da onaydan sonra, yayından önce:
+   - veri temizliği ("★ 17 Ekim" → Temizlik);
+   - Maps anahtarından debug SHA-1'in kaldırılması;
+   - ASC yaş derecelendirmesindeki yeni sosyal medya soruları.
+3. **Yayın günü:** Play'de Yayınlama özeti → "Yayınla", ASC'de "Release This Version", ikisi aynı gün. Ardından iki mağaza
+   adresi siteye APP_SYNC ile gider.
+4. Yayından sonra: Play mağaza girişinin 11 dil çevirisi (§3.3) ve 1.0.1 repo temizliği.
+
+---
+
+## ★ 22 Ekim — Play üretim başvurusu gönderildi (arşiv)
 
 **Durum:** Kontrol panelinde üç şart da tamamdı (kapalı sürüm yayında, 12+ kullanıcı, 14+ gün). Oturum formu Arif'in
 isteğiyle Chrome'da doldurdu ve **22 Ekim 22:02'de gönderdi**. Panel: "Üretim erişimi başvurunuzu aldık. Hesap sahibine
