@@ -59,6 +59,15 @@ Not: başka bir Supabase projesi "Gultas Archive" org'una (Free) taşındı; ody
    - ~~ASC yaş derecelendirmesindeki yeni sosyal medya soruları~~ ✅ 27 Ekim'de salt okunur olarak kontrol edildi, zaten
      cevaplıydı: UGC Evet, Sosyal Medya Evet, 13 yaş altı için sosyal medya kapatma Hayır, Mesajlaşma Evet,
      Reklam/Web/Ebeveyn denetimi/Yaş doğrulama Hayır. Sonuç: **18+** (173 ülke; Brezilya 18+, Kore 19+). Değişiklik yapılmadı.
+   - **Güney Kore dağıtımdan çıkarılacak** (Arif'in kararı, 27 Ekim). Kore'de konum bilgisi toplayan uygulamalar için
+     yerel konum tabanlı hizmet lisansı/bildirimi isteniyor (Play yardım 6223646, "South Korea → Location"); Odyssey
+     gönderi konumu ve kişisel harita tutuyor. **Zamanlama:** Google üretim onayından **sonra**, yayın gününden **önce**.
+     Bunun nedeni, incelemedeki sürüme yeni bir değişiklik eklememek. Play: Üretim → Ülkeler/bölgeler → Güney Kore'yi kaldır
+     → kaydet → Yayınlama özeti'nden incelemeye gönder. Bu da yönetilen yayınlamada bekler. ASC: Pricing and Availability →
+     Güney Kore'yi kaldır (incelemesiz). Kore talebi olursa ileride lisans konusuna bakılır.
+   - Play'deki "Coğrafi engelleme yönetmeliği" kartı yalnızca bilgilendirme. Tüm AB ülkelerinde yayındayız, yapılacak bir şey yok.
+     Japonya, İsrail, Vietnam ve Hindistan kuralları bize uymuyor; ücretli içerik ve oyun yok. Brezilya'da 18+ filtresi
+     zaten lehimize; ClassInd anketi istenirse doldurulur.
 3. **Yayın günü:** Play'de Yayınlama özeti → "Yayınla", ASC'de "Release This Version", ikisi aynı gün. Ardından iki mağaza
    adresi siteye APP_SYNC ile gider.
 4. Yayından sonra: Play mağaza girişinin 11 dil çevirisi (§3.3) ve 1.0.1 repo temizliği.

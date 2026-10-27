@@ -17,7 +17,8 @@ oturum doğrulamasını yapıp bu listeyi ve FINALIZE'ı günceller.
 > 2. ✅ ~~**DSA trader beyanı**~~ — 18 Ekim, oturum "trader değilim" olarak gönderdi (senin isteğinle). AB'de yayına engel kalmadı.
 > 3. ✅ ~~Üretim başvurusu~~ — 22 Ekim'de gönderildi, Google 24 Ekim'de onayladı. ✅ 27 Ekim: üretim sürümü (vc4)
 >    incelemeye gönderildi, yönetilen yayınlama açık. **Google onaylayınca "Yayınla"ya basma**; yayın günü iOS
->    Release ile aynı gün basacaksın. Onay e-postası gelince oturuma söyle.
+>    Release ile aynı gün basacaksın. Onay e-postası gelince oturuma söyle: önce oturum **Güney Kore'yi** iki mağazada da
+>    dağıtımdan çıkarır (senin kararın, 27 Ekim; Kore'nin konum lisansı kuralı), sonra yayın günü.
 > 4. ✅ ~~**Yaş derecelendirmesi, yeni sosyal medya soruları**~~ — 27 Ekim: zaten cevaplıydı, sonuç 18+. Yapacağın yok.
 > 5. **Şirket:** şimdi gerekmiyor. **Gelir modeli eklemeden önce Ltd** kurulması önerildi (`FINALIZE.md` "Şirket kararı").
 >    İstersen bir mali müşavir ya da avukatla 1 saatlik görüşme.

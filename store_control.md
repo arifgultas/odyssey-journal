@@ -214,6 +214,9 @@ play.google.com/console
       onaylanan sürüm "Yayınla"ya basılana kadar yayına girmez. Sürüm oluşturulmadan **önce** açılmalı. (27 Ekim: zaten açıktı.)
 - [x] **Production → Create release** → vc4'ü kütüphaneden seç (yeni build gerekmez; temizlik yalnız veri) → ülkeler
       kapalı testle aynı → gönder. (27 Ekim: 178 ülke, en-US/tr-TR notlar, incelemeye gönderildi.)
+- [ ] Google onaylayınca, yayından önce: **Güney Kore'yi dağıtımdan çıkar** (Arif'in kararı, 27 Ekim; konum lisansı).
+      Play: Üretim → Ülkeler/bölgeler → kaldır → incelemeye gönder (yönetilen yayınlamada bekler). ASC: Pricing and
+      Availability → Güney Kore'yi kaldır. Gerekçe: `FINALIZE.md` "★ 27 Ekim".
 - [ ] Google onaylayınca: Yayınlama özeti → **Yayınla** (yayın günü, Arif).
 - [ ] Aynı gün ASC'de **Release This Version** (§1.9).
 - [ ] İki mağaza adresi siteye APP_SYNC ile gider: `APP_STORE_URL` / `PLAY_STORE_URL` → `--release` → deploy.
